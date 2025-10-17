@@ -191,8 +191,8 @@ These terminals display `emoji+VS16` with the width of the base character, ignor
 ## Conclusion
 
 ✅ **Fix Verified:** All visual alignment issues resolved
-✅ **Tests Passing:** 193/193 unit tests + 160/160 visual tests
-✅ **Coverage:** 98.68% overall code coverage
+✅ **Tests Passing:** 194/194 unit tests + 160/160 visual tests
+✅ **Coverage:** 98.37% overall code coverage
 ✅ **Performance:** Negligible overhead (< 5µs per operation)
 ✅ **Examples:** All 11 example scripts work perfectly
 ✅ **Quality:** Zero regressions, improved emoji support
@@ -201,10 +201,45 @@ These terminals display `emoji+VS16` with the width of the base character, ignor
 
 ---
 
+## Follow-Up Improvements (October 18, 2025)
+
+After the initial VS16 fix, two additional border rendering improvements were implemented:
+
+### 1. THICK Style Visual Illusion Fix
+
+**Issue:** Bottom border used `▀` (UPPER HALF BLOCK) instead of `▄` (LOWER HALF BLOCK)
+
+**Fix:** Modified `render_bottom_border()` to detect THICK style and use appropriate character
+
+**Result:**
+- Top border: `█▀▀▀...▀▀▀█` (caps from above)
+- Bottom border: `█▄▄▄...▄▄▄█` (caps from below)
+- Perfect visual illusion of thick frame
+
+### 2. Empty String Title Handling
+
+**Issue:** `render_top_border(width, "")` added 2 spaces, creating visible gap
+
+**Fix:** Treat empty string same as `None` - produce solid border
+
+**Result:** Consistent behavior for both `None` and `""` parameters
+
+### Updated Test Results
+
+- **Total Tests:** 194 (added 1 new test for empty string handling)
+- **Pass Rate:** 100% ✅
+- **Coverage:** 98.37%
+
+See `doc/notes/CHANGELOG_2025-10-18.md` for detailed documentation of these improvements.
+
+---
+
 ## Next Steps
 
 1. ✅ Commit examples directory (11 files)
 2. ✅ Commit variation selector fix
-3. 🔄 Update documentation with VS16 behavior notes
-4. 🔄 Consider adding to EMOJI-STRATEGY.md as Tier 1.5 complexity
-5. 🔄 Continue to M2: Rendering Engine implementation
+3. ✅ THICK style visual illusion fix
+4. ✅ Empty string title handling fix
+5. ✅ Documentation updates (CHANGELOG_2025-10-18.md)
+6. 🔄 Consider adding to EMOJI-STRATEGY.md as Tier 1.5 complexity
+7. 🔄 Continue to M2: Rendering Engine implementation

@@ -174,6 +174,18 @@ class TestRenderTopBorder:
         result = SOLID.render_top_border(2)
         assert result == "┌┐"
 
+    def test_render_top_border_empty_string_title(self):
+        """Test that empty string title is treated same as None."""
+        width = 30
+        result_none = SOLID.render_top_border(width, None)
+        result_empty = SOLID.render_top_border(width, "")
+        result_bottom = SOLID.render_bottom_border(width)
+
+        # Empty string should produce solid border, same as None
+        assert result_empty == result_none
+        # Only corners differ between top and bottom
+        assert result_none.replace("┌", "└").replace("┐", "┘") == result_bottom
+
 
 class TestRenderTopBorderEmoji:
     """Test render_top_border with emoji titles."""

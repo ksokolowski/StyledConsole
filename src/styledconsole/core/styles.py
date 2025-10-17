@@ -100,7 +100,7 @@ class BorderStyle:
             >>> style.render_top_border(20, "🚀 Title")
             '┌──── 🚀 Title ────┐'  # Emoji visual width handled
         """
-        if title is None:
+        if title is None or title == "":
             # Simple top border without title
             inner_width = width - 2  # Subtract corners
             return self.top_left + self.render_horizontal(inner_width) + self.top_right
@@ -143,6 +143,9 @@ class BorderStyle:
     def render_bottom_border(self, width: int) -> str:
         """Render bottom border.
 
+        For THICK style, uses LOWER HALF BLOCK (▄) instead of UPPER HALF BLOCK (▀)
+        to create proper thick frame illusion.
+
         Args:
             width: Total width of the border (including corners)
 
@@ -155,7 +158,18 @@ class BorderStyle:
             '└──────────────────┘'
         """
         inner_width = width - 2  # Subtract corners
-        return self.bottom_left + self.render_horizontal(inner_width) + self.bottom_right
+
+        # Special case for THICK style: use LOWER HALF BLOCK for bottom border
+        if self.name == "thick" and self.horizontal == "▀":
+            horizontal_char = "▄"  # LOWER HALF BLOCK (U+2584)
+        else:
+            horizontal_char = self.horizontal
+
+        return (
+            self.bottom_left
+            + self.render_horizontal(inner_width, horizontal_char)
+            + self.bottom_right
+        )
 
     def render_divider(self, width: int) -> str:
         """Render horizontal divider with side joints.
