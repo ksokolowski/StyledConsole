@@ -9,20 +9,20 @@
 
 ## Progress Overview
 
-**Overall Progress:** 2/21 tasks completed (10%)
+**Overall Progress:** 3/21 tasks completed (14%)
 
 | Milestone | Tasks | Completed | Progress |
 |-----------|-------|-----------|----------|
-| **M1** Core Setup & Utilities | 5 | 2 | ✅✅⬜⬜⬜ 40% |
+| **M1** Core Setup & Utilities | 5 | 3 | ✅✅✅⬜⬜ 60% |
 | **M2** Rendering Engine | 5 | 0 | ⬜⬜⬜⬜⬜ 0% |
 | **M3** Preset Functions | 3 | 0 | ⬜⬜⬜ 0% |
 | **M4** Export & Fallbacks | 3 | 0 | ⬜⬜⬜ 0% |
 | **M5** Testing & Release | 5 | 0 | ⬜⬜⬜⬜⬜ 0% |
 
 **Total Effort:** 34 days (~7 weeks)
-**Days Completed:** 2.5
-**Days Remaining:** 31.5
-**Current Task:** T-003 Color Utilities
+**Days Completed:** 4.5
+**Days Remaining:** 29.5
+**Current Task:** T-004 Terminal Detection
 
 ---
 
@@ -168,11 +168,11 @@ def test_tier2_tier3_not_yet_supported():
 
 ---
 
-### T-003: Color Utilities
+### T-003: Color Utilities ✅
 **Priority:** High
 **Effort:** 2 days
 **Dependencies:** T-001
-**Assigned to:** TBD
+**Status:** ✅ Completed (Oct 17, 2025)
 
 **Description:**
 Implement color parsing, conversion, and gradient interpolation with **CSS4 named color support** (148 colors from W3C/matplotlib standard).
@@ -183,16 +183,29 @@ Implement color parsing, conversion, and gradient interpolation with **CSS4 name
 - **Named:** CSS4 color names (e.g., `red`, `dodgerblue`, `coral`, `lightseagreen`)
 
 **Acceptance Criteria:**
-- [ ] `parse_color(value: str) -> tuple[int, int, int]` handles all formats
-- [ ] `rgb_to_hex(r, g, b) -> str` conversion
-- [ ] `hex_to_rgb(hex_str) -> tuple[int, int, int]` conversion
-- [ ] `interpolate_color(start, end, t) -> str` gradient function
-- [ ] **CSS4 color names:** All 148 named colors supported (see: https://matplotlib.org/stable/gallery/color/named_colors.html#css-colors)
-- [ ] Case-insensitive color name matching
-- [ ] Both `gray` and `grey` spellings supported
-- [ ] `get_color_names() -> list[str]` helper to list available names
-- [ ] Unit tests with edge cases and all color formats
-- [ ] Test coverage ≥90%
+- [x] `parse_color(value: str) -> tuple[int, int, int]` handles all formats
+- [x] `rgb_to_hex(r, g, b) -> str` conversion
+- [x] `hex_to_rgb(hex_str) -> tuple[int, int, int]` conversion
+- [x] `interpolate_color(start, end, t) -> str` gradient function
+- [x] **CSS4 color names:** All 148 named colors supported
+- [x] Case-insensitive color name matching
+- [x] Both `gray` and `grey` spellings supported
+- [x] `get_color_names() -> list[str]` helper to list available names
+- [x] Unit tests with edge cases and all color formats
+- [x] Test coverage ≥90% (achieved 98.39%)
+
+**Completion Notes:**
+- ✅ Implemented 5 color utility functions: parse_color, hex_to_rgb, rgb_to_hex, interpolate_color, color_distance
+- ✅ Full CSS4 color support: 148 named colors from W3C standard
+- ✅ Multiple format support: hex (#FF0000, #f00), rgb(r,g,b), tuples, named colors
+- ✅ Case-insensitive color matching ("RED" == "red")
+- ✅ Both gray/grey spellings supported
+- ✅ All 35 unit tests passing
+- ✅ Test coverage: 98.39% (61/62 lines covered)
+- ✅ Gradient interpolation with color distance calculations
+- ✅ Exported from styledconsole.utils and styledconsole main module
+- ✅ Branch: feature/T-003-color-utilities
+- ✅ Files: src/styledconsole/utils/color.py, src/styledconsole/utils/color_data.py, tests/unit/test_color_utils.py
 
 **Test Cases:**
 ```python
@@ -990,6 +1003,17 @@ def visual_width_enhanced(text: str) -> int:
   - Functions exported from styledconsole main module
   - Branch: feature/T-002-text-width-utilities
   - Files: src/styledconsole/utils/text.py, tests/unit/test_text_utils.py
+
+- ✅ **T-003**: Color Utilities (2 days)
+  - Implemented color parsing for multiple formats (hex, rgb(), tuples, named)
+  - Added 148 CSS4 named colors from W3C standard (matplotlib compatible)
+  - Created 5 utility functions: parse_color, hex_to_rgb, rgb_to_hex, interpolate_color, color_distance
+  - Case-insensitive color matching with both gray/grey spellings supported
+  - Linear RGB interpolation with accurate int() rounding
+  - All 35 unit tests passing with 98.39% coverage
+  - Functions exported from styledconsole main module
+  - Branch: feature/T-003-color-utilities
+  - Files: src/styledconsole/utils/color.py, src/styledconsole/utils/color_data.py, tests/unit/test_color_utils.py
 
 ### Week 2 (Oct 24-30, 2025)
 - *TBD*

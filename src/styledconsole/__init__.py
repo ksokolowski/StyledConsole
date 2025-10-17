@@ -10,6 +10,15 @@ Example:
     >>> console.print("Hello, World!", color="blue", bold=True)
 """
 
+from styledconsole.utils.color import (
+    CSS4_COLORS,
+    color_distance,
+    get_color_names,
+    hex_to_rgb,
+    interpolate_color,
+    parse_color,
+    rgb_to_hex,
+)
 from styledconsole.utils.text import (
     pad_to_width,
     split_graphemes,
@@ -61,4 +70,12 @@ __all__ = [
     "split_graphemes",
     "pad_to_width",
     "truncate_to_width",
+    # Color utilities
+    "parse_color",
+    "hex_to_rgb",
+    "rgb_to_hex",
+    "interpolate_color",
+    "color_distance",
+    "get_color_names",
+    "CSS4_COLORS",
 ]
