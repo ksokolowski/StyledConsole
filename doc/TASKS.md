@@ -9,20 +9,20 @@
 
 ## Progress Overview
 
-**Overall Progress:** 1/21 tasks completed (5%)
+**Overall Progress:** 2/21 tasks completed (10%)
 
 | Milestone | Tasks | Completed | Progress |
 |-----------|-------|-----------|----------|
-| **M1** Core Setup & Utilities | 5 | 1 | ✅⬜⬜⬜⬜ 20% |
+| **M1** Core Setup & Utilities | 5 | 2 | ✅✅⬜⬜⬜ 40% |
 | **M2** Rendering Engine | 5 | 0 | ⬜⬜⬜⬜⬜ 0% |
 | **M3** Preset Functions | 3 | 0 | ⬜⬜⬜ 0% |
 | **M4** Export & Fallbacks | 3 | 0 | ⬜⬜⬜ 0% |
 | **M5** Testing & Release | 5 | 0 | ⬜⬜⬜⬜⬜ 0% |
 
 **Total Effort:** 34 days (~7 weeks)
-**Days Completed:** 0.5
-**Days Remaining:** 33.5
-**Current Task:** T-002 Text Width Utilities
+**Days Completed:** 2.5
+**Days Remaining:** 31.5
+**Current Task:** T-003 Color Utilities
 
 ---
 
@@ -104,11 +104,11 @@ uv sync
 
 ---
 
-### T-002: Text Width Utilities
+### T-002: Text Width Utilities ✅
 **Priority:** High
 **Effort:** 2 days
 **Dependencies:** T-001
-**Assigned to:** TBD
+**Status:** ✅ Completed (Oct 17, 2025)
 
 **Description:**
 Implement emoji-safe text width calculation and grapheme handling. **MVP focuses on Tier 1 (Basic Icons)** - single codepoint emojis that are well-supported across terminals.
@@ -119,14 +119,23 @@ Implement emoji-safe text width calculation and grapheme handling. **MVP focuses
 - **Tier 3 (v0.3+):** ZWJ sequences (👨‍👩‍👧‍👦 👨‍💻) - complex multi-codepoint
 
 **Acceptance Criteria:**
-- [ ] `visual_width(text: str) -> int` function implemented
-- [ ] Handles Tier 1 basic icons correctly (e.g., "🚀" returns 2)
-- [ ] Strips ANSI codes before width calculation
-- [ ] `split_graphemes(text: str) -> list[str]` implemented
-- [ ] `pad_to_width(text, width, align)` implemented
-- [ ] Unit tests with Tier 1 emoji test cases (✅ ❌ ⚠️ 🚀 ❤️ 🎉 ⭐ ℹ️)
-- [ ] Documentation warns about Tier 2/3 support (future work)
-- [ ] Test coverage ≥95%
+- [x] `visual_width(text: str) -> int` function implemented
+- [x] Handles Tier 1 basic icons correctly (e.g., "🚀" returns 2)
+- [x] Strips ANSI codes before width calculation
+- [x] `split_graphemes(text: str) -> list[str]` implemented
+- [x] `pad_to_width(text, width, align)` implemented
+- [x] Unit tests with Tier 1 emoji test cases (✅ ❌ ⚠️ 🚀 ❤️ 🎉 ⭐ ℹ️)
+- [x] Documentation warns about Tier 2/3 support (future work)
+- [x] Test coverage ≥95% (achieved 97.62%)
+
+**Completion Notes:**
+- ✅ Implemented 5 text utility functions: visual_width, strip_ansi, split_graphemes, pad_to_width, truncate_to_width
+- ✅ All 37 unit tests passing
+- ✅ Test coverage: 97.62% (72/74 lines covered)
+- ✅ Tier 1 emoji support validated (15 common emojis tested)
+- ✅ ANSI escape sequence handling working correctly
+- ✅ Exported from styledconsole.utils and styledconsole main module
+- ✅ Branch: feature/T-002-text-width-utilities
 
 **Test Cases:**
 ```python
@@ -971,6 +980,16 @@ def visual_width_enhanced(text: str) -> int:
   - Added Apache 2.0 LICENSE and comprehensive README.md
   - Branch: feature/T-001-project-setup
   - Commit: 32eadca
+
+- ✅ **T-002**: Text Width Utilities (2 days)
+  - Implemented emoji-safe text width calculation with wcwidth
+  - Created 5 utility functions: visual_width, strip_ansi, split_graphemes, pad_to_width, truncate_to_width
+  - Tier 1 emoji support validated (✅ ❌ ⚠️ 🚀 ❤️ 🎉 ⭐ ℹ️ and 15+ common emojis)
+  - ANSI escape sequence handling working correctly
+  - All 37 unit tests passing with 97.62% coverage
+  - Functions exported from styledconsole main module
+  - Branch: feature/T-002-text-width-utilities
+  - Files: src/styledconsole/utils/text.py, tests/unit/test_text_utils.py
 
 ### Week 2 (Oct 24-30, 2025)
 - *TBD*

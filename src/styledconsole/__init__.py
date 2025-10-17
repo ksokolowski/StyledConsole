@@ -10,6 +10,14 @@ Example:
     >>> console.print("Hello, World!", color="blue", bold=True)
 """
 
+from styledconsole.utils.text import (
+    pad_to_width,
+    split_graphemes,
+    strip_ansi,
+    truncate_to_width,
+    visual_width,
+)
+
 __version__ = "0.1.0"
 __author__ = "Krzysztof Sokołowski"
 __license__ = "Apache-2.0"
@@ -47,4 +55,10 @@ __all__ = [
     "RenderError",
     "ExportError",
     "TerminalError",
+    # Text utilities
+    "visual_width",
+    "strip_ansi",
+    "split_graphemes",
+    "pad_to_width",
+    "truncate_to_width",
 ]
