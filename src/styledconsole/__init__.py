@@ -10,6 +10,20 @@ Example:
     >>> console.print("Hello, World!", color="blue", bold=True)
 """
 
+from styledconsole.core.styles import (
+    ASCII,
+    BORDERS,
+    DOTS,
+    DOUBLE,
+    HEAVY,
+    MINIMAL,
+    ROUNDED,
+    SOLID,
+    THICK,
+    BorderStyle,
+    get_border_style,
+    list_border_styles,
+)
 from styledconsole.utils.color import (
     CSS4_COLORS,
     color_distance,
@@ -80,6 +94,19 @@ __all__ = [
     # Terminal utilities
     "TerminalProfile",
     "detect_terminal_capabilities",
+    # Border styles
+    "BorderStyle",
+    "SOLID",
+    "DOUBLE",
+    "ROUNDED",
+    "HEAVY",
+    "THICK",
+    "ASCII",
+    "MINIMAL",
+    "DOTS",
+    "BORDERS",
+    "get_border_style",
+    "list_border_styles",
     # Core types and exceptions
     "StyledConsoleError",
     "RenderError",
