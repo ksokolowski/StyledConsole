@@ -44,15 +44,22 @@ class TestVisualWidth:
         assert visual_width("") == 0
 
     def test_tier1_basic_icons(self):
-        """Tier 1: Basic single-codepoint emojis have width=2."""
-        assert visual_width("🚀") == 2  # Rocket
+        """Tier 1: Basic single-codepoint emojis have width=2.
+
+        Note: Emojis with variation selector (U+FE0F) are rendered as width=1
+        due to terminal-specific behavior. See visual_width() documentation.
+        """
+        assert visual_width("🚀") == 2  # Rocket (no VS16)
         assert visual_width("✅") == 2  # Check mark
         assert visual_width("❌") == 2  # Cross mark
-        assert visual_width("⚠️") == 2  # Warning (may have variation selector)
-        assert visual_width("ℹ️") == 2  # Info
-        assert visual_width("⭐") == 2  # Star
-        assert visual_width("🎉") == 2  # Party popper
-        assert visual_width("❤️") == 2  # Heart
+        assert visual_width("⚠️") == 1  # Warning + VS16 → width=1 (terminal fix)
+        assert visual_width("⚠") == 1  # Warning without VS16 → width=1
+        assert visual_width("ℹ️") == 1  # Info + VS16 → width=1 (terminal fix)
+        assert visual_width("ℹ") == 1  # Info without VS16 → width=1
+        assert visual_width("⭐") == 2  # Star (no VS16)
+        assert visual_width("🎉") == 2  # Party popper (no VS16)
+        assert visual_width("❤️") == 1  # Heart + VS16 → width=1 (terminal fix)
+        assert visual_width("❤") == 1  # Heart without VS16 → width=1
 
     def test_mixed_text_and_icons(self):
         """Mixed ASCII and emojis."""
@@ -200,29 +207,74 @@ class TestTier1EmojiSupport:
     """Test Tier 1 emoji support explicitly."""
 
     def test_common_tier1_emojis(self):
-        """Common Tier 1 emojis from specification."""
+        """Common Tier 1 emojis from specification.
+
+        Note: Emojis with Variation Selector-16 (U+FE0F) are rendered as
+        width=1 to match actual terminal behavior, not wcwidth's theoretical width=2.
+        """
         tier1_emojis = [
-            ("✅", "check mark"),
-            ("❌", "cross mark"),
-            ("⚠️", "warning"),
-            ("ℹ️", "info"),
-            ("⭐", "star"),
-            ("🚀", "rocket"),
-            ("❤️", "heart"),
-            ("🎉", "party popper"),
-            ("💡", "light bulb"),
-            ("📝", "memo"),
-            ("🔥", "fire"),
-            ("👍", "thumbs up"),
-            ("😀", "grinning face"),
-            ("🌟", "glowing star"),
-            ("📊", "bar chart"),
+            ("✅", "check mark", 2),  # No VS16
+            ("❌", "cross mark", 2),  # No VS16
+            ("⚠️", "warning", 1),  # Has VS16 → width=1 (terminal fix)
+            ("ℹ️", "info", 1),  # Has VS16 → width=1 (terminal fix)
+            ("⭐", "star", 2),  # No VS16
+            ("🚀", "rocket", 2),  # No VS16
+            ("❤️", "heart", 1),  # Has VS16 → width=1 (terminal fix)
+            ("🎉", "party popper", 2),  # No VS16
+            ("💡", "light bulb", 2),  # No VS16
+            ("📝", "memo", 2),  # No VS16
+            ("🔥", "fire", 2),  # No VS16
+            ("👍", "thumbs up", 2),  # No VS16
+            ("😀", "grinning face", 2),  # No VS16
+            ("🌟", "glowing star", 2),  # No VS16
+            ("📊", "bar chart", 2),  # No VS16
         ]
 
-        for emoji, name in tier1_emojis:
+        for emoji, name, expected_width in tier1_emojis:
             width = visual_width(emoji)
-            # All Tier 1 emojis should have width 2 or close to it
-            assert width >= 2, f"{name} ({emoji}) has unexpected width {width}"
+            assert width == expected_width, (
+                f"{name} ({emoji}) has width {width}, expected {expected_width}"
+            )
+
+
+class TestVariationSelector:
+    """Test emoji variation selector (U+FE0F) handling."""
+
+    def test_variation_selector_terminal_fix(self):
+        """Variation selectors are handled according to terminal behavior.
+
+        Many terminals display emoji+VS16 with the width of the base character,
+        not the width=2 that wcwidth reports. Our fix matches terminal behavior.
+        """
+        # These emojis have VS16, terminal renders them as width=1
+        assert visual_width("⚠️") == 1  # Warning + VS16
+        assert visual_width("ℹ️") == 1  # Info + VS16
+        assert visual_width("❤️") == 1  # Heart + VS16
+        assert visual_width("🏗️") == 1  # Building + VS16
+
+        # Without VS16, base characters are width=1
+        assert visual_width("⚠") == 1  # Warning alone
+        assert visual_width("ℹ") == 1  # Info alone
+        assert visual_width("❤") == 1  # Heart alone
+
+    def test_variation_selector_in_text(self):
+        """VS16 emojis in text are calculated correctly."""
+        # Each emoji with VS16 counts as width=1 (terminal behavior)
+        assert visual_width("⚠️  Warning") == 10  # 1 + 2 spaces + 7 chars
+        assert visual_width("ℹ️  Info") == 7  # 1 + 2 spaces + 4 chars
+        assert visual_width("Test 🏗️ emoji") == 12  # 4 + 1 + 1 + 1 + 5
+
+    def test_variation_selector_vs_no_selector(self):
+        """Text should have same width with or without VS16."""
+        # Since terminal renders both as width=1, they should match
+        assert visual_width("⚠️  Warning") == visual_width("⚠  Warning")
+        assert visual_width("ℹ️  Info") == visual_width("ℹ  Info")
+
+    def test_multiple_variation_selectors(self):
+        """Multiple VS16 emojis in one string."""
+        text = "⚠️ ℹ️ ❤️"  # Three emojis with VS16, two spaces
+        # 1 + 1 + 1 + 1 + 1 = 5
+        assert visual_width(text) == 5
 
 
 class TestTier2Tier3FutureWork:

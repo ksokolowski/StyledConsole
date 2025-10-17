@@ -12,6 +12,11 @@ import wcwidth
 # ANSI escape sequence pattern (CSI sequences)
 ANSI_PATTERN = re.compile(r"\x1b\[[0-9;]*m")
 
+# Emoji Variation Selector-16 (U+FE0F) forces emoji presentation
+# Some terminals render these as width=1 instead of wcwidth's reported width=2
+# This is a known terminal inconsistency
+VARIATION_SELECTOR_16 = "\ufe0f"
+
 # Tier 1 MVP: Basic single-codepoint emojis that are well-supported
 # These are the 200+ common icons from EMOJI-STRATEGY.md Tier 1
 TIER1_EMOJI_RANGES = [
@@ -47,6 +52,16 @@ def visual_width(text: str) -> int:
     1. Strips ANSI escape sequences
     2. Uses wcwidth for accurate Unicode width calculation
     3. Handles Tier 1 emojis correctly (width=2)
+    4. Applies terminal-specific workarounds for variation selectors
+
+    Known Issues:
+    - Emoji Variation Selector-16 (U+FE0F) has inconsistent terminal support
+    - Some terminals render "⚠️" (warning + VS16) as width=1, not width=2
+    - wcwidth reports width=2 but actual display may be width=1
+    - This affects: ⚠️ ℹ️ and other symbol+VS16 combinations
+
+    Workaround: We detect character+VS16 patterns and calculate width based
+    on the base character only, since many terminals ignore the VS16 width.
 
     Note: Tier 2 (skin tones) and Tier 3 (ZWJ sequences) will be
     addressed in future versions (v0.2+).
@@ -66,11 +81,38 @@ def visual_width(text: str) -> int:
         11
         >>> visual_width("\\033[31mRed\\033[0m")
         3
+        >>> visual_width("⚠️")  # Warning sign + variation selector
+        1
+        >>> visual_width("⚠️  Warning")
+        11
     """
     # Strip ANSI codes first
     clean_text = strip_ansi(text)
 
-    # Use wcwidth for accurate width calculation
+    # Workaround for variation selector emoji rendering inconsistency
+    # Many terminals render base_char + VS16 with the width of base_char only
+    # This fixes alignment for ⚠️, ℹ️, etc.
+    if VARIATION_SELECTOR_16 in clean_text:
+        # Calculate width character by character, treating VS16 sequences specially
+        width = 0
+        i = 0
+        while i < len(clean_text):
+            # Check if next character is VS16
+            if i + 1 < len(clean_text) and clean_text[i + 1] == VARIATION_SELECTOR_16:
+                # This is a char + VS16 combination
+                # Use only the base character's width (many terminals ignore VS16)
+                base_char = clean_text[i]
+                char_width = wcwidth.wcwidth(base_char)
+                width += char_width if char_width > 0 else 1
+                i += 2  # Skip both base char and VS16
+            else:
+                # Regular character
+                char_width = wcwidth.wcwidth(clean_text[i])
+                width += char_width if char_width > 0 else 1
+                i += 1
+        return width
+
+    # Standard path: use wcwidth for accurate width calculation
     # wcwidth handles emojis, wide characters, zero-width, etc.
     width = wcwidth.wcswidth(clean_text)
 
