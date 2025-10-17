@@ -9,20 +9,20 @@
 
 ## Progress Overview
 
-**Overall Progress:** 3/21 tasks completed (14%)
+**Overall Progress:** 4/21 tasks completed (19%)
 
 | Milestone | Tasks | Completed | Progress |
 |-----------|-------|-----------|----------|
-| **M1** Core Setup & Utilities | 5 | 3 | ✅✅✅⬜⬜ 60% |
+| - **M1: Core Setup & Utilities** ✅✅✅✅⬜ 80% (Oct 17-24, 2025) - Week 1 |
 | **M2** Rendering Engine | 5 | 0 | ⬜⬜⬜⬜⬜ 0% |
 | **M3** Preset Functions | 3 | 0 | ⬜⬜⬜ 0% |
 | **M4** Export & Fallbacks | 3 | 0 | ⬜⬜⬜ 0% |
 | **M5** Testing & Release | 5 | 0 | ⬜⬜⬜⬜⬜ 0% |
 
 **Total Effort:** 34 days (~7 weeks)
-**Days Completed:** 4.5
-**Days Remaining:** 29.5
-**Current Task:** T-004 Terminal Detection
+**Days Completed:** 6.0 / 34
+**Days Remaining:** 28.0
+**Current Task:** T-005 Border Styles Definition
 
 ---
 
@@ -282,22 +282,35 @@ def parse_color(value: str) -> tuple[int, int, int]:
 
 ### T-004: Terminal Detection
 **Priority:** High
-**Effort:** 2 days
+**Effort:** 1.5 days
 **Dependencies:** T-001
-**Assigned to:** TBD
+**Status:** ✅ Completed (Oct 17, 2025)
 
 **Description:**
 Implement terminal capability detection (color depth, emoji support, dimensions).
 
 **Acceptance Criteria:**
-- [ ] `TerminalProfile` dataclass defined
-- [ ] `detect_terminal_capabilities()` function implemented
-- [ ] Detects ANSI support via `isatty()` and `TERM` env var
-- [ ] Detects color depth (8, 256, or truecolor) via `COLORTERM`
-- [ ] Detects emoji safety heuristically (UTF-8 locale + color)
-- [ ] Gets terminal size via `os.get_terminal_size()`
-- [ ] Unit tests with mocked environment variables
-- [ ] Test coverage ≥85%
+- [x] `TerminalProfile` dataclass defined
+- [x] `detect_terminal_capabilities()` function implemented
+- [x] Detects ANSI support via `isatty()` and `TERM` env var
+- [x] Detects color depth (8, 256, or truecolor) via `COLORTERM`
+- [x] Detects emoji safety heuristically (UTF-8 locale + color)
+- [x] Gets terminal size via `os.get_terminal_size()`
+- [x] Unit tests with mocked environment variables
+- [x] Test coverage ≥85% (achieved 100%)
+
+**Completion Notes:**
+- TerminalProfile dataclass with 7 fields (ansi_support, color_depth, emoji_safe, width, height, term, colorterm)
+- Comprehensive detection logic with multiple environment variable checks
+- NO_COLOR and ANSI_COLORS_DISABLED support
+- CI environment detection (GitHub Actions, Jenkins, GitLab, CircleCI)
+- UTF-8 locale detection with LANG, LC_ALL, LC_CTYPE support
+- Fallback terminal size (80x24) on errors
+- All 37 unit tests passing
+- Test coverage: 100% (50/50 lines covered)
+- Functions exported from styledconsole.utils and styledconsole main module
+- Branch: feature/T-004-terminal-detection
+- Files: src/styledconsole/utils/terminal.py, tests/unit/test_terminal.py
 
 **Test Cases:**
 ```python
@@ -1014,6 +1027,20 @@ def visual_width_enhanced(text: str) -> int:
   - Functions exported from styledconsole main module
   - Branch: feature/T-003-color-utilities
   - Files: src/styledconsole/utils/color.py, src/styledconsole/utils/color_data.py, tests/unit/test_color_utils.py
+
+- ✅ **T-004**: Terminal Detection (1.5 days)
+  - Implemented TerminalProfile dataclass with comprehensive capability tracking
+  - Created detect_terminal_capabilities() with environment-based detection
+  - ANSI support detection via isatty() and TERM variable
+  - Color depth detection (8, 256, 16777216 truecolor) via COLORTERM
+  - Emoji safety heuristics (UTF-8 locale + color + not CI)
+  - Terminal size detection with fallback (80x24)
+  - NO_COLOR and ANSI_COLORS_DISABLED support
+  - CI environment detection (GitHub Actions, Jenkins, GitLab, CircleCI)
+  - All 37 unit tests passing with 100% coverage
+  - Functions exported from styledconsole main module
+  - Branch: feature/T-004-terminal-detection
+  - Files: src/styledconsole/utils/terminal.py, tests/unit/test_terminal.py
 
 ### Week 2 (Oct 24-30, 2025)
 - *TBD*
