@@ -9,20 +9,20 @@
 
 ## Progress Overview
 
-**Overall Progress:** 0/21 tasks completed (0%)
+**Overall Progress:** 1/21 tasks completed (5%)
 
 | Milestone | Tasks | Completed | Progress |
 |-----------|-------|-----------|----------|
-| **M1** Core Setup & Utilities | 5 | 0 | 🚧⬜⬜⬜⬜ 0% |
+| **M1** Core Setup & Utilities | 5 | 1 | ✅⬜⬜⬜⬜ 20% |
 | **M2** Rendering Engine | 5 | 0 | ⬜⬜⬜⬜⬜ 0% |
 | **M3** Preset Functions | 3 | 0 | ⬜⬜⬜ 0% |
 | **M4** Export & Fallbacks | 3 | 0 | ⬜⬜⬜ 0% |
 | **M5** Testing & Release | 5 | 0 | ⬜⬜⬜⬜⬜ 0% |
 
 **Total Effort:** 34 days (~7 weeks)
-**Days Completed:** 0
-**Days Remaining:** 34
-**Current Task:** T-001 Project Setup & Structure
+**Days Completed:** 0.5
+**Days Remaining:** 33.5
+**Current Task:** T-002 Text Width Utilities
 
 ---
 
@@ -56,24 +56,34 @@ Tasks are organized into **5 milestones** (M1-M5). Each task includes:
 
 ## M1: Core Setup & Utilities (Week 1-2)
 
-### T-001: Project Setup & Structure 🚧
+### T-001: Project Setup & Structure ✅
 **Priority:** High
 **Effort:** 0.5 days
 **Dependencies:** None
-**Status:** In Progress (Oct 17, 2025)
+**Status:** ✅ Completed (Oct 17, 2025)
 
 **Description:**
 Initialize project repository with proper structure, dependency management, and development tools.
 
 **Acceptance Criteria:**
-- [ ] Repository created with proper `.gitignore`
-- [ ] `pyproject.toml` configured with UV (PEP 621 format)
-- [ ] Core dependencies declared: rich, pyfiglet, wcwidth, ansi2html
-- [ ] Dev dependencies declared: pytest, ruff, pre-commit
-- [ ] Directory structure created (see PLAN.md)
-- [ ] `__init__.py` files in all packages
-- [ ] Pre-commit hooks configured
-- [ ] README.md with project description
+- [x] Repository created with proper `.gitignore`
+- [x] `pyproject.toml` configured with UV (PEP 621 format)
+- [x] Core dependencies declared: rich, pyfiglet, wcwidth, ansi2html
+- [x] Dev dependencies declared: pytest, ruff, pre-commit
+- [x] Directory structure created (see PLAN.md)
+- [x] `__init__.py` files in all packages
+- [x] Pre-commit hooks configured
+- [x] README.md with project description
+
+**Completion Notes:**
+- ✅ Installed UV 0.9.3
+- ✅ Configured hatchling build backend (not uv_build)
+- ✅ Created complete package structure: src/styledconsole/{core,utils,presets,export}
+- ✅ Created test structure: tests/{unit,integration,snapshots}
+- ✅ Defined exception hierarchy: StyledConsoleError, RenderError, ExportError, TerminalError
+- ✅ Added Apache 2.0 LICENSE
+- ✅ Branch: feature/T-001-project-setup
+- ✅ Commit: 32eadca "T-001: Complete project setup and structure"
 
 **Implementation Notes:**
 ```bash
@@ -949,7 +959,18 @@ def visual_width_enhanced(text: str) -> int:
 <!-- Add completed tasks here with date and notes -->
 
 ### Week 1 (Oct 17-23, 2025)
-- *No tasks completed yet*
+
+**Oct 17, 2025:**
+- ✅ **T-001**: Project Setup & Structure (0.5 days)
+  - Installed UV 0.9.3 package manager
+  - Created complete src/styledconsole/ structure (core, utils, presets, export)
+  - Configured pyproject.toml with hatchling build backend
+  - Added all core and dev dependencies
+  - Set up pre-commit hooks (ruff, yaml/toml checks)
+  - Defined exception hierarchy (StyledConsoleError, RenderError, ExportError, TerminalError)
+  - Added Apache 2.0 LICENSE and comprehensive README.md
+  - Branch: feature/T-001-project-setup
+  - Commit: 32eadca
 
 ### Week 2 (Oct 24-30, 2025)
 - *TBD*
