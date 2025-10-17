@@ -351,14 +351,27 @@ Define border style character sets and rendering logic.
 - 8 predefined border styles: SOLID, DOUBLE, ROUNDED, HEAVY, THICK, ASCII, MINIMAL, DOTS
 - Complete Unicode box-drawing character sets
 - ASCII fallback style for universal compatibility
-- 5 rendering methods: render_horizontal, render_vertical, render_top_border, render_bottom_border, render_divider
-- Centered title support in top borders
+- 6 rendering methods: render_horizontal, render_vertical, render_top_border, render_bottom_border, render_divider, render_line
+- **Emoji-safe rendering**: All methods use visual_width() for perfect alignment
+- Centered title support in top borders with emoji-safe centering
+- Automatic content line rendering with left/center/right alignment
+- Emoji-safe padding using pad_to_width() from text utilities
+- Emoji-safe truncation using truncate_to_width() for long content
 - Case-insensitive style lookup via get_border_style()
-- All 58 unit tests passing
-- Test coverage: 100% (58/58 lines covered)
+- All 80 unit tests passing (including 11 emoji-specific tests)
+- Test coverage: 100% (82/83 lines covered, 98.78%)
 - Styles exported from styledconsole.core and styledconsole main module
-- Branch: feature/T-005-border-styles
+- Branch: feature/T-005-border-styles → main (merged)
 - Files: src/styledconsole/core/styles.py, tests/unit/test_styles.py
+
+**Emoji-Safe Improvements:**
+- ✅ render_line() method added for automatic content line rendering with perfect alignment
+- ✅ render_top_border() updated to use visual_width() for emoji-safe title centering
+- ✅ All padding calculations use visual_width() instead of len()
+- ✅ All truncation uses truncate_to_width() for emoji-aware character splitting
+- ✅ TestRenderTopBorderEmoji class with 5 emoji-specific title tests
+- ✅ TestRenderLineEmoji class with 6 emoji-specific content tests
+- ✅ Visual alignment verified: All borders display at exact specified width regardless of emoji content
 
 **Implementation Files:**
 - `styledconsole/core/styles.py`
