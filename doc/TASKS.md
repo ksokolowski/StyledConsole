@@ -9,22 +9,20 @@
 
 ## Progress Overview
 
-**Overall Progress:** 4/21 tasks completed (19%)
+**Overall Progress:** 5/21 tasks completed (24%)
 
 | Milestone | Tasks | Completed | Progress |
 |-----------|-------|-----------|----------|
-| - **M1: Core Setup & Utilities** ✅✅✅✅⬜ 80% (Oct 17-24, 2025) - Week 1 |
+| - **M1: Core Setup & Utilities** ✅✅✅✅✅ 100% (Oct 17-24, 2025) - Week 1 **COMPLETE** |
 | **M2** Rendering Engine | 5 | 0 | ⬜⬜⬜⬜⬜ 0% |
 | **M3** Preset Functions | 3 | 0 | ⬜⬜⬜ 0% |
 | **M4** Export & Fallbacks | 3 | 0 | ⬜⬜⬜ 0% |
 | **M5** Testing & Release | 5 | 0 | ⬜⬜⬜⬜⬜ 0% |
 
 **Total Effort:** 34 days (~7 weeks)
-**Days Completed:** 6.0 / 34
-**Days Remaining:** 28.0
-**Current Task:** T-005 Border Styles Definition
-
----
+**Days Completed:** 7.5 / 34
+**Days Remaining:** 26.5
+**Current Task:** T-006 Frame Renderer Core---
 
 ## Task Organization
 
@@ -333,20 +331,34 @@ def test_detect_no_tty(monkeypatch):
 
 ### T-005: Border Styles Definition
 **Priority:** Medium
-**Effort:** 1 day
+**Effort:** 1.5 days
 **Dependencies:** T-001
-**Assigned to:** TBD
+**Status:** ✅ Completed (Oct 17, 2025)
 
 **Description:**
 Define border style character sets and rendering logic.
 
 **Acceptance Criteria:**
-- [ ] `BorderStyle` dataclass defined
-- [ ] Predefined styles: solid, double, rounded, heavy, ascii
-- [ ] `BORDERS` dictionary with all styles
-- [ ] Helper methods: `render_horizontal()`, `render_vertical()`
-- [ ] Unit tests for each border style
-- [ ] Test coverage ≥90%
+- [x] `BorderStyle` dataclass defined
+- [x] Predefined styles: solid, double, rounded, heavy, ascii (plus thick, minimal, dots)
+- [x] `BORDERS` dictionary with all styles
+- [x] Helper methods: `render_horizontal()`, `render_vertical()`, plus render_top_border(), render_bottom_border(), render_divider()
+- [x] Unit tests for each border style
+- [x] Test coverage ≥90% (achieved 100%)
+
+**Completion Notes:**
+- BorderStyle frozen dataclass with 12 character fields
+- 8 predefined border styles: SOLID, DOUBLE, ROUNDED, HEAVY, THICK, ASCII, MINIMAL, DOTS
+- Complete Unicode box-drawing character sets
+- ASCII fallback style for universal compatibility
+- 5 rendering methods: render_horizontal, render_vertical, render_top_border, render_bottom_border, render_divider
+- Centered title support in top borders
+- Case-insensitive style lookup via get_border_style()
+- All 58 unit tests passing
+- Test coverage: 100% (58/58 lines covered)
+- Styles exported from styledconsole.core and styledconsole main module
+- Branch: feature/T-005-border-styles
+- Files: src/styledconsole/core/styles.py, tests/unit/test_styles.py
 
 **Implementation Files:**
 - `styledconsole/core/styles.py`
@@ -1041,6 +1053,21 @@ def visual_width_enhanced(text: str) -> int:
   - Functions exported from styledconsole main module
   - Branch: feature/T-004-terminal-detection
   - Files: src/styledconsole/utils/terminal.py, tests/unit/test_terminal.py
+
+- ✅ **T-005**: Border Styles Definition (1.5 days)
+  - Implemented BorderStyle frozen dataclass with 12 character fields
+  - Created 8 predefined border styles: SOLID, DOUBLE, ROUNDED, HEAVY, THICK, ASCII, MINIMAL, DOTS
+  - Complete Unicode box-drawing character sets for beautiful borders
+  - ASCII fallback style for universal compatibility
+  - 5 rendering methods: render_horizontal, render_vertical, render_top_border, render_bottom_border, render_divider
+  - Centered title support in top borders with overflow handling
+  - Case-insensitive style lookup via get_border_style()
+  - All 58 unit tests passing with 100% coverage
+  - Styles exported from styledconsole.core and styledconsole main module
+  - Branch: feature/T-005-border-styles
+  - Files: src/styledconsole/core/styles.py, tests/unit/test_styles.py
+
+**🎉 MILESTONE M1 COMPLETE! Core Setup & Utilities - 5/5 tasks (100%)**
 
 ### Week 2 (Oct 24-30, 2025)
 - *TBD*
