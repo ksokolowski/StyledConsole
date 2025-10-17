@@ -1,9 +1,9 @@
 # TASKS (Phase 3: Implementation Breakdown)
 
-**Project:** StyledConsole  
-**Version:** 0.1.0  
-**Date Started:** October 17, 2025  
-**Status:** 🚧 In Progress
+**Project:** StyledConsole
+**Version:** 0.1.0
+**Date Started:** October 17, 2025
+**Status:** 🚧 In Progress - M1: Core Setup & Utilities
 
 ---
 
@@ -13,15 +13,16 @@
 
 | Milestone | Tasks | Completed | Progress |
 |-----------|-------|-----------|----------|
-| **M1** Core Setup & Utilities | 5 | 0 | ⬜⬜⬜⬜⬜ 0% |
+| **M1** Core Setup & Utilities | 5 | 0 | 🚧⬜⬜⬜⬜ 0% |
 | **M2** Rendering Engine | 5 | 0 | ⬜⬜⬜⬜⬜ 0% |
 | **M3** Preset Functions | 3 | 0 | ⬜⬜⬜ 0% |
 | **M4** Export & Fallbacks | 3 | 0 | ⬜⬜⬜ 0% |
 | **M5** Testing & Release | 5 | 0 | ⬜⬜⬜⬜⬜ 0% |
 
-**Total Effort:** 34 days (~7 weeks)  
-**Days Completed:** 0  
+**Total Effort:** 34 days (~7 weeks)
+**Days Completed:** 0
 **Days Remaining:** 34
+**Current Task:** T-001 Project Setup & Structure
 
 ---
 
@@ -55,11 +56,11 @@ Tasks are organized into **5 milestones** (M1-M5). Each task includes:
 
 ## M1: Core Setup & Utilities (Week 1-2)
 
-### T-001: Project Setup & Structure
-**Priority:** High  
-**Effort:** 0.5 days  
-**Dependencies:** None  
-**Assigned to:** TBD
+### T-001: Project Setup & Structure 🚧
+**Priority:** High
+**Effort:** 0.5 days
+**Dependencies:** None
+**Status:** In Progress (Oct 17, 2025)
 
 **Description:**
 Initialize project repository with proper structure, dependency management, and development tools.
@@ -94,9 +95,9 @@ uv sync
 ---
 
 ### T-002: Text Width Utilities
-**Priority:** High  
-**Effort:** 2 days  
-**Dependencies:** T-001  
+**Priority:** High
+**Effort:** 2 days
+**Dependencies:** T-001
 **Assigned to:** TBD
 
 **Description:**
@@ -149,9 +150,9 @@ def test_tier2_tier3_not_yet_supported():
 ---
 
 ### T-003: Color Utilities
-**Priority:** High  
-**Effort:** 2 days  
-**Dependencies:** T-001  
+**Priority:** High
+**Effort:** 2 days
+**Dependencies:** T-001
 **Assigned to:** TBD
 
 **Description:**
@@ -179,7 +180,7 @@ Implement color parsing, conversion, and gradient interpolation with **CSS4 name
 def test_color_parsing_hex():
     assert parse_color("#FF0000") == (255, 0, 0)
     assert parse_color("#f00") == (255, 0, 0)  # Shorthand
-    
+
 def test_color_parsing_rgb():
     assert parse_color("rgb(0,255,0)") == (0, 255, 0)
     assert parse_color("(0, 255, 0)") == (0, 255, 0)
@@ -193,7 +194,7 @@ def test_color_parsing_css4_names():
     assert parse_color("lightseagreen") == (32, 178, 170)
     assert parse_color("tomato") == (255, 99, 71)
     assert parse_color("gold") == (255, 215, 0)
-    
+
     # Both spellings
     assert parse_color("gray") == parse_color("grey")
 
@@ -201,7 +202,7 @@ def test_gradient_with_names():
     """Gradients work with named colors"""
     result = interpolate_color("red", "blue", 0.5)
     assert result  # Should produce purple-ish color
-    
+
     result2 = interpolate_color("coral", "dodgerblue", 0.3)
     assert result2
 
@@ -210,7 +211,7 @@ def test_gradient_interpolation():
     assert interpolate_color(start, end, 0.0) == "#000000"
     assert interpolate_color(start, end, 0.5) == "#808080"
     assert interpolate_color(start, end, 1.0) == "#FFFFFF"
-    
+
 def test_get_color_names():
     names = get_color_names()
     assert len(names) == 148  # CSS4 colors
@@ -231,11 +232,11 @@ CSS4_COLORS = {
 
 def parse_color(value: str) -> tuple[int, int, int]:
     value = value.strip().lower()
-    
+
     # Try CSS4 named color first
     if value in CSS4_COLORS:
         return hex_to_rgb(CSS4_COLORS[value])
-    
+
     # Then try hex, rgb() formats...
 ```
 
@@ -248,9 +249,9 @@ def parse_color(value: str) -> tuple[int, int, int]:
 ---
 
 ### T-004: Terminal Detection
-**Priority:** High  
-**Effort:** 2 days  
-**Dependencies:** T-001  
+**Priority:** High
+**Effort:** 2 days
+**Dependencies:** T-001
 **Assigned to:** TBD
 
 **Description:**
@@ -286,9 +287,9 @@ def test_detect_no_tty(monkeypatch):
 ---
 
 ### T-005: Border Styles Definition
-**Priority:** Medium  
-**Effort:** 1 day  
-**Dependencies:** T-001  
+**Priority:** Medium
+**Effort:** 1 day
+**Dependencies:** T-001
 **Assigned to:** TBD
 
 **Description:**
@@ -311,9 +312,9 @@ Define border style character sets and rendering logic.
 ## M2: Rendering Engine (Week 3-4)
 
 ### T-006: Frame Renderer Core
-**Priority:** High  
-**Effort:** 3 days  
-**Dependencies:** T-002, T-003, T-005  
+**Priority:** High
+**Effort:** 3 days
+**Dependencies:** T-002, T-003, T-005
 **Assigned to:** TBD
 
 **Description:**
@@ -352,9 +353,9 @@ def test_frame_with_emoji():
 ---
 
 ### T-007: Banner Renderer
-**Priority:** High  
-**Effort:** 2 days  
-**Dependencies:** T-003, T-006  
+**Priority:** High
+**Effort:** 2 days
+**Dependencies:** T-003, T-006
 **Assigned to:** TBD
 
 **Description:**
@@ -380,8 +381,8 @@ def test_banner_rendering():
 
 def test_banner_with_gradient():
     banner = BannerRenderer().render(
-        "GO", 
-        font="slant", 
+        "GO",
+        font="slant",
         gradient=("#00ff00", "#0000ff")
     )
     # Verify gradient applied
@@ -395,9 +396,9 @@ def test_banner_with_gradient():
 ---
 
 ### T-008: Layout Composer
-**Priority:** Medium  
-**Effort:** 2 days  
-**Dependencies:** T-006  
+**Priority:** Medium
+**Effort:** 2 days
+**Dependencies:** T-006
 **Assigned to:** TBD
 
 **Description:**
@@ -419,9 +420,9 @@ Implement layout composition for nested frames and multi-section displays.
 ---
 
 ### T-009: Console Class Core API
-**Priority:** High  
-**Effort:** 2.5 days  
-**Dependencies:** T-004, T-006, T-007  
+**Priority:** High
+**Effort:** 2.5 days
+**Dependencies:** T-004, T-006, T-007
 **Assigned to:** TBD
 
 **Description:**
@@ -463,11 +464,11 @@ def test_console_detection():
 def test_debug_logging():
     import logging
     logging.basicConfig(level=logging.DEBUG)
-    
+
     console = Console(debug=True)
     console.frame("Test")  # Should log internally
     # Check logs contain "Rendering frame"
-    
+
 def test_complete_api():
     console = Console(record=True)
     console.text("Hello", color="blue", bold=True)
@@ -475,7 +476,7 @@ def test_complete_api():
     console.newline(2)
     console.frame("Content", border="solid")
     console.banner("TEST", font="slant")
-    
+
     html = console.export_html(inline_styles=True)
     text = console.export_text()
     assert html and text
@@ -492,9 +493,9 @@ def test_complete_api():
 ## M3: Preset Functions & Layouts (Week 5-6)
 
 ### T-010: Status Frame Preset
-**Priority:** High  
-**Effort:** 1.5 days  
-**Dependencies:** T-009  
+**Priority:** High
+**Effort:** 1.5 days
+**Dependencies:** T-009
 **Assigned to:** TBD
 
 **Description:**
@@ -522,9 +523,9 @@ status_frame("Login test", status="PASS", duration="2.3s", message="All checks p
 ---
 
 ### T-011: Test Summary Preset
-**Priority:** High  
-**Effort:** 1.5 days  
-**Dependencies:** T-009  
+**Priority:** High
+**Effort:** 1.5 days
+**Dependencies:** T-009
 **Assigned to:** TBD
 
 **Description:**
@@ -552,9 +553,9 @@ test_summary({"passed": 182, "failed": 3, "skipped": 7}, title="Regression Tests
 ---
 
 ### T-012: Dashboard Presets (Small/Medium/Large)
-**Priority:** High  
-**Effort:** 3 days  
-**Dependencies:** T-008, T-009, T-010, T-011  
+**Priority:** High
+**Effort:** 3 days
+**Dependencies:** T-008, T-009, T-010, T-011
 **Assigned to:** TBD
 
 **Description:**
@@ -589,9 +590,9 @@ dashboard_large(
 ---
 
 ### T-013: Preset Function Documentation
-**Priority:** Medium  
-**Effort:** 1 day  
-**Dependencies:** T-010, T-011, T-012  
+**Priority:** Medium
+**Effort:** 1 day
+**Dependencies:** T-010, T-011, T-012
 **Assigned to:** TBD
 
 **Description:**
@@ -615,9 +616,9 @@ Create comprehensive documentation and examples for all preset functions.
 ## M4: Terminal Detection & HTML Export (Week 7)
 
 ### T-014: HTML Exporter Implementation
-**Priority:** High  
-**Effort:** 2 days  
-**Dependencies:** T-009  
+**Priority:** High
+**Effort:** 2 days
+**Dependencies:** T-009
 **Assigned to:** TBD
 
 **Description:**
@@ -640,7 +641,7 @@ def test_html_export():
     console = Console(record=True)
     console.frame("Test", title="Title")
     html = console.export_html()
-    
+
     assert "<div" in html
     assert "Test" in html
     assert "Title" in html
@@ -655,9 +656,9 @@ def test_html_export():
 ---
 
 ### T-015: Terminal Capability Fallbacks
-**Priority:** Medium  
-**Effort:** 2 days  
-**Dependencies:** T-004, T-009  
+**Priority:** Medium
+**Effort:** 2 days
+**Dependencies:** T-004, T-009
 **Assigned to:** TBD
 
 **Description:**
@@ -682,9 +683,9 @@ Implement graceful degradation for limited terminal capabilities.
 ## M5: Testing, Documentation, Release (Week 8)
 
 ### T-016: Visual Snapshot Test Suite
-**Priority:** High  
-**Effort:** 2 days  
-**Dependencies:** T-006 through T-012  
+**Priority:** High
+**Effort:** 2 days
+**Dependencies:** T-006 through T-012
 **Assigned to:** TBD
 
 **Description:**
@@ -708,9 +709,9 @@ Create comprehensive visual regression tests using pytest-snapshot.
 ---
 
 ### T-017: Cross-Platform Testing
-**Priority:** High  
-**Effort:** 1 day  
-**Dependencies:** All M1-M4 tasks  
+**Priority:** High
+**Effort:** 1 day
+**Dependencies:** All M1-M4 tasks
 **Assigned to:** TBD
 
 **Description:**
@@ -731,9 +732,9 @@ Setup and verify cross-platform test execution in CI.
 ---
 
 ### T-018: Performance Benchmarks
-**Priority:** Medium  
-**Effort:** 1.5 days  
-**Dependencies:** T-009, T-012  
+**Priority:** Medium
+**Effort:** 1.5 days
+**Dependencies:** T-009, T-012
 **Assigned to:** TBD
 
 **Description:**
@@ -754,9 +755,9 @@ Create performance benchmarks and verify targets are met.
 ---
 
 ### T-019: API Documentation (Sphinx/MkDocs)
-**Priority:** High  
-**Effort:** 2 days  
-**Dependencies:** All M1-M4 tasks  
+**Priority:** High
+**Effort:** 2 days
+**Dependencies:** All M1-M4 tasks
 **Assigned to:** TBD
 
 **Description:**
@@ -781,9 +782,9 @@ Generate comprehensive API documentation.
 ---
 
 ### T-020: Release Preparation
-**Priority:** High  
-**Effort:** 1 day  
-**Dependencies:** T-016, T-017, T-018, T-019  
+**Priority:** High
+**Effort:** 1 day
+**Dependencies:** T-016, T-017, T-018, T-019
 **Assigned to:** TBD
 
 **Description:**
@@ -838,9 +839,9 @@ You may obtain a copy of the License at
 ---
 
 ### T-021: Enhanced Emoji Support (Tier 2 & 3) [POST-MVP]
-**Priority:** Low  
-**Effort:** 3 days  
-**Dependencies:** T-002, v0.1.0 release  
+**Priority:** Low
+**Effort:** 3 days
+**Dependencies:** T-002, v0.1.0 release
 **Assigned to:** TBD
 **Target:** v0.2 (Tier 2), v0.3 (Tier 3)
 
@@ -877,10 +878,10 @@ def visual_width_enhanced(text: str) -> int:
 
 ## Summary Statistics
 
-**Total Tasks:** 21 (20 for MVP + 1 post-MVP)  
-**Total Effort (MVP):** ~34 days (≈7 weeks with buffer)  
-**Total Effort (Post-MVP):** +3 days for enhanced emoji  
-**Critical Path:** M1 → M2 → M3 → M5 (6 weeks minimum)  
+**Total Tasks:** 21 (20 for MVP + 1 post-MVP)
+**Total Effort (MVP):** ~34 days (≈7 weeks with buffer)
+**Total Effort (Post-MVP):** +3 days for enhanced emoji
+**Critical Path:** M1 → M2 → M3 → M5 (6 weeks minimum)
 **Parallelizable:** M4 can overlap with M3
 
 ### Task Breakdown by Type
@@ -919,8 +920,8 @@ def visual_width_enhanced(text: str) -> int:
 **Example:**
 ```markdown
 ### ✅ T-001: Project Setup & Structure
-**Priority:** High  
-**Effort:** 0.5 days  
+**Priority:** High
+**Effort:** 0.5 days
 **Completed:** 2025-10-17
 ```
 
