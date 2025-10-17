@@ -1,0 +1,74 @@
+[project]
+name = "styledconsole"
+version = "0.1.0"
+description = "A modern Python library for elegant terminal output with rich formatting, colors, emoji support, and export capabilities"
+readme = "README.md"
+authors = [
+    { name = "Krzysztof Sokołowski", email = "krzysiek.sokolowski@gmail.com" }
+]
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+keywords = ["terminal", "console", "cli", "formatting", "colors", "emoji", "tui"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Terminals",
+]
+dependencies = [
+    "rich>=13.7",
+    "pyfiglet>=1.0.2",
+    "wcwidth>=0.2.13",
+    "ansi2html>=1.8.0",
+]
+
+[project.urls]
+Homepage = "http://192.168.0.169:3000/falcon/styledconsole"
+Repository = "http://192.168.0.169:3000/falcon/styledconsole"
+Documentation = "http://192.168.0.169:3000/falcon/styledconsole"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=4.1",
+    "pytest-snapshot>=0.9",
+    "ruff>=0.3",
+    "pre-commit>=3.6",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/styledconsole"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = []
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = "-v --cov=styledconsole --cov-report=html --cov-report=term-missing"
+
+[tool.coverage.run]
+source = ["src/styledconsole"]
+omit = ["*/tests/*", "*/__pycache__/*"]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
