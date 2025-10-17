@@ -9,6 +9,10 @@ from styledconsole.utils.color import (
     parse_color,
     rgb_to_hex,
 )
+from styledconsole.utils.terminal import (
+    TerminalProfile,
+    detect_terminal_capabilities,
+)
 from styledconsole.utils.text import (
     pad_to_width,
     split_graphemes,
@@ -32,4 +36,7 @@ __all__ = [
     "color_distance",
     "get_color_names",
     "CSS4_COLORS",
+    # Terminal utilities
+    "TerminalProfile",
+    "detect_terminal_capabilities",
 ]

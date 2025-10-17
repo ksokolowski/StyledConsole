@@ -19,6 +19,10 @@ from styledconsole.utils.color import (
     parse_color,
     rgb_to_hex,
 )
+from styledconsole.utils.terminal import (
+    TerminalProfile,
+    detect_terminal_capabilities,
+)
 from styledconsole.utils.text import (
     pad_to_width,
     split_graphemes,
@@ -59,11 +63,6 @@ class TerminalError(StyledConsoleError):
 
 # Public API will be added as components are implemented
 __all__ = [
-    "__version__",
-    "StyledConsoleError",
-    "RenderError",
-    "ExportError",
-    "TerminalError",
     # Text utilities
     "visual_width",
     "strip_ansi",
@@ -78,4 +77,16 @@ __all__ = [
     "color_distance",
     "get_color_names",
     "CSS4_COLORS",
+    # Terminal utilities
+    "TerminalProfile",
+    "detect_terminal_capabilities",
+    # Core types and exceptions
+    "StyledConsoleError",
+    "RenderError",
+    "ExportError",
+    "TerminalError",
+    # Metadata
+    "__version__",
+    "__author__",
+    "__license__",
 ]
