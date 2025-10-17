@@ -175,6 +175,239 @@ class TestRenderTopBorder:
         assert result == "┌┐"
 
 
+class TestRenderTopBorderEmoji:
+    """Test render_top_border with emoji titles."""
+
+    def test_render_top_border_emoji_title(self):
+        """Test top border with emoji in title."""
+        from styledconsole import visual_width
+
+        result = SOLID.render_top_border(40, "🚀 Launch")
+        assert visual_width(result) == 40
+        assert result.startswith("┌")
+        assert result.endswith("┐")
+        assert "🚀" in result
+        assert "Launch" in result
+
+    def test_render_top_border_emoji_only_title(self):
+        """Test top border with emoji-only title."""
+        from styledconsole import visual_width
+
+        result = SOLID.render_top_border(30, "🎉")
+        assert visual_width(result) == 30
+        assert "🎉" in result
+
+    def test_render_top_border_multiple_emojis(self):
+        """Test top border with multiple emojis in title."""
+        from styledconsole import visual_width
+
+        result = SOLID.render_top_border(40, "🚀 Test 🎉")
+        assert visual_width(result) == 40
+        assert "🚀" in result
+        assert "🎉" in result
+
+    def test_render_top_border_emoji_truncation(self):
+        """Test emoji title truncation when too long."""
+        from styledconsole import visual_width
+
+        long_title = "🚀 " * 10 + "Very long title"
+        result = SOLID.render_top_border(20, long_title)
+        assert visual_width(result) == 20
+        assert result.startswith("┌")
+        assert result.endswith("┐")
+
+    def test_render_top_border_visual_alignment(self):
+        """Test that emoji titles align perfectly with content lines."""
+        from styledconsole import visual_width
+
+        width = 45
+        title_line = SOLID.render_top_border(width, "🚀 Emoji Support")
+        content_line = SOLID.render_line(width, "Content")
+
+        # Both should have same visual width for perfect alignment
+        assert visual_width(title_line) == width
+        assert visual_width(content_line) == width
+
+
+class TestRenderLine:
+    """Test content line rendering."""
+
+    def test_render_line_left_align(self):
+        """Test rendering content line with left alignment."""
+        result = SOLID.render_line(20, "Hello")
+        assert result == "│Hello             │"
+        assert len(result) == 20
+
+    def test_render_line_center_align(self):
+        """Test rendering content line with center alignment."""
+        result = SOLID.render_line(20, "Hello")
+        assert len(result) == 20
+
+        result = SOLID.render_line(20, "Hello", align="center")
+        assert len(result) == 20
+        # "Hello" is 5 chars, inner width is 18, so 13 padding total
+        # Center: 6 left, 7 right (or 7 left, 6 right)
+        assert "Hello" in result
+        assert result.startswith("│")
+        assert result.endswith("│")
+
+    def test_render_line_right_align(self):
+        """Test rendering content line with right alignment."""
+        result = SOLID.render_line(20, "Hello", align="right")
+        assert result == "│             Hello│"
+        assert len(result) == 20
+
+    def test_render_line_empty_content(self):
+        """Test rendering empty content line."""
+        result = SOLID.render_line(20)
+        assert result == "│                  │"
+        assert len(result) == 20
+
+    def test_render_line_empty_string(self):
+        """Test rendering with empty string content."""
+        result = SOLID.render_line(20, "")
+        assert result == "│                  │"
+        assert len(result) == 20
+
+    def test_render_line_long_content_truncated(self):
+        """Test that long content is truncated properly."""
+        long_text = "This is a very long text that should be truncated"
+        result = SOLID.render_line(20, long_text)
+        assert len(result) == 20
+        assert result.startswith("│")
+        assert result.endswith("│")
+        # Content should be truncated (using truncate_to_width)
+
+    def test_render_line_exact_fit(self):
+        """Test content that exactly fits the inner width."""
+        # Width 20, inner width 18
+        content = "A" * 18
+        result = SOLID.render_line(20, content)
+        assert result == f"│{content}│"
+        assert len(result) == 20
+
+    def test_render_line_different_styles(self):
+        """Test render_line with different border styles."""
+        content = "Test"
+
+        solid = SOLID.render_line(15, content)
+        double = DOUBLE.render_line(15, content)
+        ascii_line = ASCII.render_line(15, content)
+
+        assert len(solid) == len(double) == len(ascii_line) == 15
+        assert solid.startswith("│")
+        assert double.startswith("║")
+        assert ascii_line.startswith("|")
+
+    def test_render_line_minimum_width(self):
+        """Test render_line with minimum width."""
+        result = SOLID.render_line(2, "X")
+        assert len(result) == 2
+        assert result == "││"  # No room for content
+
+    def test_render_line_width_one(self):
+        """Test render_line with width of 1."""
+        result = SOLID.render_line(1, "X")
+        assert result == "│"
+
+    def test_render_line_align_variations(self):
+        """Test all alignment variations produce correct width."""
+        for align in ["left", "center", "right"]:
+            result = SOLID.render_line(30, "Content", align=align)
+            assert len(result) == 30
+            assert result.startswith("│")
+            assert result.endswith("│")
+            assert "Content" in result
+
+
+class TestRenderLineEmoji:
+    """Test render_line with emoji and wide characters."""
+
+    def test_render_line_emoji_left(self):
+        """Test emoji content with left alignment."""
+        from styledconsole import visual_width
+
+        result = SOLID.render_line(30, "🚀 Rocket")
+        # String length will be less than 30 due to emojis (multi-column chars)
+        # But visual width should be exactly 30
+        assert visual_width(result) == 30
+        assert result.startswith("│")
+        assert result.endswith("│")
+        assert "🚀" in result
+        assert "Rocket" in result
+
+    def test_render_line_emoji_center(self):
+        """Test emoji content with center alignment."""
+        from styledconsole import visual_width
+
+        result = SOLID.render_line(30, "🎉 Party", align="center")
+        assert visual_width(result) == 30
+        assert result.startswith("│")
+        assert result.endswith("│")
+        assert "🎉" in result
+        assert "Party" in result
+
+    def test_render_line_emoji_right(self):
+        """Test emoji content with right alignment."""
+        from styledconsole import visual_width
+
+        result = SOLID.render_line(30, "Done ✅", align="right")
+        assert visual_width(result) == 30
+        assert result.startswith("│")
+        assert result.endswith("│")
+        assert "✅" in result
+        assert "Done" in result
+
+    def test_render_line_multiple_emojis(self):
+        """Test content with multiple emojis."""
+        from styledconsole import visual_width
+
+        result = SOLID.render_line(40, "🚀 Launch 🎉 Success ✅")
+        assert visual_width(result) == 40
+        assert result.startswith("│")
+        assert result.endswith("│")
+        assert "🚀" in result
+        assert "🎉" in result
+        assert "✅" in result
+
+    def test_render_line_emoji_truncation(self):
+        """Test that long emoji content is truncated properly."""
+        from styledconsole import visual_width
+
+        long_text = "🚀 " * 20 + "Very long text"
+        result = SOLID.render_line(20, long_text)
+        # Visual width should be 20 (borders + truncated content)
+        assert visual_width(result) == 20
+        assert result.startswith("│")
+        assert result.endswith("│")
+
+    def test_render_line_visual_width_alignment(self):
+        """Test that visual width calculations produce perfect alignment."""
+        from styledconsole import visual_width
+
+        width = 30
+
+        # These should all have exactly 30 visual width (perfect alignment)
+        line1 = SOLID.render_line(width, "No emoji")
+        line2 = SOLID.render_line(width, "🚀 With emoji")
+        line3 = SOLID.render_line(width, "Multiple 🎉 emojis ✅")
+
+        # Visual widths should all be 30 (perfectly aligned visually)
+        assert visual_width(line1) == width
+        assert visual_width(line2) == width
+        assert visual_width(line3) == width
+
+        # String lengths may differ due to multi-column chars
+        assert len(line1) == 30  # No emojis
+        assert len(line2) < 30  # Has emoji (visual_width=2, len=1)
+        assert len(line3) < 30  # Has multiple emojis
+
+        # All should align perfectly
+        assert line1.startswith("│") and line1.endswith("│")
+        assert line2.startswith("│") and line2.endswith("│")
+        assert line3.startswith("│") and line3.endswith("│")
+
+
 class TestRenderBottomBorder:
     """Test bottom border rendering."""
 
@@ -460,6 +693,9 @@ class TestEdgeCases:
 
     def test_title_with_special_characters(self):
         """Test rendering title with special characters."""
+        from styledconsole import visual_width
+
         result = SOLID.render_top_border(20, "🚀 Test")
-        assert len(result) == 20
+        # Emoji has visual_width=2 but len=1, so check visual width
+        assert visual_width(result) == 20
         assert "🚀" in result or "Test" in result  # Either emoji or text visible

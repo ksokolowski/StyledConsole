@@ -6,6 +6,9 @@ and ASCII fallbacks, along with helper functions for rendering borders.
 
 from dataclasses import dataclass
 
+# Import visual_width for emoji-safe text handling
+from styledconsole.utils.text import pad_to_width, truncate_to_width, visual_width
+
 
 @dataclass(frozen=True)
 class BorderStyle:
@@ -77,7 +80,9 @@ class BorderStyle:
         return [character] * height
 
     def render_top_border(self, width: int, title: str | None = None) -> str:
-        """Render top border with optional centered title.
+        """Render top border with optional centered title (emoji-safe).
+
+        Uses visual width calculation to handle emojis and wide characters correctly.
 
         Args:
             width: Total width of the border (including corners)
@@ -92,29 +97,38 @@ class BorderStyle:
             '┌──────────────────┐'
             >>> style.render_top_border(20, "Title")
             '┌───── Title ──────┐'
+            >>> style.render_top_border(20, "🚀 Title")
+            '┌──── 🚀 Title ────┐'  # Emoji visual width handled
         """
         if title is None:
             # Simple top border without title
             inner_width = width - 2  # Subtract corners
             return self.top_left + self.render_horizontal(inner_width) + self.top_right
 
-        # Top border with centered title
+        # Top border with centered title (emoji-safe)
         inner_width = width - 2  # Subtract corners
         title_with_spaces = f" {title} "
-        title_len = len(title_with_spaces)
+        title_visual_width = visual_width(title_with_spaces)
 
-        if title_len >= inner_width:
-            # Title is too long, truncate
-            truncated = title[: inner_width - 2] if inner_width > 2 else ""
-            return (
-                self.top_left
-                + self.render_horizontal(inner_width - len(truncated))
-                + truncated
-                + self.top_right
-            )
+        if title_visual_width >= inner_width:
+            # Title is too long, truncate using emoji-safe truncation
+            if inner_width > 2:
+                truncated = truncate_to_width(title, inner_width - 2)  # -2 for spaces
+                truncated_with_spaces = f" {truncated} "
+                truncated_visual_width = visual_width(truncated_with_spaces)
+                padding_needed = inner_width - truncated_visual_width
+                return (
+                    self.top_left
+                    + self.render_horizontal(padding_needed)
+                    + truncated_with_spaces
+                    + self.top_right
+                )
+            else:
+                # No room for title
+                return self.top_left + self.render_horizontal(inner_width) + self.top_right
 
-        # Calculate padding for centering
-        remaining = inner_width - title_len
+        # Calculate padding for centering (using visual width)
+        remaining = inner_width - title_visual_width
         left_pad = remaining // 2
         right_pad = remaining - left_pad
 
@@ -159,6 +173,60 @@ class BorderStyle:
         """
         inner_width = width - 2  # Subtract joints
         return self.left_joint + self.render_horizontal(inner_width) + self.right_joint
+
+    def render_line(self, width: int, content: str = "", align: str = "left") -> str:
+        """Render a content line with borders (emoji-safe).
+
+        Uses visual width calculation to handle emojis and wide characters correctly.
+
+        Args:
+            width: Total width of the line (including borders)
+            content: Content text to display (will be truncated if too long)
+            align: Text alignment - "left", "center", or "right"
+
+        Returns:
+            Content line with left and right borders, properly aligned
+
+        Example:
+            >>> style = BORDERS["solid"]
+            >>> style.render_line(20, "Hello")
+            '│Hello             │'
+            >>> style.render_line(20, "🚀 Rocket", align="left")
+            '│🚀 Rocket         │'  # Emoji visual width handled
+            >>> style.render_line(20, "Hello", align="center")
+            '│      Hello       │'
+            >>> style.render_line(20, "Hello", align="right")
+            '│             Hello│'
+        """
+        if width < 2:
+            return self.vertical * width
+
+        inner_width = width - 2  # Subtract left and right borders
+
+        # Handle empty content
+        if not content:
+            return self.vertical + " " * inner_width + self.vertical
+
+        # Truncate content if visually too long (emoji-safe)
+        if visual_width(content) > inner_width:
+            content = truncate_to_width(content, inner_width)
+
+        # Use pad_to_width for emoji-safe padding based on alignment
+        if align == "center":
+            # For center alignment, calculate padding and split
+            content_vis_width = visual_width(content)
+            padding_needed = inner_width - content_vis_width
+            left_pad = padding_needed // 2
+            right_pad = padding_needed - left_pad
+            inner = " " * left_pad + content + " " * right_pad
+        elif align == "right":
+            # Right align: pad on the left
+            inner = pad_to_width(content, inner_width, align="right")
+        else:  # left (default)
+            # Left align: pad on the right
+            inner = pad_to_width(content, inner_width, align="left")
+
+        return self.vertical + inner + self.vertical
 
 
 # Predefined border styles
