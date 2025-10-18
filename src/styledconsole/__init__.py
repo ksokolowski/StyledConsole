@@ -10,6 +10,7 @@ Example:
     >>> console.print("Hello, World!", color="blue", bold=True)
 """
 
+from styledconsole.core.frame import Frame, FrameRenderer
 from styledconsole.core.styles import (
     ASCII,
     BORDERS,
@@ -77,6 +78,9 @@ class TerminalError(StyledConsoleError):
 
 # Public API will be added as components are implemented
 __all__ = [
+    # Frame rendering
+    "Frame",
+    "FrameRenderer",
     # Text utilities
     "visual_width",
     "strip_ansi",
