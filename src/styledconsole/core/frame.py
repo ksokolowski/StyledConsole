@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import Literal
 
 from styledconsole.core.styles import BorderStyle, get_border_style
+from styledconsole.utils.color import interpolate_color, parse_color
 from styledconsole.utils.text import pad_to_width, truncate_to_width, visual_width
 
 AlignType = Literal["left", "center", "right"]
@@ -25,6 +26,11 @@ class Frame:
         align: Content alignment ("left", "center", "right")
         min_width: Minimum frame width (when auto-calculating)
         max_width: Maximum frame width (when auto-calculating)
+        content_color: Color for content text (hex, rgb, or CSS4 name)
+        border_color: Color for border (hex, rgb, or CSS4 name)
+        title_color: Color for title (hex, rgb, or CSS4 name)
+        gradient_start: Starting color for content gradient (overrides content_color)
+        gradient_end: Ending color for content gradient
     """
 
     content: str | list[str]
@@ -35,6 +41,11 @@ class Frame:
     align: AlignType = "left"
     min_width: int = 20
     max_width: int = 100
+    content_color: str | None = None
+    border_color: str | None = None
+    title_color: str | None = None
+    gradient_start: str | None = None
+    gradient_end: str | None = None
 
 
 class FrameRenderer:
@@ -55,6 +66,11 @@ class FrameRenderer:
         align: AlignType = "left",
         min_width: int = 20,
         max_width: int = 100,
+        content_color: str | None = None,
+        border_color: str | None = None,
+        title_color: str | None = None,
+        gradient_start: str | None = None,
+        gradient_end: str | None = None,
     ) -> list[str]:
         """Render a frame with the given content and configuration.
 
@@ -67,6 +83,11 @@ class FrameRenderer:
             align: Content alignment ("left", "center", "right")
             min_width: Minimum frame width (when auto-calculating)
             max_width: Maximum frame width (when auto-calculating)
+            content_color: Color for content text (hex, rgb, or CSS4 name)
+            border_color: Color for border (hex, rgb, or CSS4 name)
+            title_color: Color for title (hex, rgb, or CSS4 name)
+            gradient_start: Starting color for content gradient (overrides content_color)
+            gradient_end: Ending color for content gradient
 
         Returns:
             List of strings, one per line of the rendered frame
@@ -89,6 +110,11 @@ class FrameRenderer:
             align=align,
             min_width=min_width,
             max_width=max_width,
+            content_color=content_color,
+            border_color=border_color,
+            title_color=title_color,
+            gradient_start=gradient_start,
+            gradient_end=gradient_end,
         )
         return self.render_frame(frame)
 
@@ -125,14 +151,48 @@ class FrameRenderer:
         lines: list[str] = []
 
         # Top border with title
-        lines.append(style.render_top_border(width, frame.title))
+        top_border = style.render_top_border(width, frame.title)
+        if frame.title_color and frame.title:
+            # Color the title (and optionally the border)
+            top_border = self._colorize_title_in_border(
+                top_border, frame.title, frame.title_color, frame.border_color
+            )
+        elif frame.border_color:
+            # Color only the border (no title color specified)
+            top_border = self._colorize(top_border, frame.border_color)
+        lines.append(top_border)
 
         # Content lines with padding
-        for line in content_lines:
-            lines.append(self._render_content_line(style, line, width, frame.padding, frame.align))
+        for idx, line in enumerate(content_lines):
+            content_line = self._render_content_line(style, line, width, frame.padding, frame.align)
+
+            # Apply coloring
+            if frame.gradient_start and frame.gradient_end:
+                # Apply gradient
+                t = idx / max(len(content_lines) - 1, 1)
+                color = interpolate_color(frame.gradient_start, frame.gradient_end, t)
+                # Color only the content part, not the borders
+                content_line = self._colorize_content_in_line(
+                    content_line, style, color, frame.border_color
+                )
+            elif frame.content_color:
+                # Apply solid content color
+                content_line = self._colorize_content_in_line(
+                    content_line, style, frame.content_color, frame.border_color
+                )
+            elif frame.border_color:
+                # Color only borders
+                content_line = self._colorize_borders_in_line(
+                    content_line, style, frame.border_color
+                )
+
+            lines.append(content_line)
 
         # Bottom border
-        lines.append(style.render_bottom_border(width))
+        bottom_border = style.render_bottom_border(width)
+        if frame.border_color:
+            bottom_border = self._colorize(bottom_border, frame.border_color)
+        lines.append(bottom_border)
 
         return lines
 
@@ -221,3 +281,105 @@ class FrameRenderer:
 
         # Render with borders
         return style.vertical + padded + style.vertical
+
+    def _colorize(self, text: str, color: str) -> str:
+        """Apply color to entire text.
+
+        Args:
+            text: Text to colorize
+            color: Color specification (hex, rgb, or CSS4 name)
+
+        Returns:
+            ANSI colored text
+        """
+        r, g, b = parse_color(color)
+        return f"\033[38;2;{r};{g};{b}m{text}\033[0m"
+
+    def _colorize_content_in_line(
+        self, line: str, style: BorderStyle, content_color: str, border_color: str | None
+    ) -> str:
+        """Color content within a line, optionally coloring borders separately.
+
+        Args:
+            line: Full line with borders
+            style: Border style
+            content_color: Color for content
+            border_color: Optional color for borders
+
+        Returns:
+            Colored line
+        """
+        # Split into: border | content | border
+        left_border = style.vertical
+        right_border = style.vertical
+        content = line[len(left_border) : -len(right_border)]
+
+        # Apply colors
+        if border_color:
+            left_colored = self._colorize(left_border, border_color)
+            right_colored = self._colorize(right_border, border_color)
+        else:
+            left_colored = left_border
+            right_colored = right_border
+
+        content_colored = self._colorize(content, content_color)
+
+        return left_colored + content_colored + right_colored
+
+    def _colorize_borders_in_line(self, line: str, style: BorderStyle, border_color: str) -> str:
+        """Color only the borders in a line.
+
+        Args:
+            line: Full line with borders
+            style: Border style
+            border_color: Color for borders
+
+        Returns:
+            Line with colored borders
+        """
+        left_border = style.vertical
+        right_border = style.vertical
+        content = line[len(left_border) : -len(right_border)]
+
+        left_colored = self._colorize(left_border, border_color)
+        right_colored = self._colorize(right_border, border_color)
+
+        return left_colored + content + right_colored
+
+    def _colorize_title_in_border(
+        self, border_line: str, title: str, title_color: str, border_color: str | None
+    ) -> str:
+        """Color the title within a border line.
+
+        Args:
+            border_line: Full border line with title
+            title: Title text
+            title_color: Color for title
+            border_color: Optional color for border
+
+        Returns:
+            Colored border line
+        """
+        # Find title in border line
+        title_start = border_line.find(title)
+        if title_start == -1:
+            # Title not found, just color the whole border
+            if border_color:
+                return self._colorize(border_line, border_color)
+            return border_line
+
+        # Split into: border_before | title | border_after
+        before = border_line[:title_start]
+        after = border_line[title_start + len(title) :]
+
+        # Apply colors
+        if border_color:
+            before_colored = self._colorize(before, border_color)
+            after_colored = self._colorize(after, border_color)
+        else:
+            before_colored = before
+            after_colored = after
+
+        title_colored = self._colorize(title, title_color)
+
+        return before_colored + title_colored + after_colored
