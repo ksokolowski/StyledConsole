@@ -25,12 +25,16 @@ uv run examples/showcase/digital_poetry.py
 
 ## Basic Examples
 
+### Low-Level BorderStyle API (M1)
+
 1. **`01_simple_frame.py`** - Basic frame rendering with different border styles
 2. **`02_emoji_support.py`** - Emoji-safe rendering demonstrations
 3. **`03_alignments.py`** - Text alignment options (left, center, right)
 4. **`04_border_styles.py`** - All 8 predefined border styles
-5. **`05_color_parsing.py`** - Color parsing and CSS4 named colors
-6. **`06_terminal_detection.py`** - Terminal capability detection
+
+### High-Level FrameRenderer API (M2)
+
+5. **`05_frame_renderer.py`** - FrameRenderer with auto-width and easy configuration
 
 ## Showcase Examples
 
