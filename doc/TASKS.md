@@ -9,20 +9,20 @@
 
 ## Progress Overview
 
-**Overall Progress:** 5/21 tasks completed (24%)
+**Overall Progress:** 6/21 tasks completed (29%)
 
 | Milestone | Tasks | Completed | Progress |
 |-----------|-------|-----------|----------|
 | - **M1: Core Setup & Utilities** ✅✅✅✅✅ 100% (Oct 17-24, 2025) - Week 1 **COMPLETE** |
-| **M2** Rendering Engine | 5 | 0 | ⬜⬜⬜⬜⬜ 0% |
+| **M2** Rendering Engine | 5 | 1 | ✅⬜⬜⬜⬜ 20% |
 | **M3** Preset Functions | 3 | 0 | ⬜⬜⬜ 0% |
 | **M4** Export & Fallbacks | 3 | 0 | ⬜⬜⬜ 0% |
 | **M5** Testing & Release | 5 | 0 | ⬜⬜⬜⬜⬜ 0% |
 
 **Total Effort:** 34 days (~7 weeks)
-**Days Completed:** 7.5 / 34
-**Days Remaining:** 26.5
-**Current Task:** T-006 Frame Renderer Core---
+**Days Completed:** 10.5 / 34
+**Days Remaining:** 23.5
+**Current Task:** T-007 Banner Renderer---
 
 ## Task Organization
 
@@ -381,23 +381,86 @@ Define border style character sets and rendering logic.
 
 ## M2: Rendering Engine (Week 3-4)
 
-### T-006: Frame Renderer Core
+### T-006: Frame Renderer Core ✅
 **Priority:** High
 **Effort:** 3 days
 **Dependencies:** T-002, T-003, T-005
-**Assigned to:** TBD
+**Status:** ✅ Completed (Oct 18, 2025)
 
 **Description:**
-Implement core frame rendering with borders, padding, and titles.
+Implement core frame rendering with borders, padding, and titles. High-level API for creating framed content with automatic width calculation.
 
 **Acceptance Criteria:**
-- [ ] `Frame` dataclass defined
-- [ ] `FrameRenderer` class implemented
-- [ ] Renders frames with all border styles
-- [ ] Handles title placement (centered by default)
-- [ ] Applies padding correctly
-- [ ] Calculates frame width automatically or uses specified width
-- [ ] Emoji-safe alignment maintained
+- [x] `Frame` dataclass defined (8 configuration fields)
+- [x] `FrameRenderer` class implemented
+- [x] Renders frames with all border styles (supports string names or BorderStyle objects)
+- [x] Handles title placement (centered by default)
+- [x] Applies padding correctly (configurable 1-n spaces)
+- [x] Calculates frame width automatically or uses specified width
+- [x] Auto-width calculation with min_width and max_width constraints (20-100 default)
+- [x] Emoji-safe alignment maintained (uses visual_width throughout)
+- [x] Support for multi-line content (strings with newlines or lists)
+- [x] Three alignment options: left, center, right
+- [x] Unit tests with 100% coverage on frame.py (27 tests)
+- [x] Integration tests for real-world usage patterns (10 tests)
+- [x] All 231 tests passing with 98.92% coverage
+
+**Completion Notes:**
+- ✅ Frame dataclass with 8 fields: content, title, border, width, padding, align, min_width, max_width
+- ✅ FrameRenderer with render() and render_frame() methods
+- ✅ _calculate_width() for intelligent auto-width with constraints
+- ✅ _render_content_line() for padding and alignment with emoji-safe width
+- ✅ Support for both keyword arguments (render) and Frame objects (render_frame)
+- ✅ 27 unit tests: dataclass config, rendering, emoji, alignment, padding, truncation, auto-width
+- ✅ 10 integration tests: real-world workflows, all border styles, mixed content types
+- ✅ 5 examples updated to use FrameRenderer: 01-04 plus new 05_frame_renderer.py
+- ✅ Exported from styledconsole.core and styledconsole main module
+- ✅ Branch: feature/T-006-frame-renderer → main (merged)
+- ✅ Files: src/styledconsole/core/frame.py, tests/unit/test_frame.py, tests/integration/test_frame_integration.py
+
+**Example Usage:**
+```python
+from styledconsole import FrameRenderer
+
+renderer = FrameRenderer()
+
+# Simple frame with auto-width
+lines = renderer.render("Hello, World!", border="solid")
+for line in lines:
+    print(line)
+
+# Frame with title and custom width
+lines = renderer.render(
+    "Content here",
+    title="My Frame",
+    border="rounded",
+    width=50,
+    align="center",
+)
+
+# Multi-line content
+content = ["Line 1", "Line 2", "Line 3"]
+lines = renderer.render(content, title="Multi-line", border="double")
+
+# Using Frame dataclass
+from styledconsole import Frame
+
+frame = Frame(
+    content=["Status: ✅ OK", "Uptime: 99.9%"],
+    title="System Status",
+    border="heavy",
+    width=40,
+    padding=2,
+    align="left",
+)
+lines = renderer.render_frame(frame)
+```
+
+**Implementation Files:**
+- `styledconsole/core/frame.py`
+- `tests/unit/test_frame.py`
+- `tests/integration/test_frame_integration.py`
+- `examples/basic/05_frame_renderer.py`
 - [ ] Unit tests with various content types
 - [ ] Integration test with Rich console
 - [ ] Test coverage ≥90%
