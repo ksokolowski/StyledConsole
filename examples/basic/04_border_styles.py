@@ -3,11 +3,12 @@
 Border Styles Example
 
 Demonstrates all 8 predefined border styles available in StyledConsole.
+Shows Console API usage with different border styles.
 """
 
-from styledconsole import FrameRenderer, list_border_styles
+from styledconsole import Console, list_border_styles
 
-renderer = FrameRenderer()
+console = Console()
 
 print("=" * 70)
 print("BORDER STYLES GALLERY")
@@ -15,10 +16,10 @@ print("=" * 70)
 print()
 
 # Display all available styles
-print("Available border styles:")
-print(", ".join(list_border_styles()))
+console.text("Available border styles:", bold=True)
+console.text(", ".join(list_border_styles()), color="cyan")
 print()
-print("=" * 70)
+console.rule(style="solid")
 print()
 
 # Showcase each style
@@ -41,43 +42,38 @@ for style_name, display_name, description in styles:
         "",
         "Sample content line",
     ]
-    for line in renderer.render(
+    console.frame(
         content,
         title=f"✨ {display_name} Style",
         border=style_name,
         width=width,
         align="center",
-    ):
-        print(line)
+    )
     print()
 
 # Example: Dynamic style selection
-print("=" * 70)
-print("DYNAMIC STYLE SELECTION")
-print("=" * 70)
+console.rule("DYNAMIC STYLE SELECTION", color="cyan")
 print()
 
 # Styles can be selected dynamically by name (case-insensitive)
 style_name = "rounded"
-print(f"Selected style: '{style_name}' (case-insensitive)")
-for line in renderer.render(
+console.text(f"Selected style: '{style_name}' (case-insensitive)", bold=True)
+console.frame(
     "Styles can be selected dynamically by name",
     title=f"Using border='{style_name}'",
     border=style_name,
     width=60,
     align="center",
-):
-    print(line)
+)
 print()
 
 # Show it works with different cases
 for case_variant in ["SOLID", "solid", "SoLiD"]:
-    for line in renderer.render(
+    console.frame(
         "Case doesn't matter!",
         title=f"'{case_variant}'",
         border=case_variant,
         width=40,
         align="center",
-    ):
-        print(line)
+    )
     print()

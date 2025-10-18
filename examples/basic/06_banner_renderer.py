@@ -1,141 +1,131 @@
 #!/usr/bin/env python3
 """
-Banner Renderer Example
+Banner Rendering Example
 
 Demonstrates ASCII art banner rendering with pyfiglet fonts, gradient coloring,
-and optional frame borders.
+and optional frame borders using the Console API.
+
+Pro Tip: For advanced banner customization, you can use BannerRenderer directly.
 """
 
-from styledconsole import Banner, BannerRenderer
+from styledconsole import Banner, BannerRenderer, Console
 
-renderer = BannerRenderer()
+console = Console()
 
-print("=" * 80)
-print("BANNER RENDERER EXAMPLES")
-print("=" * 80)
-print()
+console.rule("BANNER RENDERING EXAMPLES", style="bold cyan")
+console.newline()
 
 # Example 1: Simple banner with default font
-print("1. Simple Banner (default 'standard' font):")
-print()
+console.text("1. Simple Banner (default 'standard' font):", bold=True)
+console.newline()
 
-for line in renderer.render("Hello"):
-    print(line)
-print()
+console.banner("Hello")
+console.newline()
 
 # Example 2: Different fonts
-print("2. Different Fonts:")
-print()
+console.text("2. Different Fonts:", bold=True)
+console.newline()
 
 fonts_to_show = ["slant", "banner", "big", "digital"]
 for font in fonts_to_show:
-    print(f"Font: {font}")
-    for line in renderer.render("DEMO", font=font):
-        print(line)
-    print()
+    console.text(f"Font: {font}", color="cyan")
+    console.banner("DEMO", font=font)
+    console.newline()
 
 # Example 3: Gradient coloring
-print("3. Gradient Coloring:")
-print()
+console.text("3. Gradient Coloring:", bold=True)
+console.newline()
 
-print("Red to Blue gradient:")
-for line in renderer.render(
+console.text("Red to Blue gradient:", color="magenta")
+console.banner(
     "GRADIENT",
     font="slant",
     gradient_start="#ff0000",
     gradient_end="#0000ff",
-):
-    print(line)
-print()
+)
+console.newline()
 
-print("Green to Yellow gradient:")
-for line in renderer.render(
+console.text("Green to Yellow gradient:", color="magenta")
+console.banner(
     "COLORS",
     font="banner",
     gradient_start="green",
     gradient_end="yellow",
-):
-    print(line)
-print()
+)
+console.newline()
 
 # Example 4: Banner with border
-print("4. Banner with Border:")
-print()
+console.text("4. Banner with Border:", bold=True)
+console.newline()
 
-for line in renderer.render(
+console.banner(
     "FRAMED",
     font="slant",
     border="double",
-):
-    print(line)
-print()
+)
+console.newline()
 
 # Example 5: Gradient + Border
-print("5. Gradient with Border:")
-print()
+console.text("5. Gradient with Border:", bold=True)
+console.newline()
 
-for line in renderer.render(
+console.banner(
     "SUCCESS",
     font="banner",
     gradient_start="#00ff00",
     gradient_end="#00ffff",
     border="heavy",
-):
-    print(line)
-print()
+)
+console.newline()
 
 # Example 6: Custom width and alignment
-print("6. Custom Width and Alignment:")
-print()
+console.text("6. Custom Width and Alignment:", bold=True)
+console.newline()
 
-for line in renderer.render(
+console.banner(
     "LEFT",
     font="slant",
     border="rounded",
     width=60,
     align="left",
-):
-    print(line)
-print()
+)
+console.newline()
 
-for line in renderer.render(
+console.banner(
     "CENTER",
     font="slant",
     border="rounded",
     width=60,
     align="center",
-):
-    print(line)
-print()
+)
+console.newline()
 
-for line in renderer.render(
+console.banner(
     "RIGHT",
     font="slant",
     border="rounded",
     width=60,
     align="right",
-):
-    print(line)
-print()
+)
+console.newline()
 
 # Example 7: Custom padding
-print("7. Custom Padding:")
-print()
+console.text("7. Custom Padding:", bold=True)
+console.newline()
 
-for line in renderer.render(
+console.banner(
     "PADDED",
     font="banner",
     border="solid",
     padding=3,
     gradient_start="red",
     gradient_end="orange",
-):
-    print(line)
-print()
+)
+console.newline()
 
-# Example 8: Using Banner dataclass
-print("8. Using Banner Dataclass:")
-print()
+# Example 8: Direct Banner dataclass with Console
+console.text("8. Using Banner with Console:", bold=True)
+console.newline()
 
 banner = Banner(
     text="BANNER",
@@ -148,88 +138,91 @@ banner = Banner(
     padding=2,
 )
 
-for line in renderer.render_banner(banner):
-    print(line)
-print()
+console.banner(
+    banner.text,
+    font=banner.font,
+    gradient_start=banner.gradient_start,
+    gradient_end=banner.gradient_end,
+    border=banner.border,
+    width=banner.width,
+    align=banner.align,
+    padding=banner.padding,
+)
+console.newline()
 
 # Example 9: Emoji fallback (plain text rendering)
-print("9. Emoji Fallback (renders as plain text):")
-print()
+console.text("9. Emoji Fallback (renders as plain text):", bold=True)
+console.newline()
 
-for line in renderer.render(
+console.banner(
     "🚀 Launch",
     gradient_start="red",
     gradient_end="blue",
     border="rounded",
-):
-    print(line)
-print()
+)
+console.newline()
 
-# Example 10: Font preview utility
-print("10. Font Preview Utility:")
-print()
+# Example 10: Font preview utility (using BannerRenderer for utility methods)
+console.text("10. Font Preview Utility:", bold=True)
+console.newline()
 
-print("Available fonts (first 20):")
+renderer = BannerRenderer()
+
+console.text("Available fonts (first 20):", color="yellow")
 fonts = renderer.list_fonts(limit=20)
-print(", ".join(fonts))
-print()
+console.text(", ".join(fonts))
+console.newline()
 
-print("Preview 'small' font:")
+console.text("Preview 'small' font:", color="yellow")
 preview = renderer.preview_font("small", "Sample")
-print(preview)
+console.print(preview)
 
 # Example 11: Application titles
-print("11. Application Title Banner:")
-print()
+console.text("11. Application Title Banner:", bold=True)
+console.newline()
 
-for line in renderer.render(
+console.banner(
     "StyledConsole",
     font="slant",
     gradient_start="dodgerblue",
     gradient_end="purple",
     border="double",
     width=80,
-):
-    print(line)
-print()
+)
+console.newline()
 
 # Example 12: Status messages
-print("12. Status Message Banners:")
-print()
+console.text("12. Status Message Banners:", bold=True)
+console.newline()
 
 # Success
-for line in renderer.render(
+console.banner(
     "SUCCESS",
     font="banner",
     gradient_start="#00ff00",
     gradient_end="#00aa00",
     border="heavy",
-):
-    print(line)
-print()
+)
+console.newline()
 
 # Error
-for line in renderer.render(
+console.banner(
     "ERROR",
     font="banner",
     gradient_start="#ff0000",
     gradient_end="#aa0000",
     border="heavy",
-):
-    print(line)
-print()
+)
+console.newline()
 
 # Warning
-for line in renderer.render(
+console.banner(
     "WARNING",
     font="banner",
     gradient_start="#ffaa00",
     gradient_end="#ff6600",
     border="heavy",
-):
-    print(line)
-print()
+)
+console.newline()
 
-print("=" * 80)
-print("All banner examples complete!")
-print("=" * 80)
+console.rule("All banner examples complete!", style="bold green")

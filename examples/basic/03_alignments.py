@@ -3,11 +3,12 @@
 Text Alignment Example
 
 Demonstrates left, center, and right alignment options for content lines.
+Shows Console API usage for text alignment.
 """
 
-from styledconsole import FrameRenderer
+from styledconsole import Console
 
-renderer = FrameRenderer()
+console = Console()
 
 print("=" * 60)
 print("TEXT ALIGNMENT EXAMPLES")
@@ -18,32 +19,29 @@ print()
 print("1. Basic Alignment Options:")
 print()
 
-for line in renderer.render(
+console.frame(
     "This is LEFT aligned",
     title="Alignment Demo",
     border="solid",
     width=60,
     align="left",
-):
-    print(line)
+)
 print()
 
-for line in renderer.render(
+console.frame(
     "This is CENTER aligned",
     border="solid",
     width=60,
     align="center",
-):
-    print(line)
+)
 print()
 
-for line in renderer.render(
+console.frame(
     "This is RIGHT aligned",
     border="solid",
     width=60,
     align="right",
-):
-    print(line)
+)
 print()
 
 # Example 2: Multi-line with consistent alignment
@@ -57,14 +55,13 @@ content = [
     "Footer: Right Aligned",
 ]
 
-for line in renderer.render(
+console.frame(
     content,
     title="🎨 Creative Layout",
     border="rounded",
     width=60,
     align="center",
-):
-    print(line)
+)
 print()
 
 # Example 3: Practical use case - status display
@@ -81,14 +78,13 @@ status_content = [
     "Queries/sec: 1,234",
 ]
 
-for line in renderer.render(
+console.frame(
     status_content,
     title="⚡ System Status",
     border="heavy",
     width=60,
     align="left",
-):
-    print(line)
+)
 print()
 
 # Example 4: Different widths
@@ -97,12 +93,11 @@ print()
 
 widths = [30, 45, 60]
 for w in widths:
-    for line in renderer.render(
+    console.frame(
         ["Left", "Center", "Right"],
         title=f"Width: {w}",
         border="solid",
         width=w,
         align="center",
-    ):
-        print(line)
+    )
     print()

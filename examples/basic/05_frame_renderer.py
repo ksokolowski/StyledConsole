@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
 """
-Frame Renderer Example
+Frame Renderer Example - Advanced Direct API Usage
 
-Demonstrates the high-level FrameRenderer API for easy frame creation.
-FrameRenderer automatically handles width calculation, padding, and alignment.
+This is an ADVANCED example demonstrating direct FrameRenderer API usage.
+For most use cases, the Console API is recommended (see 01_simple_frame.py).
+
+Use FrameRenderer directly when you need:
+- To generate frames as list[str] for composition with LayoutComposer
+- Fine-grained control over rendering without immediate output
+- Integration with custom rendering pipelines
+
+For standard usage, prefer: Console().frame(content, title="...", border="...")
 """
 
 from styledconsole import SOLID, Frame, FrameRenderer

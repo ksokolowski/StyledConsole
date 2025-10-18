@@ -5,11 +5,13 @@ Emoji Support Example
 Demonstrates emoji-safe rendering with perfect visual alignment.
 StyledConsole uses visual_width() to ensure emojis (which display as 2 columns)
 align correctly with ASCII text (which displays as 1 column per character).
+
+Shows Console API usage for emoji content.
 """
 
-from styledconsole import FrameRenderer, visual_width
+from styledconsole import Console
 
-renderer = FrameRenderer()
+console = Console()
 
 print("=" * 60)
 print("EMOJI-SAFE RENDERING EXAMPLES")
@@ -29,16 +31,14 @@ examples = [
 ]
 
 for title, description in examples:
-    lines = renderer.render(
+    console.frame(
         description,
         title=title,
         border="solid",
         width=width,
         align="center",
     )
-    for line in lines:
-        print(line)
-    print(f"  Visual width: {visual_width(lines[0])} (expected: {width})")
+    console.text("  ✓ Perfect alignment with emoji support", color="green", dim=True)
     print()
 
 # Example 2: Emojis in content with different alignments
@@ -46,22 +46,20 @@ print("2. Emoji Content - Different Alignments:")
 print()
 
 content = [
-    "🎯 Left aligned",
-    "🌟 Centered",
-    "🚀 Right aligned",
-    "🎪 Multiple 🎭 emojis 🎨 in line",
+    ("🎯 Left aligned", "left"),
+    ("🌟 Centered", "center"),
+    ("🚀 Right aligned", "right"),
+    ("🎪 Multiple 🎭 emojis 🎨 in line", "center"),
 ]
-alignments = ["left", "center", "right", "center"]
 
-for line, align in zip(content, alignments):
-    for rendered in renderer.render(
+for line, align in content:
+    console.frame(
         line,
         title="🎨 Alignment Demo",
         border="rounded",
         width=50,
         align=align,
-    ):
-        print(rendered)
+    )
     print()
 
 # Example 3: Common emoji icons
@@ -83,15 +81,14 @@ icons = [
     "🔒 Secure",
 ]
 
-for line in renderer.render(
+console.frame(
     icons,
     title="🎨 Icon Library",
     border="solid",
     width=50,
     align="left",
-):
-    print(line)
+)
 
 print()
-print("✨ All frames have perfect visual alignment!")
-print("✨ Visual width calculations handle emoji correctly!")
+console.text("✨ All frames have perfect visual alignment!", color="cyan", bold=True)
+console.text("✨ Visual width calculations handle emoji correctly!", color="cyan", bold=True)

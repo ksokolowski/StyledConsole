@@ -2,27 +2,34 @@
 
 Demonstrates the layout composition capabilities for creating
 complex multi-section displays using vertical stacking, grids,
-and side-by-side placement.
+and side-by-side placement. Shows integration between Console API
+and LayoutComposer for building sophisticated layouts.
+
+Note: LayoutComposer works with lists of strings (frames), while Console
+provides the high-level interface. Use Console.print() to output composed layouts.
 """
 
 from styledconsole import (
     BannerRenderer,
+    Console,
     FrameRenderer,
     Layout,
     LayoutComposer,
 )
 
+console = Console()
+
 
 def example_1_basic_stacking():
     """Example 1: Basic vertical stacking with spacing."""
-    print("\n" + "=" * 60)
-    print("Example 1: Basic Vertical Stacking")
-    print("=" * 60 + "\n")
+    console.newline()
+    console.rule("Example 1: Basic Vertical Stacking", style="bold cyan")
+    console.newline()
 
     composer = LayoutComposer()
     frame_renderer = FrameRenderer()
 
-    # Create three sections
+    # Create three sections using FrameRenderer (for composability)
     header = frame_renderer.render(["Application Dashboard"], title="Header")
     content = frame_renderer.render(
         ["This is the main content area", "Multiple lines supported"], title="Content"
@@ -32,15 +39,16 @@ def example_1_basic_stacking():
     # Stack them with spacing
     result = composer.stack([header, content, footer], spacing=1)
 
+    # Output the composed layout using Console
     for line in result:
-        print(line)
+        console.print(line)
 
 
 def example_2_side_by_side():
     """Example 2: Side-by-side placement."""
-    print("\n" + "=" * 60)
-    print("Example 2: Side-by-Side Placement")
-    print("=" * 60 + "\n")
+    console.newline()
+    console.rule("Example 2: Side-by-Side Placement", style="bold cyan")
+    console.newline()
 
     composer = LayoutComposer()
     frame_renderer = FrameRenderer()
@@ -55,14 +63,14 @@ def example_2_side_by_side():
     result = composer.side_by_side(left_panel, right_panel, spacing=3)
 
     for line in result:
-        print(line)
+        console.print(line)
 
 
 def example_3_grid_layout():
     """Example 3: Grid layout with 2x2 cells."""
-    print("\n" + "=" * 60)
-    print("Example 3: Grid Layout (2x2)")
-    print("=" * 60 + "\n")
+    console.newline()
+    console.rule("Example 3: Grid Layout (2x2)", style="bold cyan")
+    console.newline()
 
     composer = LayoutComposer()
     frame_renderer = FrameRenderer()
@@ -82,41 +90,43 @@ def example_3_grid_layout():
     result = composer.grid([row1, row2], column_spacing=2, row_spacing=1)
 
     for line in result:
-        print(line)
+        console.print(line)
 
 
 def example_4_alignment_options():
     """Example 4: Different alignment options."""
-    print("\n" + "=" * 60)
-    print("Example 4: Alignment Options")
-    print("=" * 60 + "\n")
+    console.newline()
+    console.rule("Example 4: Alignment Options", style="bold cyan")
+    console.newline()
 
     composer = LayoutComposer()
 
     elements = [["Short"], ["Much longer text line"], ["Mid"]]
 
     # Left alignment
-    print("Left Aligned:")
+    console.text("Left Aligned:", color="yellow")
     result = composer.stack(elements, align="left", spacing=0)
     for line in result:
-        print(f"  {line}")
+        console.print(f"  {line}")
 
-    print("\nCenter Aligned:")
+    console.newline()
+    console.text("Center Aligned:", color="yellow")
     result = composer.stack(elements, align="center", spacing=0)
     for line in result:
-        print(f"  {line}")
+        console.print(f"  {line}")
 
-    print("\nRight Aligned:")
+    console.newline()
+    console.text("Right Aligned:", color="yellow")
     result = composer.stack(elements, align="right", spacing=0)
     for line in result:
-        print(f"  {line}")
+        console.print(f"  {line}")
 
 
 def example_5_layout_object():
     """Example 5: Using Layout dataclass."""
-    print("\n" + "=" * 60)
-    print("Example 5: Layout Object")
-    print("=" * 60 + "\n")
+    console.newline()
+    console.rule("Example 5: Layout Object", style="bold cyan")
+    console.newline()
 
     composer = LayoutComposer()
     frame_renderer = FrameRenderer()
@@ -138,20 +148,21 @@ def example_5_layout_object():
     result = composer.compose(layout)
 
     for line in result:
-        print(line)
+        console.print(line)
 
 
 def example_6_complex_dashboard():
     """Example 6: Complex dashboard with nested layouts."""
-    print("\n" + "=" * 60)
-    print("Example 6: Complex Dashboard")
-    print("=" * 60 + "\n")
+    console.newline()
+    console.rule("Example 6: Complex Dashboard", style="bold cyan")
+    console.newline()
 
     composer = LayoutComposer()
     frame_renderer = FrameRenderer()
+
     banner_renderer = BannerRenderer()
 
-    # Title banner
+    # Title banner (using renderer for composition)
     title = banner_renderer.render("DASHBOARD", font="banner")
 
     # Stats grid
@@ -177,14 +188,14 @@ def example_6_complex_dashboard():
     result = composer.stack([title, stats_grid, content, footer], spacing=1)
 
     for line in result:
-        print(line)
+        console.print(line)
 
 
 def example_7_three_column_layout():
     """Example 7: Three-column layout."""
-    print("\n" + "=" * 60)
-    print("Example 7: Three-Column Layout")
-    print("=" * 60 + "\n")
+    console.newline()
+    console.rule("Example 7: Three-Column Layout", style="bold cyan")
+    console.newline()
 
     composer = LayoutComposer()
     frame_renderer = FrameRenderer()
@@ -199,14 +210,14 @@ def example_7_three_column_layout():
     result = composer.grid([row], column_spacing=1)
 
     for line in result:
-        print(line)
+        console.print(line)
 
 
 def example_8_nested_composition():
     """Example 8: Nested composition."""
-    print("\n" + "=" * 60)
-    print("Example 8: Nested Composition")
-    print("=" * 60 + "\n")
+    console.newline()
+    console.rule("Example 8: Nested Composition", style="bold cyan")
+    console.newline()
 
     composer = LayoutComposer()
     frame_renderer = FrameRenderer()
@@ -226,14 +237,14 @@ def example_8_nested_composition():
     result = composer.stack([header, middle_section, footer], spacing=1)
 
     for line in result:
-        print(line)
+        console.print(line)
 
 
 def example_9_emoji_safe_alignment():
     """Example 9: Emoji-safe alignment."""
-    print("\n" + "=" * 60)
-    print("Example 9: Emoji-Safe Alignment")
-    print("=" * 60 + "\n")
+    console.newline()
+    console.rule("Example 9: Emoji-Safe Alignment", style="bold cyan")
+    console.newline()
 
     composer = LayoutComposer()
 
@@ -243,14 +254,14 @@ def example_9_emoji_safe_alignment():
     result = composer.stack(elements, align="center", spacing=0, width=30)
 
     for line in result:
-        print(f"  |{line}|")
+        console.print(f"  |{line}|")
 
 
 def example_10_custom_spacing():
     """Example 10: Custom spacing between elements."""
-    print("\n" + "=" * 60)
-    print("Example 10: Custom Spacing")
-    print("=" * 60 + "\n")
+    console.newline()
+    console.rule("Example 10: Custom Spacing", style="bold cyan")
+    console.newline()
 
     composer = LayoutComposer()
     frame_renderer = FrameRenderer()
@@ -261,21 +272,21 @@ def example_10_custom_spacing():
         frame_renderer.render(["Section C"], title="C"),
     ]
 
-    print("No spacing:")
+    console.text("No spacing:", color="yellow")
     result = composer.stack(elements, spacing=0)
     for line in result:
-        print(line)
+        console.print(line)
 
-    print("\n\nWith 3 lines spacing:")
+    console.newline(2)
+    console.text("With 3 lines spacing:", color="yellow")
     result = composer.stack(elements, spacing=3)
     for line in result:
-        print(line)
+        console.print(line)
 
 
 if __name__ == "__main__":
-    print("\n" + "=" * 60)
-    print("LAYOUT COMPOSER EXAMPLES")
-    print("=" * 60)
+    console.newline()
+    console.rule("LAYOUT COMPOSER EXAMPLES", style="bold magenta")
 
     example_1_basic_stacking()
     example_2_side_by_side()
@@ -288,6 +299,6 @@ if __name__ == "__main__":
     example_9_emoji_safe_alignment()
     example_10_custom_spacing()
 
-    print("\n" + "=" * 60)
-    print("All examples completed!")
-    print("=" * 60 + "\n")
+    console.newline()
+    console.rule("All examples completed!", style="bold green")
+    console.newline()
