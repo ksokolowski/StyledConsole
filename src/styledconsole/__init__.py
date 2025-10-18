@@ -12,6 +12,7 @@ Example:
 
 from styledconsole.core.banner import Banner, BannerRenderer
 from styledconsole.core.frame import Frame, FrameRenderer
+from styledconsole.core.layout import Layout, LayoutComposer
 from styledconsole.core.styles import (
     ASCII,
     BORDERS,
@@ -85,6 +86,9 @@ __all__ = [
     # Frame rendering
     "Frame",
     "FrameRenderer",
+    # Layout composition
+    "Layout",
+    "LayoutComposer",
     # Text utilities
     "visual_width",
     "strip_ansi",
