@@ -6,17 +6,9 @@ A visual catalog of all StyledConsole border styles with detailed character sets
 Perfect for choosing the right style for your application.
 """
 
-from styledconsole import (
-    ASCII,
-    DOTS,
-    DOUBLE,
-    HEAVY,
-    MINIMAL,
-    ROUNDED,
-    SOLID,
-    THICK,
-    list_border_styles,
-)
+from styledconsole import FrameRenderer, get_border_style, list_border_styles
+
+renderer = FrameRenderer()
 
 print()
 print("=" * 90)
@@ -26,47 +18,47 @@ print()
 
 # Gallery entry for each style
 styles = [
-    (SOLID, "SOLID", "Classic Unicode box-drawing", "Professional, universal"),
-    (DOUBLE, "DOUBLE", "Double-line borders", "Emphasis, importance"),
-    (ROUNDED, "ROUNDED", "Smooth rounded corners", "Modern, friendly"),
-    (HEAVY, "HEAVY", "Bold heavy weight", "Strong emphasis, alerts"),
-    (THICK, "THICK", "Thick with curves", "Bold yet friendly"),
-    (ASCII, "ASCII", "Pure ASCII characters", "Maximum compatibility"),
-    (MINIMAL, "MINIMAL", "Minimal horizontal lines", "Clean, subtle"),
-    (DOTS, "DOTS", "Dotted separators", "Delicate, unobtrusive"),
+    ("solid", "SOLID", "Classic Unicode box-drawing", "Professional, universal"),
+    ("double", "DOUBLE", "Double-line borders", "Emphasis, importance"),
+    ("rounded", "ROUNDED", "Smooth rounded corners", "Modern, friendly"),
+    ("heavy", "HEAVY", "Bold heavy weight", "Strong emphasis, alerts"),
+    ("thick", "THICK", "Thick with curves", "Bold yet friendly"),
+    ("ascii", "ASCII", "Pure ASCII characters", "Maximum compatibility"),
+    ("minimal", "MINIMAL", "Minimal horizontal lines", "Clean, subtle"),
+    ("dots", "DOTS", "Dotted separators", "Delicate, unobtrusive"),
 ]
 
 width = 80
 
-for style, name, description, use_case in styles:
-    # Header
-    print(style.render_top_border(width, f"✨ {name}"))
-    print(style.render_line(width, "", align="center"))
+for style_name, display_name, description, use_case in styles:
+    # Get the BorderStyle object to show character details
+    style = get_border_style(style_name)
 
-    # Description
-    print(style.render_line(width, description, align="center"))
-    print(style.render_line(width, f"Use case: {use_case}", align="center"))
-    print(style.render_line(width, "", align="center"))
-
-    # Character set display
-    print(style.render_divider(width))
-    print(style.render_line(width, "", align="center"))
-
+    # Build content with character information
     chars = f"Corners: '{style.top_left}{style.top_right}{style.bottom_left}{style.bottom_right}'  "
     chars += f"Lines: '{style.horizontal}{style.vertical}'  "
     chars += f"Joints: '{style.left_joint}{style.right_joint}{style.top_joint}{style.bottom_joint}'"
 
-    print(style.render_line(width, chars, align="center"))
-    print(style.render_line(width, "", align="center"))
+    content = [
+        "",
+        description,
+        f"Use case: {use_case}",
+        "",
+        chars,
+        "",
+        "Sample left-aligned content",
+        "Sample centered content",
+        "Sample right-aligned content",
+    ]
 
-    # Sample content
-    print(style.render_divider(width))
-    print(style.render_line(width, "Sample left-aligned content", align="left"))
-    print(style.render_line(width, "Sample centered content", align="center"))
-    print(style.render_line(width, "Sample right-aligned content", align="right"))
-
-    # Footer
-    print(style.render_bottom_border(width))
+    for line in renderer.render(
+        content,
+        title=f"✨ {display_name}",
+        border=style_name,
+        width=width,
+        align="center",
+    ):
+        print(line)
     print()
 
 # Summary
