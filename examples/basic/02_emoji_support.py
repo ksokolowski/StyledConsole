@@ -7,7 +7,9 @@ StyledConsole uses visual_width() to ensure emojis (which display as 2 columns)
 align correctly with ASCII text (which displays as 1 column per character).
 """
 
-from styledconsole import ROUNDED, SOLID, visual_width
+from styledconsole import FrameRenderer, visual_width
+
+renderer = FrameRenderer()
 
 print("=" * 60)
 print("EMOJI-SAFE RENDERING EXAMPLES")
@@ -27,27 +29,40 @@ examples = [
 ]
 
 for title, description in examples:
-    top = SOLID.render_top_border(width, title)
-    line = SOLID.render_line(width, description, align="center")
-    bottom = SOLID.render_bottom_border(width)
-
-    print(top)
-    print(line)
-    print(bottom)
-    print(f"  Visual width: {visual_width(top)} (expected: {width})")
+    lines = renderer.render(
+        description,
+        title=title,
+        border="solid",
+        width=width,
+        align="center",
+    )
+    for line in lines:
+        print(line)
+    print(f"  Visual width: {visual_width(lines[0])} (expected: {width})")
     print()
 
 # Example 2: Emojis in content with different alignments
 print("2. Emoji Content - Different Alignments:")
 print()
 
-print(ROUNDED.render_top_border(50, "🎨 Alignment Demo"))
-print(ROUNDED.render_line(50, "🎯 Left aligned", align="left"))
-print(ROUNDED.render_line(50, "🌟 Centered", align="center"))
-print(ROUNDED.render_line(50, "🚀 Right aligned", align="right"))
-print(ROUNDED.render_line(50, "🎪 Multiple 🎭 emojis 🎨 in line", align="center"))
-print(ROUNDED.render_bottom_border(50))
-print()
+content = [
+    "🎯 Left aligned",
+    "🌟 Centered",
+    "🚀 Right aligned",
+    "🎪 Multiple 🎭 emojis 🎨 in line",
+]
+alignments = ["left", "center", "right", "center"]
+
+for line, align in zip(content, alignments):
+    for rendered in renderer.render(
+        line,
+        title="🎨 Alignment Demo",
+        border="rounded",
+        width=50,
+        align=align,
+    ):
+        print(rendered)
+    print()
 
 # Example 3: Common emoji icons
 print("3. Common Emoji Icons:")
@@ -68,11 +83,15 @@ icons = [
     "🔒 Secure",
 ]
 
-print(SOLID.render_top_border(50, "🎨 Icon Library"))
-for icon_text in icons:
-    print(SOLID.render_line(50, icon_text, align="left"))
-print(SOLID.render_bottom_border(50))
-print()
+for line in renderer.render(
+    icons,
+    title="🎨 Icon Library",
+    border="solid",
+    width=50,
+    align="left",
+):
+    print(line)
 
+print()
 print("✨ All frames have perfect visual alignment!")
 print("✨ Visual width calculations handle emoji correctly!")
