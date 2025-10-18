@@ -13,26 +13,26 @@
 
 | Milestone | Tasks | Completed | Progress |
 |-----------|-------|-----------|----------|
-| - **M1: Core Setup & Utilities** ✅✅✅✅✅ 100% (Oct 17-18, 2025) - Week 1 **COMPLETE** |
-| **M2** Rendering Engine | 5 | 4 | ✅✅✅✅⬜ 80% |
-| **M3** Preset Functions | 3 | 0 | ⬜⬜⬜ 0% |
-| **M4** Export & Fallbacks | 3 | 0 | ⬜⬜⬜ 0% |
-| **M5** Testing & Release | 5 | 0 | ⬜⬜⬜⬜⬜ 0% |
+| **M1: Core Setup & Utilities** | 5 | 5 | ✅✅✅✅✅ 100% |
+| **M2: Rendering Engine** | 4 | 4 | ✅✅✅✅ 100% |
+| **M3: Preset Functions** | 4 | 0 | ⬜⬜⬜⬜ 0% |
+| **M4: Export & Fallbacks** | 2 | 0 | ⬜⬜ 0% |
+| **M5: Testing & Release** | 5 | 0 | ⬜⬜⬜⬜⬜ 0% |
 
 **Total Effort:** 34 days (~7 weeks)
 **Days Completed:** 17 / 34 (50%)
 **Days Remaining:** 17
 **Current Date:** October 18, 2025
-**Current Task:** T-010 Terminal Output Recording
+**Current Task:** 🎯 M2 COMPLETE! Next: Start M3 (Preset Functions)
 
 ### Project Statistics (Oct 18, 2025)
 
-- **Source Code:** 2,506 lines across 14 modules (678 tracked statements)
-- **Tests:** 441 tests (541 total test items collected)
-- **Coverage:** 97.64% (662 statements covered, 16 missed)
-- **Examples:** 9 files (7 basic tutorials + 2 advanced showcases)
-- **Commits:** 38 commits since project start
-- **Documentation:** 4 markdown files
+- **Source Code:** 14 Python modules (678 tracked statements)
+- **Tests:** 441 tests across 14 test modules
+- **Coverage:** 97.64% (662/678 statements covered, 16 missed)
+- **Examples:** 9 files (7 modernized basic examples + 2 showcase examples)
+- **Commits:** 38 commits since project start (Oct 17, 2025)
+- **Documentation:** 5 markdown files (README, PLAN, TASKS, 2 example READMEs)
 
 ## Task Organization
 
@@ -1224,7 +1224,7 @@ def visual_width_enhanced(text: str) -> int:
 
 <!-- Add completed tasks here with date and notes -->
 
-### Week 1 (Oct 17-23, 2025)
+### Week 1 (Oct 17-18, 2025)
 
 **Oct 17, 2025:**
 - ✅ **T-001**: Project Setup & Structure (0.5 days)
@@ -1278,18 +1278,94 @@ def visual_width_enhanced(text: str) -> int:
   - Created 8 predefined border styles: SOLID, DOUBLE, ROUNDED, HEAVY, THICK, ASCII, MINIMAL, DOTS
   - Complete Unicode box-drawing character sets for beautiful borders
   - ASCII fallback style for universal compatibility
-  - 5 rendering methods: render_horizontal, render_vertical, render_top_border, render_bottom_border, render_divider
-  - Centered title support in top borders with overflow handling
-  - Case-insensitive style lookup via get_border_style()
-  - All 58 unit tests passing with 100% coverage
+  - 6 rendering methods: render_horizontal, render_vertical, render_top_border, render_bottom_border, render_divider, render_line
+  - **Emoji-safe rendering**: All methods use visual_width() for perfect alignment
+  - Centered title support with emoji-safe centering
+  - All 80 unit tests passing (including 11 emoji-specific tests)
+  - Test coverage: 100% (82/83 lines covered, 98.78%)
   - Styles exported from styledconsole.core and styledconsole main module
   - Branch: feature/T-005-border-styles
   - Files: src/styledconsole/core/styles.py, tests/unit/test_styles.py
 
 **🎉 MILESTONE M1 COMPLETE! Core Setup & Utilities - 5/5 tasks (100%)**
 
-### Week 2 (Oct 24-30, 2025)
-- *TBD*
+**Oct 18, 2025:**
+- ✅ **T-006**: Frame Renderer Core (3 days)
+  - Implemented Frame dataclass (8 configuration fields)
+  - Created FrameRenderer with render() and render_frame() methods
+  - Auto-width calculation with min_width and max_width constraints
+  - Emoji-safe alignment throughout (uses visual_width)
+  - Support for multi-line content (strings with newlines or lists)
+  - Three alignment options: left, center, right
+  - 27 unit tests: dataclass, rendering, emoji, alignment, padding, truncation, auto-width
+  - 10 integration tests: real-world workflows, all border styles, mixed content
+  - Test coverage: 100% on frame.py (27 tests)
+  - 5 examples updated: 01-04 plus new 05_frame_renderer.py
+  - Exported from styledconsole.core and main module
+  - Branch: feature/T-006-frame-renderer → main (merged)
+  - Files: src/styledconsole/core/frame.py, tests/unit/test_frame.py, tests/integration/test_frame_integration.py
+
+- ✅ **T-007**: Banner Renderer (2 days)
+  - Implemented Banner dataclass (8 configuration fields)
+  - Created BannerRenderer with render() and render_banner() methods
+  - ASCII art using pyfiglet with all available fonts
+  - Gradient coloring: per-line RGB interpolation from start to end color
+  - Frame integration: optional borders via FrameRenderer
+  - Emoji detection: visual_width comparison, fallback to plain text
+  - Font utilities: list_fonts() and preview_font()
+  - 29 unit tests: dataclass, rendering, fonts, gradients, borders, emoji, alignment
+  - 18 integration tests: workflows, font variations, gradient combinations, status messages
+  - Test coverage: 98.48% on banner.py
+  - 2 examples: 06_banner_renderer.py (12 demos) + showcase/banner_showcase.py
+  - Exported from styledconsole.core and main module
+  - Branch: feature/T-007-banner-renderer → main (merged)
+  - Files: src/styledconsole/core/banner.py, tests/unit/test_banner.py, tests/integration/test_banner_integration.py
+
+- ✅ **T-008**: Layout Composer (2 days)
+  - Implemented Layout dataclass (frozen): elements, align, spacing, width
+  - Created LayoutComposer with stack(), compose(), grid(), side_by_side() methods
+  - Vertical stacking with configurable spacing and alignment
+  - Grid layout with variable column widths and row heights
+  - Auto-width calculation: finds widest element across all blocks
+  - Emoji-safe alignment: all operations use visual_width()
+  - 32 unit tests: dataclass, stacking, alignment, spacing, grid, side-by-side
+  - 19 integration tests: Frame combinations, Banner integration, complex dashboards
+  - Test coverage: 100% on layout.py
+  - 10 examples in 07_layout_composer.py demonstrating all features
+  - Exported from styledconsole.core and main module
+  - Branch: feature/T-008-layout-composer → main (merged)
+  - Files: src/styledconsole/core/layout.py, tests/unit/test_layout.py, tests/integration/test_layout_integration.py
+
+- ✅ **T-009**: Console Class Core API (2.5 days)
+  - Implemented Console class with Rich backend integration (104 statements)
+  - All 10 core methods: __init__, frame, banner, text, rule, newline, clear, export_html, export_text, print
+  - Terminal detection with TerminalProfile integration
+  - Recording mode for HTML/text export via Rich backend
+  - Debug logging with configurable logger (stderr output)
+  - Custom file output stream support
+  - 63 unit tests: all initialization options, all methods, edge cases
+  - 25 integration tests: complex workflows (welcome screens, dashboards, error displays, reports)
+  - Test coverage: 92.31% on console.py (96/104 lines)
+  - 15 comprehensive examples in 08_console_api.py (407 lines)
+  - Exported from styledconsole main module
+  - All 441 tests passing with 97.64% overall coverage
+  - Branch: feature/T-009-console-api → main (merged)
+  - Files: src/styledconsole/console.py, tests/unit/test_console.py, tests/integration/test_console_integration.py
+
+**🎉 MILESTONE M2 COMPLETE! Rendering Engine - 4/4 tasks (100%)**
+
+- ✅ **Examples Modernization** (Oct 18, 2025)
+  - Modernized all 7 basic examples to use Console API as primary interface
+  - Updated 01-04: simple_frame, emoji_support, alignments, border_styles (use console.frame())
+  - Updated 05: frame_renderer (marked as ADVANCED, added usage notes)
+  - Updated 06: banner_renderer (use console.banner(), keep BannerRenderer for utilities)
+  - Updated 07: layout_composer (Console + LayoutComposer integration)
+  - Created examples/basic/README.md (comprehensive guide with feature matrix)
+  - All examples demonstrate best practices with Console API
+  - Commit: a0b227e "feat(examples): Modernize all examples to use Console API"
+
+### Week 2 (Oct 21-25, 2025)
+- *TBD: Start M3 - Preset Functions*
 
 ---
 
