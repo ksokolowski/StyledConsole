@@ -9,29 +9,29 @@
 
 ## Progress Overview
 
-**Overall Progress:** 8/21 tasks completed (38%)
+**Overall Progress:** 9/21 tasks completed (43%)
 
 | Milestone | Tasks | Completed | Progress |
 |-----------|-------|-----------|----------|
 | - **M1: Core Setup & Utilities** ✅✅✅✅✅ 100% (Oct 17-18, 2025) - Week 1 **COMPLETE** |
-| **M2** Rendering Engine | 5 | 3 | ✅✅✅⬜⬜ 60% |
+| **M2** Rendering Engine | 5 | 4 | ✅✅✅✅⬜ 80% |
 | **M3** Preset Functions | 3 | 0 | ⬜⬜⬜ 0% |
 | **M4** Export & Fallbacks | 3 | 0 | ⬜⬜⬜ 0% |
 | **M5** Testing & Release | 5 | 0 | ⬜⬜⬜⬜⬜ 0% |
 
 **Total Effort:** 34 days (~7 weeks)
-**Days Completed:** 14.5 / 34 (42.6%)
-**Days Remaining:** 19.5
+**Days Completed:** 17 / 34 (50%)
+**Days Remaining:** 17
 **Current Date:** October 18, 2025
-**Current Task:** T-009 Console Class Core API
+**Current Task:** T-010 Terminal Output Recording
 
 ### Project Statistics (Oct 18, 2025)
 
-- **Source Code:** 2,398 lines across 13 modules
-- **Tests:** 353 tests (449 total test items collected)
-- **Coverage:** 98.60% (573 statements, 8 missed)
-- **Examples:** 8 files (6 basic + 2 showcase)
-- **Commits:** 37 commits since project start
+- **Source Code:** 2,506 lines across 14 modules (678 tracked statements)
+- **Tests:** 441 tests (541 total test items collected)
+- **Coverage:** 97.64% (662 statements covered, 16 missed)
+- **Examples:** 9 files (7 basic tutorials + 2 advanced showcases)
+- **Commits:** 38 commits since project start
 - **Documentation:** 4 markdown files
 
 ## Task Organization
@@ -661,80 +661,114 @@ for line in side:
 
 ---
 
-### T-009: Console Class Core API
+### T-009: Console Class Core API ✅
 **Priority:** High
 **Effort:** 2.5 days
 **Dependencies:** T-004, T-006, T-007
-**Assigned to:** TBD
+**Status:** ✅ Completed (Oct 18, 2025)
 
 **Description:**
 Implement the main Console facade class with Rich backend integration and complete public API surface.
 
 **Acceptance Criteria:**
-- [ ] `Console` class initialized with Rich console
-- [ ] `frame()` method with all parameters (title, border, colors, padding, width)
-- [ ] `banner()` method delegates to BannerRenderer
-- [ ] `text()` method for styled text output
-- [ ] `rule()` method for horizontal rules
-- [ ] `newline()` method for spacing
-- [ ] `export_html()` method with inline_styles option
-- [ ] `export_text()` method (ANSI stripped)
-- [ ] `terminal_profile` property
-- [ ] `clear()` method
-- [ ] Terminal detection on initialization
-- [ ] Recording mode for HTML export
-- [ ] **Debug logging support** (when debug=True)
-- [ ] **`file` parameter** for custom output streams
-- [ ] Unit tests for all methods
-- [ ] Integration tests end-to-end
-- [ ] Test coverage ≥90%
+- [x] `Console` class initialized with Rich console
+- [x] `frame()` method with all parameters (title, border, colors, padding, width)
+- [x] `banner()` method delegates to BannerRenderer
+- [x] `text()` method for styled text output
+- [x] `rule()` method for horizontal rules
+- [x] `newline()` method for spacing
+- [x] `export_html()` method with inline_styles option
+- [x] `export_text()` method (ANSI stripped)
+- [x] `terminal_profile` property
+- [x] `clear()` method
+- [x] Terminal detection on initialization
+- [x] Recording mode for HTML export
+- [x] **Debug logging support** (when debug=True)
+- [x] **`file` parameter** for custom output streams
+- [x] Unit tests for all methods (63 tests)
+- [x] Integration tests end-to-end (25 tests)
+- [x] Test coverage ≥90% (achieved 92.31%)
 
-**Test Cases:**
+**Completion Notes:**
+- ✅ Console class with Rich backend integration (104 statements, 92.31% coverage)
+- ✅ All 10 core methods implemented: __init__, frame, banner, text, rule, newline, clear, export_html, export_text, print
+- ✅ Terminal detection with TerminalProfile integration
+- ✅ Recording mode for HTML/text export via Rich backend
+- ✅ Debug logging with configurable logger (stderr output)
+- ✅ Custom file output stream support
+- ✅ 63 unit tests covering all initialization options and methods
+- ✅ 25 integration tests for complex workflows (welcome screens, dashboards, reports)
+- ✅ 15 comprehensive examples in 08_console_api.py (407 lines)
+- ✅ Exported from styledconsole main module
+- ✅ All 441 tests passing with 97.64% overall coverage
+- ✅ Files: src/styledconsole/console.py, tests/unit/test_console.py, tests/integration/test_console_integration.py, examples/basic/08_console_api.py
+
+**Example Usage:**
 ```python
-def test_console_frame():
-    console = Console(record=True)
-    console.frame("Test content", title="Title")
-    output = console.export_text()  # Get raw output
-    assert "Title" in output
-    assert "Test content" in output
+from styledconsole import Console
 
-def test_console_detection():
-    console = Console(detect_terminal=True)
-    assert console.terminal_profile is not None
-    assert isinstance(console.terminal_profile.color_depth, int)
+# Basic usage
+console = Console()
+console.frame("Hello World", title="Greeting", border="solid")
+console.banner("SUCCESS", font="slant")
+console.text("Status: OK", color="green", bold=True)
 
-def test_debug_logging():
-    import logging
-    logging.basicConfig(level=logging.DEBUG)
+# Recording and export
+console = Console(record=True)
+console.frame("Content", title="Demo")
+html = console.export_html(inline_styles=True)
+text = console.export_text()
 
-    console = Console(debug=True)
-    console.frame("Test")  # Should log internally
-    # Check logs contain "Rendering frame"
+# Terminal detection
+console = Console(detect_terminal=True)
+if console.terminal_profile.emoji_safe:
+    console.text("✓ Emoji supported", color="green")
 
-def test_complete_api():
-    console = Console(record=True)
-    console.text("Hello", color="blue", bold=True)
-    console.rule("Section", color="gray")
-    console.newline(2)
-    console.frame("Content", border="solid")
-    console.banner("TEST", font="slant")
+# Custom output stream
+import io
+buffer = io.StringIO()
+console = Console(file=buffer)
+console.frame("Test")
+output = buffer.getvalue()
 
-    html = console.export_html(inline_styles=True)
-    text = console.export_text()
-    assert html and text
+# Debug mode
+console = Console(debug=True)
+console.frame("Test")  # Logs to stderr
 ```
 
 **Implementation Files:**
-- `styledconsole/console.py`
-- `styledconsole/__init__.py` (public exports)
-- `tests/unit/test_console.py`
-- `tests/integration/test_console_integration.py`
+- `styledconsole/console.py` - 104 statements, 92.31% coverage
+- `styledconsole/__init__.py` - Console export added
+- `tests/unit/test_console.py` - 63 unit tests
+- `tests/integration/test_console_integration.py` - 25 integration tests
+- `examples/basic/08_console_api.py` - 15 examples
 
 ---
 
 ## M3: Preset Functions & Layouts (Week 5-6)
 
-### T-010: Status Frame Preset
+### T-010: Terminal Output Recording
+**Priority:** High
+**Effort:** 2 days
+**Dependencies:** T-009
+**Assigned to:** TBD
+
+**Description:**
+Implement output recording and replay capabilities for terminal sessions.
+
+**Acceptance Criteria:**
+- [ ] Session recording with timestamp tracking
+- [ ] HTML export with inline styles
+- [ ] SVG export for animated playback
+- [ ] Plain text export (ANSI stripped)
+- [ ] Frame-by-frame replay capability
+- [ ] Integration with Console recording mode
+- [ ] Unit tests for all export formats
+- [ ] Test coverage ≥85%
+
+---
+
+### T-011: Status Frame Preset
 **Priority:** High
 **Effort:** 1.5 days
 **Dependencies:** T-009

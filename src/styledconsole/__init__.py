@@ -7,9 +7,11 @@ for creating beautiful command-line interfaces.
 Example:
     >>> from styledconsole import Console
     >>> console = Console()
-    >>> console.print("Hello, World!", color="blue", bold=True)
+    >>> console.frame("Hello, World!", title="Greeting", border="solid")
+    >>> console.text("Status: OK", color="green", bold=True)
 """
 
+from styledconsole.console import Console
 from styledconsole.core.banner import Banner, BannerRenderer
 from styledconsole.core.frame import Frame, FrameRenderer
 from styledconsole.core.layout import Layout, LayoutComposer
@@ -80,6 +82,8 @@ class TerminalError(StyledConsoleError):
 
 # Public API will be added as components are implemented
 __all__ = [
+    # Main Console API
+    "Console",
     # Banner rendering
     "Banner",
     "BannerRenderer",
