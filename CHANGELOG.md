@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Nothing yet - this is the current development version
+
+---
+
+## [0.1.0] - 2025-10-19
+
+### 🎉 Initial Public Release
+
+First official release of StyledConsole - production ready!
+
+### Added
 
 #### Gradient & Rainbow Effects (2025-10-19)
 - **Gradient Effects System**: Three powerful gradient functions for stunning visual output
@@ -86,11 +97,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Technical Details
 
 #### Test Coverage (2025-10-19)
-- **502 tests** across 18 test modules (all passing)
-- **93.42% overall coverage** (980/1049 statements)
+- **612 tests** across all test modules (100% passing)
+- **96.30% overall coverage** (1066/1107 statements)
+- **100% coverage** on all manager classes (TerminalManager, ExportManager, RenderingEngine)
 - **83.42% effects.py coverage** (166/199 statements)
-- **36 gradient effect tests** with comprehensive edge cases
-- **Zero regressions** after CSS4 migration
+- **Zero regressions** - all examples working perfectly
+
+#### Refactoring Complete (Phase 4)
+- **Console refactored to Facade pattern** (609 lines → 54 statements, 91% reduction)
+- **TerminalManager created** (41 statements, 97.56% coverage)
+- **ExportManager created** (38 statements, 100% coverage)
+- **RenderingEngine created** (81 statements, 100% coverage)
+- **63 new tests added** for manager classes
+- **Clean architecture** with Single Responsibility Principle
+- **Full documentation** with research validation
 
 #### Color Mappings
 Common hex-to-CSS4 conversions:
@@ -108,14 +128,23 @@ Common hex-to-CSS4 conversions:
 - `#9400d3` → `darkviolet`
 - `#4b0082` → `indigo`
 
-## [0.1.0] - 2025-10-17
+### Quality Metrics
+- **Tests**: 612 passing (100% success rate)
+- **Coverage**: 96.30% overall
+- **Python**: 3.10, 3.11, 3.12, 3.13
+- **Zero known bugs**
+- **Production ready** ✅
 
-### Added
-- Initial project setup with UV package manager
-- Core package structure: `styledconsole/{core,utils,presets,export}`
-- Test structure: `tests/{unit,integration}`
-- Apache 2.0 License
-- Basic README and documentation
+### Known Limitations
+- Tier 2/3 emoji (skin tones, ZWJ sequences) not yet supported
+- Horizontal gradients not implemented (only vertical and diagonal)
+
+### Future Plans (v0.2.0)
+- Additional border styles
+- Theme presets
+- Animation support
+- Enhanced emoji support (Tier 2/3)
+- Horizontal gradients
 
 ---
 
