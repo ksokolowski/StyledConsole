@@ -10,16 +10,14 @@ This module provides high-level banner rendering with:
 
 from dataclasses import dataclass
 from functools import lru_cache
-from typing import Literal
 
 import pyfiglet
 
 from styledconsole.core.frame import FrameRenderer
 from styledconsole.core.styles import BorderStyle, get_border_style
+from styledconsole.types import AlignType
 from styledconsole.utils.color import interpolate_rgb, parse_color
 from styledconsole.utils.text import strip_ansi, visual_width
-
-AlignType = Literal["left", "center", "right"]
 
 
 @dataclass(frozen=True)
@@ -260,3 +258,10 @@ class BannerRenderer:
 
         figlet = pyfiglet.Figlet(font=font)
         return figlet.renderText(text)
+
+
+__all__ = [
+    "Banner",
+    "BannerRenderer",
+    "AlignType",
+]

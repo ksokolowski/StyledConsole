@@ -6,11 +6,9 @@ error logs or dynamic content.
 """
 
 import textwrap
-from typing import Literal
 
+from styledconsole.types import AlignType
 from styledconsole.utils.text import visual_width
-
-AlignType = Literal["left", "center", "right"]
 
 
 def wrap_text(
@@ -274,3 +272,13 @@ def auto_size_content(
         )
 
     return prepared_lines, optimal_width
+
+
+__all__ = [
+    "wrap_text",
+    "wrap_multiline",
+    "truncate_lines",
+    "prepare_frame_content",
+    "auto_size_content",
+    "AlignType",
+]

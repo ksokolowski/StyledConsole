@@ -1,12 +1,11 @@
-"""Border style definitions and rendering utilities.
+"""Border style definitions for frames and dividers.
 
-This module provides predefined border styles using Unicode box-drawing characters
-and ASCII fallbacks, along with helper functions for rendering borders.
+This module defines box-drawing characters for various border styles.
 """
 
 from dataclasses import dataclass
 
-# Import visual_width for emoji-safe text handling
+from styledconsole.types import AlignType
 from styledconsole.utils.text import pad_to_width, truncate_to_width, visual_width
 
 
@@ -188,7 +187,7 @@ class BorderStyle:
         inner_width = width - 2  # Subtract joints
         return self.left_joint + self.render_horizontal(inner_width) + self.right_joint
 
-    def render_line(self, width: int, content: str = "", align: str = "left") -> str:
+    def render_line(self, width: int, content: str = "", align: AlignType = "left") -> str:
         """Render a content line with borders (emoji-safe).
 
         Uses visual width calculation to handle emojis and wide characters correctly.
@@ -412,9 +411,23 @@ def list_border_styles() -> list[str]:
 
     Example:
         >>> styles = list_border_styles()
-        >>> "solid" in styles
-        True
-        >>> "double" in styles
-        True
+        >>> print(styles)
+        ['ascii', 'dots', 'double', 'heavy', 'minimal', 'rounded', 'solid', 'thick']
     """
     return sorted(BORDERS.keys())
+
+
+__all__ = [
+    "BorderStyle",
+    "SOLID",
+    "DOUBLE",
+    "ROUNDED",
+    "HEAVY",
+    "THICK",
+    "ASCII",
+    "MINIMAL",
+    "DOTS",
+    "BORDERS",
+    "get_border_style",
+    "list_border_styles",
+]

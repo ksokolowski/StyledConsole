@@ -5,9 +5,10 @@ MVP (v0.1) focuses on Tier 1 emoji support (single-codepoint basic icons).
 """
 
 import re
-from typing import Literal
 
 import wcwidth
+
+from styledconsole.types import AlignType
 
 # ANSI escape sequence pattern (CSI sequences)
 ANSI_PATTERN = re.compile(r"\x1b\[[0-9;]*m")
@@ -187,7 +188,7 @@ def split_graphemes(text: str) -> list[str]:
 def pad_to_width(
     text: str,
     width: int,
-    align: Literal["left", "center", "right"] = "left",
+    align: AlignType = "left",
     fill_char: str = " ",
 ) -> str:
     """Pad text to a specific visual width.
@@ -284,3 +285,13 @@ def truncate_to_width(text: str, width: int, suffix: str = "...") -> str:
         accumulated_width += char_width
 
     return "".join(result) + suffix
+
+
+__all__ = [
+    "visual_width",
+    "strip_ansi",
+    "split_graphemes",
+    "pad_to_width",
+    "truncate_to_width",
+    "AlignType",
+]

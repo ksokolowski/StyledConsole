@@ -63,6 +63,30 @@ See `doc/` directory for complete specification and design documentation:
 - `PLAN.md` - Technical architecture and API design
 - `TASKS.md` - Implementation breakdown and progress
 
+## 🔒 API Stability
+
+StyledConsole follows [Semantic Versioning 2.0.0](https://semver.org/):
+
+- **Public API**: All items in `__all__` are considered public and stable
+  - Breaking changes will increment the major version (e.g., 1.x.x → 2.0.0)
+  - New features will increment the minor version (e.g., 1.1.x → 1.2.0)
+  - Bug fixes will increment the patch version (e.g., 1.1.1 → 1.1.2)
+
+- **Internal APIs**: Items prefixed with `_` are internal and may change without notice
+  - Not part of the public API contract
+  - Should not be used in production code
+
+- **Type Safety**: All public APIs include type hints
+  - Use `Literal` types for parameters with specific valid values (e.g., `align: Literal["left", "center", "right"]`)
+  - IDE autocomplete and type checkers will help catch errors early
+
+- **Deprecation Policy**: When removing features
+  - Deprecated features will show warnings for at least one minor version
+  - Alternatives will be documented in deprecation messages
+  - Deprecated features removed only in major version bumps
+
+**Current Version**: 0.1.0 (Alpha - API may change before 1.0.0 release)
+
 ## 🤝 Contributing
 
 This is a personal project, but feedback and suggestions are welcome!

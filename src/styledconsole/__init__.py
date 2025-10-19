@@ -29,6 +29,9 @@ from styledconsole.core.styles import (
     get_border_style,
     list_border_styles,
 )
+
+# Import type aliases
+from styledconsole.types import AlignType, ColorType, Renderer
 from styledconsole.utils.color import (
     CSS4_COLORS,
     RGBColor,
@@ -89,7 +92,7 @@ class TerminalError(StyledConsoleError):
     pass
 
 
-# Public API will be added as components are implemented
+# Public API
 __all__ = [
     # Main Console API
     "Console",
@@ -114,6 +117,12 @@ __all__ = [
     "truncate_lines",
     "prepare_frame_content",
     "auto_size_content",
+    "prepare_frame_content",
+    "auto_size_content",
+    # Type aliases
+    "AlignType",
+    "ColorType",
+    "Renderer",
     # Color utilities
     "parse_color",
     "hex_to_rgb",

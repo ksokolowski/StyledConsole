@@ -171,3 +171,9 @@ def _get_terminal_size() -> tuple[int, int]:
     except (OSError, ValueError):
         # Fallback to standard terminal size
         return 80, 24
+
+
+__all__ = [
+    "TerminalProfile",
+    "detect_terminal_capabilities",
+]

@@ -4,13 +4,11 @@ This module provides high-level frame rendering that builds on BorderStyle primi
 """
 
 from dataclasses import dataclass
-from typing import Literal
 
 from styledconsole.core.styles import BorderStyle, get_border_style
+from styledconsole.types import AlignType
 from styledconsole.utils.color import interpolate_color, parse_color
 from styledconsole.utils.text import pad_to_width, truncate_to_width, visual_width
-
-AlignType = Literal["left", "center", "right"]
 
 
 @dataclass
@@ -459,3 +457,10 @@ class FrameRenderer:
         title_colored = self._colorize(title, title_color)
 
         return before_colored + title_colored + after_colored
+
+
+__all__ = [
+    "Frame",
+    "FrameRenderer",
+    "AlignType",
+]

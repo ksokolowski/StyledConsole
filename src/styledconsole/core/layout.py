@@ -263,3 +263,9 @@ class LayoutComposer:
             >>> layout = composer.side_by_side(frame1, frame2, spacing=3)
         """
         return self.grid([[left, right]], column_spacing=spacing, align=align)
+
+
+__all__ = [
+    "Layout",
+    "LayoutComposer",
+]

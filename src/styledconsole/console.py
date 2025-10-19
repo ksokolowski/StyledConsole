@@ -14,6 +14,7 @@ from rich.text import Text as RichText
 
 from styledconsole.core.banner import Banner, BannerRenderer
 from styledconsole.core.frame import Frame, FrameRenderer
+from styledconsole.types import AlignType
 from styledconsole.utils.terminal import TerminalProfile, detect_terminal_capabilities
 from styledconsole.utils.text import strip_ansi
 
@@ -272,7 +273,7 @@ class Console:
         border: str = "solid",
         width: int | None = None,
         padding: int = 1,
-        align: str = "left",
+        align: AlignType = "left",
         content_color: str | None = None,
         border_color: str | None = None,
         title_color: str | None = None,
@@ -362,12 +363,12 @@ class Console:
         self,
         text: str,
         *,
-        font: str = "slant",
+        font: str = "standard",
         gradient_start: str | None = None,
         gradient_end: str | None = None,
         border: str | None = None,
         width: int | None = None,
-        align: str = "center",
+        align: AlignType = "center",
         padding: int = 1,
     ) -> None:
         """Render and print an ASCII art banner.
