@@ -27,8 +27,8 @@ class Banner:
     Attributes:
         text: Text to render as ASCII art (plain text only, emojis fallback to plain)
         font: Pyfiglet font name (default: "standard")
-        gradient_start: Starting color for gradient (hex, rgb, or named color)
-        gradient_end: Ending color for gradient (hex, rgb, or named color)
+        start_color: Starting color for gradient (hex, rgb, or named color)
+        end_color: Ending color for gradient (hex, rgb, or named color)
         border: Border style name or BorderStyle object (None for no border)
         width: Fixed width for banner (None for auto-width)
         align: Text alignment within banner ("left", "center", "right")
@@ -37,8 +37,8 @@ class Banner:
 
     text: str
     font: str = "standard"
-    gradient_start: str | None = None
-    gradient_end: str | None = None
+    start_color: str | None = None
+    end_color: str | None = None
     border: str | BorderStyle | None = None
     width: int | None = None
     align: AlignType = "center"

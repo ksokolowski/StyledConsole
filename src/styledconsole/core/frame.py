@@ -27,8 +27,8 @@ class Frame:
         content_color: Color for content text (hex, rgb, or CSS4 name)
         border_color: Color for border (hex, rgb, or CSS4 name)
         title_color: Color for title (hex, rgb, or CSS4 name)
-        gradient_start: Starting color for content gradient (overrides content_color)
-        gradient_end: Ending color for content gradient
+        start_color: Starting color for content gradient (overrides content_color)
+        end_color: Ending color for content gradient
     """
 
     content: str | list[str]
@@ -42,8 +42,8 @@ class Frame:
     content_color: str | None = None
     border_color: str | None = None
     title_color: str | None = None
-    gradient_start: str | None = None
-    gradient_end: str | None = None
+    start_color: str | None = None
+    end_color: str | None = None
 
 
 class FrameRenderer:
