@@ -361,34 +361,50 @@ class StyleProvider(Protocol):
 
 ---
 
-#### 2.3 Enhanced Type Checking with mypy (Priority: MEDIUM)
+#### 2.3 Enhanced Type Checking with mypy (Priority: LOW) ⚠️ SKIP RECOMMENDED
 
 **Rationale:** Static analysis catches type errors before runtime
 
-**Actions:**
-- [ ] Add `mypy>=1.0` to dev dependencies
-- [ ] Create `mypy.ini` or add `[tool.mypy]` to pyproject.toml
-- [ ] Start with baseline configuration (no strict mode initially)
-- [ ] Add mypy to pre-commit hooks
-- [ ] Fix any type errors revealed by mypy
+**⚠️ REASSESSMENT (Oct 19, 2025): Likely Over-Engineering**
 
-**SOLID Alignment:** General code quality improvement
+**Current Type Safety Coverage:**
+- ✅ **Ruff** already enabled with type-aware rules (ANN* family available)
+- ✅ **Full type hints** already present in codebase (function signatures, return types)
+- ✅ **96% test coverage** catches type-related bugs at test time
+- ✅ **Small codebase** (~836 statements) - easy to review manually
+- ✅ **Single developer** - less coordination needed
 
-**Configuration Example:**
+**mypy Benefits vs. Costs:**
+- ❓ **Benefit**: Catches type errors at static analysis time (but tests already do this)
+- ❓ **Benefit**: IDE integration (but type hints already provide autocomplete)
+- ❌ **Cost**: Additional tool to maintain and configure
+- ❌ **Cost**: Potential false positives with Rich library (uses complex types)
+- ❌ **Cost**: Pre-commit hook slowdown (~2-5 seconds per commit)
+- ❌ **Cost**: Learning curve for mypy-specific annotations (e.g., `# type: ignore`)
+
+**Alternative Recommendation:**
+Instead of full mypy, consider **lightweight type checking via Ruff**:
+
 ```toml
-[tool.mypy]
-python_version = "3.10"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = false  # Start lenient, tighten later
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP", "ANN"]  # Add ANN = flake8-annotations
+ignore = ["ANN101", "ANN102"]  # Ignore missing type on self, cls
 ```
 
-**Files to Modify:**
-- `pyproject.toml` - Add mypy configuration
-- `.pre-commit-config.yaml` - Add mypy hook
-- Various source files - Fix type issues
+This provides basic type annotation enforcement without mypy's complexity.
 
-**Effort:** 1 day | **Impact:** Medium-High
+**DECISION: SKIP mypy for now. Revisit only if:**
+1. Multiple contributors need stronger guardrails
+2. Complex type issues emerge that tests don't catch
+3. Library grows beyond 2000 statements
+4. Users request better type stubs for IDE support
+
+**Original Actions (for reference):**
+- [x] ~~Add `mypy>=1.0` to dev dependencies~~ - SKIPPED
+- [x] ~~Create mypy configuration~~ - SKIPPED
+- [x] ~~Add mypy to pre-commit hooks~~ - SKIPPED
+
+**Effort:** 0 days (skipped) | **Impact:** Low (better handled by existing tools)
 
 ---
 
