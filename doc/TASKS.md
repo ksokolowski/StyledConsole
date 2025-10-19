@@ -1530,3 +1530,335 @@ def visual_width_enhanced(text: str) -> int:
 - [x] Total timeline aligns with 8-week goal
 
 **Status:** ✅ Tasks phase complete - Ready for Implementation (Phase 4)
+
+---
+
+## M6: Post-v0.1.0 Enhancements (Future Roadmap)
+
+**Status:** 📋 Planned for v0.2.0+
+**Based on:** Legacy StyledConsole Analysis (doc/LEGACY_ANALYSIS_AND_IMPROVEMENTS.md)
+
+### T-020: Icon Provider System (v0.2.0)
+**Priority:** High
+**Effort:** 2-3 days
+**Dependencies:** v0.1.0 released
+**Status:** ⬜ Planned
+
+**Description:**
+Add a simple icon provider system with Unicode/ASCII fallback for limited terminal environments.
+
+**Legacy Lessons:**
+- ✅ Keep it simple (avoid complex icon families/categories from legacy)
+- ✅ Focus on common icons (status, progress, etc.)
+- ❌ Avoid plugin architecture complexity
+
+**Acceptance Criteria:**
+- [ ] `IconProvider` class with `get(name: str) -> str` method
+- [ ] Predefined icon sets: `unicode_icons` and `ascii_icons`
+- [ ] Common icons: success (✅/[OK]), error (❌/[X]), warning (⚠️/[!]), info (ℹ️/[i]), debug (🔍/[?]), critical (🔥/[!!])
+- [ ] Context manager support for temporary icon provider switching
+- [ ] Global `set_icon_provider()` function
+- [ ] Unit tests with 95%+ coverage
+- [ ] Documentation with examples
+- [ ] Integration with Console class
+
+**Implementation Notes:**
+```python
+# Simple, focused implementation
+class IconProvider:
+    def __init__(self, unicode: bool = True):
+        self.icons = self._unicode_icons if unicode else self._ascii_icons
+
+    def get(self, name: str) -> str:
+        return self.icons.get(name, '•')
+
+# Usage
+console.text(f"{icons.get('success')} Operation completed!")
+```
+
+**Estimated LOC:** ~80 lines (plus 150 test lines)
+
+---
+
+### T-021: Runtime Policy System (v0.2.0)
+**Priority:** High
+**Effort:** 3-4 days
+**Dependencies:** T-020
+**Status:** ⬜ Planned
+
+**Description:**
+Add runtime policy for graceful degradation in different terminal environments (CI/CD, ASCII-only, etc.)
+
+**Legacy Lessons:**
+- ✅ Environment-driven rendering decisions
+- ✅ Support NO_COLOR standard
+- ❌ Keep it simple (3-4 settings max, not complex policy system)
+
+**Acceptance Criteria:**
+- [ ] `RenderPolicy` dataclass with fields: unicode, color, emoji
+- [ ] `from_env()` classmethod for automatic environment detection
+- [ ] NO_COLOR environment variable support (disable colors)
+- [ ] TERM=dumb detection (ASCII-only mode)
+- [ ] CI environment detection (disable emoji, preserve color for logs)
+- [ ] Global policy with `set_policy()` and `get_policy()` functions
+- [ ] Console class respects policy in all rendering
+- [ ] Unit tests with 95%+ coverage
+- [ ] Documentation with CI/CD examples
+
+**Implementation Notes:**
+```python
+@dataclass
+class RenderPolicy:
+    unicode: bool = True   # Use Unicode box drawing
+    color: bool = True     # Use ANSI colors
+    emoji: bool = True     # Use emoji (Tier 1 only)
+
+    @classmethod
+    def from_env(cls) -> 'RenderPolicy':
+        no_color = os.getenv('NO_COLOR') is not None
+        term = os.getenv('TERM', '').lower()
+        ci = os.getenv('CI') is not None
+        return cls(
+            unicode=(term != 'dumb'),
+            color=not no_color,
+            emoji=(term not in ('dumb', 'linux') and not ci)
+        )
+```
+
+**Estimated LOC:** ~100 lines (plus 200 test lines)
+
+---
+
+### T-022: Enhanced HTML Export (v0.2.0)
+**Priority:** Medium
+**Effort:** 4-6 days
+**Dependencies:** T-020, T-021
+**Status:** ⬜ Planned
+
+**Description:**
+Enhance HTML export with gradient support, CSS classes, and better styling options.
+
+**Legacy Lessons:**
+- ✅ HTML export preserves visual styling
+- ✅ Useful for documentation/reports
+- ❌ Keep it lightweight (no external dependencies)
+
+**Acceptance Criteria:**
+- [ ] Add `css_classes: bool` parameter to `export_html()` (use classes instead of inline styles)
+- [ ] Add `include_gradients: bool` parameter (render gradient banners in HTML)
+- [ ] Generate CSS stylesheet when `css_classes=True`
+- [ ] Gradient rendering using CSS linear-gradient()
+- [ ] Support for exporting progress bars to HTML
+- [ ] Unit tests for all export options
+- [ ] Example HTML outputs in docs
+- [ ] Documentation with screenshot comparisons
+
+**Implementation Notes:**
+```python
+# Extended export_manager.py
+class ExportManager:
+    def export_html(
+        self,
+        inline_styles: bool = True,
+        css_classes: bool = False,    # NEW
+        include_gradients: bool = True  # NEW
+    ) -> str:
+        # CSS class-based styling option
+        # Gradient banners using linear-gradient()
+```
+
+**Estimated LOC:** ~150 lines (plus 250 test lines)
+
+---
+
+### T-023: Theme System (v0.2.0)
+**Priority:** Medium
+**Effort:** 6-8 days
+**Dependencies:** T-021
+**Status:** ⬜ Planned
+
+**Description:**
+Add predefined color themes for consistent styling across frames, banners, and text.
+
+**Legacy Lessons:**
+- ✅ Aesthetic consistency
+- ✅ Optional feature (doesn't break existing code)
+- ❌ Keep it simple (3-5 predefined themes)
+
+**Acceptance Criteria:**
+- [ ] `Theme` dataclass with color fields: primary, success, warning, error, border
+- [ ] Predefined themes: DARK, LIGHT, SOLARIZED, MONOKAI, NORD
+- [ ] Console class accepts `theme` parameter
+- [ ] Theme applies to frames, banners, and text styling
+- [ ] Global `set_theme()` function
+- [ ] Theme preview utility function
+- [ ] Unit tests for all themes
+- [ ] Example gallery showing all themes
+- [ ] Documentation with screenshots
+
+**Implementation Notes:**
+```python
+@dataclass
+class Theme:
+    primary: str = 'blue'
+    success: str = 'green'
+    warning: str = 'yellow'
+    error: str = 'red'
+    border: str = 'white'
+
+# Predefined themes
+DARK = Theme(primary='cyan', success='green', ...)
+LIGHT = Theme(primary='blue', success='darkgreen', ...)
+SOLARIZED = Theme(primary='#268bd2', success='#859900', ...)
+```
+
+**Estimated LOC:** ~120 lines (plus 200 test lines)
+
+---
+
+### T-024: Animation Support (v0.3.0)
+**Priority:** Low
+**Effort:** 8-10 days
+**Dependencies:** v0.2.0 released
+**Status:** ⬜ Planned (Experimental)
+
+**Description:**
+Add simple frame-based animations for spinners and progress indicators.
+
+**Legacy Lessons:**
+- ⚠️ Nice for progress indicators
+- ⚠️ Terminal clearing complexities
+- ❌ Don't over-engineer (simple frame iteration)
+
+**Acceptance Criteria:**
+- [ ] `Animator` class with `spinner()` method
+- [ ] Predefined spinners: DOTS, MOON, ARROW, BOUNCE, PULSE
+- [ ] Frame iteration with configurable delay
+- [ ] Terminal cursor management (hide/show)
+- [ ] Integration with Console class
+- [ ] Unit tests for frame generation
+- [ ] Example with real-time progress
+- [ ] Documentation with warnings about terminal support
+
+**Implementation Notes:**
+```python
+class Animator:
+    DOTS = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+    MOON = ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘']
+
+    def spinner(self, frames: List[str]) -> Iterator[str]:
+        while True:
+            for frame in frames:
+                yield frame
+```
+
+**Estimated LOC:** ~100 lines (plus 150 test lines)
+
+---
+
+### T-025: Progress Bar Wrapper (v0.3.0)
+**Priority:** Low
+**Effort:** 4-6 days
+**Dependencies:** v0.2.0 released
+**Status:** ⬜ Planned
+
+**Description:**
+Convenience wrapper for Rich's progress bars with StyledConsole styling.
+
+**Legacy Lessons:**
+- ✅ Common need for CLI applications
+- ❌ Don't build from scratch - use Rich
+- ✅ Provide convenience wrapper only
+
+**Acceptance Criteria:**
+- [ ] `ProgressBar` wrapper class using Rich's Progress
+- [ ] Console integration for styled progress
+- [ ] Support for multiple concurrent progress bars
+- [ ] Themed progress bars (use Theme colors)
+- [ ] Unit tests with mocking
+- [ ] Example with file download simulation
+- [ ] Documentation
+
+**Implementation Notes:**
+```python
+# Simple wrapper, leverage Rich's battle-tested implementation
+class ProgressBar:
+    def __init__(self, console: Console, theme: Optional[Theme] = None):
+        self._progress = rich.progress.Progress(...)
+
+    def add_task(self, description: str) -> TaskID:
+        return self._progress.add_task(description)
+```
+
+**Estimated LOC:** ~80 lines (plus 100 test lines)
+
+---
+
+### T-026: Tier 2 Emoji Support (v0.4.0+)
+**Priority:** Low
+**Effort:** 10-15 days
+**Dependencies:** v0.3.0 released, user demand proven
+**Status:** ⬜ Planned (Conditional)
+
+**Description:**
+Add support for Tier 2 emoji (skin tones, ZWJ sequences) IF users request it and clear use cases are identified.
+
+**Legacy Lessons:**
+- ❌ Legacy's complex emoji handling caused 248 lines of alignment hacks
+- ❌ Over-engineering led to maintenance nightmare
+- ⚠️ Only proceed if there's real user demand
+
+**Acceptance Criteria:**
+- [ ] ⚠️ User demand validated (GitHub issues, feedback)
+- [ ] ⚠️ Clear use cases documented
+- [ ] Add grapheme library for ZWJ support
+- [ ] Document which Tier 2 emoji work
+- [ ] NO per-emoji correction hacks (get it right first time)
+- [ ] Test coverage 95%+
+- [ ] Clear documentation on limitations
+- [ ] Opt-in feature (default stays Tier 1)
+
+**Implementation Notes:**
+```python
+# Only if we can do it WITHOUT legacy's complexity
+# Must work correctly without post-rendering hacks
+# Document limitations clearly
+```
+
+**Risk Assessment:** ⚠️ HIGH - Complexity creep danger
+**Recommendation:** Avoid unless compelling need proven
+
+**Estimated LOC:** ~200 lines (plus 300 test lines)
+
+---
+
+### M6 Task Summary
+
+| Task | Priority | Effort | Target Version | Risk |
+|------|----------|--------|----------------|------|
+| **T-020: Icon Provider** | High | 2-3 days | v0.2.0 | ✅ Low |
+| **T-021: Runtime Policy** | High | 3-4 days | v0.2.0 | ✅ Low |
+| **T-022: Enhanced HTML Export** | Medium | 4-6 days | v0.2.0 | ✅ Low |
+| **T-023: Theme System** | Medium | 6-8 days | v0.2.0 | ✅ Low |
+| **T-024: Animation Support** | Low | 8-10 days | v0.3.0 | ⚠️ Medium |
+| **T-025: Progress Bar Wrapper** | Low | 4-6 days | v0.3.0 | ✅ Low |
+| **T-026: Tier 2 Emoji** | Low | 10-15 days | v0.4.0+ | ⚠️ HIGH |
+
+**v0.2.0 Scope:** T-020 through T-023 (15-21 days, ~3-4 weeks)
+**v0.3.0 Scope:** T-024, T-025 (12-16 days, ~2-3 weeks)
+**v0.4.0+ Scope:** T-026 (only if justified)
+
+**Architecture Principles to Maintain:**
+- ✅ Keep modules under 200 lines each
+- ✅ Maintain 95%+ test coverage
+- ✅ Single responsibility per module
+- ✅ No post-rendering hacks
+- ✅ Document limitations clearly
+- ✅ Stay under 8,000 total lines (currently 4,696)
+
+**What NOT to do (Learn from Legacy):**
+- ❌ No factory factories or over-abstraction
+- ❌ No multiple competing implementations
+- ❌ No premature optimization (no numpy for simple tasks)
+- ❌ No undocumented heuristics or magic numbers
+- ❌ No plugin systems "for future flexibility"
