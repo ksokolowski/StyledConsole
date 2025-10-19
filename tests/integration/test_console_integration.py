@@ -192,8 +192,8 @@ class TestConsoleFrameIntegration:
         console.frame(
             ["Line 1", "Line 2", "Line 3"],
             title="Gradient",
-            gradient_start="red",
-            gradient_end="blue",
+            start_color="red",
+            end_color="blue",
         )
 
         output = buffer.getvalue()
@@ -252,16 +252,16 @@ class TestConsoleBannerIntegration:
         console.banner(
             "OK",
             font="slant",
-            gradient_start="red",
-            gradient_end="blue",
+            start_color="red",
+            end_color="blue",
         )
         console.newline()
 
         console.banner(
             "GO",
             font="slant",
-            gradient_start="lime",
-            gradient_end="blue",
+            start_color="lime",
+            end_color="blue",
         )
 
         output = buffer.getvalue()

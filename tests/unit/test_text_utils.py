@@ -3,6 +3,7 @@
 import pytest
 
 from styledconsole.utils.text import (
+    normalize_content,
     pad_to_width,
     split_graphemes,
     strip_ansi,
@@ -329,3 +330,68 @@ class TestEdgeCases:
 
         # Zero-width space
         assert visual_width("a\u200bb") == 2  # zero-width space
+
+
+class TestNormalizeContent:
+    """Tests for normalize_content()."""
+
+    def test_string_with_newlines(self):
+        """Test string with newlines splits into lines."""
+        result = normalize_content("Line 1\nLine 2\nLine 3")
+        assert result == ["Line 1", "Line 2", "Line 3"]
+
+    def test_string_without_newlines(self):
+        """Test single-line string."""
+        result = normalize_content("Single line")
+        assert result == ["Single line"]
+
+    def test_empty_string(self):
+        """Test empty string returns list with empty string."""
+        result = normalize_content("")
+        assert result == [""]
+
+    def test_list_of_strings(self):
+        """Test list of strings is returned as-is."""
+        input_list = ["Line 1", "Line 2"]
+        result = normalize_content(input_list)
+        assert result == ["Line 1", "Line 2"]
+
+    def test_empty_list(self):
+        """Test empty list returns list with empty string."""
+        result = normalize_content([])
+        assert result == [""]
+
+    def test_list_with_empty_strings(self):
+        """Test list with empty strings preserved."""
+        result = normalize_content(["", "text", ""])
+        assert result == ["", "text", ""]
+
+    def test_string_with_only_newlines(self):
+        """Test string with only newlines."""
+        result = normalize_content("\n\n")
+        # splitlines() returns ["", ""] for "\n\n" (2 newlines = 2 empty strings)
+        assert result == ["", ""]
+
+    def test_string_with_trailing_newline(self):
+        """Test string with trailing newline."""
+        result = normalize_content("Line 1\nLine 2\n")
+        # splitlines() removes trailing newline
+        assert result == ["Line 1", "Line 2"]
+
+    def test_preserves_whitespace(self):
+        """Test whitespace in lines is preserved."""
+        result = normalize_content("  Line 1  \n\tLine 2\t")
+        assert result == ["  Line 1  ", "\tLine 2\t"]
+
+    def test_with_unicode_content(self):
+        """Test normalization with unicode content."""
+        result = normalize_content("Hello 🚀\nWorld 🎉")
+        assert result == ["Hello 🚀", "World 🎉"]
+
+    def test_does_not_modify_original_list(self):
+        """Test that original list is not modified if non-empty."""
+        original = ["Line 1", "Line 2"]
+        result = normalize_content(original)
+        assert result == original
+        # For non-empty lists, we return the same list (optimization)
+        # This is fine since we're not modifying it

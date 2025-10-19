@@ -311,7 +311,7 @@ def main():
 
     banner_renderer = BannerRenderer()
     banner_lines = banner_renderer.render(
-        "POETRY", font="slant", gradient_start="magenta", gradient_end="cyan"
+        "POETRY", font="slant", start_color="magenta", end_color="cyan"
     )
 
     # Digital poetry content with banner at the top

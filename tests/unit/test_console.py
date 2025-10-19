@@ -19,23 +19,26 @@ class TestConsoleInitialization:
 
         assert console is not None
         assert console._rich_console is not None
-        assert console._frame_renderer is not None
-        assert console._banner_renderer is not None
+        assert console._terminal is not None
+        assert console._renderer is not None
+        assert console._exporter is not None
 
     def test_terminal_detection_enabled(self):
         """Test terminal detection when enabled."""
-        with patch("styledconsole.console.detect_terminal_capabilities") as mock_detect:
-            mock_profile = TerminalProfile(
-                ansi_support=True,
-                color_depth=256,
-                emoji_safe=True,
-                width=120,
-                height=30,
-                term="xterm-256color",
-                colorterm=None,
-            )
-            mock_detect.return_value = mock_profile
+        mock_profile = TerminalProfile(
+            ansi_support=True,
+            color_depth=256,
+            emoji_safe=True,
+            width=120,
+            height=30,
+            term="xterm-256color",
+            colorterm=None,
+        )
 
+        with patch(
+            "styledconsole.core.terminal_manager.detect_terminal_capabilities"
+        ) as mock_detect:
+            mock_detect.return_value = mock_profile
             console = Console(detect_terminal=True)
 
             assert console.terminal_profile == mock_profile
@@ -77,21 +80,19 @@ class TestConsoleInitialization:
 
     def test_debug_mode_enabled(self):
         """Test Console with debug logging enabled."""
-        with patch("styledconsole.console.Console._setup_logging") as mock_logging:
-            mock_logger = MagicMock()
-            mock_logging.return_value = mock_logger
+        console = Console(debug=True, detect_terminal=False)
 
-            console = Console(debug=True, detect_terminal=False)
-
-            assert console._debug is True
-            mock_logging.assert_called_once()
+        assert console._debug is True
+        # Debug logging is now handled by TerminalManager, RenderingEngine, and ExportManager
+        assert console._terminal is not None
+        assert console._renderer is not None
+        assert console._exporter is not None
 
     def test_debug_mode_disabled(self):
         """Test Console with debug logging disabled."""
         console = Console(debug=False, detect_terminal=False)
 
         assert console._debug is False
-        assert console._logger is None
 
 
 class TestConsoleTerminalProfile:
@@ -99,18 +100,20 @@ class TestConsoleTerminalProfile:
 
     def test_profile_property_when_detected(self):
         """Test terminal_profile property returns detected profile."""
-        with patch("styledconsole.console.detect_terminal_capabilities") as mock_detect:
-            mock_profile = TerminalProfile(
-                ansi_support=True,
-                color_depth=16777216,
-                emoji_safe=True,
-                width=80,
-                height=24,
-                term="xterm",
-                colorterm="truecolor",
-            )
-            mock_detect.return_value = mock_profile
+        mock_profile = TerminalProfile(
+            ansi_support=True,
+            color_depth=16777216,
+            emoji_safe=True,
+            width=80,
+            height=24,
+            term="xterm",
+            colorterm="truecolor",
+        )
 
+        with patch(
+            "styledconsole.core.terminal_manager.detect_terminal_capabilities"
+        ) as mock_detect:
+            mock_detect.return_value = mock_profile
             console = Console(detect_terminal=True)
             profile = console.terminal_profile
 
@@ -196,8 +199,8 @@ class TestConsoleFrameMethod:
 
         console.frame(
             ["Line 1", "Line 2"],
-            gradient_start="red",
-            gradient_end="blue",
+            start_color="red",
+            end_color="blue",
         )
         output = buffer.getvalue()
 
@@ -258,8 +261,8 @@ class TestConsoleBannerMethod:
 
         console.banner(
             "OK",
-            gradient_start="red",
-            gradient_end="blue",
+            start_color="red",
+            end_color="blue",
         )
         output = buffer.getvalue()
 
@@ -476,18 +479,20 @@ class TestConsoleClearMethod:
 
     def test_clear_with_ansi_support(self):
         """Test clear() when ANSI is supported."""
-        with patch("styledconsole.console.detect_terminal_capabilities") as mock_detect:
-            mock_profile = TerminalProfile(
-                ansi_support=True,
-                color_depth=256,
-                emoji_safe=True,
-                width=80,
-                height=24,
-                term="xterm",
-                colorterm=None,
-            )
-            mock_detect.return_value = mock_profile
+        mock_profile = TerminalProfile(
+            ansi_support=True,
+            color_depth=256,
+            emoji_safe=True,
+            width=80,
+            height=24,
+            term="xterm",
+            colorterm=None,
+        )
 
+        with patch(
+            "styledconsole.core.terminal_manager.detect_terminal_capabilities"
+        ) as mock_detect:
+            mock_detect.return_value = mock_profile
             console = Console(detect_terminal=True)
 
             # Mock Rich console clear method
@@ -499,18 +504,20 @@ class TestConsoleClearMethod:
 
     def test_clear_without_ansi_support(self):
         """Test clear() when ANSI is not supported."""
-        with patch("styledconsole.console.detect_terminal_capabilities") as mock_detect:
-            mock_profile = TerminalProfile(
-                ansi_support=False,
-                color_depth=0,
-                emoji_safe=False,
-                width=80,
-                height=24,
-                term="dumb",
-                colorterm=None,
-            )
-            mock_detect.return_value = mock_profile
+        mock_profile = TerminalProfile(
+            ansi_support=False,
+            color_depth=0,
+            emoji_safe=False,
+            width=80,
+            height=24,
+            term="dumb",
+            colorterm=None,
+        )
 
+        with patch(
+            "styledconsole.core.terminal_manager.detect_terminal_capabilities"
+        ) as mock_detect:
+            mock_detect.return_value = mock_profile
             console = Console(detect_terminal=True)
             console._rich_console.clear = MagicMock()
 
@@ -682,11 +689,11 @@ class TestConsoleDebugLogging:
 
     def test_debug_logging_for_terminal_detection(self, caplog):
         """Test debug logging during terminal detection."""
-        with caplog.at_level(logging.DEBUG, logger="styledconsole.console"):
+        with caplog.at_level(logging.DEBUG):
             Console(debug=True, detect_terminal=True)
 
+            # Debug logging now comes from TerminalManager, not Console
             assert any("Terminal detected" in record.message for record in caplog.records)
-            assert any("Console initialized" in record.message for record in caplog.records)
 
     def test_no_debug_logging_when_disabled(self, caplog):
         """Test no debug logs when debug=False."""

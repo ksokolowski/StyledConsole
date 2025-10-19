@@ -3,7 +3,9 @@
 import pytest
 
 from styledconsole.utils.color import (
+    apply_line_gradient,
     color_distance,
+    colorize_text,
     get_color_names,
     hex_to_rgb,
     interpolate_color,
@@ -281,3 +283,106 @@ class TestEdgeCases:
         """Test rebeccapurple (added in CSS4 in honor of Eric Meyer's daughter)."""
         # This color has historical significance in CSS
         assert parse_color("rebeccapurple") == (102, 51, 153)
+
+
+class TestApplyLineGradient:
+    """Tests for apply_line_gradient()."""
+
+    def test_basic_gradient(self):
+        """Test basic gradient application."""
+        lines = ["Line 1", "Line 2", "Line 3"]
+        colored = apply_line_gradient(lines, "red", "blue")
+
+        assert len(colored) == 3
+        # All lines should have ANSI codes
+        assert all("\033[38;2;" in line for line in colored)
+        # All lines should have reset codes
+        assert all("\033[0m" in line for line in colored)
+        # Original text preserved
+        assert "Line 1" in colored[0]
+        assert "Line 2" in colored[1]
+        assert "Line 3" in colored[2]
+
+    def test_single_line(self):
+        """Test gradient with single line."""
+        lines = ["Single"]
+        colored = apply_line_gradient(lines, "red", "blue")
+        assert len(colored) == 1
+        assert "\033[38;2;" in colored[0]
+        assert "Single" in colored[0]
+
+    def test_empty_list(self):
+        """Test gradient with empty list."""
+        lines = []
+        colored = apply_line_gradient(lines, "red", "blue")
+        assert colored == []
+
+    def test_two_lines(self):
+        """Test gradient with two lines (start and end colors)."""
+        lines = ["First", "Last"]
+        colored = apply_line_gradient(lines, "#FF0000", "#0000FF")
+
+        # First line should be red (255, 0, 0)
+        assert "255;0;0" in colored[0]
+        # Last line should be blue (0, 0, 255)
+        assert "0;0;255" in colored[1]
+
+    def test_gradient_with_hex_colors(self):
+        """Test gradient with hex color format."""
+        lines = ["A", "B", "C"]
+        colored = apply_line_gradient(lines, "#FF0000", "#00FF00")
+        assert len(colored) == 3
+
+    def test_gradient_with_named_colors(self):
+        """Test gradient with CSS4 color names."""
+        lines = ["A", "B"]
+        colored = apply_line_gradient(lines, "cyan", "magenta")
+        assert len(colored) == 2
+
+    def test_preserves_original_lines(self):
+        """Test that original lines list is not modified."""
+        lines = ["Test 1", "Test 2"]
+        original = lines.copy()
+        apply_line_gradient(lines, "red", "blue")
+        assert lines == original
+
+
+class TestColorizeText:
+    """Tests for colorize_text()."""
+
+    def test_basic_colorization(self):
+        """Test basic text colorization."""
+        colored = colorize_text("Hello", "red")
+        assert "\033[38;2;255;0;0m" in colored  # Red
+        assert "Hello" in colored
+        assert "\033[0m" in colored  # Reset
+
+    def test_with_hex_color(self):
+        """Test colorization with hex color."""
+        colored = colorize_text("World", "#00FF00")
+        assert "\033[38;2;0;255;0m" in colored  # Green
+        assert "World" in colored
+
+    def test_with_css4_color(self):
+        """Test colorization with CSS4 color name."""
+        colored = colorize_text("Test", "lime")
+        assert "\033[38;2;0;255;0m" in colored  # Lime
+        assert "Test" in colored
+
+    def test_empty_string(self):
+        """Test colorization of empty string."""
+        colored = colorize_text("", "red")
+        assert "\033[38;2;255;0;0m" in colored
+        assert "\033[0m" in colored
+
+    def test_multiline_text(self):
+        """Test colorization preserves newlines."""
+        colored = colorize_text("Line 1\nLine 2", "blue")
+        assert "Line 1\nLine 2" in colored
+        assert "\033[38;2;0;0;255m" in colored  # Blue
+
+    def test_text_with_special_chars(self):
+        """Test colorization with special characters."""
+        colored = colorize_text("!@#$%^&*()", "red")
+        assert "!@#$%^&*()" in colored
+        assert "\033[38;2;255;0;0m" in colored

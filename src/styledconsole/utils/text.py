@@ -287,11 +287,37 @@ def truncate_to_width(text: str, width: int, suffix: str = "...") -> str:
     return "".join(result) + suffix
 
 
+def normalize_content(content: str | list[str]) -> list[str]:
+    """Normalize content to list of lines.
+
+    Args:
+        content: String or list of strings
+
+    Returns:
+        List of lines (empty content becomes [""])
+
+    Example:
+        >>> normalize_content("Line 1\\nLine 2")
+        ['Line 1', 'Line 2']
+        >>> normalize_content(["Line 1", "Line 2"])
+        ['Line 1', 'Line 2']
+        >>> normalize_content("")
+        ['']
+        >>> normalize_content([])
+        ['']
+    """
+    if isinstance(content, str):
+        return content.splitlines() if content else [""]
+    else:
+        return content if content else [""]
+
+
 __all__ = [
     "visual_width",
     "strip_ansi",
     "split_graphemes",
     "pad_to_width",
     "truncate_to_width",
+    "normalize_content",
     "AlignType",
 ]

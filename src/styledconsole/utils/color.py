@@ -255,6 +255,71 @@ def color_distance(color1: str | RGBColor, color2: str | RGBColor) -> float:
     return ((rgb1[0] - rgb2[0]) ** 2 + (rgb1[1] - rgb2[1]) ** 2 + (rgb1[2] - rgb2[2]) ** 2) ** 0.5
 
 
+def apply_line_gradient(
+    lines: list[str],
+    start_color: str,
+    end_color: str,
+) -> list[str]:
+    """Apply vertical gradient to lines (top to bottom).
+
+    Optimized with cached color parsing and RGB interpolation.
+
+    Args:
+        lines: Text lines to colorize
+        start_color: Starting color (hex, RGB, or CSS4 name)
+        end_color: Ending color (hex, RGB, or CSS4 name)
+
+    Returns:
+        Lines with ANSI color codes applied
+
+    Example:
+        >>> lines = ["Line 1", "Line 2", "Line 3"]
+        >>> colored = apply_line_gradient(lines, "red", "blue")
+        >>> for line in colored:
+        ...     print(line)  # Gradient from red to blue
+    """
+    if not lines:
+        return lines
+
+    # Parse colors once (cached by lru_cache)
+    start_rgb = parse_color(start_color)
+    end_rgb = parse_color(end_color)
+
+    colored_lines = []
+    num_lines = len(lines)
+
+    for i, line in enumerate(lines):
+        # Calculate gradient position (0.0 to 1.0)
+        t = i / (num_lines - 1) if num_lines > 1 else 0.0
+
+        # Interpolate color using optimized RGB function
+        r, g, b = interpolate_rgb(start_rgb, end_rgb, t)
+
+        # Apply ANSI color code
+        colored_line = f"\033[38;2;{r};{g};{b}m{line}\033[0m"
+        colored_lines.append(colored_line)
+
+    return colored_lines
+
+
+def colorize_text(text: str, color: str) -> str:
+    """Apply color to text using ANSI codes.
+
+    Args:
+        text: Text to colorize
+        color: Color specification (hex, RGB, or CSS4 name)
+
+    Returns:
+        ANSI colored text
+
+    Example:
+        >>> colored = colorize_text("Hello", "red")
+        >>> print(colored)  # Red text
+    """
+    r, g, b = parse_color(color)
+    return f"\033[38;2;{r};{g};{b}m{text}\033[0m"
+
+
 __all__ = [
     "hex_to_rgb",
     "rgb_to_hex",
@@ -262,6 +327,8 @@ __all__ = [
     "interpolate_color",
     "interpolate_rgb",
     "color_distance",
+    "apply_line_gradient",
+    "colorize_text",
     "get_color_names",
     "CSS4_COLORS",
     "RGBColor",

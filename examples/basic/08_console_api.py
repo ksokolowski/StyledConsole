@@ -68,8 +68,8 @@ print()
 console.banner(
     "DEMO",
     font="banner",
-    gradient_start="red",
-    gradient_end="blue",
+    start_color="red",
+    end_color="blue",
 )
 print()
 
@@ -77,8 +77,8 @@ console.banner(
     "FRAMED",
     font="slant",
     border="double",
-    gradient_start="green",
-    gradient_end="blue",
+    start_color="green",
+    end_color="blue",
 )
 print()
 
@@ -286,8 +286,8 @@ console.frame(
     ],
     title="Test Summary",
     border="double",
-    gradient_start="lime",
-    gradient_end="darkgreen",
+    start_color="lime",
+    end_color="darkgreen",
 )
 console.newline()
 

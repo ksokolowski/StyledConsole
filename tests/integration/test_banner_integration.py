@@ -25,8 +25,8 @@ def test_banner_with_all_features():
     lines = renderer.render(
         "DEMO",
         font="banner",
-        gradient_start="#ff0000",
-        gradient_end="#0000ff",
+        start_color="#ff0000",
+        end_color="#0000ff",
         border="double",
         width=60,
         align="center",
@@ -55,8 +55,8 @@ def test_banner_dataclass_workflow():
     banner = Banner(
         text="BANNER",
         font="standard",
-        gradient_start="red",
-        gradient_end="blue",
+        start_color="red",
+        end_color="blue",
         border="solid",
         width=50,
     )
@@ -93,7 +93,7 @@ def test_gradient_variations():
     ]
 
     for start, end in test_cases:
-        lines = renderer.render("X", gradient_start=start, gradient_end=end)
+        lines = renderer.render("X", start_color=start, end_color=end)
         assert len(lines) > 0
         # Should contain ANSI color codes
         assert any("\033[38;2;" in line for line in lines)
@@ -137,7 +137,7 @@ def test_emoji_handling():
     assert "🚀" in emoji_lines[0]
 
     # Emoji with gradient
-    gradient_lines = renderer.render("🎉", gradient_start="red", gradient_end="blue")
+    gradient_lines = renderer.render("🎉", start_color="red", end_color="blue")
     assert len(gradient_lines) == 1
     assert "🎉" in gradient_lines[0]
     assert "\033[38;2;" in gradient_lines[0]  # Should still have color
@@ -155,8 +155,8 @@ def test_realistic_application_title():
     lines = renderer.render(
         "MyApp",
         font="slant",
-        gradient_start="dodgerblue",
-        gradient_end="purple",
+        start_color="dodgerblue",
+        end_color="purple",
         border="double",
         width=70,
     )
@@ -188,8 +188,8 @@ def test_status_message_banners():
         lines = renderer.render(
             text,
             font="banner",
-            gradient_start=start,
-            gradient_end=end,
+            start_color=start,
+            end_color=end,
             border="heavy",
         )
 
@@ -291,8 +291,8 @@ def test_gradient_interpolation_accuracy():
     lines = renderer.render(
         "GRADIENT",
         font="banner",
-        gradient_start="#ff0000",  # Pure red
-        gradient_end="#0000ff",  # Pure blue
+        start_color="#ff0000",  # Pure red
+        end_color="#0000ff",  # Pure blue
     )
 
     # Extract RGB values from ANSI codes
@@ -318,8 +318,8 @@ def test_combined_features():
     lines = renderer.render(
         "FULL",
         font="slant",
-        gradient_start="coral",
-        gradient_end="dodgerblue",
+        start_color="coral",
+        end_color="dodgerblue",
         border="thick",
         width=65,
         align="center",

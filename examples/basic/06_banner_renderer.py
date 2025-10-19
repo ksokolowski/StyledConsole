@@ -40,8 +40,8 @@ console.text("Red to Blue gradient:", color="magenta")
 console.banner(
     "GRADIENT",
     font="slant",
-    gradient_start="red",
-    gradient_end="blue",
+    start_color="red",
+    end_color="blue",
 )
 console.newline()
 
@@ -49,8 +49,8 @@ console.text("Green to Yellow gradient:", color="magenta")
 console.banner(
     "COLORS",
     font="banner",
-    gradient_start="green",
-    gradient_end="yellow",
+    start_color="green",
+    end_color="yellow",
 )
 console.newline()
 
@@ -72,8 +72,8 @@ console.newline()
 console.banner(
     "SUCCESS",
     font="banner",
-    gradient_start="lime",
-    gradient_end="cyan",
+    start_color="lime",
+    end_color="cyan",
     border="heavy",
 )
 console.newline()
@@ -118,8 +118,8 @@ console.banner(
     font="banner",
     border="solid",
     padding=3,
-    gradient_start="red",
-    gradient_end="orange",
+    start_color="red",
+    end_color="orange",
 )
 console.newline()
 
@@ -130,8 +130,8 @@ console.newline()
 banner = Banner(
     text="BANNER",
     font="digital",
-    gradient_start="magenta",
-    gradient_end="cyan",
+    start_color="magenta",
+    end_color="cyan",
     border="thick",
     width=70,
     align="center",
@@ -141,8 +141,8 @@ banner = Banner(
 console.banner(
     banner.text,
     font=banner.font,
-    gradient_start=banner.gradient_start,
-    gradient_end=banner.gradient_end,
+    start_color=banner.start_color,
+    end_color=banner.end_color,
     border=banner.border,
     width=banner.width,
     align=banner.align,
@@ -156,8 +156,8 @@ console.newline()
 
 console.banner(
     "🚀 Launch",
-    gradient_start="red",
-    gradient_end="blue",
+    start_color="red",
+    end_color="blue",
     border="rounded",
 )
 console.newline()
@@ -184,8 +184,8 @@ console.newline()
 console.banner(
     "StyledConsole",
     font="slant",
-    gradient_start="dodgerblue",
-    gradient_end="purple",
+    start_color="dodgerblue",
+    end_color="purple",
     border="double",
     width=80,
 )
@@ -199,8 +199,8 @@ console.newline()
 console.banner(
     "SUCCESS",
     font="banner",
-    gradient_start="lime",
-    gradient_end="darkgreen",
+    start_color="lime",
+    end_color="darkgreen",
     border="heavy",
 )
 console.newline()
@@ -209,8 +209,8 @@ console.newline()
 console.banner(
     "ERROR",
     font="banner",
-    gradient_start="red",
-    gradient_end="darkred",
+    start_color="red",
+    end_color="darkred",
     border="heavy",
 )
 console.newline()
@@ -219,8 +219,8 @@ console.newline()
 console.banner(
     "WARNING",
     font="banner",
-    gradient_start="orange",
-    gradient_end="orangered",
+    start_color="orange",
+    end_color="orangered",
     border="heavy",
 )
 console.newline()

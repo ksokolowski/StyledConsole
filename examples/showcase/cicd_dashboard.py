@@ -23,8 +23,8 @@ def create_cicd_dashboard():
     title_banner = banner_renderer.render(
         "CI/CD PIPELINE",
         font="banner",
-        gradient_start="deepskyblue",
-        gradient_end="royalblue",
+        start_color="deepskyblue",
+        end_color="royalblue",
         width=80,
         align="center",
     )
@@ -63,8 +63,8 @@ def create_cicd_dashboard():
         ["✅ Passed", "329/329 tests", "Coverage: 99%"],
         title="🧪 Unit Tests",
         border="rounded",
-        gradient_start="lime",
-        gradient_end="darkgreen",
+        start_color="lime",
+        end_color="darkgreen",
         border_color="lime",
         title_color="white",
     )
@@ -73,8 +73,8 @@ def create_cicd_dashboard():
         ["✅ Passed", "47/47 tests", "Duration: 2m"],
         title="🔗 Integration",
         border="rounded",
-        gradient_start="lime",
-        gradient_end="darkgreen",
+        start_color="lime",
+        end_color="darkgreen",
         border_color="lime",
         title_color="white",
     )
@@ -93,8 +93,8 @@ def create_cicd_dashboard():
         ["✅ Deployed", "Version: 1.2.3", "Healthy"],
         title="🚀 Staging",
         border="rounded",
-        gradient_start="#00d4ff",  # Cyan
-        gradient_end="#0066ff",  # Blue
+        start_color="#00d4ff",  # Cyan
+        end_color="#0066ff",  # Blue
         border_color="#00d4ff",
         title_color="#ffffff",
     )
@@ -134,8 +134,8 @@ def create_cicd_dashboard():
         ],
         title="📊 Summary",
         border="double",
-        gradient_start="#ff0000",  # Red at top
-        gradient_end="#ffaa00",  # Orange at bottom
+        start_color="#ff0000",  # Red at top
+        end_color="#ffaa00",  # Orange at bottom
         border_color="#ffaa00",
         title_color="#ffffff",
         width=80,
@@ -164,8 +164,8 @@ def create_success_dashboard():
     title_banner = banner_renderer.render(
         "ALL CLEAR",
         font="slant",
-        gradient_start="#00ff00",
-        gradient_end="#00aa00",
+        start_color="#00ff00",
+        end_color="#00aa00",
         width=80,
         align="center",
     )
@@ -193,8 +193,8 @@ def create_success_dashboard():
         ["✅ 99.03%", "514 lines"],
         title="Coverage",
         border="solid",
-        gradient_start="#00ff00",
-        gradient_end="#00cc00",
+        start_color="#00ff00",
+        end_color="#00cc00",
         border_color="#00ff00",
         title_color="#ffffff",
     )
@@ -226,8 +226,8 @@ def create_success_dashboard():
         ],
         title="SUCCESS",
         border="heavy",
-        gradient_start="#00ff00",
-        gradient_end="#00ffaa",
+        start_color="#00ff00",
+        end_color="#00ffaa",
         border_color="#00ff00",
         title_color="#ffffff",
         width=80,
@@ -254,8 +254,8 @@ def create_monitoring_dashboard():
     header = banner_renderer.render(
         "MONITORING",
         font="standard",
-        gradient_start="#ff00ff",  # Magenta
-        gradient_end="#00ffff",  # Cyan
+        start_color="#ff00ff",  # Magenta
+        end_color="#00ffff",  # Cyan
         width=80,
     )
 
@@ -264,8 +264,8 @@ def create_monitoring_dashboard():
         ["Usage: 34%", "Load: 1.2", "Cores: 8"],
         title="💻 CPU",
         border="rounded",
-        gradient_start="#00ff00",
-        gradient_end="#ffff00",
+        start_color="#00ff00",
+        end_color="#ffff00",
         border_color="#00ff00",
     )
 
@@ -273,8 +273,8 @@ def create_monitoring_dashboard():
         ["Used: 8.2GB", "Free: 7.8GB", "Total: 16GB"],
         title="🧠 Memory",
         border="rounded",
-        gradient_start="#00ff00",
-        gradient_end="#ffaa00",
+        start_color="#00ff00",
+        end_color="#ffaa00",
         border_color="#ffaa00",
     )
 
@@ -306,8 +306,8 @@ def create_monitoring_dashboard():
         ["42 days", "99.98%", "Last boot: OK"],
         title="⏱️  Uptime",
         border="rounded",
-        gradient_start="#00ffff",
-        gradient_end="#0066ff",
+        start_color="#00ffff",
+        end_color="#0066ff",
         border_color="#00ffff",
     )
 

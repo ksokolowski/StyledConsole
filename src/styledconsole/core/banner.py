@@ -16,7 +16,7 @@ import pyfiglet
 from styledconsole.core.frame import FrameRenderer
 from styledconsole.core.styles import BorderStyle, get_border_style
 from styledconsole.types import AlignType
-from styledconsole.utils.color import interpolate_rgb, parse_color
+from styledconsole.utils.color import apply_line_gradient
 from styledconsole.utils.text import strip_ansi, visual_width
 
 
@@ -27,8 +27,8 @@ class Banner:
     Attributes:
         text: Text to render as ASCII art (plain text only, emojis fallback to plain)
         font: Pyfiglet font name (default: "standard")
-        gradient_start: Starting color for gradient (hex, rgb, or named color)
-        gradient_end: Ending color for gradient (hex, rgb, or named color)
+        start_color: Starting color for gradient (hex, rgb, or named color)
+        end_color: Ending color for gradient (hex, rgb, or named color)
         border: Border style name or BorderStyle object (None for no border)
         width: Fixed width for banner (None for auto-width)
         align: Text alignment within banner ("left", "center", "right")
@@ -37,8 +37,8 @@ class Banner:
 
     text: str
     font: str = "standard"
-    gradient_start: str | None = None
-    gradient_end: str | None = None
+    start_color: str | None = None
+    end_color: str | None = None
     border: str | BorderStyle | None = None
     width: int | None = None
     align: AlignType = "center"
@@ -66,8 +66,8 @@ class BannerRenderer:
         >>> lines = renderer.render(
         ...     "SUCCESS",
         ...     font="banner",
-        ...     gradient_start="lime",
-        ...     gradient_end="blue",
+        ...     start_color="lime",
+        ...     end_color="blue",
         ...     border="double",
         ... )
     """
@@ -96,8 +96,8 @@ class BannerRenderer:
         self,
         text: str,
         font: str = "standard",
-        gradient_start: str | None = None,
-        gradient_end: str | None = None,
+        start_color: str | None = None,
+        end_color: str | None = None,
         border: str | BorderStyle | None = None,
         width: int | None = None,
         align: AlignType = "center",
@@ -108,8 +108,8 @@ class BannerRenderer:
         Args:
             text: Text to render (plain text only, emoji triggers fallback)
             font: Pyfiglet font name (default: "standard")
-            gradient_start: Starting color for gradient (hex, rgb, or named)
-            gradient_end: Ending color for gradient (hex, rgb, or named)
+            start_color: Starting color for gradient (hex, rgb, or named)
+            end_color: Ending color for gradient (hex, rgb, or named)
             border: Border style name or BorderStyle object (None for no border)
             width: Fixed width for banner (None for auto-width)
             align: Text alignment ("left", "center", "right")
@@ -127,8 +127,8 @@ class BannerRenderer:
         banner = Banner(
             text=text,
             font=font,
-            gradient_start=gradient_start,
-            gradient_end=gradient_end,
+            start_color=start_color,
+            end_color=end_color,
             border=border,
             width=width,
             align=align,
@@ -170,10 +170,8 @@ class BannerRenderer:
             ascii_lines = ascii_art.rstrip("\n").split("\n")
 
         # Apply gradient coloring if specified
-        if banner.gradient_start and banner.gradient_end:
-            ascii_lines = self._apply_gradient(
-                ascii_lines, banner.gradient_start, banner.gradient_end
-            )
+        if banner.start_color and banner.end_color:
+            ascii_lines = apply_line_gradient(ascii_lines, banner.start_color, banner.end_color)
 
         # If no border, return ASCII art lines directly
         if banner.border is None:
@@ -191,42 +189,6 @@ class BannerRenderer:
             align=banner.align,
             padding=banner.padding,
         )
-
-    def _apply_gradient(self, lines: list[str], start_color: str, end_color: str) -> list[str]:
-        """Apply gradient coloring to ASCII art lines (top to bottom).
-
-        Optimized to parse colors once and use RGB interpolation.
-
-        Args:
-            lines: ASCII art lines
-            start_color: Starting color (hex, rgb, or named)
-            end_color: Ending color (hex, rgb, or named)
-
-        Returns:
-            Lines with ANSI color codes applied
-        """
-        if not lines:
-            return lines
-
-        # Parse colors once (cached by lru_cache)
-        start_rgb = parse_color(start_color)
-        end_rgb = parse_color(end_color)
-
-        colored_lines = []
-        num_lines = len(lines)
-
-        for i, line in enumerate(lines):
-            # Calculate gradient position (0.0 to 1.0)
-            t = i / (num_lines - 1) if num_lines > 1 else 0.0
-
-            # Interpolate color using optimized RGB function
-            r, g, b = interpolate_rgb(start_rgb, end_rgb, t)
-
-            # Apply ANSI color code
-            colored_line = f"\033[38;2;{r};{g};{b}m{line}\033[0m"
-            colored_lines.append(colored_line)
-
-        return colored_lines
 
     def list_fonts(self, limit: int | None = None) -> list[str]:
         """Get list of available pyfiglet fonts.

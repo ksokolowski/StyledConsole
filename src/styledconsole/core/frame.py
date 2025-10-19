@@ -9,6 +9,7 @@ from styledconsole.core.styles import BorderStyle, get_border_style
 from styledconsole.types import AlignType
 from styledconsole.utils.color import interpolate_color, parse_color
 from styledconsole.utils.text import pad_to_width, truncate_to_width, visual_width
+from styledconsole.utils.validation import validate_align, validate_color_pair, validate_dimensions
 
 
 @dataclass
@@ -27,8 +28,8 @@ class Frame:
         content_color: Color for content text (hex, rgb, or CSS4 name)
         border_color: Color for border (hex, rgb, or CSS4 name)
         title_color: Color for title (hex, rgb, or CSS4 name)
-        gradient_start: Starting color for content gradient (overrides content_color)
-        gradient_end: Ending color for content gradient
+        start_color: Starting color for content gradient (overrides content_color)
+        end_color: Ending color for content gradient
     """
 
     content: str | list[str]
@@ -42,8 +43,8 @@ class Frame:
     content_color: str | None = None
     border_color: str | None = None
     title_color: str | None = None
-    gradient_start: str | None = None
-    gradient_end: str | None = None
+    start_color: str | None = None
+    end_color: str | None = None
 
 
 class FrameRenderer:
@@ -55,74 +56,6 @@ class FrameRenderer:
     def __init__(self) -> None:
         """Initialize the frame renderer."""
         pass
-
-    @staticmethod
-    def _validate_align(align: AlignType) -> None:
-        """Validate alignment parameter.
-
-        Args:
-            align: Alignment value to validate
-
-        Raises:
-            ValueError: If align is not one of: left, center, right
-        """
-        if align not in FrameRenderer.VALID_ALIGNMENTS:
-            raise ValueError(
-                f"align must be one of {FrameRenderer.VALID_ALIGNMENTS}, got: {align!r}"
-            )
-
-    @staticmethod
-    def _validate_dimensions(
-        width: int | None = None,
-        padding: int = 1,
-        min_width: int = 20,
-        max_width: int = 100,
-    ) -> None:
-        """Validate dimensional parameters.
-
-        Args:
-            width: Frame width
-            padding: Padding value
-            min_width: Minimum width
-            max_width: Maximum width
-
-        Raises:
-            ValueError: If dimensions are invalid
-        """
-        if padding < 0:
-            raise ValueError(f"padding must be >= 0, got: {padding}")
-
-        if width is not None and width < 1:
-            raise ValueError(f"width must be >= 1, got: {width}")
-
-        if min_width < 1:
-            raise ValueError(f"min_width must be >= 1, got: {min_width}")
-
-        if max_width < 1:
-            raise ValueError(f"max_width must be >= 1, got: {max_width}")
-
-        if min_width > max_width:
-            raise ValueError(f"min_width ({min_width}) must be <= max_width ({max_width})")
-
-        if width is not None and width < min_width:
-            raise ValueError(f"width ({width}) must be >= min_width ({min_width})")
-
-    @staticmethod
-    def _validate_gradient_pair(gradient_start: str | None, gradient_end: str | None) -> None:
-        """Validate gradient color pair.
-
-        Args:
-            gradient_start: Starting gradient color
-            gradient_end: Ending gradient color
-
-        Raises:
-            ValueError: If only one gradient color is provided
-        """
-        if (gradient_start is None) != (gradient_end is None):
-            raise ValueError(
-                "gradient_start and gradient_end must both be provided or both be None. "
-                f"Got gradient_start={gradient_start!r}, gradient_end={gradient_end!r}"
-            )
 
     def render(
         self,
@@ -138,8 +71,8 @@ class FrameRenderer:
         content_color: str | None = None,
         border_color: str | None = None,
         title_color: str | None = None,
-        gradient_start: str | None = None,
-        gradient_end: str | None = None,
+        start_color: str | None = None,
+        end_color: str | None = None,
     ) -> list[str]:
         """Render a frame with the given content and configuration.
 
@@ -155,8 +88,8 @@ class FrameRenderer:
             content_color: Color for content text (hex, rgb, or CSS4 name)
             border_color: Color for border (hex, rgb, or CSS4 name)
             title_color: Color for title (hex, rgb, or CSS4 name)
-            gradient_start: Starting color for content gradient (overrides content_color)
-            gradient_end: Ending color for content gradient
+            start_color: Starting color for content gradient (overrides content_color)
+            end_color: Ending color for content gradient
 
         Returns:
             List of strings, one per line of the rendered frame
@@ -171,9 +104,9 @@ class FrameRenderer:
             └─────────────────┘
         """
         # Validate inputs
-        self._validate_align(align)
-        self._validate_dimensions(width, padding, min_width, max_width)
-        self._validate_gradient_pair(gradient_start, gradient_end)
+        validate_align(align)
+        validate_dimensions(width, padding, min_width, max_width)
+        validate_color_pair(start_color, end_color, param_name="color")
 
         frame = Frame(
             content=content,
@@ -187,8 +120,8 @@ class FrameRenderer:
             content_color=content_color,
             border_color=border_color,
             title_color=title_color,
-            gradient_start=gradient_start,
-            gradient_end=gradient_end,
+            start_color=start_color,
+            end_color=end_color,
         )
         return self.render_frame(frame)
 
@@ -241,10 +174,10 @@ class FrameRenderer:
             content_line = self._render_content_line(style, line, width, frame.padding, frame.align)
 
             # Apply coloring
-            if frame.gradient_start and frame.gradient_end:
+            if frame.start_color and frame.end_color:
                 # Apply gradient
                 t = idx / max(len(content_lines) - 1, 1)
-                color = interpolate_color(frame.gradient_start, frame.gradient_end, t)
+                color = interpolate_color(frame.start_color, frame.end_color, t)
                 # Color only the content part, not the borders
                 content_line = self._colorize_content_in_line(
                     content_line, style, color, frame.border_color
