@@ -383,22 +383,52 @@ guides/
 
 ### `/doc/tasks/planned/` - Future Planning (Rarely Used)
 
-**Purpose:** Detailed planning docs for complex future features
+**Purpose:** Detailed technical planning for complex future features
 
 **What Goes Here:**
 - ✅ Major feature RFCs (Request for Comments)
-- ✅ Research before implementation
-- ✅ Large refactoring plans (before execution)
+- ✅ Detailed implementation plans for complex features
+- ✅ Research and technical analysis before implementation
+- ✅ Architecture proposals for large changes
 
-**Important:** Most future work should be in TASKS.md (M6 milestone), not separate docs
+**When to Use:**
+- Feature is confirmed feasible (in ROADMAP.md)
+- Implementation requires detailed technical planning
+- Complexity justifies separate document (vs simple task in TASKS.md)
 
-**Move to Completed:** When work starts or plan is executed
+**Important:** Most future work should be tracked in TASKS.md only, not separate docs
+
+**Workflow:**
+
+1. **Create:** Feature confirmed feasible → Create detailed plan in `tasks/planned/`
+2. **Track:** Reference from TASKS.md: "See tasks/planned/FEATURE_NAME.md for details"
+3. **Implement:** Work in progress → Keep plan in tasks/planned/
+4. **Complete:** Implementation done and tested → Move to `tasks/completed/`
+5. **Update:** Mark task complete in TASKS.md ✅
 
 **Example:**
-```
+
+```text
 tasks/planned/
-└── ANIMATION_FRAMEWORK_RFC.md  # Large feature needing detailed planning
+├── ANIMATION_FRAMEWORK.md      # Detailed animation system design
+└── ICON_PROVIDER_SYSTEM.md     # Icon provider implementation plan
+
+# Referenced from TASKS.md:
+### T-020: Icon Provider System ⏳
+**Status:** In Progress
+**Details:** See tasks/planned/ICON_PROVIDER_SYSTEM.md
+
+# After completion:
+### T-020: Icon Provider System ✅
+**Status:** ✅ Completed (Nov 5, 2025)
+**Implementation:** See tasks/completed/ICON_PROVIDER_SYSTEM.md
 ```
+
+**Benefits:**
+- ✅ TASKS.md stays high-level and scannable
+- ✅ Technical details don't clutter project docs
+- ✅ Completed plans preserved for reference
+- ✅ Clear workflow: planned → in progress → completed
 
 ---
 
