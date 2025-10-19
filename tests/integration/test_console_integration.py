@@ -183,7 +183,7 @@ class TestConsoleFrameIntegration:
         console.frame(
             "Solid color",
             title="Red Content",
-            content_color="#ff0000",
+            content_color="red",
             border_color="blue",
         )
         console.newline()
@@ -192,8 +192,8 @@ class TestConsoleFrameIntegration:
         console.frame(
             ["Line 1", "Line 2", "Line 3"],
             title="Gradient",
-            gradient_start="#ff0000",
-            gradient_end="#0000ff",
+            gradient_start="red",
+            gradient_end="blue",
         )
 
         output = buffer.getvalue()
@@ -260,8 +260,8 @@ class TestConsoleBannerIntegration:
         console.banner(
             "GO",
             font="slant",
-            gradient_start="#00ff00",
-            gradient_end="#0000ff",
+            gradient_start="lime",
+            gradient_end="blue",
         )
 
         output = buffer.getvalue()

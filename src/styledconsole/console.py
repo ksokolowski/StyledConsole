@@ -316,15 +316,15 @@ class Console:
             ...     ["Line 1", "Line 2"],
             ...     title="Status",
             ...     border="solid",
-            ...     content_color="#00ff00",
+            ...     content_color="lime",
             ...     border_color="cyan"
             ... )
 
             >>> # With gradient
             >>> console.frame(
             ...     "Test",
-            ...     gradient_start="#ff0000",
-            ...     gradient_end="#0000ff"
+            ...     gradient_start="red",
+            ...     gradient_end="blue"
             ... )
         """
         # Validate inputs

@@ -29,6 +29,12 @@ from styledconsole.core.styles import (
     get_border_style,
     list_border_styles,
 )
+# Import effects
+from styledconsole.effects import (
+    diagonal_gradient_frame,
+    gradient_frame,
+    rainbow_frame,
+)
 
 # Import type aliases
 from styledconsole.types import AlignType, ColorType, Renderer
@@ -105,6 +111,10 @@ __all__ = [
     # Layout composition
     "Layout",
     "LayoutComposer",
+    # Special effects
+    "gradient_frame",
+    "diagonal_gradient_frame",
+    "rainbow_frame",
     # Text utilities
     "visual_width",
     "strip_ansi",

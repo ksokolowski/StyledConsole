@@ -41,8 +41,8 @@ print()
 for line in renderer.render(
     "SUCCESS",
     font="banner",
-    gradient_start="#00ff00",
-    gradient_end="#00cc00",
+    gradient_start="lime",
+    gradient_end="green",
     border="heavy",
     width=65,
 ):
@@ -53,8 +53,8 @@ print()
 for line in renderer.render(
     "ERROR",
     font="banner",
-    gradient_start="#ff0000",
-    gradient_end="#cc0000",
+    gradient_start="red",
+    gradient_end="darkred",
     border="heavy",
     width=65,
 ):
@@ -65,8 +65,8 @@ print()
 for line in renderer.render(
     "WARNING",
     font="banner",
-    gradient_start="#ffaa00",
-    gradient_end="#ff6600",
+    gradient_start="orange",
+    gradient_end="orangered",
     border="heavy",
     width=65,
 ):

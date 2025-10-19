@@ -51,7 +51,7 @@ console.frame(
     "Colored frame content",
     title="Colors",
     border="rounded",
-    content_color="#00ff00",
+    content_color="lime",
     border_color="cyan",
 )
 print()
@@ -68,8 +68,8 @@ print()
 console.banner(
     "DEMO",
     font="banner",
-    gradient_start="#ff0000",
-    gradient_end="#0000ff",
+    gradient_start="red",
+    gradient_end="blue",
 )
 print()
 
@@ -286,8 +286,8 @@ console.frame(
     ],
     title="Test Summary",
     border="double",
-    gradient_start="#00ff00",
-    gradient_end="#00aa00",
+    gradient_start="lime",
+    gradient_end="darkgreen",
 )
 console.newline()
 

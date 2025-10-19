@@ -8,37 +8,37 @@ class TestFrameColors:
 
     def test_frame_with_content_color(self):
         """Test frame with content color parameter."""
-        frame = Frame(content=["Test"], content_color="#00ff00")
-        assert frame.content_color == "#00ff00"
+        frame = Frame(content=["Test"], content_color="lime")
+        assert frame.content_color == "lime"
 
     def test_frame_with_border_color(self):
         """Test frame with border color parameter."""
-        frame = Frame(content=["Test"], border_color="#ff0000")
-        assert frame.border_color == "#ff0000"
+        frame = Frame(content=["Test"], border_color="red")
+        assert frame.border_color == "red"
 
     def test_frame_with_title_color(self):
         """Test frame with title color parameter."""
-        frame = Frame(content=["Test"], title="Title", title_color="#0000ff")
-        assert frame.title_color == "#0000ff"
+        frame = Frame(content=["Test"], title="Title", title_color="blue")
+        assert frame.title_color == "blue"
 
     def test_frame_with_gradient(self):
         """Test frame with gradient parameters."""
-        frame = Frame(content=["Test"], gradient_start="#ff0000", gradient_end="#0000ff")
-        assert frame.gradient_start == "#ff0000"
-        assert frame.gradient_end == "#0000ff"
+        frame = Frame(content=["Test"], gradient_start="red", gradient_end="blue")
+        assert frame.gradient_start == "red"
+        assert frame.gradient_end == "blue"
 
     def test_frame_with_all_colors(self):
         """Test frame with all color parameters."""
         frame = Frame(
             content=["Test"],
-            content_color="#ff00ff",
-            border_color="#00ffff",
-            title_color="#ffff00",
+            content_color="magenta",
+            border_color="cyan",
+            title_color="yellow",
             title="Title",
         )
-        assert frame.content_color == "#ff00ff"
-        assert frame.border_color == "#00ffff"
-        assert frame.title_color == "#ffff00"
+        assert frame.content_color == "magenta"
+        assert frame.border_color == "cyan"
+        assert frame.title_color == "yellow"
 
 
 class TestFrameRendererColors:
@@ -47,7 +47,7 @@ class TestFrameRendererColors:
     def test_render_with_content_color(self):
         """Test rendering with content color."""
         renderer = FrameRenderer()
-        lines = renderer.render(["Test content"], content_color="#00ff00")
+        lines = renderer.render(["Test content"], content_color="lime")
 
         # Check that ANSI color codes are present
         assert any("\033[" in line for line in lines)
@@ -57,7 +57,7 @@ class TestFrameRendererColors:
     def test_render_with_border_color(self):
         """Test rendering with border color."""
         renderer = FrameRenderer()
-        lines = renderer.render(["Test"], border_color="#ff0000")
+        lines = renderer.render(["Test"], border_color="red")
 
         # All lines should have border color codes
         for line in lines:
@@ -66,7 +66,7 @@ class TestFrameRendererColors:
     def test_render_with_title_color(self):
         """Test rendering with title color."""
         renderer = FrameRenderer()
-        lines = renderer.render(["Test"], title="Title", title_color="#0000ff")
+        lines = renderer.render(["Test"], title="Title", title_color="blue")
 
         # Title line should have title color
         assert "\033[38;2;0;0;255m" in lines[0]
@@ -75,7 +75,7 @@ class TestFrameRendererColors:
         """Test rendering with gradient."""
         renderer = FrameRenderer()
         lines = renderer.render(
-            ["Line 1", "Line 2", "Line 3"], gradient_start="#ff0000", gradient_end="#0000ff"
+            ["Line 1", "Line 2", "Line 3"], gradient_start="red", gradient_end="blue"
         )
 
         # Each content line should have different colors
@@ -90,9 +90,9 @@ class TestFrameRendererColors:
         lines = renderer.render(
             ["Content"],
             title="Title",
-            content_color="#ff00ff",
-            border_color="#00ffff",
-            title_color="#ffff00",
+            content_color="magenta",
+            border_color="cyan",
+            title_color="yellow",
         )
 
         # Check that multiple color codes are present
@@ -113,7 +113,7 @@ class TestFrameRendererColors:
     def test_render_gradient_single_line(self):
         """Test gradient with single line (edge case)."""
         renderer = FrameRenderer()
-        lines = renderer.render(["Single line"], gradient_start="#ff0000", gradient_end="#0000ff")
+        lines = renderer.render(["Single line"], gradient_start="red", gradient_end="blue")
 
         # Single line should get the start color
         assert "\033[38;2;255;0;0m" in lines[1]
@@ -123,9 +123,9 @@ class TestFrameRendererColors:
         renderer = FrameRenderer()
         lines = renderer.render(
             ["Line 1", "Line 2"],
-            content_color="#ffffff",
-            gradient_start="#ff0000",
-            gradient_end="#0000ff",
+            content_color="white",
+            gradient_start="red",
+            gradient_end="blue",
         )
 
         # Should use gradient, not white
@@ -137,14 +137,14 @@ class TestFrameRendererColors:
         renderer = FrameRenderer()
 
         for border_style in ["solid", "double", "rounded", "heavy"]:
-            lines = renderer.render(["Test"], border=border_style, content_color="#00ff00")
+            lines = renderer.render(["Test"], border=border_style, content_color="lime")
             assert "\033[38;2;0;255;0m" in lines[1]
 
     def test_color_with_emoji_content(self):
         """Test colors with emoji content."""
         renderer = FrameRenderer()
         lines = renderer.render(
-            ["🚀 Test", "💎 Content"], gradient_start="#ff0000", gradient_end="#00ff00"
+            ["🚀 Test", "💎 Content"], gradient_start="red", gradient_end="lime"
         )
 
         # Should have color codes despite emoji
@@ -163,7 +163,7 @@ class TestFrameRendererColors:
     def test_ansi_reset_codes(self):
         """Test that ANSI reset codes are properly added."""
         renderer = FrameRenderer()
-        lines = renderer.render(["Test"], content_color="#ff0000")
+        lines = renderer.render(["Test"], content_color="red")
 
         # Should have reset code after color
         assert "\033[0m" in lines[1]
@@ -173,8 +173,8 @@ class TestFrameRendererColors:
         renderer = FrameRenderer()
         lines = renderer.render(
             ["Line 1", "Line 2", "Line 3", "Line 4", "Line 5"],
-            gradient_start="#ff0000",
-            gradient_end="#0000ff",
+            gradient_start="red",
+            gradient_end="blue",
         )
 
         # All content lines should have color codes
@@ -187,7 +187,7 @@ class TestFrameRendererColors:
         renderer = FrameRenderer()
 
         for padding in [0, 1, 2, 3]:
-            lines = renderer.render(["Test"], padding=padding, content_color="#00ff00")
+            lines = renderer.render(["Test"], padding=padding, content_color="lime")
             assert "\033[38;2;0;255;0m" in lines[1]
 
     def test_color_with_alignment(self):
@@ -195,7 +195,7 @@ class TestFrameRendererColors:
         renderer = FrameRenderer()
 
         for align in ["left", "center", "right"]:
-            lines = renderer.render(["Test"], align=align, content_color="#ff0000")
+            lines = renderer.render(["Test"], align=align, content_color="red")
             assert "\033[38;2;255;0;0m" in lines[1]
 
 
@@ -205,7 +205,7 @@ class TestFrameRendererColorHelpers:
     def test_colorize_method(self):
         """Test _colorize helper method."""
         renderer = FrameRenderer()
-        colored = renderer._colorize("Test", "#ff0000")
+        colored = renderer._colorize("Test", "red")
 
         assert "\033[38;2;255;0;0m" in colored
         assert "Test" in colored
@@ -226,7 +226,7 @@ class TestFrameRendererColorHelpers:
         style = get_border_style("solid")
         line = "│ Test content │"
 
-        colored = renderer._colorize_content_in_line(line, style, "#00ff00", None)
+        colored = renderer._colorize_content_in_line(line, style, "lime", None)
 
         # Content should be colored
         assert "\033[38;2;0;255;0m" in colored
@@ -241,7 +241,7 @@ class TestFrameRendererColorHelpers:
         style = get_border_style("solid")
         line = "│ Test content │"
 
-        colored = renderer._colorize_borders_in_line(line, style, "#0000ff")
+        colored = renderer._colorize_borders_in_line(line, style, "blue")
 
         # Borders should be colored
         assert "\033[38;2;0;0;255m" in colored

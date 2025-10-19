@@ -40,8 +40,8 @@ console.text("Red to Blue gradient:", color="magenta")
 console.banner(
     "GRADIENT",
     font="slant",
-    gradient_start="#ff0000",
-    gradient_end="#0000ff",
+    gradient_start="red",
+    gradient_end="blue",
 )
 console.newline()
 
@@ -72,8 +72,8 @@ console.newline()
 console.banner(
     "SUCCESS",
     font="banner",
-    gradient_start="#00ff00",
-    gradient_end="#00ffff",
+    gradient_start="lime",
+    gradient_end="cyan",
     border="heavy",
 )
 console.newline()
@@ -130,8 +130,8 @@ console.newline()
 banner = Banner(
     text="BANNER",
     font="digital",
-    gradient_start="#ff00ff",
-    gradient_end="#00ffff",
+    gradient_start="magenta",
+    gradient_end="cyan",
     border="thick",
     width=70,
     align="center",
@@ -199,8 +199,8 @@ console.newline()
 console.banner(
     "SUCCESS",
     font="banner",
-    gradient_start="#00ff00",
-    gradient_end="#00aa00",
+    gradient_start="lime",
+    gradient_end="darkgreen",
     border="heavy",
 )
 console.newline()
@@ -209,8 +209,8 @@ console.newline()
 console.banner(
     "ERROR",
     font="banner",
-    gradient_start="#ff0000",
-    gradient_end="#aa0000",
+    gradient_start="red",
+    gradient_end="darkred",
     border="heavy",
 )
 console.newline()
@@ -219,8 +219,8 @@ console.newline()
 console.banner(
     "WARNING",
     font="banner",
-    gradient_start="#ffaa00",
-    gradient_end="#ff6600",
+    gradient_start="orange",
+    gradient_end="orangered",
     border="heavy",
 )
 console.newline()

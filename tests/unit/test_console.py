@@ -181,7 +181,7 @@ class TestConsoleFrameMethod:
 
         console.frame(
             "Test",
-            content_color="#ff0000",
+            content_color="red",
             border_color="blue",
             title_color="green",
         )
@@ -196,8 +196,8 @@ class TestConsoleFrameMethod:
 
         console.frame(
             ["Line 1", "Line 2"],
-            gradient_start="#ff0000",
-            gradient_end="#0000ff",
+            gradient_start="red",
+            gradient_end="blue",
         )
         output = buffer.getvalue()
 

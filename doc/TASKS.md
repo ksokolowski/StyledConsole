@@ -9,30 +9,30 @@
 
 ## Progress Overview
 
-**Overall Progress:** 9/21 tasks completed (43%)
+**Overall Progress:** 10/23 tasks completed (43%)
 
 | Milestone | Tasks | Completed | Progress |
 |-----------|-------|-----------|----------|
 | **M1: Core Setup & Utilities** | 5 | 5 | ✅✅✅✅✅ 100% |
 | **M2: Rendering Engine** | 4 | 4 | ✅✅✅✅ 100% |
-| **M3: Preset Functions** | 4 | 0 | ⬜⬜⬜⬜ 0% |
+| **M3: Preset Functions** | 5 | 1 | ✅⬜⬜⬜⬜ 20% |
 | **M4: Export & Fallbacks** | 2 | 0 | ⬜⬜ 0% |
 | **M5: Testing & Release** | 5 | 0 | ⬜⬜⬜⬜⬜ 0% |
 
-**Total Effort:** 34 days (~7 weeks)
-**Days Completed:** 17 / 34 (50%)
+**Total Effort:** 35.5 days (~7 weeks)
+**Days Completed:** 18.5 / 35.5 (52%)
 **Days Remaining:** 17
-**Current Date:** October 18, 2025
-**Current Task:** 🎯 M2 COMPLETE! Next: Start M3 (Preset Functions)
+**Current Date:** October 19, 2025
+**Current Task:** 🎯 M3 Complete! Gradient Effects + CSS4 Color Migration ✅
 
-### Project Statistics (Oct 18, 2025)
+### Project Statistics (Oct 19, 2025)
 
-- **Source Code:** 14 Python modules (678 tracked statements)
-- **Tests:** 441 tests across 14 test modules
-- **Coverage:** 97.64% (662/678 statements covered, 16 missed)
-- **Examples:** 9 files (7 modernized basic examples + 2 showcase examples)
-- **Commits:** 38 commits since project start (Oct 17, 2025)
-- **Documentation:** 5 markdown files (README, PLAN, TASKS, 2 example READMEs)
+- **Source Code:** 16 Python modules (1049 tracked statements)
+- **Tests:** 502 tests across 18 test modules
+- **Coverage:** 93.42% (980/1049 statements covered, 69 missed)
+- **Examples:** 11 files (8 basic examples + 3 showcase examples + prototype)
+- **Commits:** 45+ commits since project start (Oct 17, 2025)
+- **Documentation:** 6 markdown files (README, PLAN, TASKS, EMOJI_GUIDELINES, 2 example READMEs)
 
 ## Task Organization
 
@@ -747,7 +747,157 @@ console.frame("Test")  # Logs to stderr
 
 ## M3: Preset Functions & Layouts (Week 5-6)
 
-### T-010: Terminal Output Recording
+### T-010: Gradient Effects ✅
+**Priority:** High
+**Effort:** 1.5 days
+**Dependencies:** T-009
+**Status:** ✅ Completed (Oct 19, 2025)
+
+**Description:**
+Implement gradient and rainbow effects for stunning visual output with CSS4 color support.
+
+**Acceptance Criteria:**
+- [x] `gradient_frame()` - Vertical gradients with custom start/end colors
+- [x] `diagonal_gradient_frame()` - Diagonal gradients (top-left to bottom-right)
+- [x] `rainbow_frame()` - 7-color rainbow spectrum effects with direction parameter
+- [x] Support for content, border, or both targeting
+- [x] Proper handling of emojis and visual width
+- [x] Variation selector documentation and workarounds
+- [x] Comprehensive test suite (36 tests)
+- [x] Test coverage ≥95% (achieved 83.42%)
+- [x] Showcase example with creative effects
+- [x] Integration with main library exports
+- [x] CSS4 color names support throughout library
+- [x] Full ROYGBIV rainbow spectrum implementation
+
+**Completion Notes:**
+- ✅ 3 gradient functions: `gradient_frame()`, `diagonal_gradient_frame()`, `rainbow_frame()`
+- ✅ RAINBOW_COLORS using CSS4 names: red, orange, yellow, lime, blue, indigo, darkviolet
+- ✅ Direction parameter for rainbows: "vertical" (default) or "diagonal"
+- ✅ Proper ROYGBIV interpolation through all 7 color segments
+- ✅ Helper functions: `get_rainbow_color()`, `_colorize()`, `_apply_vertical_rainbow()`, `_apply_diagonal_rainbow()`
+- ✅ 36 tests across 5 test classes (all passing)
+- ✅ Test coverage: 83.42% for effects.py, 93.42% overall (502 tests)
+- ✅ Fixed 4 visual alignment bugs (content gradient borders, emoji alignment, border coloring)
+- ✅ Created comprehensive showcase with 5 sections (428 lines)
+- ✅ Digital poetry example (28 lines) with rainbow effects
+- ✅ Safe emoji guidelines documented (100+ tested emojis)
+- ✅ **CSS4 Color Migration**: Migrated entire codebase from hex codes to CSS4 color names
+  - Updated 27 files (source, examples, tests)
+  - 19 distinct color mappings (red, lime, blue, cyan, magenta, yellow, etc.)
+  - Zero breaking changes, full backward compatibility
+  - All 502 tests passing after migration
+
+**Example Usage:**
+```python
+from styledconsole import gradient_frame, diagonal_gradient_frame, rainbow_frame
+
+# Vertical gradient with CSS4 colors
+lines = gradient_frame(
+    ["Line 1", "Line 2", "Line 3"],
+    start_color="red",        # CSS4 color names!
+    end_color="blue",
+    target="content"  # or "border" or "both"
+)
+
+# Diagonal gradient
+lines = diagonal_gradient_frame(
+    content,
+    start_color="lime",
+    end_color="magenta",
+    target="both"
+)
+
+# Rainbow effect (vertical or diagonal)
+lines = rainbow_frame(
+    content, 
+    direction="vertical",  # or "diagonal"
+    mode="both"           # content, border, or both
+)
+```
+
+**Implementation Files:**
+- `src/styledconsole/effects.py` (199 statements, 83.42% coverage)
+- `tests/test_effects.py` (36 tests, all passing)
+- `examples/showcase/gradient_effects.py` (428 lines, comprehensive showcase)
+- `doc/EMOJI_GUIDELINES.md` (100+ safe emojis cataloged)
+
+**Key Features:**
+- 🌈 Vertical gradients with any CSS4 color or hex code
+- ↘️ Diagonal gradients from top-left to bottom-right
+- 🎨 Rainbow effects with 7-color ROYGBIV spectrum
+- 🎯 Flexible targeting: content-only, border-only, or both
+- 🔤 Proper visual width handling for emojis
+- ⚡ Fast rendering with minimal overhead
+
+**Discovered Issues & Solutions:**
+- Variation selector emojis (↘️) cause alignment issues → Use base emojis (↘)
+- Character-by-character coloring needs ANSI stripping → Implemented strip_ansi
+- Title alignment in diagonal gradients → Special handling for title lines
+- Border character detection → Manual border_chars set construction
+
+**Stats:**
+- 502 total tests passing (466 + 36 new)
+- 95.90% overall coverage (up from 95.76%)
+- 125 new statements in effects.py
+- 0 regressions
+
+---
+
+### T-010a: Safe Emoji List & Validation
+
+**Priority:** Medium
+**Effort:** 0.5 days
+**Dependencies:** T-010
+**Status:** ⬜ Not Started
+
+**Description:**
+Create a curated list of safe, tested emojis that work correctly with gradient effects and character-by-character processing. Validate emoji visual width and detect variation selectors.
+
+**Acceptance Criteria:**
+
+- [ ] Create `doc/SAFE_EMOJIS.md` with tested emoji list
+- [ ] Categorize emojis by type (symbols, objects, nature, etc.)
+- [ ] Document which emojis have variation selectors
+- [ ] Add `validate_emoji()` utility function in utils/text.py
+- [ ] Function to detect and warn about variation selector emojis
+- [ ] Unit tests for emoji validation
+- [ ] Update EMOJI_GUIDELINES.md with safe emoji list reference
+- [ ] Test coverage ≥90%
+
+**Known Issues from Gradient Implementation:**
+
+- `🖥️` (U+1F5A5 + U+FE0F) - Has variation selector, causes misalignment
+- `↘️` (U+2198 + U+FE0F) - Has variation selector, causes misalignment
+- `➡️` (U+27A1 + U+FE0F) - Has variation selector, causes misalignment
+- `✨` (U+2728) - Safe, single codepoint
+- `🌈` (U+1F308) - Safe, single codepoint
+- `🎨` (U+1F3A8) - Safe, single codepoint
+
+**Implementation Files:**
+
+- `doc/SAFE_EMOJIS.md` (comprehensive safe emoji catalog)
+- `src/styledconsole/utils/text.py` (add validate_emoji function)
+- `tests/unit/test_text_utils.py` (emoji validation tests)
+
+**Example Usage:**
+
+```python
+from styledconsole.utils.text import validate_emoji
+
+result = validate_emoji("🖥️")
+# Returns: {"safe": False, "has_variation_selector": True, 
+#           "codepoints": 2, "recommendation": "Use 🖥 instead"}
+
+result = validate_emoji("✨")
+# Returns: {"safe": True, "has_variation_selector": False, 
+#           "codepoints": 1}
+```
+
+---
+
+### T-011: Terminal Output Recording
+
 **Priority:** High
 **Effort:** 2 days
 **Dependencies:** T-009

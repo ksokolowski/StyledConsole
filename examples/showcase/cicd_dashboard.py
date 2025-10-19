@@ -23,8 +23,8 @@ def create_cicd_dashboard():
     title_banner = banner_renderer.render(
         "CI/CD PIPELINE",
         font="banner",
-        gradient_start="#00d4ff",  # Cyan
-        gradient_end="#0066ff",  # Blue
+        gradient_start="deepskyblue",
+        gradient_end="royalblue",
         width=80,
         align="center",
     )
@@ -35,27 +35,27 @@ def create_cicd_dashboard():
         ["✅ Passed", "Duration: 1.2s", "Pass Rate: 100%"],
         title="🔍 Lint",
         border="rounded",
-        content_color="#00ff00",  # Green
-        border_color="#00ff00",
-        title_color="#ffffff",
+        content_color="lime",
+        border_color="lime",
+        title_color="white",
     )
 
     build_compile = frame_renderer.render(
         ["✅ Passed", "Duration: 45s", "Pass Rate: 98%"],
         title="⚙️  Compile",
         border="rounded",
-        content_color="#00ff00",
-        border_color="#00ff00",
-        title_color="#ffffff",
+        content_color="lime",
+        border_color="lime",
+        title_color="white",
     )
 
     build_security = frame_renderer.render(
         ["⚠️  Warning", "Duration: 8s", "3 minor issues"],
         title="🔒 Security",
         border="rounded",
-        content_color="#ffaa00",  # Orange
-        border_color="#ffaa00",
-        title_color="#ffffff",
+        content_color="orange",
+        border_color="orange",
+        title_color="white",
     )
 
     # Row 2: Test stages
@@ -63,29 +63,29 @@ def create_cicd_dashboard():
         ["✅ Passed", "329/329 tests", "Coverage: 99%"],
         title="🧪 Unit Tests",
         border="rounded",
-        gradient_start="#00ff00",  # Green
-        gradient_end="#00aa00",  # Dark green
-        border_color="#00ff00",
-        title_color="#ffffff",
+        gradient_start="lime",
+        gradient_end="darkgreen",
+        border_color="lime",
+        title_color="white",
     )
 
     test_integration = frame_renderer.render(
         ["✅ Passed", "47/47 tests", "Duration: 2m"],
         title="🔗 Integration",
         border="rounded",
-        gradient_start="#00ff00",
-        gradient_end="#00aa00",
-        border_color="#00ff00",
-        title_color="#ffffff",
+        gradient_start="lime",
+        gradient_end="darkgreen",
+        border_color="lime",
+        title_color="white",
     )
 
     test_e2e = frame_renderer.render(
         ["❌ Failed", "12/15 passed", "3 failures"],
         title="🌐 E2E Tests",
         border="rounded",
-        content_color="#ff0000",  # Red
-        border_color="#ff0000",
-        title_color="#ffffff",
+        content_color="red",
+        border_color="red",
+        title_color="white",
     )
 
     # Row 3: Deploy stages

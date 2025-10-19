@@ -66,8 +66,8 @@ class BannerRenderer:
         >>> lines = renderer.render(
         ...     "SUCCESS",
         ...     font="banner",
-        ...     gradient_start="#00ff00",
-        ...     gradient_end="#0000ff",
+        ...     gradient_start="lime",
+        ...     gradient_end="blue",
         ...     border="double",
         ... )
     """

@@ -9,6 +9,7 @@ A modern Python library for elegant terminal output with rich formatting, colors
 
 - 🎨 **Rich Formatting**: Bold, italic, underline, strikethrough with automatic fallbacks
 - 🌈 **Flexible Colors**: RGB, hex, CSS4 names (148 colors), with terminal compatibility
+- 🌟 **Gradient Effects**: Vertical, diagonal, and rainbow gradients for stunning visual effects
 - 😀 **Emoji Support**: 200+ common emojis with safe width calculation
 - 📦 **Box & Border Styles**: 8+ border styles (ASCII, single, double, rounded, etc.)
 - 📊 **Smart Layouts**: Automatic padding, alignment, and wrapping
@@ -43,6 +44,37 @@ console.print("❌ Error!", color="red")
 
 # Boxes and borders
 console.box("Important Message", border="double", padding=1)
+
+# Gradient effects (NEW in v0.2.0!)
+from styledconsole import gradient_frame, diagonal_gradient_frame, rainbow_frame
+
+# Vertical gradient
+lines = gradient_frame(
+    ["Line 1", "Line 2", "Line 3"],
+    start_color="red",
+    end_color="blue",
+    target="content"
+)
+for line in lines:
+    print(line)
+
+# Diagonal gradient (top-left to bottom-right)
+lines = diagonal_gradient_frame(
+    ["Beautiful", "Diagonal", "Flow"],
+    start_color="lime",
+    end_color="magenta",
+    target="both"
+)
+for line in lines:
+    print(line)
+
+# Rainbow effect (7-color spectrum)
+lines = rainbow_frame(
+    ["Red", "Orange", "Yellow", "Green", "Blue"],
+    mode="both"
+)
+for line in lines:
+    print(line)
 ```
 
 ## 🛠️ Development Status
