@@ -14,8 +14,8 @@ print()
 for line in renderer.render(
     "WELCOME",
     font="slant",
-    gradient_start="dodgerblue",
-    gradient_end="purple",
+    start_color="dodgerblue",
+    end_color="purple",
     border="double",
     width=80,
 ):
@@ -25,8 +25,8 @@ print()
 for line in renderer.render(
     "StyledConsole v0.1",
     font="standard",
-    gradient_start="lightseagreen",
-    gradient_end="coral",
+    start_color="lightseagreen",
+    end_color="coral",
     border="rounded",
 ):
     print(line)
@@ -41,8 +41,8 @@ print()
 for line in renderer.render(
     "SUCCESS",
     font="banner",
-    gradient_start="lime",
-    gradient_end="green",
+    start_color="lime",
+    end_color="green",
     border="heavy",
     width=65,
 ):
@@ -53,8 +53,8 @@ print()
 for line in renderer.render(
     "ERROR",
     font="banner",
-    gradient_start="red",
-    gradient_end="darkred",
+    start_color="red",
+    end_color="darkred",
     border="heavy",
     width=65,
 ):
@@ -65,8 +65,8 @@ print()
 for line in renderer.render(
     "WARNING",
     font="banner",
-    gradient_start="orange",
-    gradient_end="orangered",
+    start_color="orange",
+    end_color="orangered",
     border="heavy",
     width=65,
 ):
@@ -82,8 +82,8 @@ print()
 for line in renderer.render(
     "API",
     font="big",
-    gradient_start="cyan",
-    gradient_end="blue",
+    start_color="cyan",
+    end_color="blue",
 ):
     print(line)
 
@@ -92,8 +92,8 @@ print()
 for line in renderer.render(
     "DATABASE",
     font="big",
-    gradient_start="green",
-    gradient_end="teal",
+    start_color="green",
+    end_color="teal",
 ):
     print(line)
 
@@ -102,8 +102,8 @@ print()
 for line in renderer.render(
     "TESTS",
     font="big",
-    gradient_start="yellow",
-    gradient_end="orange",
+    start_color="yellow",
+    end_color="orange",
 ):
     print(line)
 
@@ -117,8 +117,8 @@ print()
 for line in renderer.render(
     "ASCII ART",
     font="slant",
-    gradient_start="red",
-    gradient_end="orange",
+    start_color="red",
+    end_color="orange",
     border="solid",
     width=70,
     padding=2,
@@ -130,8 +130,8 @@ print()
 for line in renderer.render(
     "GRADIENTS",
     font="slant",
-    gradient_start="purple",
-    gradient_end="pink",
+    start_color="purple",
+    end_color="pink",
     border="solid",
     width=70,
     padding=2,
@@ -143,8 +143,8 @@ print()
 for line in renderer.render(
     "BORDERS",
     font="slant",
-    gradient_start="blue",
-    gradient_end="cyan",
+    start_color="blue",
+    end_color="cyan",
     border="solid",
     width=70,
     padding=2,
@@ -158,8 +158,8 @@ print()
 for line in renderer.render(
     "ENJOY",
     font="banner",
-    gradient_start="gold",
-    gradient_end="orange",
+    start_color="gold",
+    end_color="orange",
     border="thick",
     width=60,
 ):
