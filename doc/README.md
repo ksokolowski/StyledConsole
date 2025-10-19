@@ -4,14 +4,51 @@ This directory contains comprehensive documentation for StyledConsole.
 
 ---
 
+## 📁 Folder Structure
+
+### `/doc` (Root Level)
+
+Active reference documentation:
+
+- **Living documents** (TASKS.md, PLAN.md, ROADMAP.md)
+- **Guidelines & standards** (EMOJI_GUIDELINES.md, CSS4-COLORS.md, etc.)
+- **Technical references** (BORDER_GRADIENTS.md, GRADIENT_IMPLEMENTATION.md, etc.)
+
+### `/doc/tasks/completed/`
+
+Historical documentation:
+
+- **Completed work** (refactoring summaries, testing reports, UX validation)
+- **Finished analysis** (Phase 4 analysis, legacy comparisons)
+- **Code reviews** (GPT-5 and Gemini reviews)
+- **Status snapshots** (historical status reports)
+
+### `/doc/tasks/planned/`
+
+Future work planning:
+
+- *Currently empty* - Future tasks tracked in TASKS.md (M6 milestone)
+
+### `/doc/notes/`
+
+Development notes and scratch work
+
+### `/doc/tips_and_tricks/`
+
+Useful development tips and workarounds
+
+---
+
 ## Core Documentation
 
 ### 📘 [EMOJI-STRATEGY.md](EMOJI-STRATEGY.md)
+
 **Purpose:** Overall emoji support strategy and tier classification
 **Audience:** Developers understanding emoji complexity
 **Status:** Complete (M1)
 
 **Contents:**
+
 - Tier 1: Basic emojis (fully supported)
 - Tier 2: Skin tones (future work)
 - Tier 3: Complex sequences (future work)
@@ -20,11 +57,13 @@ This directory contains comprehensive documentation for StyledConsole.
 ---
 
 ### 🎨 [EMOJI_RENDERING.md](EMOJI_RENDERING.md)
+
 **Purpose:** Deep dive into terminal-specific emoji rendering
 **Audience:** Developers debugging emoji issues
 **Status:** Complete (October 18, 2025)
 
 **Contents:**
+
 - Variation Selector-16 (VS16) problem explanation
 - wcwidth vs terminal behavior discrepancy
 - Solution implementation with code examples
@@ -35,11 +74,13 @@ This directory contains comprehensive documentation for StyledConsole.
 ---
 
 ### 🖼️ [THICK_STYLE.md](THICK_STYLE.md)
+
 **Purpose:** Technical details of THICK border style
 **Audience:** Developers understanding Unicode block characters
 **Status:** Complete (October 18, 2025)
 
 **Contents:**
+
 - Unicode block character reference (█ ▀ ▄)
 - Visual illusion explanation
 - Implementation details
@@ -51,11 +92,13 @@ This directory contains comprehensive documentation for StyledConsole.
 ## Notes & Reports
 
 ### 📝 [notes/VERIFICATION_REPORT.md](notes/VERIFICATION_REPORT.md)
+
 **Purpose:** Verification of Variation Selector-16 fix
 **Audience:** QA, code reviewers
 **Status:** Updated October 18, 2025
 
 **Contents:**
+
 - Original VS16 issue identification
 - Root cause analysis
 - Test results (194 tests, 98.37% coverage)
@@ -65,11 +108,13 @@ This directory contains comprehensive documentation for StyledConsole.
 ---
 
 ### 📋 [notes/CHANGELOG_2025-10-18.md](notes/CHANGELOG_2025-10-18.md)
+
 **Purpose:** Detailed changelog for October 18 improvements
 **Audience:** Users, developers tracking changes
 **Status:** Complete
 
 **Contents:**
+
 - THICK style visual illusion fix
 - Empty string title handling fix
 - Context about VS16 terminal rendering
@@ -83,16 +128,19 @@ This directory contains comprehensive documentation for StyledConsole.
 ### By Topic
 
 **Emoji Support:**
+
 - Strategy: `EMOJI-STRATEGY.md`
 - Rendering: `EMOJI_RENDERING.md`
 - Testing: `notes/VERIFICATION_REPORT.md`
 
 **Border Styles:**
+
 - THICK details: `THICK_STYLE.md`
 - All styles: See `src/styledconsole/core/styles.py`
 - Gallery: Run `examples/gallery/border_gallery.py`
 
 **Recent Changes:**
+
 - October 18 updates: `notes/CHANGELOG_2025-10-18.md`
 - VS16 fix: `notes/VERIFICATION_REPORT.md`
 
@@ -166,12 +214,14 @@ This directory contains comprehensive documentation for StyledConsole.
 ### Updating Documentation
 
 **When to Update:**
+
 - New features added → Create/update relevant doc
 - Bugs fixed → Update CHANGELOG and VERIFICATION_REPORT
 - API changes → Update API_REFERENCE (M2+)
 - Performance changes → Update PERFORMANCE (M2+)
 
 **Documentation Standards:**
+
 - Use Markdown format
 - Include code examples
 - Add visual diagrams where helpful
