@@ -23,9 +23,9 @@ class TestFrameColors:
 
     def test_frame_with_gradient(self):
         """Test frame with gradient parameters."""
-        frame = Frame(content=["Test"], gradient_start="red", gradient_end="blue")
-        assert frame.gradient_start == "red"
-        assert frame.gradient_end == "blue"
+        frame = Frame(content=["Test"], start_color="red", end_color="blue")
+        assert frame.start_color == "red"
+        assert frame.end_color == "blue"
 
     def test_frame_with_all_colors(self):
         """Test frame with all color parameters."""
@@ -74,9 +74,7 @@ class TestFrameRendererColors:
     def test_render_with_gradient(self):
         """Test rendering with gradient."""
         renderer = FrameRenderer()
-        lines = renderer.render(
-            ["Line 1", "Line 2", "Line 3"], gradient_start="red", gradient_end="blue"
-        )
+        lines = renderer.render(["Line 1", "Line 2", "Line 3"], start_color="red", end_color="blue")
 
         # Each content line should have different colors
         # First line: red (255, 0, 0)
@@ -113,7 +111,7 @@ class TestFrameRendererColors:
     def test_render_gradient_single_line(self):
         """Test gradient with single line (edge case)."""
         renderer = FrameRenderer()
-        lines = renderer.render(["Single line"], gradient_start="red", gradient_end="blue")
+        lines = renderer.render(["Single line"], start_color="red", end_color="blue")
 
         # Single line should get the start color
         assert "\033[38;2;255;0;0m" in lines[1]
@@ -124,8 +122,8 @@ class TestFrameRendererColors:
         lines = renderer.render(
             ["Line 1", "Line 2"],
             content_color="white",
-            gradient_start="red",
-            gradient_end="blue",
+            start_color="red",
+            end_color="blue",
         )
 
         # Should use gradient, not white
@@ -143,9 +141,7 @@ class TestFrameRendererColors:
     def test_color_with_emoji_content(self):
         """Test colors with emoji content."""
         renderer = FrameRenderer()
-        lines = renderer.render(
-            ["🚀 Test", "💎 Content"], gradient_start="red", gradient_end="lime"
-        )
+        lines = renderer.render(["🚀 Test", "💎 Content"], start_color="red", end_color="lime")
 
         # Should have color codes despite emoji
         assert "\033[38;2;255;0;0m" in lines[1]
@@ -173,8 +169,8 @@ class TestFrameRendererColors:
         renderer = FrameRenderer()
         lines = renderer.render(
             ["Line 1", "Line 2", "Line 3", "Line 4", "Line 5"],
-            gradient_start="red",
-            gradient_end="blue",
+            start_color="red",
+            end_color="blue",
         )
 
         # All content lines should have color codes
