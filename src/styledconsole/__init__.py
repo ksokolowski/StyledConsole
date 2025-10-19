@@ -51,6 +51,13 @@ from styledconsole.utils.text import (
     truncate_to_width,
     visual_width,
 )
+from styledconsole.utils.wrap import (
+    auto_size_content,
+    prepare_frame_content,
+    truncate_lines,
+    wrap_multiline,
+    wrap_text,
+)
 
 __version__ = "0.1.0"
 __author__ = "Krzysztof Sokołowski"
@@ -101,6 +108,12 @@ __all__ = [
     "split_graphemes",
     "pad_to_width",
     "truncate_to_width",
+    # Text wrapping utilities
+    "wrap_text",
+    "wrap_multiline",
+    "truncate_lines",
+    "prepare_frame_content",
+    "auto_size_content",
     # Color utilities
     "parse_color",
     "hex_to_rgb",
