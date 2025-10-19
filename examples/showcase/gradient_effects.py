@@ -185,7 +185,7 @@ def main():
     for line in lines:
         print(line)
     print()
-    
+
     # Diagonal rainbow
     lines = rainbow_frame(
         [
@@ -305,17 +305,15 @@ def main():
     # Section 5: Digital Poetry
     console.text("5️⃣  DIGITAL POETRY", color="gold", bold=True)
     print("-" * 80)
-    
+
     # Poetry banner header with gradient - will be inside the frame
     from styledconsole.core.banner import BannerRenderer
+
     banner_renderer = BannerRenderer()
     banner_lines = banner_renderer.render(
-        "POETRY",
-        font="slant",
-        gradient_start="magenta",
-        gradient_end="cyan"
+        "POETRY", font="slant", gradient_start="magenta", gradient_end="cyan"
     )
-    
+
     # Digital poetry content with banner at the top
     poetry_lines = banner_lines + [
         "",
@@ -349,30 +347,31 @@ def main():
         "In terminal windows, dark and wide,",
         "Let StyledConsole be your guide!",
     ]
-    
+
     # Apply full rainbow spectrum to content (cycling through ROYGBIV)
-    from styledconsole.utils.color import interpolate_color
-    from styledconsole.utils.text import strip_ansi
-    from styledconsole.effects import get_rainbow_color, _colorize
-    
     # Create frame first (without gradient)
     from styledconsole.core.frame import FrameRenderer
+    from styledconsole.effects import _colorize, get_rainbow_color
+    from styledconsole.utils.color import interpolate_color
+    from styledconsole.utils.text import strip_ansi
+
     frame_renderer = FrameRenderer()
     poetry_frame = frame_renderer.render(
         poetry_lines,
         border="heavy",
         # No width specified - auto-width calculation!
     )
-    
+
     # Apply rainbow to content lines (skip borders)
     from styledconsole.core.styles import get_border_style
+
     style = get_border_style("heavy")
     colored_poetry = []
-    
+
     content_line_count = 0
     for idx, line in enumerate(poetry_frame):
         clean = strip_ansi(line)
-        
+
         if clean and clean[0] in {style.top_left, style.bottom_left}:
             # Top or bottom border - apply gradient
             position = idx / max(len(poetry_frame) - 1, 1)
@@ -382,25 +381,25 @@ def main():
             # Content line - apply rainbow to content, gradient to borders
             position = idx / max(len(poetry_frame) - 1, 1)
             border_color = interpolate_color("gold", "purple", position)
-            
+
             # Get rainbow color for this content line (cycling through 7 colors)
             rainbow_position = (content_line_count % 7) / 6.0  # Convert to 0.0-1.0 range
             rainbow_color = get_rainbow_color(rainbow_position)
             content_line_count += 1
-            
+
             left_border = clean[0]
             right_border = clean[-1]
-            content = clean[len(left_border):-len(right_border)]
-            
+            content = clean[len(left_border) : -len(right_border)]
+
             colored_line = (
-                _colorize(left_border, border_color) +
-                _colorize(content, rainbow_color) +
-                _colorize(right_border, border_color)
+                _colorize(left_border, border_color)
+                + _colorize(content, rainbow_color)
+                + _colorize(right_border, border_color)
             )
             colored_poetry.append(colored_line)
         else:
             colored_poetry.append(line)
-    
+
     for line in colored_poetry:
         print(line)
     print()

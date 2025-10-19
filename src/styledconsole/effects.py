@@ -33,23 +33,23 @@ __all__ = [
 # Rainbow color spectrum (7 colors: ROYGBIV)
 # Using CSS4 color names for readability and consistency
 RAINBOW_COLORS = [
-    "red",        # #FF0000
-    "orange",     # #FFA500
-    "yellow",     # #FFFF00
-    "lime",       # #00FF00 (bright green for rainbow spectrum)
-    "blue",       # #0000FF
-    "indigo",     # #4B0082
-    "darkviolet", # #9400D3
+    "red",  # #FF0000
+    "orange",  # #FFA500
+    "yellow",  # #FFFF00
+    "lime",  # #00FF00 (bright green for rainbow spectrum)
+    "blue",  # #0000FF
+    "indigo",  # #4B0082
+    "darkviolet",  # #9400D3
 ]
 
 
 def _colorize(text: str, color: str) -> str:
     """Apply color to text using ANSI codes.
-    
+
     Args:
         text: Text to colorize
         color: Color specification (hex, rgb, or CSS4 name)
-        
+
     Returns:
         ANSI colored text
     """
@@ -143,13 +143,13 @@ def gradient_frame(
     # Apply vertical gradient
     if target in ("content", "both"):
         # For "both", also color the vertical borders
-        color_vertical_borders = (target == "both")
-        lines = _apply_vertical_content_gradient(lines, start_color, end_color, style, color_vertical_borders)
+        color_vertical_borders = target == "both"
+        lines = _apply_vertical_content_gradient(
+            lines, start_color, end_color, style, color_vertical_borders
+        )
 
     if target in ("border", "both"):
-        lines = _apply_vertical_border_gradient(
-            lines, start_color, end_color, border, title
-        )
+        lines = _apply_vertical_border_gradient(lines, start_color, end_color, border, title)
 
     return lines
 
@@ -257,7 +257,7 @@ def rainbow_frame(
 
     Args:
         content: Content to display in frame
-        direction: Rainbow direction - "vertical" (top to bottom) or 
+        direction: Rainbow direction - "vertical" (top to bottom) or
                    "diagonal" (top-left to bottom-right)
         mode: Apply rainbow to "content", "border", or "both"
         title: Optional frame title
@@ -290,7 +290,7 @@ def rainbow_frame(
         content_lines = content.splitlines() if content else [""]
     else:
         content_lines = content if content else [""]
-    
+
     lines = renderer.render(
         content_lines,
         title=title,
@@ -299,7 +299,7 @@ def rainbow_frame(
         padding=padding,
         align=align,
     )
-    
+
     # Apply rainbow using get_rainbow_color for proper ROYGBIV spectrum
     if direction == "vertical":
         lines = _apply_vertical_rainbow(lines, mode, border, title)
@@ -307,10 +307,8 @@ def rainbow_frame(
         style = get_border_style(border)
         apply_to_border = mode in ("border", "both")
         apply_to_content = mode in ("content", "both")
-        lines = _apply_diagonal_rainbow(
-            lines, style, title, apply_to_border, apply_to_content
-        )
-    
+        lines = _apply_diagonal_rainbow(lines, style, title, apply_to_border, apply_to_content)
+
     return lines
 
 
@@ -318,17 +316,21 @@ def rainbow_frame(
 
 
 def _apply_vertical_content_gradient(
-    lines: list[str], start_color: str, end_color: str, border_style, color_vertical_borders: bool = False
+    lines: list[str],
+    start_color: str,
+    end_color: str,
+    border_style,
+    color_vertical_borders: bool = False,
 ) -> list[str]:
     """Apply vertical gradient to content lines.
-    
+
     Args:
         lines: Frame lines including borders
         start_color: Starting color
         end_color: Ending color
         border_style: BorderStyle object for border character detection
         color_vertical_borders: If True, also color left/right vertical borders (for target="both")
-    
+
     Returns:
         Lines with gradient applied to content (and optionally vertical borders)
     """
@@ -342,16 +344,16 @@ def _apply_vertical_content_gradient(
     for idx, line in enumerate(content_lines):
         position = idx / max(len(content_lines) - 1, 1)
         color = interpolate_color(start_color, end_color, position)
-        
+
         # Extract and color the content part (not the border characters)
         left_border = border_style.vertical
         right_border = border_style.vertical
-        
+
         # Split: left border | content | right border
         if len(line) > len(left_border) + len(right_border):
-            content = line[len(left_border):-len(right_border)]
+            content = line[len(left_border) : -len(right_border)]
             content_colored = _colorize(content, color)
-            
+
             # Color vertical borders if requested (for target="both")
             if color_vertical_borders:
                 left_border_colored = _colorize(left_border, color)
@@ -362,7 +364,7 @@ def _apply_vertical_content_gradient(
         else:
             # Safety: if line is too short, just keep it as-is
             colored_line = line
-        
+
         colored_lines.append(colored_line)
 
     colored_lines.append(lines[-1])  # Keep bottom border as-is
@@ -456,9 +458,7 @@ def _apply_diagonal_gradient(
                         for tc in title_part:
                             tc_progress = visual_col / max(max_col - 1, 1)
                             tc_position = (row_progress + tc_progress) / 2.0
-                            tc_color = interpolate_color(
-                                start_color, end_color, tc_position
-                            )
+                            tc_color = interpolate_color(start_color, end_color, tc_position)
                             colored_line += _colorize(tc, tc_color)
                             visual_col += 1
                         i += len(title_part)
@@ -494,11 +494,7 @@ def _apply_diagonal_gradient(
                 char_color = interpolate_color(start_color, end_color, diagonal_position)
 
                 # Determine if this is border or content character
-                is_border_char = (
-                    row_idx == 0
-                    or row_idx == total_rows - 1
-                    or char in border_chars
-                )
+                is_border_char = row_idx == 0 or row_idx == total_rows - 1 or char in border_chars
 
                 # Apply color based on settings
                 if (is_border_char and apply_to_border) or (
@@ -522,19 +518,23 @@ def _apply_vertical_rainbow(
     """Apply vertical rainbow effect (proper ROYGBIV spectrum)."""
     colored_lines = []
     num_lines = len(lines)
-    
+
     style = get_border_style(border)
-    
+
     for idx, line in enumerate(lines):
         # Calculate position in rainbow (0.0 to 1.0)
         position = idx / max(num_lines - 1, 1)
         color = get_rainbow_color(position)
-        
+
         # Check if this is a border line
         clean = strip_ansi(line)
-        is_top_bottom_border = clean and clean[0] in {style.top_left, style.bottom_left, style.horizontal}
+        is_top_bottom_border = clean and clean[0] in {
+            style.top_left,
+            style.bottom_left,
+            style.horizontal,
+        }
         is_content_line = clean and clean[0] == style.vertical
-        
+
         if is_top_bottom_border:
             # Top or bottom border
             if mode in ("border", "both"):
@@ -545,22 +545,28 @@ def _apply_vertical_rainbow(
             # Content line with vertical borders
             left_border = clean[0]
             right_border = clean[-1]
-            content = clean[len(left_border):-len(right_border)]
-            
+            content = clean[len(left_border) : -len(right_border)]
+
             if mode == "content":
                 # Color content only
                 colored_line = left_border + _colorize(content, color) + right_border
             elif mode == "border":
                 # Color borders only
-                colored_line = _colorize(left_border, color) + content + _colorize(right_border, color)
+                colored_line = (
+                    _colorize(left_border, color) + content + _colorize(right_border, color)
+                )
             else:  # both
                 # Color everything
-                colored_line = _colorize(left_border, color) + _colorize(content, color) + _colorize(right_border, color)
-            
+                colored_line = (
+                    _colorize(left_border, color)
+                    + _colorize(content, color)
+                    + _colorize(right_border, color)
+                )
+
             colored_lines.append(colored_line)
         else:
             colored_lines.append(line)
-    
+
     return colored_lines
 
 
@@ -609,7 +615,7 @@ def _apply_diagonal_rainbow(
             # Calculate diagonal position (0.0 at top-left, 1.0 at bottom-right)
             col_progress = visual_col / max(max_col - 1, 1)
             diagonal_position = (row_progress + col_progress) / 2.0
-            
+
             # Get rainbow color for this position
             char_color = get_rainbow_color(diagonal_position)
 
@@ -617,9 +623,7 @@ def _apply_diagonal_rainbow(
             is_border_char = char in border_chars
 
             # Apply color based on settings
-            if (is_border_char and apply_to_border) or (
-                not is_border_char and apply_to_content
-            ):
+            if (is_border_char and apply_to_border) or (not is_border_char and apply_to_content):
                 colored_chars.append(_colorize(char, char_color))
             else:
                 colored_chars.append(char)

@@ -64,7 +64,9 @@ def main():
 
     print_separator("🎨 STYLEDCONSOLE EXAMPLES SHOWCASE 🎨", "=")
     print("This will run all examples in sequence for visual inspection.")
-    print(f"Mode: {'AUTO (no pauses)' if auto_continue else 'INTERACTIVE (press Enter between examples)'}")
+    print(
+        f"Mode: {'AUTO (no pauses)' if auto_continue else 'INTERACTIVE (press Enter between examples)'}"
+    )
     print()
 
     if not auto_continue:
@@ -117,7 +119,9 @@ def main():
     print("✅ Successfully ran all examples!")
     print()
     print("Examples demonstrated:")
-    print("  📚 Basic: Frame creation, emojis, alignments, borders, renderers, layouts, Console API")
+    print(
+        "  📚 Basic: Frame creation, emojis, alignments, borders, renderers, layouts, Console API"
+    )
     print("  ✨ Showcase: Banners, CI/CD dashboard, digital poetry, advanced dashboard")
     print("  🎨 Gallery: Border style gallery")
     print("  🧪 Testing: UX validation summaries")

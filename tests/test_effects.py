@@ -3,7 +3,6 @@
 import pytest
 
 from styledconsole.effects import (
-    RAINBOW_COLORS,
     diagonal_gradient_frame,
     get_rainbow_color,
     gradient_frame,
@@ -406,7 +405,7 @@ class TestGradientIntegration:
         lines3 = rainbow_frame(content)
 
         # All should produce valid output
-        assert all(len(l) == 4 for l in [lines1, lines2, lines3])
+        assert all(len(line) == 4 for line in [lines1, lines2, lines3])
 
     def test_gradient_with_padding(self):
         """Test gradients with different padding values."""

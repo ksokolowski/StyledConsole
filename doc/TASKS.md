@@ -810,7 +810,7 @@ lines = diagonal_gradient_frame(
 
 # Rainbow effect (vertical or diagonal)
 lines = rainbow_frame(
-    content, 
+    content,
     direction="vertical",  # or "diagonal"
     mode="both"           # content, border, or both
 )
@@ -886,11 +886,11 @@ Create a curated list of safe, tested emojis that work correctly with gradient e
 from styledconsole.utils.text import validate_emoji
 
 result = validate_emoji("🖥️")
-# Returns: {"safe": False, "has_variation_selector": True, 
+# Returns: {"safe": False, "has_variation_selector": True,
 #           "codepoints": 2, "recommendation": "Use 🖥 instead"}
 
 result = validate_emoji("✨")
-# Returns: {"safe": True, "has_variation_selector": False, 
+# Returns: {"safe": True, "has_variation_selector": False,
 #           "codepoints": 1}
 ```
 

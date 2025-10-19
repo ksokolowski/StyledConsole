@@ -29,6 +29,7 @@ from styledconsole.core.styles import (
     get_border_style,
     list_border_styles,
 )
+
 # Import effects
 from styledconsole.effects import (
     diagonal_gradient_frame,

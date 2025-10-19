@@ -45,7 +45,7 @@ frame_renderer.render(
    - Top border (1 line)
    - Left/Right borders (N lines for N content lines)
    - Bottom border (1 line)
-   
+
 2. **Gradient Direction Options**:
    - **Vertical**: Top→Bottom (most common)
    - **Horizontal**: Left→Right (per line)
@@ -109,9 +109,9 @@ frame_renderer.render(
 
 ```python
 def _render_border_with_gradient(
-    self, 
-    border_line: str, 
-    line_index: int, 
+    self,
+    border_line: str,
+    line_index: int,
     total_lines: int,
     gradient_start: str,
     gradient_end: str
@@ -119,10 +119,10 @@ def _render_border_with_gradient(
     """Apply gradient to border line based on vertical position."""
     # Calculate gradient position (0.0 to 1.0)
     t = line_index / max(total_lines - 1, 1)
-    
+
     # Interpolate color
     color = interpolate_color(gradient_start, gradient_end, t)
-    
+
     # Apply to entire border line
     return self._colorize(border_line, color)
 ```
@@ -201,7 +201,7 @@ outer = frame_renderer.render(
 
 middle = frame_renderer.render(
     outer,
-    border="solid", 
+    border="solid",
     border_color="orange"
 )
 
@@ -212,7 +212,7 @@ middle = frame_renderer.render(
 ```python
 # Use ASCII art to simulate gradient effect
 print("╔════ 🔥 FIRE EFFECT 🔥 ════╗")  # Yellow
-print("║  Content goes here        ║")  # Orange  
+print("║  Content goes here        ║")  # Orange
 print("╚═══════════════════════════╝")  # Red
 # Manual coloring per line
 ```
@@ -249,7 +249,7 @@ Based on user request (October 19, 2025):
 
 ---
 
-**Status**: 📝 Documented as future feature  
-**Created**: October 19, 2025  
-**Priority**: Medium (Phase 3)  
+**Status**: 📝 Documented as future feature
+**Created**: October 19, 2025
+**Priority**: Medium (Phase 3)
 **User Interest**: High! 🎨

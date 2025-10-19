@@ -9,7 +9,7 @@ StyledConsole supports emoji rendering with proper width calculation for **simpl
 These emojis work perfectly and are recommended:
 
 ### Status & Symbols
-- ✅ ❌ ⚠️ ℹ️ ⏭️ ⏸️ ⏹️ 
+- ✅ ❌ ⚠️ ℹ️ ⏭️ ⏸️ ⏹️
 - 🔴 🟡 🟢 🔵 🟣 🟠
 - ⭐ ✨ 💫 🌟
 
@@ -22,7 +22,7 @@ These emojis work perfectly and are recommended:
 - 🧪 🔬 🔧 🔨 ⚙️
 
 ### People (Simple)
-- 👥 👤 
+- 👥 👤
 - 👍 👎 👋 🙌
 
 ### Nature & Food
