@@ -1,9 +1,9 @@
 # PLAN (Phase 2: Technical Plan)
 
-**Project:** StyledConsole  
-**Version:** 0.1.0  
-**Date:** October 17, 2025  
-**License:** Apache License 2.0  
+**Project:** StyledConsole
+**Version:** 0.1.0
+**Date:** October 17, 2025
+**License:** Apache License 2.0
 **Status:** Planning Complete
 
 ---
@@ -147,7 +147,7 @@ import sys
 
 class Console:
     """High-level console rendering facade."""
-    
+
     def __init__(
         self,
         *,
@@ -158,7 +158,7 @@ class Console:
         debug: bool = False,
     ):
         """Initialize console with terminal detection.
-        
+
         Args:
             detect_terminal: Auto-detect terminal capabilities
             record: Enable HTML export mode
@@ -167,20 +167,20 @@ class Console:
             debug: Enable debug logging for library internals
         """
         self._rich_console = RichConsole(
-            record=record, 
+            record=record,
             width=width,
             file=file or sys.stdout
         )
         self._profile: TerminalProfile | None = None
         self._logger = logging.getLogger('styledconsole') if debug else None
-        
+
         if detect_terminal:
             self._profile = detect_terminal_capabilities()
             if self._logger:
                 self._logger.debug(f"Detected terminal: {self._profile}")
-    
+
     # === Core Rendering Methods ===
-    
+
     def frame(
         self,
         content: str | Any,
@@ -193,7 +193,7 @@ class Console:
         width: int | None = None,
     ) -> None:
         """Render a framed block.
-        
+
         Args:
             content: Text content or renderable object
             title: Optional frame title (centered)
@@ -203,7 +203,7 @@ class Console:
             padding: Inner padding (spaces)
             width: Fixed width (None = auto-fit content)
         """
-        
+
     def banner(
         self,
         text: str,
@@ -213,14 +213,14 @@ class Console:
         gradient: tuple[str, str] | None = None,
     ) -> None:
         """Render a banner with FIGlet.
-        
+
         Args:
             text: Banner text (ASCII recommended)
             font: FIGlet font name ('slant', 'standard', 'banner')
             color: Solid color (CSS4 name or hex)
             gradient: Gradient colors (start, end) - overrides color
         """
-    
+
     def text(
         self,
         text: str,
@@ -230,14 +230,14 @@ class Console:
         italic: bool = False,
     ) -> None:
         """Print styled text.
-        
+
         Args:
             text: Text to print
             color: Text color (CSS4 name or hex)
             bold: Bold text
             italic: Italic text
         """
-    
+
     def rule(
         self,
         title: str = "",
@@ -246,49 +246,49 @@ class Console:
         style: str = "─",
     ) -> None:
         """Print a horizontal rule.
-        
+
         Args:
             title: Optional centered title
             color: Rule color
             style: Line character ('─', '═', '-')
         """
-    
+
     def newline(self, count: int = 1) -> None:
         """Print blank lines.
-        
+
         Args:
             count: Number of blank lines
         """
-    
+
     # === Export Methods ===
-    
+
     def export_html(self, *, inline_styles: bool = True) -> str:
         """Export recorded output as HTML.
-        
+
         Args:
             inline_styles: Use inline CSS (True) or classes (False)
-            
+
         Returns:
             HTML string with ANSI formatting preserved
-            
+
         Raises:
             ExportError: If recording not enabled
         """
-    
+
     def export_text(self) -> str:
         """Export recorded output as plain text (ANSI codes stripped).
-        
+
         Returns:
             Plain text without formatting
         """
-    
+
     # === Utility Methods ===
-    
+
     @property
     def terminal_profile(self) -> TerminalProfile | None:
         """Get detected terminal capabilities."""
         return self._profile
-    
+
     def clear(self) -> None:
         """Clear the console (if supported)."""
         if self._profile and self._profile.ansi_support:
@@ -353,24 +353,24 @@ CSS4_COLORS = {
     # Basic
     'red': '#ff0000', 'green': '#008000', 'blue': '#0000ff',
     'yellow': '#ffff00', 'orange': '#ffa500', 'purple': '#800080',
-    
+
     # Extended blues
     'aliceblue': '#f0f8ff', 'dodgerblue': '#1e90ff', 'lightblue': '#add8e6',
     'navy': '#000080', 'skyblue': '#87ceeb', 'steelblue': '#4682b4',
-    
+
     # Vibrant colors
     'coral': '#ff7f50', 'tomato': '#ff6347', 'gold': '#ffd700',
     'lime': '#00ff00', 'cyan': '#00ffff', 'magenta': '#ff00ff',
-    
+
     # Nature colors
     'aquamarine': '#7fffd4', 'lightseagreen': '#20b2aa', 'seagreen': '#2e8b57',
     'olive': '#808000', 'teal': '#008080', 'indigo': '#4b0082',
-    
+
     # Grays (both spellings)
     'gray': '#808080', 'grey': '#808080',
     'darkgray': '#a9a9a9', 'darkgrey': '#a9a9a9',
     'lightgray': '#d3d3d3', 'lightgrey': '#d3d3d3',
-    
+
     # ... 148 total colors
 }
 ```
@@ -381,47 +381,47 @@ CSS4_COLORS = {
 def parse_color(value: str) -> tuple[int, int, int]:
     """
     Parse color from multiple formats.
-    
+
     Supports:
     - CSS4 named colors (case-insensitive): 'dodgerblue', 'CORAL'
     - Hex: '#FF0000', '#f00'
     - RGB: 'rgb(255,0,0)', '(255, 0, 0)'
-    
+
     Returns RGB tuple: (r, g, b)
     """
     value = value.strip().lower()
-    
+
     # Try CSS4 named color first (most user-friendly)
     if value in CSS4_COLORS:
         return hex_to_rgb(CSS4_COLORS[value])
-    
+
     # Try hex format
     if value.startswith('#'):
         return hex_to_rgb(value)
-    
+
     # Try rgb() format
     if 'rgb' in value:
         return parse_rgb_string(value)
-    
+
     raise ValueError(f"Unknown color format: {value}")
 
 def interpolate_color(start: str, end: str, t: float) -> str:
     """
     Interpolate between two colors for gradients.
-    
+
     Works with any color format (names, hex, rgb).
-    
+
     Example:
         interpolate_color('coral', 'dodgerblue', 0.5)
         # Returns middle color between coral and dodgerblue
     """
     r1, g1, b1 = parse_color(start)
     r2, g2, b2 = parse_color(end)
-    
+
     r = int(r1 + (r2 - r1) * t)
     g = int(g1 + (g2 - g1) * t)
     b = int(b1 + (b2 - b1) * t)
-    
+
     return rgb_to_hex(r, g, b)
 
 def get_color_names() -> list[str]:
@@ -466,7 +466,7 @@ def render_frame(
 ) -> list[str]:
     """
     Render frame with proper alignment.
-    
+
     Algorithm:
     1. Measure content width (emoji-safe via wcwidth)
     2. Determine frame width (auto or specified)
@@ -477,16 +477,16 @@ def render_frame(
     # Calculate visual width
     content_lines = content.splitlines()
     max_width = max(visual_width(line) for line in content_lines)
-    
+
     # Determine frame dimensions
     inner_width = width or (max_width + 2 * padding)
-    
+
     # Build frame
     top = border_style.render_top(inner_width, title)
-    middle = [border_style.render_content(line, inner_width, padding) 
+    middle = [border_style.render_content(line, inner_width, padding)
               for line in content_lines]
     bottom = border_style.render_bottom(inner_width)
-    
+
     return [top] + middle + [bottom]
 ```
 
@@ -538,9 +538,9 @@ import regex
 def visual_width(text: str) -> int:
     """
     Calculate visual width of text including Tier 1 basic icons.
-    
+
     Uses wcwidth library which handles single-codepoint emojis well.
-    
+
     Known Limitations (v0.1):
     - Tier 2 (skin tones) may have ±1 width errors
     - Tier 3 (ZWJ sequences) may break or misalign
@@ -548,20 +548,20 @@ def visual_width(text: str) -> int:
     """
     # Strip ANSI codes first
     clean = strip_ansi(text)
-    
+
     # Calculate width using wcwidth
     width = wcswidth(clean)
-    
+
     # Fallback for unsupported characters
     if width < 0:
         return len(clean)  # Conservative fallback
-    
+
     return width
 
 def split_graphemes(text: str) -> list[str]:
     """
     Split text into grapheme clusters.
-    
+
     Works well for Tier 1 icons. Tier 2/3 may need enhanced logic.
     """
     return regex.findall(r'\X', text)
@@ -570,7 +570,7 @@ def pad_to_width(text: str, width: int, align: str = "left") -> str:
     """Pad text to specified visual width."""
     current = visual_width(text)
     padding = max(0, width - current)
-    
+
     if align == "left":
         return text + " " * padding
     elif align == "right":
@@ -596,20 +596,20 @@ def render_banner(
     """Render banner text with optional gradient."""
     fig = Figlet(font=font)
     banner = fig.renderText(text)
-    
+
     if gradient:
         # Apply gradient per line
         lines = banner.splitlines()
         start_color, end_color = gradient
         colored_lines = []
-        
+
         for i, line in enumerate(lines):
             t = i / max(len(lines) - 1, 1)
             color = interpolate_color(start_color, end_color, t)
             colored_lines.append(apply_color(line, color))
-        
+
         return "\n".join(colored_lines)
-    
+
     return banner
 ```
 
@@ -633,7 +633,7 @@ class TerminalProfile:
 def detect_terminal_capabilities() -> TerminalProfile:
     """
     Detect terminal capabilities.
-    
+
     Checks:
     - TERM environment variable
     - COLORTERM for truecolor
@@ -642,11 +642,11 @@ def detect_terminal_capabilities() -> TerminalProfile:
     """
     # Check if output is a terminal
     is_tty = sys.stdout.isatty()
-    
+
     # Detect color support
     term = os.getenv("TERM", "")
     colorterm = os.getenv("COLORTERM", "")
-    
+
     if "truecolor" in colorterm or "24bit" in colorterm:
         color_depth = 16777216
     elif "256" in term:
@@ -655,17 +655,17 @@ def detect_terminal_capabilities() -> TerminalProfile:
         color_depth = 8
     else:
         color_depth = 0
-    
+
     # Detect emoji support (heuristic)
     emoji_safe = (
-        is_tty 
-        and color_depth >= 256 
+        is_tty
+        and color_depth >= 256
         and os.getenv("LANG", "").endswith("UTF-8")
     )
-    
+
     # Get terminal size
     size = os.get_terminal_size()
-    
+
     return TerminalProfile(
         ansi_support=is_tty and color_depth > 0,
         color_depth=color_depth,
@@ -684,14 +684,14 @@ from ansi2html import Ansi2HTMLConverter
 
 class HtmlExporter:
     """Export console output to HTML."""
-    
+
     def __init__(self):
         self.converter = Ansi2HTMLConverter(inline=True, scheme="ansi2html")
-    
+
     def export(self, ansi_text: str) -> str:
         """Convert ANSI text to HTML fragment."""
         html = self.converter.convert(ansi_text, full=False)
-        
+
         # Wrap in div with monospace styling
         return f'<div style="font-family: monospace; white-space: pre;">{html}</div>'
 ```
@@ -709,26 +709,26 @@ def status_frame(
     message: str | None = None,
 ) -> None:
     """Render a test status frame.
-    
+
     Displays formatted test status instantly - library formats content,
     doesn't measure or track timing. ANSI output captured by CI/CD logs.
     """
     console = get_console()
-    
+
     # Choose color based on status
     color = {
         "PASS": "green",
         "FAIL": "red",
         "SKIP": "yellow",
     }.get(status.upper(), "white")
-    
+
     # Build content
     lines = [f"[bold {color}]{status}[/] {test_name}"]
     if message:
         lines.append(message)
-    
+
     content = "\n".join(lines)
-    
+
     console.frame(
         content,
         title=f"Test: {test_name}",
@@ -744,16 +744,16 @@ def dashboard_small(
 ) -> None:
     """Render a small dashboard with statistics."""
     console = get_console()
-    
+
     # Banner header
     console.banner(f"📊 {title}", font="slant")
-    
+
     # Stats frame
     lines = []
     for key, value in stats.items():
         color = _get_stat_color(key)
         lines.append(f"[{color}]{key}:[/] {value}")
-    
+
     console.frame(
         "\n".join(lines),
         border="double",
@@ -806,7 +806,7 @@ HTML Fragment
 1. **Width Calculation Caching**
    ```python
    from functools import lru_cache
-   
+
    @lru_cache(maxsize=1024)
    def visual_width(text: str) -> int:
        """Cached width calculation."""
@@ -1069,7 +1069,7 @@ Design allows pluggable backends:
 ```python
 class RenderBackend(Protocol):
     """Backend interface for future Textual support."""
-    
+
     def render_frame(self, frame: Frame) -> None: ...
     def render_banner(self, banner: Banner) -> None: ...
 ```

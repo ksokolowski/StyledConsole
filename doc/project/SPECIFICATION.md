@@ -1,11 +1,11 @@
 # SPECIFICATION (Phase 1: Specify)
 
-**Project:** StyledConsole – ANSI Console Rendering Library  
-**Version:** 0.1.0 (Draft)  
-**Date:** October 17, 2025  
-**Python Requirement:** ≥ 3.10  
-**License:** Apache License 2.0  
-**Installation:** `pip install styledconsole`  
+**Project:** StyledConsole – ANSI Console Rendering Library
+**Version:** 0.1.0 (Draft)
+**Date:** October 17, 2025
+**Python Requirement:** ≥ 3.10
+**License:** Apache License 2.0
+**Installation:** `pip install styledconsole`
 **Status:** Specification Phase Complete
 
 ---
@@ -46,8 +46,8 @@ StyledConsole provides a **high-level, emoji-safe API** for creating professiona
 ## User Journeys
 
 ### Journey 1: Quick Status Report
-**As a** test engineer  
-**I want to** display test results in a framed, colored format  
+**As a** test engineer
+**I want to** display test results in a framed, colored format
 **So that** I can quickly identify pass/fail status in console logs
 
 **Steps:**
@@ -64,8 +64,8 @@ StyledConsole provides a **high-level, emoji-safe API** for creating professiona
 - Output captured correctly in Jenkins/GitLab logs
 
 ### Journey 2: Test Summary Dashboard
-**As a** CI/CD engineer  
-**I want to** show aggregated test statistics in a compact dashboard  
+**As a** CI/CD engineer
+**I want to** show aggregated test statistics in a compact dashboard
 **So that** teams can see results at a glance
 
 **Steps:**
@@ -81,8 +81,8 @@ StyledConsole provides a **high-level, emoji-safe API** for creating professiona
 - Layout preserved in HTML export
 
 ### Journey 3: Custom Report Layout
-**As a** developer  
-**I want to** compose custom layouts with frames and text  
+**As a** developer
+**I want to** compose custom layouts with frames and text
 **So that** I can match my organization's reporting style
 
 **Steps:**
@@ -104,8 +104,8 @@ StyledConsole provides a **high-level, emoji-safe API** for creating professiona
 ## Extended User Journeys - Generic Library Usage
 
 ### Journey 4: Application Welcome Screen
-**As a** CLI tool developer  
-**I want to** display an attractive welcome screen with branding  
+**As a** CLI tool developer
+**I want to** display an attractive welcome screen with branding
 **So that** users get a professional first impression
 
 **Example:**
@@ -127,8 +127,8 @@ console.frame(
 ---
 
 ### Journey 5: Configuration Summary Display
-**As a** DevOps engineer  
-**I want to** show loaded configuration in a structured format  
+**As a** DevOps engineer
+**I want to** show loaded configuration in a structured format
 **So that** users can verify settings before execution
 
 **Example:**
@@ -157,8 +157,8 @@ console.frame(
 ---
 
 ### Journey 6: Progress Section Headers
-**As a** script developer  
-**I want to** create visual section breaks in long-running scripts  
+**As a** script developer
+**I want to** create visual section breaks in long-running scripts
 **So that** users can track progress stages
 
 **Example:**
@@ -172,7 +172,7 @@ console.frame(
 # ... processing ...
 console.frame(
     "✅ Found 234 duplicates (1.2 GB)",
-    border="solid", 
+    border="solid",
     border_color="green"
 )
 ```
@@ -185,8 +185,8 @@ console.frame(
 ---
 
 ### Journey 7: Error Messages with Context
-**As a** application developer  
-**I want to** display detailed error information in a prominent frame  
+**As a** application developer
+**I want to** display detailed error information in a prominent frame
 **So that** users understand what went wrong and how to fix it
 
 **Example:**
@@ -197,7 +197,7 @@ console.frame(
 
 Error: Timeout after 30 seconds
 Host: db.example.com:5432
-    
+
 💡 Troubleshooting:
   • Check network connectivity
   • Verify credentials in .env file
@@ -219,8 +219,8 @@ Host: db.example.com:5432
 ---
 
 ### Journey 8: Motivational Daily Quote
-**As a** developer  
-**I want to** display an inspiring quote when my dev environment starts  
+**As a** developer
+**I want to** display an inspiring quote when my dev environment starts
 **So that** I start my day with positive energy
 
 **Example:**
@@ -244,8 +244,8 @@ console.frame(
 ---
 
 ### Journey 9: API Response Preview
-**As a** backend developer  
-**I want to** display formatted API responses during testing  
+**As a** backend developer
+**I want to** display formatted API responses during testing
 **So that** I can quickly verify data structure
 
 **Example:**
@@ -280,8 +280,8 @@ console.frame(
 ---
 
 ### Journey 10: Deployment Checklist
-**As a** release manager  
-**I want to** show a pre-deployment checklist  
+**As a** release manager
+**I want to** show a pre-deployment checklist
 **So that** team members verify all steps completed
 
 **Example:**
@@ -312,8 +312,8 @@ console.frame(
 ---
 
 ### Journey 11: Feature Announcement
-**As a** product manager  
-**I want to** announce new features in release notes  
+**As a** product manager
+**I want to** announce new features in release notes
 **So that** users are excited about updates
 
 **Example:**
@@ -346,8 +346,8 @@ console.frame(
 ---
 
 ### Journey 12: System Resource Monitor
-**As a** sysadmin  
-**I want to** display system metrics in a dashboard frame  
+**As a** sysadmin
+**I want to** display system metrics in a dashboard frame
 **So that** I can monitor resource usage at a glance
 
 **Example:**
@@ -378,8 +378,8 @@ console.frame(
 ---
 
 ### Journey 13: Git Commit Message Template
-**As a** developer  
-**I want to** display commit message guidelines  
+**As a** developer
+**I want to** display commit message guidelines
 **So that** team follows consistent format
 
 **Example:**
@@ -417,8 +417,8 @@ console.frame(
 ---
 
 ### Journey 14: Build Summary with Banner
-**As a** build engineer  
-**I want to** show build results with large banner  
+**As a** build engineer
+**I want to** show build results with large banner
 **So that** success/failure is immediately obvious
 
 **Example:**
@@ -448,8 +448,8 @@ Next: Deploy to staging 🚀
 ---
 
 ### Journey 15: Warning Notice
-**As a** security engineer  
-**I want to** display security warnings prominently  
+**As a** security engineer
+**I want to** display security warnings prominently
 **So that** users take necessary precautions
 
 **Example:**
@@ -486,8 +486,8 @@ console.frame(
 ---
 
 ### Journey 16: Code Generation Preview
-**As a** code generator tool developer  
-**I want to** show generated code in a frame  
+**As a** code generator tool developer
+**I want to** show generated code in a frame
 **So that** users can review before writing to file
 
 **Example:**
@@ -520,8 +520,8 @@ console.frame(
 ---
 
 ### Journey 17: Installation Instructions
-**As a** package maintainer  
-**I want to** display installation steps clearly  
+**As a** package maintainer
+**I want to** display installation steps clearly
 **So that** users can get started quickly
 
 **Example:**
@@ -560,8 +560,8 @@ console.frame(
 ---
 
 ### Journey 18: Data Processing Summary
-**As a** data engineer  
-**I want to** show ETL pipeline results  
+**As a** data engineer
+**I want to** show ETL pipeline results
 **So that** stakeholders see processing outcomes
 
 **Example:**
@@ -577,7 +577,7 @@ Transformations:
   • Deduplicated: 45,231 records ♻️
   • Validated: 1,189,336 passed ✅
   • Rejected: 0 failed ❌
-  
+
 Destination: Data Warehouse (loaded) 📦
 """
 
@@ -599,8 +599,8 @@ console.frame(
 ---
 
 ### Journey 19: Menu / Options Display
-**As a** interactive CLI developer  
-**I want to** show available options in a frame  
+**As a** interactive CLI developer
+**I want to** show available options in a frame
 **So that** users see choices clearly
 
 **Example:**
@@ -636,8 +636,8 @@ console.frame(
 ---
 
 ### Journey 20: Backup Status Report
-**As a** backup administrator  
-**I want to** display backup completion status  
+**As a** backup administrator
+**I want to** display backup completion status
 **So that** I verify data protection
 
 **Example:**
@@ -653,7 +653,7 @@ Backed up:
   📁 /home/users         45.2 GB (1.2M files)
   📁 /var/databases     128.7 GB (12 files)
   📁 /etc/configs         2.1 MB (234 files)
-  
+
 Total: 173.9 GB ✅
 
 Next backup: 2025-10-18 02:00:00 🕐
@@ -677,8 +677,8 @@ console.frame(
 ---
 
 ### Journey 21: License / Legal Notice
-**As a** software distributor  
-**I want to** display license information  
+**As a** software distributor
+**I want to** display license information
 **So that** users understand terms of use
 
 **Example:**
@@ -716,8 +716,8 @@ console.frame(
 ---
 
 ### Journey 22: Performance Benchmark Results
-**As a** performance engineer  
-**I want to** display benchmark comparison  
+**As a** performance engineer
+**I want to** display benchmark comparison
 **So that** teams see optimization impact
 
 **Example:**
@@ -758,8 +758,8 @@ console.frame(
 ---
 
 ### Journey 23: News / Changelog Display
-**As a** product developer  
-**I want to** show release changelog  
+**As a** product developer
+**I want to** show release changelog
 **So that** users know what changed
 
 **Example:**
@@ -801,8 +801,8 @@ console.frame(
 ---
 
 ### Journey 24: Tips & Tricks Display
-**As a** tool maintainer  
-**I want to** show helpful tips randomly  
+**As a** tool maintainer
+**I want to** show helpful tips randomly
 **So that** users discover advanced features
 
 **Example:**
@@ -835,8 +835,8 @@ console.frame(
 ---
 
 ### Journey 25: Docker Container Status
-**As a** container orchestrator  
-**I want to** show container health status  
+**As a** container orchestrator
+**I want to** show container health status
 **So that** operators monitor services
 
 **Example:**
@@ -873,8 +873,8 @@ console.frame(
 ---
 
 ### Journey 26: Certificate Expiry Warning
-**As a** DevOps engineer  
-**I want to** alert about expiring SSL certificates  
+**As a** DevOps engineer
+**I want to** alert about expiring SSL certificates
 **So that** teams renew before outage
 
 **Example:**

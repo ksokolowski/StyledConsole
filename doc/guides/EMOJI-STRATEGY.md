@@ -1,7 +1,7 @@
 # Emoji/Icon Support Strategy
 
-**Project:** StyledConsole  
-**Version:** MVP v0.1 → v0.3+  
+**Project:** StyledConsole
+**Version:** MVP v0.1 → v0.3+
 **Date:** October 15, 2025
 
 ---
@@ -275,5 +275,5 @@ console = Console(emoji_tier="tier3")  # Enable all emojis (may break)
 
 ---
 
-**Status:** ✅ Strategy defined and documented  
+**Status:** ✅ Strategy defined and documented
 **Next Steps:** Implement Tier 1 in T-002 (Text Width Utilities)

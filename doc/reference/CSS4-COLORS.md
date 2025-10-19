@@ -1,8 +1,8 @@
 # CSS4 Color Names Reference
 
-**Project:** StyledConsole  
-**Feature:** Human-readable color names  
-**Standard:** CSS4 / W3C Color Module Level 4  
+**Project:** StyledConsole
+**Feature:** Human-readable color names
+**Standard:** CSS4 / W3C Color Module Level 4
 **Total Colors:** 148
 
 ---
@@ -485,19 +485,19 @@ tomato, turquoise, violet, wheat, white, whitesmoke, yellow, yellowgreen
 def test_css4_color_support():
     """Verify all 148 CSS4 colors work."""
     from styledconsole.utils.color import parse_color, CSS4_COLORS
-    
+
     for name, hex_value in CSS4_COLORS.items():
         # Named color should parse correctly
         rgb = parse_color(name)
-        
+
         # Should match hex equivalent
         expected = parse_color(hex_value)
         assert rgb == expected, f"Color {name} mismatch"
-    
+
     # Both gray spellings
     assert parse_color("gray") == parse_color("grey")
     assert parse_color("darkgray") == parse_color("darkgrey")
-    
+
     print("✅ All 148 CSS4 colors validated!")
 ```
 
@@ -511,6 +511,6 @@ def test_css4_color_support():
 
 ---
 
-**Status:** ✅ Full CSS4 color support in StyledConsole v0.1  
-**Maintained by:** StyledConsole project  
+**Status:** ✅ Full CSS4 color support in StyledConsole v0.1
+**Maintained by:** StyledConsole project
 **Last updated:** October 15, 2025
