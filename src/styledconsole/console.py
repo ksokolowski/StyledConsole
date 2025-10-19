@@ -17,6 +17,7 @@ from styledconsole.core.frame import Frame, FrameRenderer
 from styledconsole.types import AlignType
 from styledconsole.utils.terminal import TerminalProfile, detect_terminal_capabilities
 from styledconsole.utils.text import strip_ansi
+from styledconsole.utils.validation import validate_align, validate_color_pair, validate_dimensions
 
 # Valid alignment options
 VALID_ALIGNMENTS = {"left", "center", "right"}
@@ -184,72 +185,6 @@ class Console:
                 self._logger.debug("BannerRenderer initialized (lazy)")
         return self.__banner_renderer
 
-    @staticmethod
-    def _validate_align(align: str) -> None:
-        """Validate alignment parameter.
-
-        Args:
-            align: Alignment value to validate
-
-        Raises:
-            ValueError: If align is not one of: left, center, right
-        """
-        if align not in VALID_ALIGNMENTS:
-            raise ValueError(f"align must be one of {VALID_ALIGNMENTS}, got: {align!r}")
-
-    @staticmethod
-    def _validate_gradient_pair(gradient_start: str | None, gradient_end: str | None) -> None:
-        """Validate gradient color pair.
-
-        Args:
-            gradient_start: Starting gradient color
-            gradient_end: Ending gradient color
-
-        Raises:
-            ValueError: If only one gradient color is provided
-        """
-        if (gradient_start is None) != (gradient_end is None):
-            raise ValueError(
-                "gradient_start and gradient_end must both be provided or both be None. "
-                f"Got gradient_start={gradient_start!r}, gradient_end={gradient_end!r}"
-            )
-
-    @staticmethod
-    def _validate_dimensions(
-        width: int | None = None,
-        padding: int | None = None,
-        min_width: int | None = None,
-        max_width: int | None = None,
-    ) -> None:
-        """Validate dimensional parameters.
-
-        Args:
-            width: Frame width
-            padding: Padding value
-            min_width: Minimum width
-            max_width: Maximum width
-
-        Raises:
-            ValueError: If dimensions are invalid
-        """
-        if padding is not None and padding < 0:
-            raise ValueError(f"padding must be >= 0, got: {padding}")
-
-        if width is not None and width < 1:
-            raise ValueError(f"width must be >= 1, got: {width}")
-
-        if min_width is not None and min_width < 1:
-            raise ValueError(f"min_width must be >= 1, got: {min_width}")
-
-        if max_width is not None and max_width < 1:
-            raise ValueError(f"max_width must be >= 1, got: {max_width}")
-
-        if min_width is not None and max_width is not None and min_width > max_width:
-            raise ValueError(f"min_width ({min_width}) must be <= max_width ({max_width})")
-
-        if width is not None and min_width is not None and width < min_width:
-            raise ValueError(f"width ({width}) must be >= min_width ({min_width})")
-
     @property
     def terminal_profile(self) -> TerminalProfile | None:
         """Get detected terminal capabilities.
@@ -328,9 +263,9 @@ class Console:
             ... )
         """
         # Validate inputs
-        self._validate_align(align)
-        self._validate_gradient_pair(start_color, end_color)
-        self._validate_dimensions(width=width, padding=padding)
+        validate_align(align)
+        validate_color_pair(start_color, end_color, param_name="color")
+        validate_dimensions(width=width, padding=padding)
 
         if self._debug:
             self._logger.debug(
@@ -409,9 +344,9 @@ class Console:
             ... )
         """
         # Validate inputs
-        self._validate_align(align)
-        self._validate_gradient_pair(start_color, end_color)
-        self._validate_dimensions(width=width, padding=padding)
+        validate_align(align)
+        validate_color_pair(start_color, end_color, param_name="color")
+        validate_dimensions(width=width, padding=padding)
 
         if self._debug:
             self._logger.debug(
