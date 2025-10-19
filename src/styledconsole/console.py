@@ -17,6 +17,9 @@ from styledconsole.core.frame import Frame, FrameRenderer
 from styledconsole.utils.terminal import TerminalProfile, detect_terminal_capabilities
 from styledconsole.utils.text import strip_ansi
 
+# Valid alignment options
+VALID_ALIGNMENTS = {"left", "center", "right"}
+
 
 class Console:
     """High-level console rendering facade with Rich backend.
@@ -98,6 +101,9 @@ class Console:
                     f"size={self._profile.width}x{self._profile.height}"
                 )
 
+        # Determine color system based on detected terminal capabilities
+        color_system = self._determine_color_system()
+
         # Initialize Rich console
         self._rich_console = RichConsole(
             record=record,
@@ -106,14 +112,12 @@ class Console:
             force_terminal=True
             if detect_terminal and self._profile and self._profile.ansi_support
             else None,
-            color_system="truecolor"
-            if self._profile and self._profile.color_depth == 16777216
-            else "auto",
+            color_system=color_system,
         )
 
-        # Initialize renderers
-        self._frame_renderer = FrameRenderer()
-        self._banner_renderer = BannerRenderer()
+        # Lazy-initialized renderers (created on first use)
+        self.__frame_renderer: FrameRenderer | None = None
+        self.__banner_renderer: BannerRenderer | None = None
 
         if self._debug:
             self._logger.debug(
@@ -133,6 +137,117 @@ class Console:
             logger.addHandler(handler)
             logger.setLevel(logging.DEBUG)
         return logger
+
+    def _determine_color_system(self) -> str:
+        """Determine appropriate color system based on terminal capabilities.
+
+        Returns:
+            Color system string: "standard", "256", "truecolor", or "auto"
+        """
+        import os
+
+        # Check for environment variable override
+        env_override = os.environ.get("SC_FORCE_COLOR_SYSTEM")
+        if env_override in {"standard", "256", "truecolor", "auto"}:
+            if self._debug:
+                self._logger.debug(f"Color system overridden by env: {env_override}")
+            return env_override
+
+        # Use detected terminal profile if available
+        if self._profile:
+            if self._profile.color_depth >= 16777216:  # 24-bit truecolor
+                return "truecolor"
+            elif self._profile.color_depth >= 256:
+                return "256"
+            elif self._profile.color_depth >= 8:
+                return "standard"
+
+        # Fallback to auto-detection
+        return "auto"
+
+    @property
+    def _frame_renderer(self) -> FrameRenderer:
+        """Lazy-initialized frame renderer."""
+        if self.__frame_renderer is None:
+            self.__frame_renderer = FrameRenderer()
+            if self._debug:
+                self._logger.debug("FrameRenderer initialized (lazy)")
+        return self.__frame_renderer
+
+    @property
+    def _banner_renderer(self) -> BannerRenderer:
+        """Lazy-initialized banner renderer."""
+        if self.__banner_renderer is None:
+            self.__banner_renderer = BannerRenderer()
+            if self._debug:
+                self._logger.debug("BannerRenderer initialized (lazy)")
+        return self.__banner_renderer
+
+    @staticmethod
+    def _validate_align(align: str) -> None:
+        """Validate alignment parameter.
+
+        Args:
+            align: Alignment value to validate
+
+        Raises:
+            ValueError: If align is not one of: left, center, right
+        """
+        if align not in VALID_ALIGNMENTS:
+            raise ValueError(f"align must be one of {VALID_ALIGNMENTS}, got: {align!r}")
+
+    @staticmethod
+    def _validate_gradient_pair(gradient_start: str | None, gradient_end: str | None) -> None:
+        """Validate gradient color pair.
+
+        Args:
+            gradient_start: Starting gradient color
+            gradient_end: Ending gradient color
+
+        Raises:
+            ValueError: If only one gradient color is provided
+        """
+        if (gradient_start is None) != (gradient_end is None):
+            raise ValueError(
+                "gradient_start and gradient_end must both be provided or both be None. "
+                f"Got gradient_start={gradient_start!r}, gradient_end={gradient_end!r}"
+            )
+
+    @staticmethod
+    def _validate_dimensions(
+        width: int | None = None,
+        padding: int | None = None,
+        min_width: int | None = None,
+        max_width: int | None = None,
+    ) -> None:
+        """Validate dimensional parameters.
+
+        Args:
+            width: Frame width
+            padding: Padding value
+            min_width: Minimum width
+            max_width: Maximum width
+
+        Raises:
+            ValueError: If dimensions are invalid
+        """
+        if padding is not None and padding < 0:
+            raise ValueError(f"padding must be >= 0, got: {padding}")
+
+        if width is not None and width < 1:
+            raise ValueError(f"width must be >= 1, got: {width}")
+
+        if min_width is not None and min_width < 1:
+            raise ValueError(f"min_width must be >= 1, got: {min_width}")
+
+        if max_width is not None and max_width < 1:
+            raise ValueError(f"max_width must be >= 1, got: {max_width}")
+
+        if min_width is not None and max_width is not None and min_width > max_width:
+            raise ValueError(f"min_width ({min_width}) must be <= max_width ({max_width})")
+
+        if width is not None and min_width is not None and width < min_width:
+            raise ValueError(f"width ({width}) must be >= min_width ({min_width})")
 
     @property
     def terminal_profile(self) -> TerminalProfile | None:
@@ -211,6 +326,11 @@ class Console:
             ...     gradient_end="#0000ff"
             ... )
         """
+        # Validate inputs
+        self._validate_align(align)
+        self._validate_gradient_pair(gradient_start, gradient_end)
+        self._validate_dimensions(width=width, padding=padding)
+
         if self._debug:
             self._logger.debug(
                 f"Rendering frame: title='{title}', border='{border}', "
@@ -287,6 +407,11 @@ class Console:
             ...     border="double"
             ... )
         """
+        # Validate inputs
+        self._validate_align(align)
+        self._validate_gradient_pair(gradient_start, gradient_end)
+        self._validate_dimensions(width=width, padding=padding)
+
         if self._debug:
             self._logger.debug(
                 f"Rendering banner: text='{text}', font='{font}', "

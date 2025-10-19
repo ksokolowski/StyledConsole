@@ -116,7 +116,7 @@ class TestFrameRenderer:
     def test_frame_with_padding(self):
         """Test frame with custom padding."""
         renderer = FrameRenderer()
-        lines = renderer.render("X", border="solid", width=10, padding=2)
+        lines = renderer.render("X", border="solid", width=10, padding=2, min_width=5)
 
         # Content line should have padding on both sides
         content_line = lines[1]

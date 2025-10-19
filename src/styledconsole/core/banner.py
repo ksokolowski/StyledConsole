@@ -9,13 +9,14 @@ This module provides high-level banner rendering with:
 """
 
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import Literal
 
 import pyfiglet
 
 from styledconsole.core.frame import FrameRenderer
 from styledconsole.core.styles import BorderStyle, get_border_style
-from styledconsole.utils.color import interpolate_color, parse_color
+from styledconsole.utils.color import interpolate_rgb, parse_color
 from styledconsole.utils.text import strip_ansi, visual_width
 
 AlignType = Literal["left", "center", "right"]
@@ -77,6 +78,21 @@ class BannerRenderer:
         """Initialize banner renderer."""
         self._frame_renderer = FrameRenderer()
         self._available_fonts = set(pyfiglet.FigletFont.getFonts())
+
+    @staticmethod
+    @lru_cache(maxsize=32)
+    def _get_figlet(font: str) -> pyfiglet.Figlet:
+        """Get cached Figlet instance for a font.
+
+        Cached to avoid repeated font file loading.
+
+        Args:
+            font: Font name
+
+        Returns:
+            Figlet instance for the font
+        """
+        return pyfiglet.Figlet(font=font)
 
     def render(
         self,
@@ -148,8 +164,8 @@ class BannerRenderer:
                     f"Use pyfiglet.FigletFont.getFonts() for full list."
                 )
 
-            # Generate ASCII art
-            figlet = pyfiglet.Figlet(font=banner.font)
+            # Generate ASCII art using cached Figlet instance
+            figlet = self._get_figlet(banner.font)
             ascii_art = figlet.renderText(banner.text)
 
             # Split into lines and remove trailing empty lines
@@ -181,6 +197,8 @@ class BannerRenderer:
     def _apply_gradient(self, lines: list[str], start_color: str, end_color: str) -> list[str]:
         """Apply gradient coloring to ASCII art lines (top to bottom).
 
+        Optimized to parse colors once and use RGB interpolation.
+
         Args:
             lines: ASCII art lines
             start_color: Starting color (hex, rgb, or named)
@@ -192,7 +210,7 @@ class BannerRenderer:
         if not lines:
             return lines
 
-        # Parse colors
+        # Parse colors once (cached by lru_cache)
         start_rgb = parse_color(start_color)
         end_rgb = parse_color(end_color)
 
@@ -203,13 +221,8 @@ class BannerRenderer:
             # Calculate gradient position (0.0 to 1.0)
             t = i / (num_lines - 1) if num_lines > 1 else 0.0
 
-            # Interpolate color
-            color_hex = interpolate_color(start_rgb, end_rgb, t)
-
-            # Convert hex to RGB for ANSI
-            r = int(color_hex[1:3], 16)
-            g = int(color_hex[3:5], 16)
-            b = int(color_hex[5:7], 16)
+            # Interpolate color using optimized RGB function
+            r, g, b = interpolate_rgb(start_rgb, end_rgb, t)
 
             # Apply ANSI color code
             colored_line = f"\033[38;2;{r};{g};{b}m{line}\033[0m"

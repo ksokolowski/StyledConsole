@@ -7,6 +7,7 @@ Supports multiple color formats:
 """
 
 import re
+from functools import lru_cache
 
 from styledconsole.utils.color_data import CSS4_COLORS, get_color_names
 
@@ -85,8 +86,11 @@ def rgb_to_hex(r: int, g: int, b: int) -> str:
     return f"#{r:02X}{g:02X}{b:02X}"
 
 
+@lru_cache(maxsize=512)
 def parse_color(value: str) -> RGBColor:
     """Parse color string in any supported format to RGB tuple.
+
+    Cached with LRU cache (512 entries) for performance in loops.
 
     Supported formats:
     - Hex: "#FF0000", "#f00", "FF0000"
@@ -144,6 +148,39 @@ def parse_color(value: str) -> RGBColor:
     raise ValueError(f"Invalid color format: '{value}'")
 
 
+def interpolate_rgb(
+    start_rgb: RGBColor,
+    end_rgb: RGBColor,
+    t: float,
+) -> RGBColor:
+    """Interpolate between two RGB colors (optimized for loops).
+
+    Use this when you've already parsed colors to RGB tuples to avoid
+    repeated hex conversions in tight loops.
+
+    Args:
+        start_rgb: Start color as RGB tuple
+        end_rgb: End color as RGB tuple
+        t: Interpolation factor (0.0 = start, 1.0 = end)
+
+    Returns:
+        Interpolated RGB tuple
+
+    Example:
+        >>> interpolate_rgb((255, 0, 0), (0, 0, 255), 0.5)
+        (128, 0, 128)
+    """
+    # Clamp t to [0, 1]
+    t = max(0.0, min(1.0, t))
+
+    # Linear interpolation for each channel
+    r = int(start_rgb[0] + (end_rgb[0] - start_rgb[0]) * t)
+    g = int(start_rgb[1] + (end_rgb[1] - start_rgb[1]) * t)
+    b = int(start_rgb[2] + (end_rgb[2] - start_rgb[2]) * t)
+
+    return (r, g, b)
+
+
 def interpolate_color(
     start: str | RGBColor,
     end: str | RGBColor,
@@ -167,9 +204,6 @@ def interpolate_color(
         >>> interpolate_color((255, 0, 0), (0, 0, 255), 0.5)
         '#800080'
     """
-    # Clamp t to [0, 1]
-    t = max(0.0, min(1.0, t))
-
     # Parse colors to RGB
     if isinstance(start, tuple):
         start_rgb = start
@@ -181,12 +215,9 @@ def interpolate_color(
     else:
         end_rgb = parse_color(end)
 
-    # Linear interpolation for each channel
-    r = int(start_rgb[0] + (end_rgb[0] - start_rgb[0]) * t)
-    g = int(start_rgb[1] + (end_rgb[1] - start_rgb[1]) * t)
-    b = int(start_rgb[2] + (end_rgb[2] - start_rgb[2]) * t)
-
-    return rgb_to_hex(r, g, b)
+    # Use optimized RGB interpolation
+    result_rgb = interpolate_rgb(start_rgb, end_rgb, t)
+    return rgb_to_hex(*result_rgb)
 
 
 def color_distance(color1: str | RGBColor, color2: str | RGBColor) -> float:
@@ -229,7 +260,9 @@ __all__ = [
     "rgb_to_hex",
     "parse_color",
     "interpolate_color",
+    "interpolate_rgb",
     "color_distance",
     "get_color_names",
     "CSS4_COLORS",
+    "RGBColor",
 ]

@@ -51,9 +51,80 @@ class Frame:
 class FrameRenderer:
     """Renders frames with borders, titles, and padding."""
 
+    # Valid alignment options
+    VALID_ALIGNMENTS = {"left", "center", "right"}
+
     def __init__(self) -> None:
         """Initialize the frame renderer."""
         pass
+
+    @staticmethod
+    def _validate_align(align: AlignType) -> None:
+        """Validate alignment parameter.
+
+        Args:
+            align: Alignment value to validate
+
+        Raises:
+            ValueError: If align is not one of: left, center, right
+        """
+        if align not in FrameRenderer.VALID_ALIGNMENTS:
+            raise ValueError(
+                f"align must be one of {FrameRenderer.VALID_ALIGNMENTS}, got: {align!r}"
+            )
+
+    @staticmethod
+    def _validate_dimensions(
+        width: int | None = None,
+        padding: int = 1,
+        min_width: int = 20,
+        max_width: int = 100,
+    ) -> None:
+        """Validate dimensional parameters.
+
+        Args:
+            width: Frame width
+            padding: Padding value
+            min_width: Minimum width
+            max_width: Maximum width
+
+        Raises:
+            ValueError: If dimensions are invalid
+        """
+        if padding < 0:
+            raise ValueError(f"padding must be >= 0, got: {padding}")
+
+        if width is not None and width < 1:
+            raise ValueError(f"width must be >= 1, got: {width}")
+
+        if min_width < 1:
+            raise ValueError(f"min_width must be >= 1, got: {min_width}")
+
+        if max_width < 1:
+            raise ValueError(f"max_width must be >= 1, got: {max_width}")
+
+        if min_width > max_width:
+            raise ValueError(f"min_width ({min_width}) must be <= max_width ({max_width})")
+
+        if width is not None and width < min_width:
+            raise ValueError(f"width ({width}) must be >= min_width ({min_width})")
+
+    @staticmethod
+    def _validate_gradient_pair(gradient_start: str | None, gradient_end: str | None) -> None:
+        """Validate gradient color pair.
+
+        Args:
+            gradient_start: Starting gradient color
+            gradient_end: Ending gradient color
+
+        Raises:
+            ValueError: If only one gradient color is provided
+        """
+        if (gradient_start is None) != (gradient_end is None):
+            raise ValueError(
+                "gradient_start and gradient_end must both be provided or both be None. "
+                f"Got gradient_start={gradient_start!r}, gradient_end={gradient_end!r}"
+            )
 
     def render(
         self,
@@ -101,6 +172,11 @@ class FrameRenderer:
             │ Hello, World!   │
             └─────────────────┘
         """
+        # Validate inputs
+        self._validate_align(align)
+        self._validate_dimensions(width, padding, min_width, max_width)
+        self._validate_gradient_pair(gradient_start, gradient_end)
+
         frame = Frame(
             content=content,
             title=title,

@@ -31,10 +31,12 @@ from styledconsole.core.styles import (
 )
 from styledconsole.utils.color import (
     CSS4_COLORS,
+    RGBColor,
     color_distance,
     get_color_names,
     hex_to_rgb,
     interpolate_color,
+    interpolate_rgb,
     parse_color,
     rgb_to_hex,
 )
@@ -104,9 +106,11 @@ __all__ = [
     "hex_to_rgb",
     "rgb_to_hex",
     "interpolate_color",
+    "interpolate_rgb",
     "color_distance",
     "get_color_names",
     "CSS4_COLORS",
+    "RGBColor",
     # Terminal utilities
     "TerminalProfile",
     "detect_terminal_capabilities",
