@@ -66,8 +66,8 @@ class BannerRenderer:
         >>> lines = renderer.render(
         ...     "SUCCESS",
         ...     font="banner",
-        ...     gradient_start="lime",
-        ...     gradient_end="blue",
+        ...     start_color="lime",
+        ...     end_color="blue",
         ...     border="double",
         ... )
     """
@@ -96,8 +96,8 @@ class BannerRenderer:
         self,
         text: str,
         font: str = "standard",
-        gradient_start: str | None = None,
-        gradient_end: str | None = None,
+        start_color: str | None = None,
+        end_color: str | None = None,
         border: str | BorderStyle | None = None,
         width: int | None = None,
         align: AlignType = "center",
@@ -108,8 +108,8 @@ class BannerRenderer:
         Args:
             text: Text to render (plain text only, emoji triggers fallback)
             font: Pyfiglet font name (default: "standard")
-            gradient_start: Starting color for gradient (hex, rgb, or named)
-            gradient_end: Ending color for gradient (hex, rgb, or named)
+            start_color: Starting color for gradient (hex, rgb, or named)
+            end_color: Ending color for gradient (hex, rgb, or named)
             border: Border style name or BorderStyle object (None for no border)
             width: Fixed width for banner (None for auto-width)
             align: Text alignment ("left", "center", "right")
@@ -127,8 +127,8 @@ class BannerRenderer:
         banner = Banner(
             text=text,
             font=font,
-            gradient_start=gradient_start,
-            gradient_end=gradient_end,
+            start_color=start_color,
+            end_color=end_color,
             border=border,
             width=width,
             align=align,
@@ -170,10 +170,8 @@ class BannerRenderer:
             ascii_lines = ascii_art.rstrip("\n").split("\n")
 
         # Apply gradient coloring if specified
-        if banner.gradient_start and banner.gradient_end:
-            ascii_lines = self._apply_gradient(
-                ascii_lines, banner.gradient_start, banner.gradient_end
-            )
+        if banner.start_color and banner.end_color:
+            ascii_lines = self._apply_gradient(ascii_lines, banner.start_color, banner.end_color)
 
         # If no border, return ASCII art lines directly
         if banner.border is None:

@@ -196,8 +196,8 @@ class TestConsoleFrameMethod:
 
         console.frame(
             ["Line 1", "Line 2"],
-            gradient_start="red",
-            gradient_end="blue",
+            start_color="red",
+            end_color="blue",
         )
         output = buffer.getvalue()
 
@@ -258,8 +258,8 @@ class TestConsoleBannerMethod:
 
         console.banner(
             "OK",
-            gradient_start="red",
-            gradient_end="blue",
+            start_color="red",
+            end_color="blue",
         )
         output = buffer.getvalue()
 

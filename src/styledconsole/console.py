@@ -41,7 +41,7 @@ class Console:
     Example:
         >>> console = Console()
         >>> console.frame("Hello World", title="Greeting", border="solid")
-        >>> console.banner("SUCCESS", font="slant", gradient_start="green")
+        >>> console.banner("SUCCESS", font="slant", start_color="green")
         >>> console.text("Status: OK", color="green", bold=True)
 
     Attributes:
@@ -277,8 +277,8 @@ class Console:
         content_color: str | None = None,
         border_color: str | None = None,
         title_color: str | None = None,
-        gradient_start: str | None = None,
-        gradient_end: str | None = None,
+        start_color: str | None = None,
+        end_color: str | None = None,
     ) -> None:
         """Render and print a framed content box.
 
@@ -302,10 +302,10 @@ class Console:
             border_color: Color for frame border characters. Defaults to None.
             title_color: Color for frame title. If None and border_color is set,
                 title uses border_color. Defaults to None.
-            gradient_start: Starting color for per-line gradient effect. Overrides
+            start_color: Starting color for per-line gradient effect. Overrides
                 content_color when set. Defaults to None.
-            gradient_end: Ending color for per-line gradient effect. Required when
-                gradient_start is set. Defaults to None.
+            end_color: Ending color for per-line gradient effect. Required when
+                start_color is set. Defaults to None.
 
         Example:
             >>> console = Console()
@@ -323,13 +323,13 @@ class Console:
             >>> # With gradient
             >>> console.frame(
             ...     "Test",
-            ...     gradient_start="red",
-            ...     gradient_end="blue"
+            ...     start_color="red",
+            ...     end_color="blue"
             ... )
         """
         # Validate inputs
         self._validate_align(align)
-        self._validate_gradient_pair(gradient_start, gradient_end)
+        self._validate_gradient_pair(start_color, end_color)
         self._validate_dimensions(width=width, padding=padding)
 
         if self._debug:
@@ -348,8 +348,8 @@ class Console:
             content_color=content_color,
             border_color=border_color,
             title_color=title_color,
-            gradient_start=gradient_start,
-            gradient_end=gradient_end,
+            start_color=start_color,
+            end_color=end_color,
         )
 
         lines = self._frame_renderer.render_frame(frame)
@@ -364,8 +364,8 @@ class Console:
         text: str,
         *,
         font: str = "standard",
-        gradient_start: str | None = None,
-        gradient_end: str | None = None,
+        start_color: str | None = None,
+        end_color: str | None = None,
         border: str | None = None,
         width: int | None = None,
         align: AlignType = "center",
@@ -383,10 +383,10 @@ class Console:
             font: Pyfiglet font name. Common options: "slant", "banner", "big",
                 "digital", "standard". Use BannerRenderer.list_fonts() to see
                 all available fonts. Defaults to "slant".
-            gradient_start: Starting color for per-line gradient effect. Accepts
+            start_color: Starting color for per-line gradient effect. Accepts
                 hex codes, RGB tuples, or CSS4 names. Defaults to None.
-            gradient_end: Ending color for per-line gradient effect. Required
-                when gradient_start is set. Defaults to None.
+            end_color: Ending color for per-line gradient effect. Required
+                when start_color is set. Defaults to None.
             border: Optional border style to frame the banner. One of: "solid",
                 "double", "rounded", etc. Defaults to None (no border).
             width: Banner width in characters. If None, auto-calculated.
@@ -403,27 +403,27 @@ class Console:
             >>> console.banner(
             ...     "DEMO",
             ...     font="banner",
-            ...     gradient_start="red",
-            ...     gradient_end="blue",
+            ...     start_color="red",
+            ...     end_color="blue",
             ...     border="double"
             ... )
         """
         # Validate inputs
         self._validate_align(align)
-        self._validate_gradient_pair(gradient_start, gradient_end)
+        self._validate_gradient_pair(start_color, end_color)
         self._validate_dimensions(width=width, padding=padding)
 
         if self._debug:
             self._logger.debug(
                 f"Rendering banner: text='{text}', font='{font}', "
-                f"gradient={gradient_start}→{gradient_end}, border='{border}'"
+                f"gradient={start_color}→{end_color}, border='{border}'"
             )
 
         banner_obj = Banner(
             text=text,
             font=font,
-            gradient_start=gradient_start,
-            gradient_end=gradient_end,
+            start_color=start_color,
+            end_color=end_color,
             border=border,
             width=width,
             align=align,

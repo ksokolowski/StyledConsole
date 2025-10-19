@@ -138,8 +138,8 @@ class FrameRenderer:
         content_color: str | None = None,
         border_color: str | None = None,
         title_color: str | None = None,
-        gradient_start: str | None = None,
-        gradient_end: str | None = None,
+        start_color: str | None = None,
+        end_color: str | None = None,
     ) -> list[str]:
         """Render a frame with the given content and configuration.
 
@@ -155,8 +155,8 @@ class FrameRenderer:
             content_color: Color for content text (hex, rgb, or CSS4 name)
             border_color: Color for border (hex, rgb, or CSS4 name)
             title_color: Color for title (hex, rgb, or CSS4 name)
-            gradient_start: Starting color for content gradient (overrides content_color)
-            gradient_end: Ending color for content gradient
+            start_color: Starting color for content gradient (overrides content_color)
+            end_color: Ending color for content gradient
 
         Returns:
             List of strings, one per line of the rendered frame
@@ -173,7 +173,7 @@ class FrameRenderer:
         # Validate inputs
         self._validate_align(align)
         self._validate_dimensions(width, padding, min_width, max_width)
-        self._validate_gradient_pair(gradient_start, gradient_end)
+        self._validate_gradient_pair(start_color, end_color)
 
         frame = Frame(
             content=content,
@@ -187,8 +187,8 @@ class FrameRenderer:
             content_color=content_color,
             border_color=border_color,
             title_color=title_color,
-            gradient_start=gradient_start,
-            gradient_end=gradient_end,
+            start_color=start_color,
+            end_color=end_color,
         )
         return self.render_frame(frame)
 
@@ -241,10 +241,10 @@ class FrameRenderer:
             content_line = self._render_content_line(style, line, width, frame.padding, frame.align)
 
             # Apply coloring
-            if frame.gradient_start and frame.gradient_end:
+            if frame.start_color and frame.end_color:
                 # Apply gradient
                 t = idx / max(len(content_lines) - 1, 1)
-                color = interpolate_color(frame.gradient_start, frame.gradient_end, t)
+                color = interpolate_color(frame.start_color, frame.end_color, t)
                 # Color only the content part, not the borders
                 content_line = self._colorize_content_in_line(
                     content_line, style, color, frame.border_color

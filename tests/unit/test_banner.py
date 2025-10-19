@@ -15,8 +15,8 @@ class TestBanner:
         banner = Banner(text="Test")
         assert banner.text == "Test"
         assert banner.font == "standard"
-        assert banner.gradient_start is None
-        assert banner.gradient_end is None
+        assert banner.start_color is None
+        assert banner.end_color is None
         assert banner.border is None
         assert banner.width is None
         assert banner.align == "center"
@@ -27,8 +27,8 @@ class TestBanner:
         banner = Banner(
             text="Custom",
             font="slant",
-            gradient_start="#ff0000",
-            gradient_end="#0000ff",
+            start_color="#ff0000",
+            end_color="#0000ff",
             border="solid",
             width=60,
             align="left",
@@ -36,8 +36,8 @@ class TestBanner:
         )
         assert banner.text == "Custom"
         assert banner.font == "slant"
-        assert banner.gradient_start == "#ff0000"
-        assert banner.gradient_end == "#0000ff"
+        assert banner.start_color == "#ff0000"
+        assert banner.end_color == "#0000ff"
         assert banner.border == "solid"
         assert banner.width == 60
         assert banner.align == "left"
@@ -98,7 +98,7 @@ class TestBannerRenderer:
     def test_render_with_gradient(self):
         """Test rendering with gradient coloring."""
         renderer = BannerRenderer()
-        lines = renderer.render("Hi", gradient_start="#ff0000", gradient_end="#0000ff")
+        lines = renderer.render("Hi", start_color="#ff0000", end_color="#0000ff")
 
         assert len(lines) > 0
         # Should contain ANSI color codes
@@ -121,8 +121,8 @@ class TestBannerRenderer:
         renderer = BannerRenderer()
         lines = renderer.render(
             "Hi",
-            gradient_start="#00ff00",
-            gradient_end="#0000ff",
+            start_color="#00ff00",
+            end_color="#0000ff",
             border="double",
         )
 
@@ -145,7 +145,7 @@ class TestBannerRenderer:
     def test_render_emoji_with_gradient(self):
         """Test emoji with gradient applies color to plain text."""
         renderer = BannerRenderer()
-        lines = renderer.render("🎉", gradient_start="#ff0000", gradient_end="#00ff00")
+        lines = renderer.render("🎉", start_color="#ff0000", end_color="#00ff00")
 
         assert len(lines) == 1
         assert "🎉" in lines[0]
@@ -236,7 +236,7 @@ class TestBannerRenderer:
         renderer = BannerRenderer()
 
         # Emoji fallback creates single line
-        lines = renderer.render("X", gradient_start="#ff0000", gradient_end="#0000ff")
+        lines = renderer.render("X", start_color="#ff0000", end_color="#0000ff")
 
         # Should handle single line gradient
         assert len(lines) >= 1
@@ -253,9 +253,7 @@ class TestBannerRenderer:
         """Test that gradient actually interpolates colors."""
         renderer = BannerRenderer()
 
-        lines = renderer.render(
-            "TEST", font="banner", gradient_start="#ff0000", gradient_end="#0000ff"
-        )
+        lines = renderer.render("TEST", font="banner", start_color="#ff0000", end_color="#0000ff")
 
         # Extract RGB values from ANSI codes
         rgb_values = []
@@ -274,7 +272,7 @@ class TestBannerRenderer:
         """Test gradient with named colors."""
         renderer = BannerRenderer()
 
-        lines = renderer.render("Hi", gradient_start="red", gradient_end="blue", font="standard")
+        lines = renderer.render("Hi", start_color="red", end_color="blue", font="standard")
 
         assert len(lines) > 0
         assert any("\033[38;2;" in line for line in lines)
