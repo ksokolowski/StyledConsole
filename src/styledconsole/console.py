@@ -3,24 +3,21 @@
 This module provides the primary API for StyledConsole, wrapping Rich console
 functionality with additional features like terminal detection, frame/banner
 rendering, and HTML export capabilities.
+
+Phase 4.4: Refactored to use specialized manager classes (TerminalManager,
+ExportManager, RenderingEngine) following the Facade pattern.
 """
 
-import logging
 import sys
 from typing import Any, TextIO
 
 from rich.console import Console as RichConsole
-from rich.text import Text as RichText
 
-from styledconsole.core.banner import Banner, BannerRenderer
-from styledconsole.core.frame import Frame, FrameRenderer
+from styledconsole.core.export_manager import ExportManager
+from styledconsole.core.rendering_engine import RenderingEngine
+from styledconsole.core.terminal_manager import TerminalManager
 from styledconsole.types import AlignType
-from styledconsole.utils.terminal import TerminalProfile, detect_terminal_capabilities
-from styledconsole.utils.text import strip_ansi
-from styledconsole.utils.validation import validate_align, validate_color_pair, validate_dimensions
-
-# Valid alignment options
-VALID_ALIGNMENTS = {"left", "center", "right"}
+from styledconsole.utils.terminal import TerminalProfile
 
 
 class Console:
@@ -30,6 +27,11 @@ class Console:
     a unified API for rendering frames, banners, styled text, and more.
     It integrates with Rich for ANSI rendering and supports HTML export
     via recording mode.
+
+    Phase 4.4: Refactored to delegate to specialized managers:
+        - TerminalManager: Terminal detection and capabilities
+        - RenderingEngine: Frame, banner, text, rule, newline rendering
+        - ExportManager: HTML and text export functionality
 
     Features:
         - Terminal capability detection
@@ -88,102 +90,26 @@ class Console:
             >>> # Debug mode
             >>> console = Console(debug=True)
         """
-        self._debug = debug
-        self._logger = self._setup_logging() if debug else None
+        # Initialize terminal manager (handles detection and color system)
+        self._terminal = TerminalManager(detect=detect_terminal, debug=debug)
 
-        # Detect terminal capabilities if requested
-        self._profile: TerminalProfile | None = None
-        if detect_terminal:
-            self._profile = detect_terminal_capabilities()
-            if self._debug:
-                self._logger.debug(
-                    f"Terminal detected: ANSI={self._profile.ansi_support}, "
-                    f"colors={self._profile.color_depth}, "
-                    f"emoji={self._profile.emoji_safe}, "
-                    f"size={self._profile.width}x{self._profile.height}"
-                )
-
-        # Determine color system based on detected terminal capabilities
-        color_system = self._determine_color_system()
-
-        # Initialize Rich console
+        # Initialize Rich console with terminal settings
         self._rich_console = RichConsole(
             record=record,
             width=width,
             file=file or sys.stdout,
-            force_terminal=True
-            if detect_terminal and self._profile and self._profile.ansi_support
-            else None,
-            color_system=color_system,
+            force_terminal=self._terminal.should_force_terminal(),
+            color_system=self._terminal.get_color_system(),
         )
 
-        # Lazy-initialized renderers (created on first use)
-        self.__frame_renderer: FrameRenderer | None = None
-        self.__banner_renderer: BannerRenderer | None = None
+        # Initialize rendering engine (handles frame, banner, text, rule, newline)
+        self._renderer = RenderingEngine(self._rich_console, debug=debug)
 
-        if self._debug:
-            self._logger.debug(
-                f"Console initialized: record={record}, width={width}, file={file or 'stdout'}"
-            )
+        # Initialize export manager (handles HTML and text export)
+        self._exporter = ExportManager(self._rich_console, debug=debug)
 
-    def _setup_logging(self) -> logging.Logger:
-        """Set up debug logger for Console class.
-
-        Returns:
-            Configured logger instance
-        """
-        logger = logging.getLogger("styledconsole.console")
-        if not logger.handlers:
-            handler = logging.StreamHandler(sys.stderr)
-            handler.setFormatter(logging.Formatter("[%(name)s] %(levelname)s: %(message)s"))
-            logger.addHandler(handler)
-            logger.setLevel(logging.DEBUG)
-        return logger
-
-    def _determine_color_system(self) -> str:
-        """Determine appropriate color system based on terminal capabilities.
-
-        Returns:
-            Color system string: "standard", "256", "truecolor", or "auto"
-        """
-        import os
-
-        # Check for environment variable override
-        env_override = os.environ.get("SC_FORCE_COLOR_SYSTEM")
-        if env_override in {"standard", "256", "truecolor", "auto"}:
-            if self._debug:
-                self._logger.debug(f"Color system overridden by env: {env_override}")
-            return env_override
-
-        # Use detected terminal profile if available
-        if self._profile:
-            if self._profile.color_depth >= 16777216:  # 24-bit truecolor
-                return "truecolor"
-            elif self._profile.color_depth >= 256:
-                return "256"
-            elif self._profile.color_depth >= 8:
-                return "standard"
-
-        # Fallback to auto-detection
-        return "auto"
-
-    @property
-    def _frame_renderer(self) -> FrameRenderer:
-        """Lazy-initialized frame renderer."""
-        if self.__frame_renderer is None:
-            self.__frame_renderer = FrameRenderer()
-            if self._debug:
-                self._logger.debug("FrameRenderer initialized (lazy)")
-        return self.__frame_renderer
-
-    @property
-    def _banner_renderer(self) -> BannerRenderer:
-        """Lazy-initialized banner renderer."""
-        if self.__banner_renderer is None:
-            self.__banner_renderer = BannerRenderer()
-            if self._debug:
-                self._logger.debug("BannerRenderer initialized (lazy)")
-        return self.__banner_renderer
+        # Store debug flag for backward compatibility
+        self._debug = debug
 
     @property
     def terminal_profile(self) -> TerminalProfile | None:
@@ -195,10 +121,10 @@ class Console:
 
         Example:
             >>> console = Console(detect_terminal=True)
-            >>> if console.terminal_profile.emoji_safe:
+            >>> if console.terminal_profile and console.terminal_profile.emoji_safe:
             ...     print("Emoji supported: 🚀")
         """
-        return self._profile
+        return self._terminal.profile
 
     def frame(
         self,
@@ -262,19 +188,8 @@ class Console:
             ...     end_color="blue"
             ... )
         """
-        # Validate inputs
-        validate_align(align)
-        validate_color_pair(start_color, end_color, param_name="color")
-        validate_dimensions(width=width, padding=padding)
-
-        if self._debug:
-            self._logger.debug(
-                f"Rendering frame: title='{title}', border='{border}', "
-                f"width={width}, padding={padding}"
-            )
-
-        frame = Frame(
-            content=content if isinstance(content, list) else [content],
+        self._renderer.print_frame(
+            content,
             title=title,
             border=border,
             width=width,
@@ -286,13 +201,6 @@ class Console:
             start_color=start_color,
             end_color=end_color,
         )
-
-        lines = self._frame_renderer.render_frame(frame)
-        for line in lines:
-            self._rich_console.print(line, highlight=False, soft_wrap=False)
-
-        if self._debug:
-            self._logger.debug(f"Frame rendered: {len(lines)} lines")
 
     def banner(
         self,
@@ -317,7 +225,7 @@ class Console:
                 fallback to plain text rendering.
             font: Pyfiglet font name. Common options: "slant", "banner", "big",
                 "digital", "standard". Use BannerRenderer.list_fonts() to see
-                all available fonts. Defaults to "slant".
+                all available fonts. Defaults to "standard".
             start_color: Starting color for per-line gradient effect. Accepts
                 hex codes, RGB tuples, or CSS4 names. Defaults to None.
             end_color: Ending color for per-line gradient effect. Required
@@ -343,19 +251,8 @@ class Console:
             ...     border="double"
             ... )
         """
-        # Validate inputs
-        validate_align(align)
-        validate_color_pair(start_color, end_color, param_name="color")
-        validate_dimensions(width=width, padding=padding)
-
-        if self._debug:
-            self._logger.debug(
-                f"Rendering banner: text='{text}', font='{font}', "
-                f"gradient={start_color}→{end_color}, border='{border}'"
-            )
-
-        banner_obj = Banner(
-            text=text,
+        self._renderer.print_banner(
+            text,
             font=font,
             start_color=start_color,
             end_color=end_color,
@@ -364,13 +261,6 @@ class Console:
             align=align,
             padding=padding,
         )
-
-        lines = self._banner_renderer.render_banner(banner_obj)
-        for line in lines:
-            self._rich_console.print(line, highlight=False, soft_wrap=False)
-
-        if self._debug:
-            self._logger.debug(f"Banner rendered: {len(lines)} lines")
 
     def text(
         self,
@@ -396,7 +286,7 @@ class Console:
             italic: Apply italic formatting. Defaults to False.
             underline: Apply underline formatting. Defaults to False.
             dim: Apply dim/faint formatting. Defaults to False.
-            end: String appended after text. Defaults to "\n" (newline).
+            end: String appended after text. Defaults to "\\n" (newline).
 
         Example:
             >>> console = Console()
@@ -408,26 +298,36 @@ class Console:
             >>> console.text("Loading", end="")
             >>> console.text("... done!", color="green")
         """
-        if self._debug:
-            self._logger.debug(
-                f"Printing text: '{text[:50]}...' (color={color}, bold={bold}, italic={italic})"
-            )
-
-        # Build Rich Text object with styles
-        rich_text = RichText(text)
-        if color:
-            rich_text.stylize(f"bold {color}" if bold else color)
-        elif bold:
-            rich_text.stylize("bold")
-
+        # Note: RenderingEngine.print_text doesn't support dim, so we need to handle it here
+        # Build style string
+        styles = []
+        if bold:
+            styles.append("bold")
         if italic:
-            rich_text.stylize("italic")
+            styles.append("italic")
         if underline:
-            rich_text.stylize("underline")
+            styles.append("underline")
         if dim:
-            rich_text.stylize("dim")
+            styles.append("dim")
+        if color:
+            styles.append(color)
 
-        self._rich_console.print(rich_text, end=end, highlight=False)
+        # Use Rich console directly for dim support
+        if styles:
+            from rich.text import Text as RichText
+
+            style_str = " ".join(styles)
+            rich_text = RichText(text, style=style_str)
+            self._rich_console.print(rich_text, end=end, highlight=False)
+        else:
+            self._renderer.print_text(
+                text,
+                color=color,
+                bold=bold,
+                italic=italic,
+                underline=underline,
+                end=end,
+            )
 
     def rule(
         self,
@@ -458,14 +358,7 @@ class Console:
             >>> console.rule("Section 1", color="blue")
             >>> console.rule("Configuration", color="cyan", align="left")
         """
-        if self._debug:
-            self._logger.debug(f"Rendering rule: title='{title}', color={color}")
-
-        self._rich_console.rule(
-            title=title,
-            style=color,
-            align=align,
-        )
+        self._renderer.print_rule(title=title, color=color, style=style, align=align)
 
     def newline(self, count: int = 1) -> None:
         """Print one or more blank lines.
@@ -483,11 +376,7 @@ class Console:
             >>> console.newline(3)  # Three blank lines
             >>> console.text("Line 3")
         """
-        if count < 0:
-            raise ValueError("count must be >= 0")
-
-        for _ in range(count):
-            self._rich_console.print()
+        self._renderer.print_newline(count=count)
 
     def clear(self) -> None:
         """Clear the console screen.
@@ -500,12 +389,9 @@ class Console:
             >>> console.text("Some content")
             >>> console.clear()  # Screen is cleared
         """
-        if self._profile and self._profile.ansi_support:
+        profile = self.terminal_profile
+        if profile and profile.ansi_support:
             self._rich_console.clear()
-            if self._debug:
-                self._logger.debug("Console cleared")
-        elif self._debug:
-            self._logger.debug("Console clear skipped: no ANSI support")
 
     def export_html(self, *, inline_styles: bool = True) -> str:
         """Export recorded console output as HTML.
@@ -533,21 +419,7 @@ class Console:
             >>> with open("output.html", "w") as f:
             ...     f.write(html)
         """
-        if not self._rich_console.record:
-            raise RuntimeError(
-                "Recording mode not enabled. Initialize Console with record=True "
-                "to use export_html()."
-            )
-
-        if self._debug:
-            self._logger.debug(f"Exporting HTML (inline_styles={inline_styles})")
-
-        html = self._rich_console.export_html(inline_styles=inline_styles)
-
-        if self._debug:
-            self._logger.debug(f"HTML exported: {len(html)} characters")
-
-        return html
+        return self._exporter.export_html(inline_styles=inline_styles)
 
     def export_text(self) -> str:
         """Export recorded console output as plain text.
@@ -568,23 +440,7 @@ class Console:
             >>> text = console.export_text()
             >>> print(repr(text))  # No ANSI codes
         """
-        if not self._rich_console.record:
-            raise RuntimeError(
-                "Recording mode not enabled. Initialize Console with record=True "
-                "to use export_text()."
-            )
-
-        if self._debug:
-            self._logger.debug("Exporting plain text")
-
-        # Get Rich's text export and strip any remaining ANSI codes
-        text = self._rich_console.export_text()
-        clean_text = strip_ansi(text)
-
-        if self._debug:
-            self._logger.debug(f"Text exported: {len(clean_text)} characters")
-
-        return clean_text
+        return self._exporter.export_text()
 
     def print(self, *args: Any, **kwargs: Any) -> None:
         """Direct pass-through to Rich console print.
