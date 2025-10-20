@@ -55,10 +55,14 @@ from styledconsole.utils.terminal import (
     detect_terminal_capabilities,
 )
 from styledconsole.utils.text import (
+    SAFE_EMOJIS,
+    format_emoji_with_spacing,
+    get_safe_emojis,
     pad_to_width,
     split_graphemes,
     strip_ansi,
     truncate_to_width,
+    validate_emoji,
     visual_width,
 )
 from styledconsole.utils.wrap import (
@@ -122,6 +126,10 @@ __all__ = [
     "split_graphemes",
     "pad_to_width",
     "truncate_to_width",
+    "SAFE_EMOJIS",
+    "get_safe_emojis",
+    "validate_emoji",
+    "format_emoji_with_spacing",
     # Text wrapping utilities
     "wrap_text",
     "wrap_multiline",

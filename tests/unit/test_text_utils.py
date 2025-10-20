@@ -3,6 +3,9 @@
 import pytest
 
 from styledconsole.utils.text import (
+    format_emoji_with_spacing,
+    get_emoji_spacing_adjustment,
+    get_safe_emojis,
     normalize_content,
     pad_to_width,
     split_graphemes,
@@ -395,3 +398,128 @@ class TestNormalizeContent:
         assert result == original
         # For non-empty lists, we return the same list (optimization)
         # This is fine since we're not modifying it
+
+
+class TestEmojiSpacingAdjustment:
+    """Test emoji spacing adjustment detection."""
+
+    def test_standard_emoji_no_adjustment(self):
+        """Standard emojis with correct width don't need adjustment."""
+        assert get_emoji_spacing_adjustment("✅") == 0  # Check mark
+        assert get_emoji_spacing_adjustment("🚀") == 0  # Rocket
+        assert get_emoji_spacing_adjustment("🎉") == 0  # Party popper
+        assert get_emoji_spacing_adjustment("❌") == 0  # Cross mark
+        assert get_emoji_spacing_adjustment("⭐") == 0  # Star
+
+    def test_vs16_emojis_need_adjustment(self):
+        """VS16 emojis that have width mismatch need 1 space."""
+        assert get_emoji_spacing_adjustment("⚠️") == 1  # Warning
+        assert get_emoji_spacing_adjustment("ℹ️") == 1  # Info
+        assert get_emoji_spacing_adjustment("➡️") == 1  # Right arrow
+        assert get_emoji_spacing_adjustment("🖥️") == 1  # Desktop
+        assert get_emoji_spacing_adjustment("🖱️") == 1  # Mouse
+
+    def test_multi_grapheme_emojis_need_adjustment(self):
+        """Multi-grapheme emojis without VS16 also need adjustment."""
+        # These are emojis with grapheme_count=2 but reported visual_width < metadata width
+        assert get_emoji_spacing_adjustment("⬅️") == 1  # Left arrow
+        assert get_emoji_spacing_adjustment("⬆️") == 1  # Up arrow
+        assert get_emoji_spacing_adjustment("⬇️") == 1  # Down arrow
+        assert get_emoji_spacing_adjustment("↖️") == 1  # Northwest arrow
+        assert get_emoji_spacing_adjustment("↗️") == 1  # Northeast arrow
+        assert get_emoji_spacing_adjustment("↘️") == 1  # Southeast arrow
+        assert get_emoji_spacing_adjustment("↙️") == 1  # Southwest arrow
+        assert get_emoji_spacing_adjustment("▶️") == 1  # Play
+        assert get_emoji_spacing_adjustment("⏭️") == 1  # Next track
+        assert get_emoji_spacing_adjustment("⏸️") == 1  # Pause
+        assert get_emoji_spacing_adjustment("⏹️") == 1  # Stop
+        assert get_emoji_spacing_adjustment("⌨️") == 1  # Keyboard
+        assert get_emoji_spacing_adjustment("⚙️") == 1  # Gear
+        assert get_emoji_spacing_adjustment("☀️") == 1  # Sun
+        assert get_emoji_spacing_adjustment("❄️") == 1  # Snowflake
+        assert get_emoji_spacing_adjustment("✌️") == 1  # Peace
+        assert get_emoji_spacing_adjustment("❤️") == 1  # Heart
+        assert get_emoji_spacing_adjustment("✏️") == 1  # Pencil
+
+    def test_non_safe_emoji_raises_error(self):
+        """Non-safe emojis raise ValueError."""
+        with pytest.raises(ValueError, match="not in safe list"):
+            get_emoji_spacing_adjustment("👨‍💻")  # ZWJ sequence
+
+        with pytest.raises(ValueError, match="not in safe list"):
+            get_emoji_spacing_adjustment("👍🏻")  # Skin tone modifier
+
+    def test_adjustment_range(self):
+        """Adjustment is always 0, 1, or 2."""
+        all_emojis = get_safe_emojis()
+        for emoji in all_emojis:
+            adjustment = get_emoji_spacing_adjustment(emoji)
+            assert adjustment in (0, 1, 2), (
+                f"Emoji {emoji} returned invalid adjustment: {adjustment}"
+            )
+
+
+class TestFormatEmojiWithSpacing:
+    """Test emoji formatting with automatic spacing."""
+
+    def test_standard_emoji_single_space(self):
+        """Standard emojis use single space separator."""
+        assert format_emoji_with_spacing("✅", "Success") == "✅ Success"
+        assert format_emoji_with_spacing("🚀", "Launch") == "🚀 Launch"
+        assert format_emoji_with_spacing("❌", "Failed") == "❌ Failed"
+
+    def test_vs16_emoji_double_space(self):
+        """VS16 emojis get extra space to prevent gluing."""
+        assert format_emoji_with_spacing("⚠️", "Warning") == "⚠️  Warning"
+        assert format_emoji_with_spacing("ℹ️", "Info") == "ℹ️  Info"
+        assert format_emoji_with_spacing("➡️", "Next") == "➡️  Next"
+
+    def test_arrow_emojis_double_space(self):
+        """Multi-grapheme arrow emojis get extra space."""
+        assert format_emoji_with_spacing("⬅️", "Back") == "⬅️  Back"
+        assert format_emoji_with_spacing("⬆️", "Up") == "⬆️  Up"
+        assert format_emoji_with_spacing("⬇️", "Down") == "⬇️  Down"
+        assert format_emoji_with_spacing("↖️", "Home") == "↖️  Home"
+
+    def test_emoji_without_text(self):
+        """Emoji without text returns just emoji."""
+        assert format_emoji_with_spacing("✅") == "✅"
+        assert format_emoji_with_spacing("⚠️") == "⚠️"
+        assert format_emoji_with_spacing("") == ""
+
+    def test_custom_separator(self):
+        """Custom separator is used as base."""
+        # Standard emoji with custom sep (still 1 space total)
+        assert format_emoji_with_spacing("✅", "Success", sep="") == "✅Success"
+        assert format_emoji_with_spacing("✅", "Success", sep="  ") == "✅  Success"
+
+        # VS16 emoji with custom sep (sep length + 1 extra = total spaces)
+        assert format_emoji_with_spacing("⚠️", "Warning", sep="") == "⚠️ Warning"  # 0 + 1 = 1 space
+        assert (
+            format_emoji_with_spacing("⚠️", "Warning", sep=" ") == "⚠️  Warning"
+        )  # 1 + 1 = 2 spaces
+        assert (
+            format_emoji_with_spacing("⚠️", "Warning", sep="  ") == "⚠️   Warning"
+        )  # 2 + 1 = 3 spaces
+
+    def test_all_safe_emojis_format_without_error(self):
+        """All safe emojis can be formatted without error."""
+        all_emojis = get_safe_emojis()
+        for emoji in all_emojis:
+            # Should not raise any error
+            result = format_emoji_with_spacing(emoji, "Test")
+            assert isinstance(result, str)
+            assert emoji in result
+            assert "Test" in result
+
+    def test_formatting_consistency(self):
+        """Formatted output is consistent with spacing adjustment."""
+        for emoji in ["✅", "⚠️", "⬅️", "🚀"]:
+            adjustment = get_emoji_spacing_adjustment(emoji)
+            formatted = format_emoji_with_spacing(emoji, "Text")
+            expected_spaces = 1 + adjustment  # 1 for base sep, + adjustment
+
+            # Extract spaces between emoji and text
+            # Format is: emoji + spaces + "Text"
+            spaces_in_result = formatted.split("Text")[0].replace(emoji, "")
+            assert len(spaces_in_result) == expected_spaces

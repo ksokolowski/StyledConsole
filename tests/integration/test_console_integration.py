@@ -583,3 +583,43 @@ class TestConsoleComplexWorkflows:
         assert "Cache" in output
         assert "localhost" in output
         assert "Redis" in output
+
+    def test_console_frame_with_multiline_string_content(self):
+        """Test that console.frame() correctly handles multiline string content.
+
+        This is a regression test for a bug where multiline content passed as a
+        single string was not being split into individual lines, causing rendering
+        issues where some lines would be misaligned or truncated.
+
+        Bug: RenderingEngine was wrapping string content in a list without splitting
+        newlines, so "\n" in content was never processed.
+
+        Fix: RenderingEngine now splits newlines before creating the Frame object.
+        """
+        buffer = io.StringIO()
+        console = Console(file=buffer, detect_terminal=False)
+
+        # Multiline string with newlines (this was previously broken)
+        multiline_content = "Line 1\nLine 2\nLine 3\nLine 4"
+
+        console.frame(
+            multiline_content,
+            title="Test Multiline",
+            border="rounded",
+            width=50,
+        )
+
+        output = buffer.getvalue()
+
+        # All lines should be present and properly formatted
+        assert "Line 1" in output
+        assert "Line 2" in output
+        assert "Line 3" in output
+        assert "Line 4" in output
+        assert "Test Multiline" in output
+
+        # Each line should appear on its own line in output (not concatenated)
+        lines = output.strip().split("\n")
+
+        # Should have: top border + 4 content lines + bottom border = 6 lines minimum
+        assert len(lines) >= 6

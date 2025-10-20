@@ -141,10 +141,16 @@ class FrameRenderer:
             style = frame.border
 
         # Normalize content to list of lines
+        # Note: RenderingEngine handles string->list conversion and newline splitting
+        # Here we just ensure we have a list
         if isinstance(frame.content, str):
+            # Fallback: if content is still a string (shouldn't happen with RenderingEngine),
+            # split it properly
             content_lines = frame.content.splitlines() if frame.content else [""]
-        else:
+        elif isinstance(frame.content, list):
             content_lines = frame.content if frame.content else [""]
+        else:
+            content_lines = [""]
 
         # Calculate frame width
         if frame.width is None:

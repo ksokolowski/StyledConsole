@@ -122,8 +122,22 @@ class RenderingEngine:
                 f"width={width}, padding={padding}"
             )
 
+        # Normalize content to list of lines
+        if isinstance(content, str):
+            # Split string by newlines to get individual lines
+            content_lines = content.splitlines() if content else [""]
+        else:
+            # If already a list, process each element for embedded newlines
+            content_lines = []
+            for item in content:
+                if isinstance(item, str) and "\n" in item:
+                    # Split items that contain newlines
+                    content_lines.extend(item.splitlines())
+                else:
+                    content_lines.append(item)
+
         frame = Frame(
-            content=content if isinstance(content, list) else [content],
+            content=content_lines,
             title=title,
             border=border,
             width=width,

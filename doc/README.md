@@ -212,15 +212,17 @@ doc/### `/doc/tasks/planned/`
 
 |----------|---------|--------|
 
-| [EMOJI_GUIDELINES.md](guides/EMOJI_GUIDELINES.md) | Emoji usage guide | ✅ Complete (M1) |---
+| [EMOJI_GUIDELINES.md](guides/EMOJI_GUIDELINES.md) | Emoji usage guide | ✅ Complete (M1) |
 
 | [EMOJI-STRATEGY.md](guides/EMOJI-STRATEGY.md) | Tier strategy | ✅ Complete (M1) |
 
-| [EMOJI_RENDERING.md](guides/EMOJI_RENDERING.md) | VS16 technical | ✅ Complete (Oct 18) |### 📋 [notes/CHANGELOG_2025-10-18.md](notes/CHANGELOG_2025-10-18.md)
+| [EMOJI_RENDERING.md](guides/EMOJI_RENDERING.md) | VS16 technical | ✅ Complete (Oct 18) |
 
 | [BORDER_GRADIENTS.md](guides/BORDER_GRADIENTS.md) | Gradient guide | ✅ Complete |
 
-| [THICK_STYLE.md](guides/THICK_STYLE.md) | THICK border | ✅ Complete (Oct 18) |**Purpose:** Detailed changelog for October 18 improvements
+| [THICK_STYLE.md](guides/THICK_STYLE.md) | THICK border | ✅ Complete (Oct 18) |
+
+| [COLOR_STANDARDIZATION.md](guides/COLOR_STANDARDIZATION.md) | CSS4 colors | ✅ Complete (Oct 20) |
 
 **Audience:** Users, developers tracking changes
 
@@ -274,7 +276,11 @@ doc/### `/doc/tasks/planned/`
 
 - THICK details: `THICK_STYLE.md`
 
-**Testing & Validation (Done):**- All styles: See `src/styledconsole/core/styles.py`
+**Testing & Validation (Done):**
+
+- UX_TESTING_SUMMARY.md - User validation results
+
+- EMOJI_SPACING_FIX.md - Complete spacing fix (Oct 20)- All styles: See `src/styledconsole/core/styles.py`
 
 - UX_TESTING_SUMMARY.md - UX testing Oct 19- Gallery: Run `examples/gallery/border_gallery.py`
 

@@ -312,6 +312,322 @@ def normalize_content(content: str | list[str]) -> list[str]:
         return content if content else [""]
 
 
+# Safe emoji list - tested and verified for reliable width calculation and rendering
+# These are Tier 1 emojis (single codepoint) that work correctly across terminals
+SAFE_EMOJIS = {
+    # Status & Indicators
+    "✅": {"name": "check_mark", "width": 2, "category": "status"},
+    "❌": {"name": "cross_mark", "width": 2, "category": "status"},
+    "⚠️": {"name": "warning", "width": 2, "category": "status", "has_vs16": True},
+    "ℹ️": {"name": "info", "width": 2, "category": "status", "has_vs16": True},
+    "🔴": {"name": "red_circle", "width": 2, "category": "status"},
+    "🟡": {"name": "yellow_circle", "width": 2, "category": "status"},
+    "🟢": {"name": "green_circle", "width": 2, "category": "status"},
+    "🔵": {"name": "blue_circle", "width": 2, "category": "status"},
+    # Progress & Activity
+    "⏭️": {"name": "next_track", "width": 2, "category": "progress"},
+    "⏸️": {"name": "pause", "width": 2, "category": "progress"},
+    "⏹️": {"name": "stop", "width": 2, "category": "progress"},
+    "▶️": {"name": "play", "width": 2, "category": "progress"},
+    "⏩": {"name": "fast_forward", "width": 2, "category": "progress"},
+    "⏪": {"name": "rewind", "width": 2, "category": "progress"},
+    # Arrows & Direction
+    "➡️": {"name": "right_arrow", "width": 2, "category": "direction", "has_vs16": True},
+    "⬅️": {"name": "left_arrow", "width": 2, "category": "direction"},
+    "⬆️": {"name": "up_arrow", "width": 2, "category": "direction"},
+    "⬇️": {"name": "down_arrow", "width": 2, "category": "direction"},
+    "↗️": {"name": "northeast_arrow", "width": 2, "category": "direction"},
+    "↘️": {"name": "southeast_arrow", "width": 2, "category": "direction"},
+    "↙️": {"name": "southwest_arrow", "width": 2, "category": "direction"},
+    "↖️": {"name": "northwest_arrow", "width": 2, "category": "direction"},
+    "🔃": {"name": "repeat", "width": 2, "category": "direction"},
+    "🔄": {"name": "refresh", "width": 2, "category": "direction"},
+    # Tech & Objects
+    "💻": {"name": "laptop", "width": 2, "category": "tech"},
+    "🖥️": {"name": "desktop", "width": 2, "category": "tech", "has_vs16": True},
+    "⌨️": {"name": "keyboard", "width": 2, "category": "tech"},
+    "🖱️": {"name": "mouse", "width": 2, "category": "tech", "has_vs16": True},
+    "💾": {"name": "floppy_disk", "width": 2, "category": "tech"},
+    "💿": {"name": "cd", "width": 2, "category": "tech"},
+    "🔧": {"name": "wrench", "width": 2, "category": "tech"},
+    "🔨": {"name": "hammer", "width": 2, "category": "tech"},
+    "⚙️": {"name": "gear", "width": 2, "category": "tech"},
+    "🚀": {"name": "rocket", "width": 2, "category": "tech"},
+    "📦": {"name": "package", "width": 2, "category": "tech"},
+    "📁": {"name": "folder", "width": 2, "category": "tech"},
+    "📂": {"name": "open_folder", "width": 2, "category": "tech"},
+    "📄": {"name": "page", "width": 2, "category": "tech"},
+    "📝": {"name": "memo", "width": 2, "category": "tech"},
+    "📋": {"name": "clipboard", "width": 2, "category": "tech"},
+    # Data & Charts
+    "📊": {"name": "bar_chart", "width": 2, "category": "data"},
+    "📈": {"name": "chart_up", "width": 2, "category": "data"},
+    "📉": {"name": "chart_down", "width": 2, "category": "data"},
+    # Nature & Weather
+    "🌈": {"name": "rainbow", "width": 2, "category": "nature"},
+    "☀️": {"name": "sun", "width": 2, "category": "nature"},
+    "🌙": {"name": "moon", "width": 2, "category": "nature"},
+    "⭐": {"name": "star", "width": 2, "category": "nature"},
+    "✨": {"name": "sparkles", "width": 2, "category": "nature"},
+    "💫": {"name": "dizzy", "width": 2, "category": "nature"},
+    "🌟": {"name": "glowing_star", "width": 2, "category": "nature"},
+    "💧": {"name": "droplet", "width": 2, "category": "nature"},
+    "❄️": {"name": "snowflake", "width": 2, "category": "nature"},
+    "☔": {"name": "umbrella", "width": 2, "category": "nature"},
+    "⚡": {"name": "lightning", "width": 2, "category": "nature"},
+    "🔥": {"name": "fire", "width": 2, "category": "nature"},
+    # Food & Drink
+    "🍕": {"name": "pizza", "width": 2, "category": "food"},
+    "🍔": {"name": "hamburger", "width": 2, "category": "food"},
+    "🍟": {"name": "fries", "width": 2, "category": "food"},
+    "☕": {"name": "coffee", "width": 2, "category": "food"},
+    "🍺": {"name": "beer", "width": 2, "category": "food"},
+    "🍪": {"name": "cookie", "width": 2, "category": "food"},
+    # Fun & Activities
+    "🎉": {"name": "party", "width": 2, "category": "activity"},
+    "🎊": {"name": "confetti", "width": 2, "category": "activity"},
+    "🎁": {"name": "gift", "width": 2, "category": "activity"},
+    "🎯": {"name": "target", "width": 2, "category": "activity"},
+    "🎨": {"name": "artist", "width": 2, "category": "activity"},
+    "🎭": {"name": "theater", "width": 2, "category": "activity"},
+    "🎮": {"name": "game", "width": 2, "category": "activity"},
+    "🏆": {"name": "trophy", "width": 2, "category": "activity"},
+    # Hand Gestures (Simple)
+    "👍": {"name": "thumbs_up", "width": 2, "category": "hand"},
+    "👎": {"name": "thumbs_down", "width": 2, "category": "hand"},
+    "👋": {"name": "wave", "width": 2, "category": "hand"},
+    "🙌": {"name": "raising_hands", "width": 2, "category": "hand"},
+    "🤝": {"name": "handshake", "width": 2, "category": "hand"},
+    "✋": {"name": "raised_hand", "width": 2, "category": "hand"},
+    "✌️": {"name": "peace", "width": 2, "category": "hand"},
+    # Others
+    "❤️": {"name": "heart", "width": 2, "category": "other"},
+    "💡": {"name": "lightbulb", "width": 2, "category": "other"},
+    "💎": {"name": "gem", "width": 2, "category": "other"},
+    "🔑": {"name": "key", "width": 2, "category": "other"},
+    "🎓": {"name": "graduation", "width": 2, "category": "other"},
+    "🚗": {"name": "car", "width": 2, "category": "other"},
+    "✏️": {"name": "pencil", "width": 2, "category": "other"},
+}
+
+
+def validate_emoji(emoji: str) -> dict:
+    """Validate an emoji for safe usage in StyledConsole.
+
+    Checks if emoji is in the safe list and returns detailed information
+    about its properties and any known issues.
+
+    Args:
+        emoji: Single emoji character or emoji+variation selector sequence
+
+    Returns:
+        Dictionary with keys:
+        - 'safe': bool - Whether emoji is in safe list
+        - 'name': str - Human-readable name if safe
+        - 'width': int - Display width (1 or 2)
+        - 'category': str - Category if safe
+        - 'has_vs16': bool - Whether emoji includes variation selector
+        - 'recommendation': str - Any warnings or recommendations
+
+    Example:
+        >>> result = validate_emoji("✅")
+        >>> result['safe']
+        True
+        >>> result['width']
+        2
+
+        >>> result = validate_emoji("👨‍💻")
+        >>> result['safe']
+        False
+        >>> "ZWJ" in result['recommendation']
+        True
+
+        >>> result = validate_emoji("🖥️")
+        >>> result['has_vs16']
+        True
+    """
+    result = {
+        "safe": False,
+        "name": None,
+        "width": None,
+        "category": None,
+        "has_vs16": False,
+        "recommendation": "Unknown emoji",
+    }
+
+    # Check if in safe list
+    if emoji in SAFE_EMOJIS:
+        info = SAFE_EMOJIS[emoji]
+        result.update(
+            {
+                "safe": True,
+                "name": info.get("name", "unknown"),
+                "width": info.get("width", 2),
+                "category": info.get("category", "other"),
+                "has_vs16": info.get("has_vs16", False),
+                "recommendation": "✅ Safe to use",
+            }
+        )
+        if result["has_vs16"]:
+            result["recommendation"] += " (includes variation selector)"
+        return result
+
+    # Check for ZWJ sequences
+    if "\u200d" in emoji:  # Zero-Width Joiner
+        result["recommendation"] = (
+            "❌ ZWJ sequence detected. These are not supported in v0.1. "
+            "Use simple single-codepoint emojis instead."
+        )
+        return result
+
+    # Check for variation selectors
+    if VARIATION_SELECTOR_16 in emoji:
+        result["recommendation"] = (
+            "⚠️ Variation selector (U+FE0F) detected. "
+            "This emoji may not be in the tested safe list. "
+            "Try removing the variation selector if alignment issues occur."
+        )
+        return result
+
+    # Check for skin tone modifiers (Tier 2)
+    if any(0x1F3FB <= ord(c) <= 0x1F3FF for c in emoji):
+        result["recommendation"] = (
+            "❌ Skin tone modifier detected. "
+            "Tier 2 emojis are not supported in v0.1. "
+            "Use base emoji without skin tone."
+        )
+        return result
+
+    # Fallback
+    result["recommendation"] = (
+        "❓ Unknown emoji. Not in safe list. Use at your own risk - may have alignment issues."
+    )
+    return result
+
+
+def get_safe_emojis(category: str | None = None) -> dict:
+    """Get safe emojis, optionally filtered by category.
+
+    Args:
+        category: Optional category name to filter by
+                 (e.g., 'status', 'tech', 'nature', 'food', 'activity')
+                 If None, returns all safe emojis.
+
+    Returns:
+        Dictionary of emoji -> info mappings
+
+    Example:
+        >>> status_emojis = get_safe_emojis("status")
+        >>> "✅" in status_emojis
+        True
+        >>> len(get_safe_emojis())
+        > 80
+    """
+    if category is None:
+        return SAFE_EMOJIS.copy()
+
+    return {emoji: info for emoji, info in SAFE_EMOJIS.items() if info.get("category") == category}
+
+
+def get_emoji_spacing_adjustment(emoji: str) -> int:
+    """Get the number of extra spaces needed after an emoji for proper alignment.
+
+    This function detects when an emoji's reported visual width doesn't match
+    its actual terminal display width (due to grapheme cluster compositions
+    and terminal rendering inconsistencies) and returns the adjustment needed.
+
+    The detection logic:
+    1. Checks if emoji is in safe list
+    2. Compares emoji's grapheme_count with visual_width() result
+    3. Returns adjustment if: grapheme_count > 1 AND visual_width < metadata width
+
+    This handles both explicit VS16 cases and other multi-part emoji sequences.
+
+    Args:
+        emoji: Single emoji or emoji+modifiers sequence
+
+    Returns:
+        Number of extra spaces to add after emoji:
+        - 0: No adjustment needed (emoji width calculated correctly)
+        - 1: Add 1 extra space (common for VS16 emojis)
+        - 2: Add 2 extra spaces (edge cases)
+
+    Example:
+        >>> get_emoji_spacing_adjustment("✅")  # Standard emoji
+        0
+        >>> get_emoji_spacing_adjustment("⚠️")  # VS16 emoji (warning)
+        1
+        >>> get_emoji_spacing_adjustment("➡️")  # Variation selector arrow
+        1
+        >>> get_emoji_spacing_adjustment("↖️")  # Multi-grapheme no VS16
+        1
+
+    Raises:
+        ValueError: If emoji is not in safe list
+    """
+    if emoji not in SAFE_EMOJIS:
+        raise ValueError(
+            f"Emoji {repr(emoji)} not in safe list. "
+            f"Use validate_emoji() to check unsupported emojis."
+        )
+
+    # Get emoji metadata
+    info = SAFE_EMOJIS[emoji]
+    metadata_width = info.get("width", 2)
+
+    # Calculate actual grapheme count
+    grapheme_count = len(split_graphemes(emoji))
+
+    # Calculate visual width reported by wcwidth
+    actual_visual_width = visual_width(emoji)
+
+    # Determine if spacing adjustment is needed
+    # If emoji has multiple graphemes but visual_width is less than metadata width,
+    # there's a mismatch that needs compensation
+    if grapheme_count > 1 and actual_visual_width < metadata_width:
+        # Calculate how much adjustment is needed
+        adjustment = metadata_width - actual_visual_width
+        return min(adjustment, 2)  # Cap at 2 extra spaces
+
+    return 0
+
+
+def format_emoji_with_spacing(emoji: str, text: str = "", sep: str = " ") -> str:
+    """Format emoji with automatic spacing adjustment.
+
+    This is a convenience function that combines emoji with text, automatically
+    adding the correct number of spaces between them to prevent visual gluing.
+
+    Args:
+        emoji: Emoji character(s) from safe list
+        text: Optional text to append after emoji
+        sep: Base separator between emoji and text (default: single space)
+
+    Returns:
+        Formatted string with emoji and text, properly spaced
+
+    Example:
+        >>> format_emoji_with_spacing("✅", "Success")
+        '✅ Success'
+        >>> format_emoji_with_spacing("⚠️", "Warning")
+        '⚠️  Warning'  # Extra space for VS16
+        >>> format_emoji_with_spacing("➡️", "Next")
+        '➡️  Next'
+        >>> format_emoji_with_spacing("↖️", "Back")
+        '↖️  Back'
+
+    Raises:
+        ValueError: If emoji not in safe list
+    """
+    if not text:
+        return emoji
+
+    adjustment = get_emoji_spacing_adjustment(emoji)
+    total_spaces = len(sep) + adjustment
+
+    return emoji + (" " * total_spaces) + text
+
+
 __all__ = [
     "visual_width",
     "strip_ansi",
@@ -319,5 +635,10 @@ __all__ = [
     "pad_to_width",
     "truncate_to_width",
     "normalize_content",
+    "validate_emoji",
+    "get_safe_emojis",
+    "get_emoji_spacing_adjustment",
+    "format_emoji_with_spacing",
+    "SAFE_EMOJIS",
     "AlignType",
 ]

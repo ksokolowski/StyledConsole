@@ -29,18 +29,31 @@ Comprehensive CI/CD monitoring dashboards demonstrating:
 uv run python examples/showcase/cicd_dashboard.py
 ```
 
-### `banner_showcase.py` - Banner Renderer Gallery
+### `rainbow_fat_alignment.py` - Rainbow Fat Alignment Showcase
 
-Visual showcase of banner capabilities:
+Advanced example showcasing layout alignment with vibrant styling:
 
-- Different ASCII art fonts (slant, banner, standard, etc.)
-- Gradient color effects
-- Border integration
-- Application launch banners
+- **Three Alignment Demonstrations**: Left, Center, and Right aligned sections
+- **Rainbow Gradient Banners**: Large colorful ASCII art banners with gradients
+- **Mixed Alignment Layouts**: Dynamic visual hierarchy with multiple alignment types
+- **Emoji-Rich Dashboard**: Performance, storage, and user metrics cards (all centered)
+- **Border Style Gallery**: All 8 border styles with rotating alignments
+- **Multiple Color Schemes**: CSS4 color names throughout (lime, cyan, yellow, magenta, hotpink, orange)
+
+**Features Demonstrated:**
+
+- `LayoutComposer.stack()` with `align="left"`, `align="center"`, `align="right"`
+- `BannerRenderer` with red→magenta, green→cyan, and blue→magenta gradients
+- `FrameRenderer` with all 8 border styles
+- Emoji-safe width calculations with `visual_width()`
+- `format_emoji_with_spacing()` for perfect emoji alignment
+- Fixed and auto-width layouts
+- Complex multi-section compositions
 
 **Run It:**
+
 ```bash
-uv run python examples/showcase/banner_showcase.py
+uv run python examples/showcase/rainbow_fat_alignment.py
 ```
 
 ## Requirements
