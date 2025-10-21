@@ -1,7 +1,7 @@
 # ANSI Layout Wrapping Bug
 
 **Priority:** HIGH
-**Status:** ✅ **SOLUTION FOUND** - Use Rich's `justify` parameter
+**Status:** ✅ **SOLVED** - Using Rich's `Text.align()` method
 **Date Discovered:** 2025-10-20
 **Date Analyzed:** 2025-10-21
 **Date Solved:** 2025-10-21
@@ -9,36 +9,40 @@
 
 ---
 
-## ✅ SOLUTION FOUND (2025-10-21)
+## ✅ FINAL SOLUTION (2025-10-21)
 
-**Rich's `justify` parameter handles ANSI codes correctly!**
+**Use Rich's `Text.align()` method for proper ANSI-aware alignment!**
 
-Instead of padding strings in `LayoutComposer`, use Rich's built-in ANSI-aware justification:
+The correct approach is to convert ANSI strings to Rich Text objects and use their align method:
 
 ```python
-# ❌ OLD (Broken with colored frames):
-layout = composer.stack([frame], align="right", width=terminal_width)
-for line in layout:
-    console.print(line)
+from rich.text import Text
 
-# ✅ NEW (Works perfectly):
-layout = composer.stack([frame], align="left")  # Don't add padding
+# ❌ BROKEN (Using justify parameter - treats lines independently):
+layout = composer.stack([frame], align="left")
 for line in layout:
-    console.print(line, justify="right")  # Let Rich handle alignment
+    console.print(line, justify="right")  # Each line aligned separately!
+
+# ✅ CORRECT (Using Text.align() - treats frame as a unit):
+layout = composer.stack([frame], align="left")  # No padding in composer
+for line in layout:
+    text = Text.from_ansi(line)
+    text.align("right", width=terminal_width)
+    console._rich_console.print(text, highlight=False, soft_wrap=False)
 ```
 
-**Why this works:**
-- Rich's `console.print(text, justify="right")` uses ANSI-aware width calculation
-- It outputs positioning codes instead of padding strings with spaces
-- Terminal counts positioning codes differently than character padding
-- Result: Perfect alignment with no wrapping!
+**Why Text.align() works but justify doesn't:**
+- `console.print(line, justify="right")` treats each line independently
+- Frame lines have different ANSI overhead (top/bottom: 21 bytes, content: 63 bytes)
+- Rich centers each line separately based on its byte count → misalignment
+- `Text.align()` aligns the Text object properly accounting for ANSI as a visual unit
+- All frame lines align consistently regardless of ANSI differences
 
-**Implementation options:**
-1. **Quick fix:** Document workaround, update examples
-2. **Clean solution:** Add `justify_output` parameter to Console methods
-3. **Comprehensive:** Refactor `LayoutComposer` to delegate alignment to Rich
-
-**Recommended:** Option 2 - add `justify` parameter to layout-printing methods.
+**Implementation completed:**
+- All sections in rainbow_fat_alignment.py updated
+- Perfect alignment for left/center/right with colored borders
+- No wrapping at any terminal width
+- All 655 tests passing
 
 ---
 

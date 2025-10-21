@@ -157,13 +157,17 @@ def create_alignment_showcase() -> None:
         spacing=1,
     )
 
-    console.print("┌─ LEFT-ALIGNED (Default) ─────────────────────────────────┐")
+    header = Text("┌─ LEFT-ALIGNED (Default) ─────────────────────────────────┐")
+    header.align("left", width=terminal_width)
+    console._rich_console.print(header, highlight=False, soft_wrap=False)
     for line in left_layout:
         # Convert to Rich Text and align to terminal width
         text = Text.from_ansi(line)
         text.align("left", width=terminal_width)
         console._rich_console.print(text, highlight=False, soft_wrap=False)
-    console.print("└──────────────────────────────────────────────────────────┘")
+    footer = Text("└──────────────────────────────────────────────────────────┘")
+    footer.align("left", width=terminal_width)
+    console._rich_console.print(footer, highlight=False, soft_wrap=False)
     console.newline(2)
 
     # ==============================================================================
@@ -205,12 +209,16 @@ def create_alignment_showcase() -> None:
         spacing=1,
     )
 
-    console.print("┌─ CENTER-ALIGNED ──────────────────────────────────────────┐")
+    header = Text("┌─ CENTER-ALIGNED ──────────────────────────────────────────┐")
+    header.align("center", width=terminal_width)
+    console._rich_console.print(header, highlight=False, soft_wrap=False)
     for line in center_layout:
         text = Text.from_ansi(line)
         text.align("center", width=terminal_width)
         console._rich_console.print(text, highlight=False, soft_wrap=False)
-    console.print("└──────────────────────────────────────────────────────────┘")
+    footer = Text("└──────────────────────────────────────────────────────────┘")
+    footer.align("center", width=terminal_width)
+    console._rich_console.print(footer, highlight=False, soft_wrap=False)
     console.newline(2)
 
     # ==============================================================================
@@ -252,12 +260,16 @@ def create_alignment_showcase() -> None:
         spacing=1,
     )
 
-    console.print("┌─ RIGHT-ALIGNED ───────────────────────────────────────────┐")
+    header = Text("┌─ RIGHT-ALIGNED ───────────────────────────────────────────┐")
+    header.align("right", width=terminal_width)
+    console._rich_console.print(header, highlight=False, soft_wrap=False)
     for line in right_layout:
         text = Text.from_ansi(line)
         text.align("right", width=terminal_width)
         console._rich_console.print(text, highlight=False, soft_wrap=False)
-    console.print("└──────────────────────────────────────────────────────────┘")
+    footer = Text("└──────────────────────────────────────────────────────────┘")
+    footer.align("right", width=terminal_width)
+    console._rich_console.print(footer, highlight=False, soft_wrap=False)
     console.newline(2)
 
     # ==============================================================================
@@ -311,7 +323,9 @@ def create_alignment_showcase() -> None:
     center_mixed = composer.stack([section_b], align="left", spacing=0)
     right_mixed = composer.stack([section_c], align="left", spacing=0)
 
-    console.print("┌─ MIXED ALIGNMENTS ────────────────────────────────────────┐")
+    header = Text("┌─ MIXED ALIGNMENTS ────────────────────────────────────────┐")
+    header.align("left", width=terminal_width)
+    console._rich_console.print(header, highlight=False, soft_wrap=False)
     # Print left-aligned section
     for line in left_mixed:
         text = Text.from_ansi(line)
@@ -333,7 +347,9 @@ def create_alignment_showcase() -> None:
         text = Text.from_ansi(line)
         text.align("right", width=terminal_width)
         console._rich_console.print(text, highlight=False, soft_wrap=False)
-    console.print("└──────────────────────────────────────────────────────────┘")
+    footer = Text("└──────────────────────────────────────────────────────────┘")
+    footer.align("left", width=terminal_width)
+    console._rich_console.print(footer, highlight=False, soft_wrap=False)
     console.newline(2)
 
     # ==============================================================================
@@ -380,12 +396,16 @@ def create_alignment_showcase() -> None:
         spacing=1,
     )
 
-    console.print("┌─ EMOJI DASHBOARD (Centered) ──────────────────────────────┐")
+    header = Text("┌─ EMOJI DASHBOARD (Centered) ──────────────────────────────┐")
+    header.align("center", width=terminal_width)
+    console._rich_console.print(header, highlight=False, soft_wrap=False)
     for line in dashboard_layout:
         text = Text.from_ansi(line)
         text.align("center", width=terminal_width)
         console._rich_console.print(text, highlight=False, soft_wrap=False)
-    console.print("└──────────────────────────────────────────────────────────┘")
+    footer = Text("└──────────────────────────────────────────────────────────┘")
+    footer.align("center", width=terminal_width)
+    console._rich_console.print(footer, highlight=False, soft_wrap=False)
     console.newline(2)
 
     # ==============================================================================
