@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 """
-Border Gallery
+Border Gallery (v0.3.0 - Rich Native)
 
 A visual catalog of all StyledConsole border styles with detailed character sets.
 Perfect for choosing the right style for your application.
+
+v0.3.0: Updated to use Console.frame() which internally uses Rich Panel.
 """
 
-from styledconsole import FrameRenderer, get_border_style, list_border_styles
+from styledconsole import Console, get_border_style, list_border_styles
 
-renderer = FrameRenderer()
+console = Console()
 
 print()
 print("=" * 90)
@@ -39,27 +41,29 @@ for style_name, display_name, description, use_case in styles:
     chars += f"Lines: '{style.horizontal}{style.vertical}'  "
     chars += f"Joints: '{style.left_joint}{style.right_joint}{style.top_joint}{style.bottom_joint}'"
 
-    content = [
-        "",
-        description,
-        f"Use case: {use_case}",
-        "",
-        chars,
-        "",
-        "Sample left-aligned content",
-        "Sample centered content",
-        "Sample right-aligned content",
-    ]
+    content = "\n".join(
+        [
+            "",
+            description,
+            f"Use case: {use_case}",
+            "",
+            chars,
+            "",
+            "Sample left-aligned content",
+            "Sample centered content",
+            "Sample right-aligned content",
+        ]
+    )
 
-    for line in renderer.render(
+    # Use Console.frame() which internally uses Rich Panel
+    console.frame(
         content,
         title=f"✨ {display_name}",
         border=style_name,
         width=width,
         align="center",
-    ):
-        print(line)
-    print()
+    )
+    console.newline()
 
 # Summary
 print("=" * 90)
