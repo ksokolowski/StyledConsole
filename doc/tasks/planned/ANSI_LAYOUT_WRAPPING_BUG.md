@@ -1,13 +1,68 @@
 # ANSI Layout Wrapping Bug
 
 **Priority:** HIGH
-**Status:** Discovered
-**Date:** 2025-10-20
+**Status:** ✅ **SOLUTION FOUND** - Use Rich's `justify` parameter
+**Date Discovered:** 2025-10-20
+**Date Analyzed:** 2025-10-21
+**Date Solved:** 2025-10-21
 **Discovered in:** Rainbow Fat Alignment Showcase Example
+
+---
+
+## ✅ SOLUTION FOUND (2025-10-21)
+
+**Rich's `justify` parameter handles ANSI codes correctly!**
+
+Instead of padding strings in `LayoutComposer`, use Rich's built-in ANSI-aware justification:
+
+```python
+# ❌ OLD (Broken with colored frames):
+layout = composer.stack([frame], align="right", width=terminal_width)
+for line in layout:
+    console.print(line)
+
+# ✅ NEW (Works perfectly):
+layout = composer.stack([frame], align="left")  # Don't add padding
+for line in layout:
+    console.print(line, justify="right")  # Let Rich handle alignment
+```
+
+**Why this works:**
+- Rich's `console.print(text, justify="right")` uses ANSI-aware width calculation
+- It outputs positioning codes instead of padding strings with spaces
+- Terminal counts positioning codes differently than character padding
+- Result: Perfect alignment with no wrapping!
+
+**Implementation options:**
+1. **Quick fix:** Document workaround, update examples
+2. **Clean solution:** Add `justify_output` parameter to Console methods
+3. **Comprehensive:** Refactor `LayoutComposer` to delegate alignment to Rich
+
+**Recommended:** Option 2 - add `justify` parameter to layout-printing methods.
+
+---
 
 ## Problem Description
 
 When using `LayoutComposer` with `align="right"` or `align="center"`, frames containing ANSI color codes wrap to the next line even though their **visual width** fits within the terminal width.
+
+### Fundamental Constraint
+
+This is a **mathematical impossibility** with the current string-based architecture:
+
+**Three conflicting requirements:**
+1. ✅ **Colored borders** (adds ~20 bytes ANSI codes per line)
+2. ✅ **Perfect right-edge alignment** (requires padding to terminal width)
+3. ✅ **No wrapping** (requires total string length ≤ terminal width)
+
+**Why they conflict:**
+- Frame visual width: 60 chars (what you see)
+- ANSI codes overhead: ~20 bytes (invisible)
+- Terminal width: 277 chars
+- For right-align: padding = 277 - 60 = 217 spaces
+- Total string: 217 + 60 + 20 = **297 bytes**
+- Terminal wraps at: 277 chars
+- **Result: 20 bytes overflow → frame breaks**
 
 ### Root Cause
 
@@ -196,23 +251,181 @@ def print(self, *args: Any, **kwargs: Any) -> None:
 - Patches symptom, not cause
 - May affect other use cases
 
+## Current Workaround (v0.1.0)
+
+**In rainbow_fat_alignment.py:**
+```python
+max_frame_width = min(60, terminal_width // 2)  # Keep frames narrow
+```
+
+This works because:
+- Frame width: 60 chars
+- ANSI overhead: ~20 bytes
+- Total string: 60 + 20 = 80 bytes
+- Padding for right-align: 277 - 60 = 217 spaces
+- Total output: 217 + 80 = 297 bytes (still wraps!)
+
+**Current workaround still has issues.** Left and center alignment work, but right alignment still wraps.
+
+## Why All Attempted Fixes Failed
+
+### ❌ Attempted Fix #1: Reduce Padding by ANSI Overhead
+```python
+max_padding = target_width - visual_width - ansi_overhead
+```
+**Result:** No wrapping ✅, but frames don't align to terminal edge ❌
+**Problem:** Frames appear ~20 chars left of where they should be
+
+### ❌ Attempted Fix #2: ANSI Cursor Positioning
+```python
+cursor_forward = f"\x1b[{padding}C"  # Move cursor without spaces
+return cursor_forward + line
+```
+**Result:** Still wraps ❌
+**Problem:** Terminal counts the frame string bytes after cursor position
+
+### ❌ Attempted Fix #3: Rich Text API with Padding
+```python
+text = Text.from_ansi(line)
+text.pad_left(target_width)
+```
+**Result:** Still wraps ❌
+**Problem:** Rich outputs ANSI string + spaces, same total length
+
+## The Real Solution: Architectural Change
+
+### Current Architecture (v0.1.0)
+```
+LayoutComposer.stack() → list[str]  # Pre-formatted with padding
+  ↓
+Console.print(str)  # Just outputs the string
+```
+
+**Problem:** Once we add padding to create the string, it's too late - the string length already exceeds terminal width.
+
+### Proposed Architecture (M4)
+
+**Option A: Return Structured Data**
+```python
+@dataclass
+class LayoutLine:
+    content: str          # The frame line with ANSI
+    visual_width: int     # Visual width
+    alignment: AlignType  # How to align
+
+LayoutComposer.stack() → list[LayoutLine]
+  ↓
+Console.print(LayoutLine)  # Uses Rich's justify parameter
+```
+
+**Option B: Use Rich Renderables**
+```python
+LayoutComposer.stack() → Renderables
+  ↓
+Console.print(Renderable)  # Rich handles alignment internally
+```
+
+**Option C: Strip Colors, Let Console Re-apply**
+```python
+LayoutComposer.stack() → list[tuple[str, style_info]]
+  ↓
+Console.print()  # Applies colors while printing with Rich
+```
+
 ## Recommendation
 
-**Implement Option 1** (Strip ANSI Before Padding) as it:
-- Fixes the root cause in `LayoutComposer`
-- Maintains separation of concerns
-- Doesn't rely on Rich's internal APIs
-- Provides precise control over alignment
+**Implement Option A** (Structured Data) in M4 because:
 
-## Implementation Plan
+1. **Separation of Concerns:** Layout calculates positions, Console handles rendering
+2. **No Data Loss:** Preserves all information (content, width, alignment, colors)
+3. **Rich Integration:** Can use `Text()` objects with `justify` parameter
+4. **Backward Compatible:** Can add `stack_legacy()` that returns strings
+5. **Future-Proof:** Enables more features (vertical alignment, padding control, etc.)
 
-1. **Phase 1:** Add ANSI extraction/reapplication utilities to `utils/text.py`
-   - `extract_ansi_sequences(text: str) -> list[tuple[int, str]]`
-   - `reapply_ansi_sequences(text: str, sequences: list) -> str`
+## Implementation Plan (M4 Milestone)
 
-2. **Phase 2:** Update `LayoutComposer._align_line()` to use new utilities
+### Phase 1: Define New Types (0.5 days)
+```python
+# In types.py
+@dataclass
+class LayoutLine:
+    """A line in a layout with metadata for proper rendering."""
+    content: str  # May contain ANSI codes
+    visual_width: int
+    alignment: AlignType = "left"
+```
 
-3. **Phase 3:** Add comprehensive tests:
+### Phase 2: Update LayoutComposer (1 day)
+- Add `stack_structured()` method that returns `list[LayoutLine]`
+- Keep `stack()` for backward compatibility (returns `list[str]`)
+- Mark `stack()` as deprecated with migration guide
+
+### Phase 3: Update Console.print() (1 day)
+- Add overload for `print(LayoutLine)`
+- Use Rich's `Text()` with `justify` parameter for alignment
+- Handle ANSI codes transparently
+
+### Phase 4: Testing (0.5 days)
+- Test all frame types with all alignments
+- Test at various terminal widths (40, 80, 120, 277)
+- Test edge cases (frame wider than terminal, etc.)
+- Update all 655 existing tests
+
+### Phase 5: Update Examples & Docs (0.5 days)
+- Update `rainbow_fat_alignment.py` to remove workarounds
+- Update all other examples to use new API
+- Document migration path in CHANGELOG
+- Update API documentation
+
+**Total Effort:** 3.5 days
+**Target:** M4 Milestone
+
+## Testing Checklist (Post-Implementation)
+
+- [ ] Colored frame, left-aligned, terminal width 80
+- [ ] Colored frame, center-aligned, terminal width 80
+- [ ] Colored frame, right-aligned, terminal width 80
+- [ ] Colored frame, center-aligned, terminal width 277
+- [ ] Colored frame, right-aligned, terminal width 277
+- [ ] Multiple colored frames stacked, all alignments
+- [ ] Gradient frames (complex ANSI) with all alignments
+- [ ] Very narrow terminal (40 chars)
+- [ ] Frame wider than terminal (graceful degradation)
+- [ ] Mixed colored and plain frames
+- [ ] Grid layouts with colored frames
+- [ ] All existing 655 tests pass
+
+## Impact Analysis
+
+**Breaking Changes:**
+- None if we keep `stack()` returning strings
+- Add `stack_structured()` as new API
+
+**Migration Path:**
+```python
+# Old (v0.1.0)
+layout = composer.stack([frame1, frame2], align="right", width=terminal_width)
+for line in layout:
+    console.print(line, highlight=False, soft_wrap=False)
+
+# New (v0.2.0 / M4)
+layout = composer.stack([frame1, frame2], align="right")  # No width needed
+console.print_layout(layout)  # Console handles alignment
+```
+
+**Benefits:**
+- ✅ Perfect alignment to terminal edge
+- ✅ No wrapping with colored frames
+- ✅ Cleaner API (Console handles rendering)
+- ✅ Better separation of concerns
+- ✅ Enables future features (animations, dynamic resize, etc.)
+
+## References
+
+- Original issue: `examples/showcase/rainbow_fat_alignment.py` wrapping
+- Related: Terminal detection in `utils/terminal.py`
+- Related: Visual width calculations in `utils/text.py`
+- Architecture doc: `doc/project/PLAN.md`
    - Test colored frames with all alignment types
    - Test various terminal widths
    - Test edge cases (very narrow terminals, very wide frames)

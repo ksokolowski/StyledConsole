@@ -30,15 +30,26 @@
 ## 🐛 Critical Bugs (High Priority)
 
 ### BUG-001: ANSI Layout Wrapping
-**Status:** 🔴 Active
+**Status:** � Documented - Requires Architectural Change
 **Priority:** HIGH
 **Discovered:** 2025-10-20
+**Last Updated:** 2025-10-20
 **File:** [`doc/tasks/planned/ANSI_LAYOUT_WRAPPING_BUG.md`](../tasks/planned/ANSI_LAYOUT_WRAPPING_BUG.md)
 
-Colored frames with `align="center"` or `align="right"` wrap to the next line because ANSI escape codes make the string length exceed terminal width, even though visual width is correct. Affects all colored layouts with center/right alignment.
+**Problem:** Colored frames with `align="center"` or `align="right"` wrap to the next line because ANSI escape codes (~20 bytes) make the string length exceed terminal width, even though visual width is correct.
 
-**Recommended Fix:** Strip ANSI codes before padding, then reapply them.
-**Target:** M4 (Current sprint)
+**Root Cause:** Architectural limitation - cannot have colored borders + perfect alignment + no wrapping simultaneously with string-based padding approach.
+
+**Failed Attempts:** Three fix approaches tested and documented:
+1. Extract/reapply ANSI codes (wrong positions)
+2. Reduce padding by ANSI overhead (frames misaligned)
+3. Cursor positioning codes (still wraps)
+
+**Solution:** Architectural change to structured data approach (`LayoutLine` dataclass). Console renders using Rich's `justify` parameter instead of pre-padded strings.
+
+**Implementation Plan:** 5 phases, 3.5 days effort (see BUG-001 document)
+**Target:** M4 milestone
+**Current Workaround:** Use narrow frames (max 60 chars)
 
 ---
 

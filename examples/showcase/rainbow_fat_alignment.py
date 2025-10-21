@@ -88,9 +88,9 @@ def create_alignment_showcase() -> None:
     # Get terminal width for proper alignment - use Rich console's detected width
     terminal_width = console._rich_console.width
 
-    # Use a safe frame width that accounts for ANSI codes and terminal wrapping
-    # Keep frames at a reasonable width (60 chars) to avoid any wrapping issues
-    max_frame_width = min(60, terminal_width // 2)  # Max 60 or half terminal width
+    # Fixed: Now using Rich's justify parameter, we can use wider frames!
+    # No need to restrict frame width to avoid ANSI wrapping
+    max_frame_width = min(80, terminal_width // 2)  # Increased from 60 to 80
 
     # ==============================================================================
     # SECTION 1: Rainbow Banner Header
@@ -148,16 +148,21 @@ def create_alignment_showcase() -> None:
     )
 
     # Stack left-aligned (default)
+    # Fix: Use Rich's Text.align() for ANSI-aware alignment
+    from rich.text import Text
+
     left_layout = composer.stack(
         [left_banner, left_frame_1, left_frame_2],
         align="left",
         spacing=1,
-        width=terminal_width,
     )
 
     console.print("┌─ LEFT-ALIGNED (Default) ─────────────────────────────────┐")
     for line in left_layout:
-        console.print(line, highlight=False, soft_wrap=False)
+        # Convert to Rich Text and align to terminal width
+        text = Text.from_ansi(line)
+        text.align("left", width=terminal_width)
+        console._rich_console.print(text, highlight=False, soft_wrap=False)
     console.print("└──────────────────────────────────────────────────────────┘")
     console.newline(2)
 
@@ -193,16 +198,18 @@ def create_alignment_showcase() -> None:
     )
 
     # Stack center-aligned
+    # Fix: Use Rich's Text.align() for proper ANSI-aware alignment
     center_layout = composer.stack(
         [center_banner, center_frame_1, center_frame_2],
-        align="center",
+        align="left",  # Don't pad in composer
         spacing=1,
-        width=terminal_width,
     )
 
     console.print("┌─ CENTER-ALIGNED ──────────────────────────────────────────┐")
     for line in center_layout:
-        console.print(line, highlight=False, soft_wrap=False)
+        text = Text.from_ansi(line)
+        text.align("center", width=terminal_width)
+        console._rich_console.print(text, highlight=False, soft_wrap=False)
     console.print("└──────────────────────────────────────────────────────────┘")
     console.newline(2)
 
@@ -238,16 +245,18 @@ def create_alignment_showcase() -> None:
     )
 
     # Stack right-aligned
+    # Fix: Use Rich's Text.align() for ANSI-aware alignment
     right_layout = composer.stack(
         [right_banner, right_frame_1, right_frame_2],
-        align="right",
+        align="left",  # Don't pad in composer
         spacing=1,
-        width=terminal_width,
     )
 
     console.print("┌─ RIGHT-ALIGNED ───────────────────────────────────────────┐")
     for line in right_layout:
-        console.print(line, highlight=False, soft_wrap=False)
+        text = Text.from_ansi(line)
+        text.align("right", width=terminal_width)
+        console._rich_console.print(text, highlight=False, soft_wrap=False)
     console.print("└──────────────────────────────────────────────────────────┘")
     console.newline(2)
 
