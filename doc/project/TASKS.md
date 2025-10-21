@@ -30,36 +30,43 @@
 ## 🐛 Critical Bugs (High Priority)
 
 ### BUG-001: ANSI Layout Wrapping
-**Status:** � Documented - Requires Architectural Change
+**Status:** ✅ **SOLVED** - Using Rich's Text.align()
 **Priority:** HIGH
 **Discovered:** 2025-10-20
-**Last Updated:** 2025-10-20
+**Solved:** 2025-10-21
 **File:** [`doc/tasks/planned/ANSI_LAYOUT_WRAPPING_BUG.md`](../tasks/planned/ANSI_LAYOUT_WRAPPING_BUG.md)
 
-**Problem:** Colored frames with `align="center"` or `align="right"` wrap to the next line because ANSI escape codes (~20 bytes) make the string length exceed terminal width, even though visual width is correct.
+**Problem:** Colored frames with `align="center"` or `align="right"` wrapped to next line because ANSI escape codes made string length exceed terminal width.
 
-**Root Cause:** Architectural limitation - cannot have colored borders + perfect alignment + no wrapping simultaneously with string-based padding approach.
+**Root Cause:** Using string-based padding with `composer.stack(align=..., width=terminal_width)` caused each line to be aligned independently based on its total byte count (including ANSI codes).
 
-**Failed Attempts:** Three fix approaches tested and documented:
-1. Extract/reapply ANSI codes (wrong positions)
-2. Reduce padding by ANSI overhead (frames misaligned)
-3. Cursor positioning codes (still wraps)
+**Solution Found:** Use Rich's `Text.align()` method:
 
-**Solution:** Architectural change to structured data approach (`LayoutLine` dataclass). Console renders using Rich's `justify` parameter instead of pre-padded strings.
+```python
+text = Text.from_ansi(line)
+text.align("center", width=terminal_width)
+console._rich_console.print(text)
+```
 
-**Implementation Plan:** 5 phases, 3.5 days effort (see BUG-001 document)
-**Target:** M4 milestone
-**Current Workaround:** Use narrow frames (max 60 chars)
+**Results:**
+
+- ✅ Perfect alignment for all left/center/right positions
+- ✅ No wrapping at any terminal width
+- ✅ All colored borders display correctly
+- ✅ All 655 tests passing
+- ✅ All showcase examples updated and working
+
+**Key Lesson:** Rely on Rich's native ANSI-aware methods instead of reimplementing alignment ourselves.
 
 ---
 
-### Project Statistics (Oct 20, 2025)
+### Project Statistics (Oct 21, 2025)
 
-- **Source Code:** 21 Python modules (1,131 tracked statements)
-- **Tests:** 642 tests across 18 test modules (✅ ALL PASSING)
-- **Coverage:** 96.20% (1,088/1,131 statements covered, 43 missed)
+- **Source Code:** 21 Python modules (1,157 tracked statements)
+- **Tests:** 655 tests across 18 test modules (✅ ALL PASSING)
+- **Coverage:** 96.11% (1,112/1,157 statements covered, 45 missed)
 - **Examples:** 12 files (9 basic examples + 3 showcase examples)
-- **Commits:** 45+ commits since project start (Oct 17, 2025)
+- **Commits:** 47+ commits since project start (Oct 17, 2025)
 - **Documentation:** 7+ markdown files (README, PLAN, TASKS, EMOJI_GUIDELINES, examples, guides)
 
 ## Task Organization
