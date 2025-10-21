@@ -39,24 +39,7 @@ class TestRenderingEngineInit:
 
 
 class TestRenderingEngineLazyInit:
-    """Tests for lazy initialization of renderers."""
-
-    def test_frame_renderer_lazy_init(self):
-        """Test that frame renderer is initialized lazily."""
-        rich_console = RichConsole()
-        engine = RenderingEngine(rich_console)
-
-        # Initially None
-        assert engine._RenderingEngine__frame_renderer is None
-
-        # Access triggers initialization
-        renderer = engine._frame_renderer
-        assert renderer is not None
-        assert engine._RenderingEngine__frame_renderer is renderer
-
-        # Second access returns same instance
-        renderer2 = engine._frame_renderer
-        assert renderer2 is renderer
+    """Tests for lazy initialization of renderers (v0.3.0: Only banner renderer now)."""
 
     def test_banner_renderer_lazy_init(self):
         """Test that banner renderer is initialized lazily."""
@@ -79,11 +62,6 @@ class TestRenderingEngineLazyInit:
         """Test that lazy initialization logs debug message."""
         rich_console = RichConsole()
         engine = RenderingEngine(rich_console, debug=True)
-
-        with patch.object(engine._logger, "debug") as mock_debug:
-            # Access frame renderer
-            _ = engine._frame_renderer
-            mock_debug.assert_called_with("FrameRenderer initialized (lazy)")
 
         with patch.object(engine._logger, "debug") as mock_debug:
             # Access banner renderer
@@ -132,18 +110,17 @@ class TestRenderingEngineFrame:
         assert "Line 3" in output
 
     def test_print_frame_debug_logging(self):
-        """Test that frame rendering logs debug messages."""
+        """Test that frame rendering logs debug messages (v0.3.0: Rich Panel)."""
         rich_console = RichConsole()
         engine = RenderingEngine(rich_console, debug=True)
 
         with patch.object(engine._logger, "debug") as mock_debug:
-            with patch.object(engine._frame_renderer, "render_frame", return_value=["line"]):
-                engine.print_frame("Test", title="Title", border="solid")
+            engine.print_frame("Test", title="Title", border="solid")
 
-                # Check debug calls
-                calls = [str(call) for call in mock_debug.call_args_list]
-                assert any("Rendering frame" in str(call) for call in calls)
-                assert any("Frame rendered" in str(call) for call in calls)
+            # Check debug calls
+            calls = [str(call) for call in mock_debug.call_args_list]
+            assert any("Rendering frame" in str(call) for call in calls)
+            assert any("Frame rendered" in str(call) for call in calls)
 
 
 class TestRenderingEngineBanner:
@@ -405,20 +382,12 @@ class TestRenderingEngineIntegration:
         assert "Additional details" in output
 
     def test_all_renderers_initialized(self):
-        """Test that all renderers get initialized through usage."""
+        """Test that all renderers get initialized through usage (v0.3.0: banner only)."""
         rich_console = RichConsole()
         engine = RenderingEngine(rich_console)
 
         # Initially not initialized
-        assert engine._RenderingEngine__frame_renderer is None
         assert engine._RenderingEngine__banner_renderer is None
-
-        # Use frame
-        with patch.object(engine._frame_renderer, "render_frame", return_value=["test"]):
-            engine.print_frame("Test")
-
-        # Frame renderer initialized
-        assert engine._RenderingEngine__frame_renderer is not None
 
         # Use banner
         with patch.object(engine._banner_renderer, "render_banner", return_value=["test"]):
@@ -428,7 +397,7 @@ class TestRenderingEngineIntegration:
         assert engine._RenderingEngine__banner_renderer is not None
 
     def test_debug_mode_comprehensive(self):
-        """Test that debug mode logs all operations."""
+        """Test that debug mode logs all operations (v0.3.0: no frame_renderer)."""
         rich_console = RichConsole()
         engine = RenderingEngine(rich_console, debug=True)
 
@@ -438,8 +407,7 @@ class TestRenderingEngineIntegration:
             debug_calls.append(msg)
 
         with patch.object(engine._logger, "debug", side_effect=capture_debug):
-            with patch.object(engine._frame_renderer, "render_frame", return_value=["line"]):
-                engine.print_frame("Frame test")
+            engine.print_frame("Frame test")
 
             with patch.object(engine._banner_renderer, "render_banner", return_value=["line"]):
                 engine.print_banner("Banner test")
