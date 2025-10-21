@@ -305,21 +305,34 @@ def create_alignment_showcase() -> None:
         width=max_frame_width,
     )
 
-    # Create three separate layouts
-    left_mixed = composer.stack([section_a], align="left", width=terminal_width)
-    center_mixed = composer.stack([section_b], align="center", width=terminal_width)
-    right_mixed = composer.stack([section_c], align="right", width=terminal_width)
-
-    # Combine them vertically
-    mixed_layout = composer.stack(
-        [left_mixed, center_mixed, right_mixed],
-        spacing=1,
-        width=terminal_width,
-    )
+    # Create three separate layouts with different alignments
+    # Fix: Use Rich's Text.align() for ANSI-aware alignment
+    left_mixed = composer.stack([section_a], align="left", spacing=0)
+    center_mixed = composer.stack([section_b], align="left", spacing=0)
+    right_mixed = composer.stack([section_c], align="left", spacing=0)
 
     console.print("┌─ MIXED ALIGNMENTS ────────────────────────────────────────┐")
-    for line in mixed_layout:
-        console.print(line, highlight=False, soft_wrap=False)
+    # Print left-aligned section
+    for line in left_mixed:
+        text = Text.from_ansi(line)
+        text.align("left", width=terminal_width)
+        console._rich_console.print(text, highlight=False, soft_wrap=False)
+
+    console.newline()
+
+    # Print center-aligned section
+    for line in center_mixed:
+        text = Text.from_ansi(line)
+        text.align("center", width=terminal_width)
+        console._rich_console.print(text, highlight=False, soft_wrap=False)
+
+    console.newline()
+
+    # Print right-aligned section
+    for line in right_mixed:
+        text = Text.from_ansi(line)
+        text.align("right", width=terminal_width)
+        console._rich_console.print(text, highlight=False, soft_wrap=False)
     console.print("└──────────────────────────────────────────────────────────┘")
     console.newline(2)
 
@@ -360,16 +373,18 @@ def create_alignment_showcase() -> None:
     )
 
     # Stack dashboard centered
+    # Fix: Use Rich's Text.align() for ANSI-aware alignment
     dashboard_layout = composer.stack(
         [banner_dash, card_1, card_2, card_3],
-        align="center",
+        align="left",
         spacing=1,
-        width=terminal_width,
     )
 
     console.print("┌─ EMOJI DASHBOARD (Centered) ──────────────────────────────┐")
     for line in dashboard_layout:
-        console.print(line, highlight=False, soft_wrap=False)
+        text = Text.from_ansi(line)
+        text.align("center", width=terminal_width)
+        console._rich_console.print(text, highlight=False, soft_wrap=False)
     console.print("└──────────────────────────────────────────────────────────┘")
     console.newline(2)
 
@@ -403,12 +418,15 @@ def create_alignment_showcase() -> None:
         alignments = ["left", "center", "right"]
         align_choice = alignments[i % 3]
 
-        style_layout = composer.stack([style_frame], align=align_choice, width=terminal_width)
+        # Fix: Use Rich's Text.align() for ANSI-aware alignment
+        style_layout = composer.stack([style_frame], align="left")
 
         alignment_label = f"({align_choice.upper():^6})"
         console.print(f"  {alignment_label}")
         for line in style_layout:
-            console.print(line, highlight=False, soft_wrap=False)
+            text = Text.from_ansi(line)
+            text.align(align_choice, width=terminal_width)
+            console._rich_console.print(text, highlight=False, soft_wrap=False)
         console.newline()
 
     # ==============================================================================
@@ -423,9 +441,12 @@ def create_alignment_showcase() -> None:
         width=max_frame_width,
     )
 
-    footer_layout = composer.stack([footer_banner], align="center", width=terminal_width)
+    # Fix: Use Rich's Text.align() for ANSI-aware alignment
+    footer_layout = composer.stack([footer_banner], align="left")
     for line in footer_layout:
-        console.print(line, highlight=False, soft_wrap=False)
+        text = Text.from_ansi(line)
+        text.align("center", width=terminal_width)
+        console._rich_console.print(text, highlight=False, soft_wrap=False)
 
     console.newline()
     footer_text = "🎉 Rainbow Fat Alignment Showcase Complete! 🎉"
@@ -436,9 +457,12 @@ def create_alignment_showcase() -> None:
         content_color="white",
         width=max_frame_width,
     )
-    footer_centered = composer.stack([footer_frame], align="center", width=terminal_width)
+    # Fix: Use Rich's Text.align() for ANSI-aware alignment
+    footer_centered = composer.stack([footer_frame], align="left")
     for line in footer_centered:
-        console.print(line, highlight=False, soft_wrap=False)
+        text = Text.from_ansi(line)
+        text.align("center", width=terminal_width)
+        console._rich_console.print(text, highlight=False, soft_wrap=False)
 
     console.newline()
 
