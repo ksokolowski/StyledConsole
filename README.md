@@ -2,13 +2,13 @@
 
 [![Python >=3.10](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-0.1.0-brightgreen.svg)](https://github.com/yourusername/styledconsole/releases/tag/v0.1.0)
-[![Tests](https://img.shields.io/badge/tests-612%20passing-success.svg)](https://github.com/yourusername/styledconsole)
-[![Coverage](https://img.shields.io/badge/coverage-96.30%25-brightgreen.svg)](https://github.com/yourusername/styledconsole)
+[![Version](https://img.shields.io/badge/version-0.3.0-brightgreen.svg)](https://github.com/yourusername/styledconsole/releases/tag/v0.3.0)
+[![Tests](https://img.shields.io/badge/tests-654%20passing-success.svg)](https://github.com/yourusername/styledconsole)
+[![Coverage](https://img.shields.io/badge/coverage-95.96%25-brightgreen.svg)](https://github.com/yourusername/styledconsole)
 
 A modern Python library for elegant terminal output with rich formatting, colors, emoji support, and export capabilities.
 
-**✨ v0.1.0 Released!** Production-ready with 612 tests passing and 96.30% coverage.
+**✨ v0.3.0 Released!** Rich-native integration for ANSI-safe rendering with 654 tests passing and 95.96% coverage.
 
 ## ✨ Features
 
@@ -17,10 +17,11 @@ A modern Python library for elegant terminal output with rich formatting, colors
 - 🌟 **Gradient Effects**: Vertical, diagonal, and 7-color ROYGBIV rainbow gradients
 - 😀 **Emoji Support**: Tier 1 emoji support (✅🔥🎉🚀⚡💡🎨💎) with proper width calculation
 - 📦 **8 Border Styles**: solid, rounded, double, heavy, thick, ascii, minimal, dots
-- 📊 **Layout System**: Stack, side-by-side, and grid layouts for complex compositions
+- 📊 **Layout System**: Rich-native Group, Columns, Table for powerful compositions
 - 💾 **Export**: HTML and plain-text export with ANSI-to-HTML conversion
 - 🔍 **Terminal Detection**: Auto-detect color depth, ANSI support, and emoji safety
-- 🏗️ **Clean Architecture**: Facade pattern with specialized managers (96.30% test coverage)
+- 🏗️ **Clean Architecture**: Rich-native rendering (v0.3.0) with 95.96% test coverage
+- ✅ **ANSI-Safe**: No wrapping bugs, proper alignment with emoji (v0.3.0)
 
 ## 🚀 Installation
 
@@ -89,31 +90,47 @@ rainbow_frame(
 )
 ```
 
-### Layout System
+### Layout System (v0.3.0 Rich-Native)
 
 ```python
-from styledconsole.core.layout import LayoutComposer
+from rich.console import Group
+from rich.columns import Columns
+from rich.panel import Panel
+from rich.table import Table
+from styledconsole import Console
+from styledconsole.core.box_mapping import get_box_style
 
-composer = LayoutComposer()
+console = Console()
 
-# Stack vertically
-output = composer.stack([
-    "First block",
-    "Second block",
-    "Third block"
-], spacing=1)
+# Stack vertically with Group
+panel1 = Panel("First block", box=get_box_style("solid"))
+panel2 = Panel("Second block", box=get_box_style("solid"))
+panel3 = Panel("Third block", box=get_box_style("solid"))
 
-# Side by side
-output = composer.side_by_side([
-    "Left column",
-    "Right column"
-], spacing=3)
+from rich.text import Text
+group = Group(panel1, Text(""), panel2, Text(""), panel3)
+console._rich_console.print(group)
 
-# Grid layout
-output = composer.grid([
-    ["Cell 1", "Cell 2", "Cell 3"],
-    ["Cell 4", "Cell 5", "Cell 6"]
-])
+# Side by side with Columns
+left = Panel("Left column", box=get_box_style("rounded"))
+right = Panel("Right column", box=get_box_style("rounded"))
+
+columns = Columns([left, right], padding=(0, 2))
+console._rich_console.print(columns)
+
+# Grid layout with Table.grid
+grid = Table.grid(padding=(0, 2))
+grid.add_row(
+    Panel("Cell 1", box=get_box_style("solid")),
+    Panel("Cell 2", box=get_box_style("solid")),
+    Panel("Cell 3", box=get_box_style("solid"))
+)
+grid.add_row(
+    Panel("Cell 4", box=get_box_style("solid")),
+    Panel("Cell 5", box=get_box_style("solid")),
+    Panel("Cell 6", box=get_box_style("solid"))
+)
+console._rich_console.print(grid)
 ```
 
 ### Export
@@ -130,11 +147,19 @@ text = console.export_text()  # Get plain text
 
 ## 🛠️ Development Status
 
-**v0.1.0 Released!** 🎉
+**v0.3.0 Released!** 🎉
 
 This project is **production-ready** with comprehensive testing and documentation.
 
-Implementation status:
+**v0.3.0 Rich-Native Migration:**
+- ✅ Console.frame() uses Rich Panel internally (ANSI-safe)
+- ✅ box_mapping.py for border style → Rich box mapping
+- ✅ LayoutComposer Rich-aware (backward compatible)
+- ✅ All examples refactored (43% code reduction)
+- ✅ Legacy utilities preserved (FrameRenderer, effects.py)
+- ✅ 100% backward compatible - v0.1.0 code still works
+
+**Previous Milestones:**
 - ✅ Core Setup & Utilities (M1) - Complete
 - ✅ Rendering Engine (M2) - Complete
 - ✅ Console API & Effects (M3) - Complete
@@ -142,8 +167,8 @@ Implementation status:
 - ✅ Testing & Documentation (M5) - Complete
 
 **Quality Metrics:**
-- 612 tests passing (100%)
-- 96.30% test coverage
+- 654 tests passing (100%)
+- 95.96% test coverage
 - Zero known bugs
 - All examples working
 - Full type hints with Literal types
@@ -153,14 +178,15 @@ Implementation status:
 **User Documentation:**
 - `README.md` - This file with quick start and examples
 - `CHANGELOG.md` - Version history and release notes
+- `doc/migration/v0.1_to_v0.3.md` - **Migration guide** for v0.3.0 (v0.1.0 code still works!)
 - `examples/` - 20+ working examples demonstrating all features
-- `RELEASE_ANNOUNCEMENT.md` - v0.1.0 release details
+- `RELEASE_ANNOUNCEMENT.md` - Release details
 
 **Developer Documentation:**
-- `doc/REFACTORING_SUMMARY.md` - Architecture overview and achievements
-- `doc/REFACTORING_PLAN_v2.md` - Comprehensive refactoring documentation
-- `doc/PHASE4_RESEARCH_PLAN.md` - Research methodology and validation
-- `doc/EMOJI_GUIDELINES.md` - Emoji support and safe usage guide
+- `doc/project/PLAN.md` - Architecture overview with v0.3.0 changes
+- `doc/guides/EMOJI_GUIDELINES.md` - Emoji support and safe usage guide
+- `doc/guides/COLOR_STANDARDIZATION.md` - CSS4 color system
+- `doc/guides/BORDER_GRADIENTS.md` - Gradient implementation
 
 **API Reference:**
 All public APIs include comprehensive docstrings with type hints.
@@ -187,7 +213,7 @@ StyledConsole follows [Semantic Versioning 2.0.0](https://semver.org/):
   - Alternatives will be documented in deprecation messages
   - Deprecated features removed only in major version bumps
 
-**Current Version**: 0.1.0 (Production Ready - Public API stable, internal implementation may be refined)
+**Current Version**: 0.3.0 (Production Ready - 100% backward compatible with v0.1.0)
 
 ## 🤝 Contributing
 
