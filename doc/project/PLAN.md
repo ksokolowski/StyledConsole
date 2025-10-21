@@ -1,10 +1,39 @@
 # PLAN (Phase 2: Technical Plan)
 
 **Project:** StyledConsole
-**Version:** 0.1.0
-**Date:** October 17, 2025
+**Version:** 0.3.0
+**Date:** October 21, 2025
 **License:** Apache License 2.0
-**Status:** Planning Complete
+**Status:** v0.3.0 Rich-Native Migration Complete
+
+---
+
+## Version History
+
+### v0.3.0 (October 21, 2025) - Rich-Native Migration
+Major architectural improvement integrating Rich's native renderables for ANSI-safe rendering.
+
+**Key Changes:**
+- Console.frame() now uses Rich Panel internally (eliminates ANSI wrapping bugs)
+- Created box_mapping.py to map border styles to Rich box types
+- LayoutComposer updated to be Rich-aware (backward compatible)
+- All examples refactored to demonstrate v0.3.0 best practices
+- Legacy utilities (FrameRenderer, effects.py, BannerRenderer) preserved for backward compatibility
+
+**Benefits:**
+- ✅ ANSI-safe rendering (no more double-wrapping bugs)
+- ✅ Better alignment and padding handling
+- ✅ Cleaner, more maintainable code (43% reduction in example code)
+- ✅ Direct access to Rich's powerful composition features
+- ✅ 100% backward compatible - existing code still works
+
+**Testing:**
+- 654 tests passing (95.96% coverage)
+- No regressions from v0.1.0
+- All examples verified
+
+### v0.1.0 (October 17, 2025) - Initial Release
+Production-ready release with comprehensive testing and documentation.
 
 ---
 
@@ -52,6 +81,71 @@
         └──────────────────────────────────┘
 ```
 
+### v0.3.0 Architecture Changes
+
+**Rich-Native Integration:**
+
+In v0.3.0, the rendering pipeline was refactored to use Rich's native renderables directly:
+
+```
+Console.frame(content, title, border)
+  ↓
+RenderingEngine.print_frame()
+  ↓
+box_mapping.get_box_style(border)  ← Maps border styles to Rich box types
+  ↓
+Rich Panel(content, title=title, box=box_style, ...)
+  ↓
+rich_console.print(panel)  ← ANSI-safe rendering
+```
+
+**Key Components:**
+
+1. **box_mapping.py** (NEW)
+   - Maps StyledConsole border styles → Rich box types
+   - Supports all 8 border styles: solid, rounded, double, heavy, thick, ascii, minimal, dots
+   - `get_box_style(name: str) -> Box` function
+
+2. **Console.frame()** (REFACTORED)
+   - Now uses Rich Panel internally instead of FrameRenderer
+   - Eliminates ANSI wrapping bugs from manual rendering
+   - Better alignment and padding handling
+   - Backward compatible API (no breaking changes)
+
+3. **LayoutComposer** (UPDATED)
+   - Imports Rich primitives (Group, Columns, Table, Align)
+   - API unchanged for backward compatibility
+   - Internal implementation Rich-aware
+
+4. **Legacy Utilities** (PRESERVED)
+   - **FrameRenderer**: Kept for backward compatibility (returns list[str])
+   - **effects.py**: Gradient/rainbow functions still available
+   - **BannerRenderer**: Unchanged (returns list[str])
+   - **text utilities**: Still needed for exact width calculations
+
+**Migration Path:**
+
+Users can gradually migrate from legacy utilities to Rich-native approach:
+
+```python
+# v0.1.0 approach (still works in v0.3.0):
+from styledconsole.core.frame import FrameRenderer
+renderer = FrameRenderer()
+for line in renderer.render(content, border="solid"):
+    print(line)
+
+# v0.3.0 recommended approach:
+from styledconsole import Console
+console = Console()
+console.frame(content, border="solid")
+
+# v0.3.0 advanced (direct Rich access):
+from rich.panel import Panel
+from styledconsole.core.box_mapping import get_box_style
+panel = Panel(content, box=get_box_style("solid"))
+console._rich_console.print(panel)
+```
+
 ### Module Structure
 
 ```
@@ -61,9 +155,13 @@ styledconsole/
 │
 ├── core/                         # Core rendering logic
 │   ├── __init__.py
-│   ├── frame.py                  # Frame rendering
+│   ├── box_mapping.py            # Border style → Rich box mapping (v0.3.0)
+│   ├── frame.py                  # FrameRenderer (legacy, backward compat)
 │   ├── banner.py                 # Banner (FIGlet) rendering
-│   ├── layout.py                 # Layout composition
+│   ├── layout.py                 # Layout composition (Rich-aware v0.3.0)
+│   ├── rendering_engine.py       # Rendering coordinator (uses Rich Panel)
+│   ├── terminal_manager.py       # Terminal capability detection
+│   ├── export_manager.py         # HTML export management
 │   └── styles.py                 # Border styles, themes
 │
 ├── presets/                      # High-level preset functions

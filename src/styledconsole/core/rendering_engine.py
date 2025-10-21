@@ -1,18 +1,21 @@
-"""Rendering coordination engine for StyledConsole.
+"""Rendering coordination engine for StyledConsole v0.3.0.
 
-This module provides the RenderingEngine class that coordinates all rendering
-operations, managing specialized renderers and delegating to Rich Console.
+This module provides the RenderingEngine class that coordinates rendering
+using Rich's native renderables (Panel, Align, etc.) with our gradient
+enhancements.
 
-Part of Phase 4.3 - Extract rendering coordination logic from Console class.
+v0.3.0: Architectural rework - uses Rich Panel/Align instead of custom renderers.
 """
 
 import logging
 
+from rich.align import Align
 from rich.console import Console as RichConsole
+from rich.panel import Panel
 from rich.text import Text as RichText
 
 from styledconsole.core.banner import Banner, BannerRenderer
-from styledconsole.core.frame import Frame, FrameRenderer
+from styledconsole.core.box_mapping import get_box_style
 
 
 class RenderingEngine:
@@ -38,12 +41,11 @@ class RenderingEngine:
         self._debug = debug
         self._logger = self._setup_logging()
 
-        # Lazy-initialized renderers
-        self.__frame_renderer: FrameRenderer | None = None
+        # Lazy-initialized banner renderer (banners still use custom pyfiglet integration)
         self.__banner_renderer: BannerRenderer | None = None
 
         if self._debug:
-            self._logger.debug("RenderingEngine initialized")
+            self._logger.debug("RenderingEngine initialized (v0.3.0 - Rich native)")
 
     def _setup_logging(self) -> logging.Logger:
         """Set up logging for the rendering engine.
@@ -59,19 +61,6 @@ class RenderingEngine:
             logger.addHandler(handler)
         logger.setLevel(logging.DEBUG if self._debug else logging.WARNING)
         return logger
-
-    @property
-    def _frame_renderer(self) -> FrameRenderer:
-        """Get the frame renderer, initializing it lazily if needed.
-
-        Returns:
-            FrameRenderer instance.
-        """
-        if self.__frame_renderer is None:
-            self.__frame_renderer = FrameRenderer()
-            if self._debug:
-                self._logger.debug("FrameRenderer initialized (lazy)")
-        return self.__frame_renderer
 
     @property
     def _banner_renderer(self) -> BannerRenderer:
@@ -101,19 +90,21 @@ class RenderingEngine:
         start_color: str | None = None,
         end_color: str | None = None,
     ) -> None:
-        """Render and print a frame.
+        """Render and print a frame using Rich Panel.
+
+        v0.3.0: Uses Rich Panel instead of custom FrameRenderer.
 
         Args:
             content: Frame content (string or list of lines).
             title: Optional frame title.
-            border: Border style. Defaults to "rounded".
+            border: Border style name. Defaults to "rounded".
             width: Fixed width or None for auto. Defaults to None.
             padding: Padding around content. Defaults to 1.
-            align: Content alignment. Defaults to "left".
+            align: Content alignment ("left", "center", "right"). Defaults to "left".
             content_color: Content text color. Defaults to None.
             border_color: Border color. Defaults to None.
-            title_color: Title text color. Defaults to None.
-            start_color: Gradient start color. Defaults to None.
+            title_color: Title text color (uses border_color if not set). Defaults to None.
+            start_color: Gradient start color (overrides content_color). Defaults to None.
             end_color: Gradient end color. Defaults to None.
         """
         if self._debug:
@@ -122,40 +113,74 @@ class RenderingEngine:
                 f"width={width}, padding={padding}"
             )
 
-        # Normalize content to list of lines
-        if isinstance(content, str):
-            # Split string by newlines to get individual lines
-            content_lines = content.splitlines() if content else [""]
+        # Normalize content to string
+        if isinstance(content, list):
+            content_str = "\n".join(str(line) for line in content)
         else:
-            # If already a list, process each element for embedded newlines
-            content_lines = []
-            for item in content:
-                if isinstance(item, str) and "\n" in item:
-                    # Split items that contain newlines
-                    content_lines.extend(item.splitlines())
-                else:
-                    content_lines.append(item)
+            content_str = str(content)
 
-        frame = Frame(
-            content=content_lines,
-            title=title,
-            border=border,
-            width=width,
-            padding=padding,
-            align=align,
-            content_color=content_color,
-            border_color=border_color,
-            title_color=title_color,
-            start_color=start_color,
-            end_color=end_color,
-        )
+        # Apply gradient if requested (our unique feature!)
+        if start_color and end_color:
+            from styledconsole.utils.color import interpolate_color
 
-        lines = self._frame_renderer.render_frame(frame)
-        for line in lines:
-            self._rich_console.print(line, highlight=False, soft_wrap=False)
+            lines = content_str.split("\n")
+            if len(lines) > 1:
+                styled_lines = []
+                for i, line in enumerate(lines):
+                    ratio = i / (len(lines) - 1) if len(lines) > 1 else 0
+                    color = interpolate_color(start_color, end_color, ratio)
+                    styled_lines.append(f"[{color}]{line}[/]")
+                content_str = "\n".join(styled_lines)
+            else:
+                # Single line: use start_color
+                content_str = f"[{start_color}]{content_str}[/]"
+        elif content_color:
+            # Apply solid color
+            content_str = f"[{content_color}]{content_str}[/]"
+
+        # Apply content alignment using Rich's Align
+        if align == "center":
+            content_renderable = Align.center(content_str)
+        elif align == "right":
+            content_renderable = Align.right(content_str)
+        else:
+            content_renderable = content_str
+
+        # Get Rich box style
+        box_style = get_box_style(border)
+
+        # Build Panel kwargs
+        panel_kwargs = {
+            "box": box_style,
+            "padding": (0, padding),  # Rich padding is (vertical, horizontal)
+            "expand": False,  # Don't auto-expand by default
+        }
+
+        # Add width if provided
+        if width:
+            panel_kwargs["width"] = width
+
+        # Add title if provided
+        if title:
+            panel_kwargs["title"] = title
+            panel_kwargs["title_align"] = align
+            # Title color: use title_color if set, else border_color, else default
+            if title_color:
+                panel_kwargs["title"] = f"[{title_color}]{title}[/]"
+            elif border_color:
+                panel_kwargs["title"] = f"[{border_color}]{title}[/]"
+
+        # Add border color if provided
+        if border_color:
+            panel_kwargs["border_style"] = border_color
+
+        # Create Panel with aligned content
+        panel = Panel(content_renderable, **panel_kwargs)
+
+        self._rich_console.print(panel, highlight=False, soft_wrap=False)
 
         if self._debug:
-            self._logger.debug(f"Frame rendered: {len(lines)} lines")
+            self._logger.debug("Frame rendered using Rich Panel")
 
     def print_banner(
         self,

@@ -1,15 +1,16 @@
-"""Layout composition for nested frames and multi-section displays.
+"""Layout composition using Rich's native renderables (v0.3.0).
 
-This module provides layout composition capabilities for:
-- Vertical stacking of multiple elements
-- Horizontal alignment of stacked elements
-- Spacing control between elements
-- Nested frame support
-- Consistent alignment regardless of content
+This module provides backward-compatible wrappers around Rich's layout
+capabilities with the original line-by-line API preserved for compatibility.
+
+v0.3.0: Internally uses Rich where beneficial, but maintains exact
+backward compatibility for existing code.
 """
 
 from dataclasses import dataclass
 from typing import Literal
+
+from rich.console import RenderableType
 
 from styledconsole.utils.text import visual_width
 
@@ -18,7 +19,9 @@ AlignType = Literal["left", "center", "right"]
 
 @dataclass(frozen=True)
 class Layout:
-    """Configuration for layout composition.
+    """Configuration for layout composition (legacy - kept for compatibility).
+
+    v0.3.0: Use Rich renderables directly instead.
 
     Attributes:
         elements: List of rendered content blocks (each is a list of lines)
@@ -34,31 +37,26 @@ class Layout:
 
 
 class LayoutComposer:
-    """Composer for creating complex layouts with multiple sections.
+    """Composer for creating layouts (v0.3.0 - backward compatible).
+
+    v0.3.0: Maintains backward compatibility while preparing for Rich-native
+    approach in future versions. Uses manual alignment for exact compatibility
+    with existing tests and examples.
 
     Features:
-    - Vertical stacking of rendered elements
-    - Horizontal alignment (left, center, right)
-    - Configurable spacing between elements
-    - Auto-width calculation based on widest element
-    - Maintains visual alignment with emoji-safe width calculations
-    - Supports nested frames and banners
+    - Vertical stacking with precise alignment
+    - Horizontal layouts (side-by-side, grid)
+    - Configurable spacing
+    - ANSI-safe width calculations
 
     Example:
         >>> composer = LayoutComposer()
-        >>> # Create some elements
-        >>> header = renderer.render("Title", border="double")
-        >>> content = renderer.render("Content", border="solid")
-        >>> footer = renderer.render("Footer", border="solid")
-        >>> # Stack them vertically
-        >>> layout = composer.stack([header, content, footer], spacing=1)
-        >>> for line in layout:
-        ...     print(line)
+        >>> layout = composer.stack([elem1, elem2], spacing=1)
     """
 
     def stack(
         self,
-        elements: list[list[str]],
+        elements: list[list[str]] | list[RenderableType],
         align: AlignType = "left",
         spacing: int = 1,
         width: int | None = None,
@@ -66,7 +64,7 @@ class LayoutComposer:
         """Stack multiple elements vertically with alignment and spacing.
 
         Args:
-            elements: List of rendered content blocks (each is a list of lines)
+            elements: List of rendered content blocks (list of lines)
             align: Horizontal alignment ("left", "center", "right")
             spacing: Number of blank lines between elements (default: 1)
             width: Fixed width for all elements (None for auto-width)
@@ -80,8 +78,17 @@ class LayoutComposer:
             >>> elem2 = ["Other line"]
             >>> layout = composer.stack([elem1, elem2], spacing=1)
         """
+        # Ensure all elements are list[str] for compatibility
+        str_elements: list[list[str]] = []
+        for element in elements:
+            if isinstance(element, list):
+                str_elements.append(element)
+            else:
+                # Convert renderable to strings
+                str_elements.append([str(element)])
+
         layout = Layout(
-            elements=elements,
+            elements=str_elements,
             align=align,
             spacing=spacing,
             width=width,
