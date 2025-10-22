@@ -3,13 +3,20 @@
 Supports multiple color formats:
 - Hex: #FF0000, #f00 (shorthand)
 - RGB: rgb(255, 0, 0), (255, 0, 0)
-- Named: CSS4 color names (148 colors)
+- Named: CSS4 color names (148 colors) + Rich color names (250+ colors)
+
+The combined color system allows using human-readable names from both
+CSS4 standard and Rich's extended palette throughout the library.
 """
 
 import re
 from functools import lru_cache
 
-from styledconsole.utils.color_data import CSS4_COLORS, get_color_names
+from styledconsole.utils.color_data import (
+    CSS4_COLORS,
+    RICH_TO_CSS4_MAPPING,
+    get_color_names,
+)
 
 # Regex patterns for color parsing
 HEX_PATTERN = re.compile(r"^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")
@@ -96,7 +103,8 @@ def parse_color(value: str) -> RGBColor:
     - Hex: "#FF0000", "#f00", "FF0000"
     - RGB: "rgb(255, 0, 0)"
     - Tuple: "(255, 0, 0)"
-    - Named: CSS4 color names (case-insensitive)
+    - Named CSS4: 148 colors (case-insensitive) - "red", "dodgerblue", "lime"
+    - Named Rich: 250+ colors (case-insensitive) - "bright_green", "dodger_blue1"
 
     Args:
         value: Color string in any supported format
@@ -112,9 +120,13 @@ def parse_color(value: str) -> RGBColor:
         (255, 0, 0)
         >>> parse_color("rgb(0, 255, 0)")
         (0, 255, 0)
-        >>> parse_color("red")
+        >>> parse_color("red")  # CSS4
         (255, 0, 0)
-        >>> parse_color("dodgerblue")
+        >>> parse_color("lime")  # CSS4
+        (0, 255, 0)
+        >>> parse_color("bright_green")  # Rich
+        (0, 255, 0)
+        >>> parse_color("dodger_blue1")  # Rich numbered variant
         (30, 144, 255)
     """
     value = value.strip()
@@ -123,6 +135,10 @@ def parse_color(value: str) -> RGBColor:
     value_lower = value.lower()
     if value_lower in CSS4_COLORS:
         return hex_to_rgb(CSS4_COLORS[value_lower])
+
+    # Try Rich named color (case-insensitive, with underscore)
+    if value_lower in RICH_TO_CSS4_MAPPING:
+        return hex_to_rgb(RICH_TO_CSS4_MAPPING[value_lower])
 
     # Try hex format
     if HEX_PATTERN.match(value):
@@ -145,7 +161,10 @@ def parse_color(value: str) -> RGBColor:
         return (r, g, b)
 
     # No match found
-    raise ValueError(f"Invalid color format: '{value}'")
+    raise ValueError(
+        f"Invalid color format: '{value}'. "
+        f"Supported: hex (#FF0000), rgb(r,g,b), CSS4 names (148), Rich names (250+)"
+    )
 
 
 def interpolate_rgb(

@@ -93,6 +93,7 @@ class RenderingEngine:
         """Render and print a frame using Rich Panel.
 
         v0.3.0: Uses Rich Panel instead of custom FrameRenderer.
+        Automatically converts CSS4/Rich color names to hex for Rich compatibility.
 
         Args:
             content: Frame content (string or list of lines).
@@ -101,17 +102,46 @@ class RenderingEngine:
             width: Fixed width or None for auto. Defaults to None.
             padding: Padding around content. Defaults to 1.
             align: Content alignment ("left", "center", "right"). Defaults to "left".
-            content_color: Content text color. Defaults to None.
-            border_color: Border color. Defaults to None.
-            title_color: Title text color (uses border_color if not set). Defaults to None.
-            start_color: Gradient start color (overrides content_color). Defaults to None.
-            end_color: Gradient end color. Defaults to None.
+            content_color: Content text color (CSS4/Rich name or hex). Defaults to None.
+            border_color: Border color (CSS4/Rich name or hex). Defaults to None.
+            title_color: Title text color (CSS4/Rich name or hex). Defaults to None.
+            start_color: Gradient start color (CSS4/Rich name or hex). Defaults to None.
+            end_color: Gradient end color (CSS4/Rich name or hex). Defaults to None.
         """
         if self._debug:
             self._logger.debug(
                 f"Rendering frame: title='{title}', border='{border}', "
                 f"width={width}, padding={padding}"
             )
+
+        # Helper to convert color names to hex for Rich compatibility
+        def normalize_color(color: str | None) -> str | None:
+            """Convert color name to hex if it's not already hex."""
+            if not color:
+                return None
+            color = color.strip()
+            # If it's already hex, return as-is
+            if color.startswith("#"):
+                return color
+            # Try to parse as color name and convert to hex
+            try:
+                from styledconsole.utils.color import parse_color, rgb_to_hex
+
+                r, g, b = parse_color(color)
+                return rgb_to_hex(r, g, b)
+            except Exception:
+                # If parsing fails, return original (Rich might understand it)
+                return color
+
+                # If parsing fails, return original (Rich might understand it)
+                return color
+
+        # Normalize all colors to hex for Rich compatibility
+        content_color = normalize_color(content_color)
+        border_color = normalize_color(border_color)
+        title_color = normalize_color(title_color)
+        start_color = normalize_color(start_color)
+        end_color = normalize_color(end_color)
 
         # Normalize content to string
         if isinstance(content, list):
