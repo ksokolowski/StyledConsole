@@ -184,15 +184,21 @@ def main() -> None:
     )
 
     # Another outer frame with different color scheme
-    title2 = Text.from_markup(
-        gradient_markup(expand_emoji_shortcodes(":rocket: MULTINEST 2"), "cyan", "blue", per="char")
+    title2_markup = gradient_markup(
+        expand_emoji_shortcodes(":rocket: MULTINEST 2"),
+        "cyan",
+        "blue",
+        per="char",
     )
+    title2 = Text.from_markup(title2_markup)
+
     metrics_text = gradient_markup(
         expand_emoji_shortcodes(":chart_with_upwards_trend: Metrics coming soon\nDetails incoming"),
         "bright_green",
         "bright_cyan",
         per="line",
     )
+
     outer2 = Panel(
         Group(Align(deep_outer, align="center"), Text.from_markup(metrics_text)),
         title=title2,

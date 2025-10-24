@@ -652,8 +652,9 @@ def main() -> None:
         "gray",
     ]
 
+    style_panels = []
     for i, (style_name, color) in enumerate(zip(styles_to_show, colors)):
-        style_panel = create_panel(
+        panel = create_panel(
             f"✨ {style_name.upper()}\nBorder style demo",
             title="",
             emoji="",
@@ -662,10 +663,7 @@ def main() -> None:
             content_color="bright_white",
             width=panel_width,
         )
-
-        # Rotate alignments
-        alignments = ["left", "center", "right"]
-        align_choice = alignments[i % 3]
+        style_panels.append(panel)
 
     # ==============================================================================
     # SECTION 6: Nested Layouts & Hierarchies
@@ -723,7 +721,6 @@ def main() -> None:
     console.newline(2)
 
     # Create a complex grid with different content types
-    grid_panels = []
 
     # Status cards with different states
     status_cards = [
@@ -897,9 +894,12 @@ def main() -> None:
 
     # Typography showcase
     typography_panel = create_panel(
-        "[bold bright_white]BOLD TEXT[/bold bright_white] | [italic bright_cyan]Italic Text[/italic bright_cyan]\n"
-        "[underline bright_green]Underlined[/underline bright_green] | [strike bright_red]Strikethrough[/strike bright_red]\n"
-        "[bright_yellow]Colors:[/bright_yellow] [red]Red[/red] [green]Green[/green] [blue]Blue[/blue] [magenta]Magenta[/magenta]\n"
+        "[bold bright_white]BOLD TEXT[/bold bright_white]\n"
+        "[italic bright_cyan]Italic Text[/italic bright_cyan]\n"
+        "[underline bright_green]Underlined[/underline bright_green]\n"
+        "[strike bright_red]Strikethrough[/strike]\n"
+        "[bright_yellow]Colors:[/bright_yellow] [red]Red[/red] [green]Green[/green]\n"
+        "[blue]Blue[/blue] [magenta]Magenta[/magenta]\n"
         "[dim]Dim text[/dim] | [blink]Blinking text[/blink] | [reverse]Reversed[/reverse]",
         title="Typography Showcase",
         emoji="🎨",
@@ -932,8 +932,9 @@ def main() -> None:
     code_panel = create_panel(
         "[bright_green]# Python code example[/bright_green]\n"
         "[bright_white]def[/bright_white] [bright_cyan]calculate_total[/bright_cyan](items):\n"
-        "    [bright_white]return[/bright_white] [bright_yellow]sum[/bright_yellow](item.price * item.qty\n"
-        "                                   [bright_white]for[/bright_white] item [bright_white]in[/bright_white] items)\n\n"
+        "    [bright_white]return[/bright_white] [bright_yellow]sum[/bright_yellow](\n"
+        "        item.price * item.qty\n"
+        "        [bright_white]for[/bright_white] item [bright_white]in[/bright_white] items)\n\n"
         "[bright_green]# Result: $1,247.50[/bright_green]",
         title="Code Snippet",
         emoji="💻",
