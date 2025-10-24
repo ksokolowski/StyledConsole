@@ -1,0 +1,20 @@
+Traceback (most recent call last):
+  File "/home/falcon/New/examples/showcase/rainbow_fat_alignment.py", line 19, in <module>
+    from styledconsole import Console
+  File "/home/falcon/New/src/styledconsole/__init__.py", line 14, in <module>
+    from styledconsole.console import Console
+  File "/home/falcon/New/src/styledconsole/console.py", line 16, in <module>
+    from styledconsole.core.export_manager import ExportManager
+  File "/home/falcon/New/src/styledconsole/core/__init__.py", line 3, in <module>
+    from styledconsole.core.styles import (
+    ...<12 lines>...
+    )
+  File "/home/falcon/New/src/styledconsole/core/styles.py", line 9, in <module>
+    from styledconsole.utils.text import pad_to_width, truncate_to_width, visual_width
+  File "/home/falcon/New/src/styledconsole/utils/__init__.py", line 16, in <module>
+    from styledconsole.utils.text import (
+    ...<5 lines>...
+    )
+  File "/home/falcon/New/src/styledconsole/utils/text.py", line 9, in <module>
+    import wcwidth
+ModuleNotFoundError: No module named 'wcwidth'

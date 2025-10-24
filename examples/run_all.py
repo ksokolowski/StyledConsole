@@ -21,6 +21,10 @@ def get_all_examples():
         "Gallery Examples": sorted(examples_dir.glob("gallery/*.py")),
     }
 
+    # Filter out old/deprecated examples
+    for category in categories:
+        categories[category] = [ex for ex in categories[category] if not ex.stem.endswith("_old")]
+
     return categories
 
 
