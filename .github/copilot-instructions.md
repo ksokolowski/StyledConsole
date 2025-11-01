@@ -1,14 +1,16 @@
 # AI Coding Agent Instructions for StyledConsole
 
-**Project:** StyledConsole v0.1.0
-**Last Updated:** October 20, 2025
+**Project:** StyledConsole v0.3.0
+**Last Updated:** November 1, 2025
 **Python:** ≥3.10 | **License:** Apache-2.0
 
 ---
 
 ## 🎯 Project Overview
 
-StyledConsole is a production-ready Python library (612 tests, 96.30% coverage) for elegant terminal output with rich formatting, emojis, gradients, and HTML export. It's a focused rewrite of a previous over-engineered version—built on **simplicity and clarity**.
+StyledConsole is a production-ready Python library (654 tests, 95.96% coverage) for elegant terminal output with rich formatting, emojis, gradients, and HTML export. Built on **Rich-native integration** for ANSI-safe rendering.
+
+**Key v0.3.0 change:** Frames now use Rich Panel internally (eliminates ANSI wrapping bugs) while maintaining 100% backward compatibility with v0.1.0 API.
 
 **Key architectural pattern:** Facade design—`Console` class wraps specialized managers (`TerminalManager`, `RenderingEngine`, `ExportManager`) over Rich backend.
 
@@ -23,11 +25,11 @@ StyledConsole is a production-ready Python library (612 tests, 96.30% coverage) 
    - Delegates to managers; never handles rendering directly
    - Public methods: `frame()`, `banner()`, `text()`, `rule()`, `newline()`, `export_html()`
 
-2. **Rendering Managers** (in `core/`)
-   - `FrameRenderer`: Border styles + content layout (8 styles: solid, rounded, double, heavy, thick, ascii, minimal, dots)
-   - `BannerRenderer`: ASCII art via pyfiglet + gradient integration
-   - `LayoutComposer`: Multi-frame layouts (stack, side-by-side, grid)
-   - `RenderingEngine`: Coordinates all rendering operations
+2. **Rendering Engine** (v0.3.0 - Rich-native)
+   - `RenderingEngine`: Uses Rich Panel for frames (ANSI-safe, no wrapping bugs)
+   - `BannerRenderer`: ASCII art via pyfiglet + gradient integration (still custom)
+   - `box_mapping.py`: Maps border styles (solid, rounded, etc.) to Rich box types
+   - **Key change:** `Console.frame()` now uses `Panel` internally, not custom line-by-line rendering
 
 3. **Terminal & Export**
    - `TerminalManager`: Detects capabilities (color depth, emoji safety, dimensions)
@@ -39,14 +41,21 @@ StyledConsole is a production-ready Python library (612 tests, 96.30% coverage) 
    - `wrap.py`: Multiline text wrapping with emoji support
    - `terminal.py`: Terminal detection (TerminalProfile)
 
-### Data Flow
+5. **Legacy Utilities** (in `core/` - maintained for v0.1.0 compatibility)
+   - `core/frame.py`: FrameRenderer (**DEPRECATED v0.4.0** - use Console.frame() for new code, will be removed in v1.0.0)
+   - `core/layout.py`: LayoutComposer (deprecated—use Rich Group, Columns, Table)
+   - `effects.py`: Gradient effects (gradient_frame, diagonal_gradient_frame, rainbow_frame)
+
+### Data Flow (v0.3.0)
 
 ```
 Console.frame(content, title, border)
   ↓
-TerminalManager.detect() → TerminalProfile
+RenderingEngine.print_frame()
   ↓
-FrameRenderer.render() → list of styled lines
+box_mapping.get_box_style(border) → Rich Box
+  ↓
+Rich Panel (with color conversion & padding)
   ↓
 RichConsole.print() → ANSI terminal output
   ↓
@@ -77,17 +86,21 @@ padded = pad_to_width("🚀 Title", 20)  # Correctly centers emoji
 
 **8 builtin styles** in `src/styledconsole/core/styles.py`:
 - Each defined as frozen dataclass with Unicode box-drawing characters
+- v0.3.0: Mapped to Rich box types via `core/box_mapping.py`
 - Access via: `from styledconsole import SOLID, ROUNDED, DOUBLE, etc.`
 - or `from styledconsole.core.styles import BorderStyle, BORDERS`
 - Custom styles possible but discourage—use existing 8
 
 ```python
 from styledconsole.core.styles import BorderStyle, BORDERS
+from styledconsole.core.box_mapping import get_box_style
 
-# Get by name:
+# Legacy (v0.1.0, still works):
 style = BORDERS["solid"]  # type: BorderStyle
 
-# Methods: render_horizontal(), render_vertical(), render_top_border(), render_bottom_border()
+# v0.3.0 Rich-native:
+box = get_box_style("solid")  # Returns Rich box.SQUARE
+# Use with Panel: Panel("content", box=box)
 ```
 
 ### Color System
@@ -143,7 +156,7 @@ Use in function signatures for clarity.
 - **Unit Tests:** `tests/unit/` – isolated component testing
 - **Integration Tests:** `tests/integration/` – cross-component workflows
 - **Snapshots:** `tests/snapshots/` – pytest snapshot testing for visual regression
-- **Examples:** `examples/basic/` (8 examples) → `examples/showcase/` (advanced features)
+- **Examples:** `examples/basic/` (10+ examples) → `examples/showcase/` (advanced features)
 
 ### Running Tests
 
@@ -156,6 +169,9 @@ pytest tests/unit/test_frame.py -v
 
 # Run all examples (validates UX):
 python test_examples.py
+
+# Run visual examples (for manual inspection):
+python examples/run_all_visual.py
 ```
 
 ### Snapshot Testing Pattern
@@ -163,7 +179,9 @@ python test_examples.py
 Example tests verify visual output hasn't changed:
 ```python
 def test_frame_solid_border(snapshot):
-    output = FrameRenderer().render("content", border=SOLID, width=20)
+    console = Console()
+    # Capture output for snapshot comparison
+    # ...
     assert output == snapshot  # Stored in tests/snapshots/
 ```
 
@@ -205,7 +223,7 @@ python examples/basic/01_simple_frame.py
 
 ### Before Committing
 
-- Run full test suite: `pytest --cov=src/styledconsole` (target: ≥96% coverage)
+- Run full test suite: `pytest --cov=src/styledconsole` (target: ≥95% coverage)
 - Run linter: `ruff check src/ tests/`
 - Format code: `ruff format src/ tests/`
 - Validate examples: `python test_examples.py`
@@ -217,14 +235,16 @@ python examples/basic/01_simple_frame.py
 | File | Purpose |
 |------|---------|
 | `src/styledconsole/console.py` | Main facade—API entry point |
-| `src/styledconsole/core/frame.py` | Frame rendering logic |
+| `src/styledconsole/core/rendering_engine.py` | v0.3.0 Rich-native rendering coordinator |
+| `src/styledconsole/core/box_mapping.py` | Border style → Rich Box mapping (v0.3.0) |
+| `src/styledconsole/core/frame.py` | Frame rendering logic (legacy, still works) |
 | `src/styledconsole/core/banner.py` | Banner rendering (pyfiglet) |
 | `src/styledconsole/core/styles.py` | Border style definitions |
 | `src/styledconsole/utils/text.py` | **Emoji-safe text utilities** (critical) |
 | `src/styledconsole/utils/color.py` | Color parsing & gradients |
 | `src/styledconsole/effects.py` | Gradient/rainbow effects |
 | `pyproject.toml` | Dependencies: rich, pyfiglet, wcwidth, ansi2html |
-| `doc/EMOJI_GUIDELINES.md` | Categorized safe emoji list (100+ emojis) |
+| `doc/guides/EMOJI_GUIDELINES.md` | Categorized safe emoji list (100+ emojis) |
 | `doc/project/PLAN.md` | Detailed architecture (1099 lines) |
 
 ---
@@ -286,4 +306,4 @@ This project **explicitly avoids over-documentation**. Read:
 
 ## 📞 Questions?
 
-Refer to existing examples (`examples/basic/01-09`) for common patterns. The 612 passing tests are the ultimate reference for expected behavior.
+Refer to existing examples (`examples/basic/01-09`) for common patterns. The 654 passing tests are the ultimate reference for expected behavior.

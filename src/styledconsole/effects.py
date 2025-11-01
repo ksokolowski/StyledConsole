@@ -17,9 +17,10 @@ All functions support:
 
 from __future__ import annotations
 
+from io import StringIO
 from typing import Literal
 
-from styledconsole.core.frame import FrameRenderer
+from styledconsole import Console
 from styledconsole.core.styles import get_border_style
 from styledconsole.utils.color import interpolate_color, parse_color
 from styledconsole.utils.text import strip_ansi, visual_width
@@ -119,8 +120,6 @@ def gradient_frame(
     if direction == "horizontal":
         raise NotImplementedError("Horizontal gradients not yet implemented")
 
-    renderer = FrameRenderer()
-
     # Normalize content to list
     if isinstance(content, str):
         content_lines = content.splitlines() if content else [""]
@@ -130,8 +129,10 @@ def gradient_frame(
     # Get border style
     style = get_border_style(border)
 
-    # Build frame
-    lines = renderer.render(
+    # Build frame using Console.frame()
+    buffer = StringIO()
+    console = Console(file=buffer, detect_terminal=False, record=False)
+    console.frame(
         content_lines,
         title=title,
         border=border,
@@ -139,6 +140,9 @@ def gradient_frame(
         padding=padding,
         align=align,
     )
+
+    # Get rendered lines
+    lines = buffer.getvalue().splitlines()
 
     # Apply vertical gradient
     if target in ("content", "both"):
@@ -196,8 +200,6 @@ def diagonal_gradient_frame(
         variation selectors (like ↘️) as they may cause alignment issues.
         Use base emojis instead (like ↘).
     """
-    renderer = FrameRenderer()
-
     # Normalize content to list
     if isinstance(content, str):
         content_lines = content.splitlines() if content else [""]
@@ -207,25 +209,43 @@ def diagonal_gradient_frame(
     # Get border style
     style = get_border_style(border)
 
-    # Calculate width
+    # Calculate width if not provided
     if width is None:
-        width = renderer._calculate_width(content_lines, title, padding, 20, 100)
+        from styledconsole.utils.text import visual_width as vw
 
-    # Build frame without colors first
-    lines: list[str] = []
+        # Find longest content line
+        max_content_width = 0
+        for line in content_lines:
+            content_width = vw(line)
+            if content_width > max_content_width:
+                max_content_width = content_width
 
-    # Top border
-    top_border = style.render_top_border(width, title)
-    lines.append(top_border)
+        # Account for borders (2 chars) + padding (both sides)
+        needed_width = max_content_width + 2 + (padding * 2)
 
-    # Content lines
-    for line in content_lines:
-        content_line = renderer._render_content_line(style, line, width, padding, align)
-        lines.append(content_line)
+        # Check title width if present
+        if title:
+            # Title needs space for " title " + borders
+            title_width = vw(title) + 2 + 2  # spaces + borders
+            needed_width = max(needed_width, title_width)
 
-    # Bottom border
-    bottom_border = style.render_bottom_border(width)
-    lines.append(bottom_border)
+        # Clamp to min/max (20 to 100)
+        width = max(20, min(needed_width, 100))
+
+    # Build frame without colors using Console.frame()
+    buffer = StringIO()
+    console = Console(file=buffer, detect_terminal=False, record=False)
+    console.frame(
+        content_lines,
+        title=title,
+        border=border,
+        width=width,
+        padding=padding,
+        align=align,
+    )
+
+    # Get rendered lines
+    lines = buffer.getvalue().splitlines()
 
     # Apply diagonal gradient character-by-character
     apply_to_border = target in ("border", "both")
@@ -284,14 +304,15 @@ def rainbow_frame(
         ...     mode="both"
         ... )
     """
-    # Build base frame
-    renderer = FrameRenderer()
+    # Build base frame using Console.frame()
     if isinstance(content, str):
         content_lines = content.splitlines() if content else [""]
     else:
         content_lines = content if content else [""]
 
-    lines = renderer.render(
+    buffer = StringIO()
+    console = Console(file=buffer, detect_terminal=False, record=False)
+    console.frame(
         content_lines,
         title=title,
         border=border,
@@ -299,6 +320,9 @@ def rainbow_frame(
         padding=padding,
         align=align,
     )
+
+    # Get rendered lines
+    lines = buffer.getvalue().splitlines()
 
     # Apply rainbow using get_rainbow_color for proper ROYGBIV spectrum
     if direction == "vertical":

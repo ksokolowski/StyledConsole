@@ -43,16 +43,19 @@ from styledconsole.utils.color import (
     CSS4_COLORS,
     RGBColor,
     color_distance,
-    get_all_color_names,
-    get_color_names,
-    get_rich_color_names,
     hex_to_rgb,
     interpolate_color,
     interpolate_rgb,
+    normalize_color_for_rich,
     parse_color,
     rgb_to_hex,
 )
-from styledconsole.utils.color_data import RICH_TO_CSS4_MAPPING
+from styledconsole.utils.color_data import (
+    RICH_TO_CSS4_MAPPING,
+    get_all_color_names,
+    get_color_names,
+    get_rich_color_names,
+)
 from styledconsole.utils.terminal import (
     TerminalProfile,
     detect_terminal_capabilities,
@@ -152,6 +155,7 @@ __all__ = [
     "interpolate_color",
     "interpolate_rgb",
     "color_distance",
+    "normalize_color_for_rich",
     "get_color_names",
     "get_rich_color_names",
     "get_all_color_names",

@@ -16,6 +16,7 @@ from rich.text import Text as RichText
 
 from styledconsole.core.banner import Banner, BannerRenderer
 from styledconsole.core.box_mapping import get_box_style
+from styledconsole.utils.color import normalize_color_for_rich
 
 
 class RenderingEngine:
@@ -114,34 +115,12 @@ class RenderingEngine:
                 f"width={width}, padding={padding}"
             )
 
-        # Helper to convert color names to hex for Rich compatibility
-        def normalize_color(color: str | None) -> str | None:
-            """Convert color name to hex if it's not already hex."""
-            if not color:
-                return None
-            color = color.strip()
-            # If it's already hex, return as-is
-            if color.startswith("#"):
-                return color
-            # Try to parse as color name and convert to hex
-            try:
-                from styledconsole.utils.color import parse_color, rgb_to_hex
-
-                r, g, b = parse_color(color)
-                return rgb_to_hex(r, g, b)
-            except Exception:
-                # If parsing fails, return original (Rich might understand it)
-                return color
-
-                # If parsing fails, return original (Rich might understand it)
-                return color
-
         # Normalize all colors to hex for Rich compatibility
-        content_color = normalize_color(content_color)
-        border_color = normalize_color(border_color)
-        title_color = normalize_color(title_color)
-        start_color = normalize_color(start_color)
-        end_color = normalize_color(end_color)
+        content_color = normalize_color_for_rich(content_color)
+        border_color = normalize_color_for_rich(border_color)
+        title_color = normalize_color_for_rich(title_color)
+        start_color = normalize_color_for_rich(start_color)
+        end_color = normalize_color_for_rich(end_color)
 
         # Normalize content to string
         if isinstance(content, list):
@@ -149,32 +128,47 @@ class RenderingEngine:
         else:
             content_str = str(content)
 
-        # Apply gradient if requested (our unique feature!)
-        if start_color and end_color:
-            from styledconsole.utils.color import interpolate_color
+        # Check if content contains ANSI codes (from banner gradients, etc.)
+        has_ansi_codes = "\x1b" in content_str
 
-            lines = content_str.split("\n")
-            if len(lines) > 1:
-                styled_lines = []
-                for i, line in enumerate(lines):
-                    ratio = i / (len(lines) - 1) if len(lines) > 1 else 0
-                    color = interpolate_color(start_color, end_color, ratio)
-                    styled_lines.append(f"[{color}]{line}[/]")
-                content_str = "\n".join(styled_lines)
-            else:
-                # Single line: use start_color
-                content_str = f"[{start_color}]{content_str}[/]"
-        elif content_color:
-            # Apply solid color
-            content_str = f"[{content_color}]{content_str}[/]"
+        # If content has ANSI codes, convert to Rich Text object for proper handling
+        # This prevents Rich from mis-parsing ANSI sequences and breaking line wrapping
+        if has_ansi_codes:
+            from rich.text import Text
+
+            # Convert ANSI string to Rich Text object (preserves colors)
+            content_renderable = Text.from_ansi(content_str)
+
+            # Note: We skip gradient/color application since content already has ANSI formatting
+            # This typically happens when banner renderer has applied gradients
+        else:
+            # Apply gradient if requested (our unique feature!)
+            if start_color and end_color:
+                from styledconsole.utils.color import interpolate_color
+
+                lines = content_str.split("\n")
+                if len(lines) > 1:
+                    styled_lines = []
+                    for i, line in enumerate(lines):
+                        ratio = i / (len(lines) - 1) if len(lines) > 1 else 0
+                        color = interpolate_color(start_color, end_color, ratio)
+                        styled_lines.append(f"[{color}]{line}[/]")
+                    content_str = "\n".join(styled_lines)
+                else:
+                    # Single line: use start_color
+                    content_str = f"[{start_color}]{content_str}[/]"
+            elif content_color:
+                # Apply solid color
+                content_str = f"[{content_color}]{content_str}[/]"
+
+            content_renderable = content_str
 
         # Apply content alignment using Rich's Align
         if align == "center":
-            content_renderable = Align.center(content_str)
+            content_renderable = Align.center(content_renderable)
         elif align == "right":
-            content_renderable = Align.right(content_str)
-        else:
-            content_renderable = content_str
+            content_renderable = Align.right(content_renderable)
+        # else: left alignment (default, no Align wrapper needed)
 
         # Get Rich box style
         box_style = get_box_style(border)
@@ -189,6 +183,10 @@ class RenderingEngine:
         # Add width if provided
         if width:
             panel_kwargs["width"] = width
+            # When explicit width is provided, we want Rich to honor it exactly
+            # But we can't use expand=True because it expands to console width
+            # Instead, we'll need to pad the content to fill the width
+            pass  # Handled below
 
         # Add title if provided
         if title:
@@ -257,6 +255,7 @@ class RenderingEngine:
         for line in lines:
             self._rich_console.print(line, highlight=False, soft_wrap=False)
 
+        # Log completion
         if self._debug:
             self._logger.debug(f"Banner rendered: {len(lines)} lines")
 

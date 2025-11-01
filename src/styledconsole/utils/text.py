@@ -240,13 +240,15 @@ def pad_to_width(
 def truncate_to_width(text: str, width: int, suffix: str = "...") -> str:
     """Truncate text to fit within a specific visual width.
 
+    ANSI escape codes are preserved in the output.
+
     Args:
-        text: Text to truncate
+        text: Text to truncate (may contain ANSI codes)
         width: Maximum visual width
         suffix: Suffix to append when truncating (default: "...")
 
     Returns:
-        Truncated text with suffix if needed
+        Truncated text with suffix if needed, preserving ANSI codes
 
     Example:
         >>> truncate_to_width("Hello World", 8)
@@ -268,22 +270,63 @@ def truncate_to_width(text: str, width: int, suffix: str = "...") -> str:
         # Not enough space for suffix, just truncate
         return suffix[:width] if len(suffix) > 0 else ""
 
-    # Build truncated string character by character
-    clean_text = strip_ansi(text)
+    # If text has no ANSI codes, use simple truncation
+    if "\x1b" not in text:
+        # Build truncated string character by character
+        result = []
+        accumulated_width = 0
+
+        for char in text:
+            char_width = wcwidth.wcwidth(char)
+            if char_width == -1:
+                char_width = 1
+
+            if accumulated_width + char_width > target_width:
+                break
+
+            result.append(char)
+            accumulated_width += char_width
+
+        return "".join(result) + suffix
+
+    # Text has ANSI codes - need to preserve them
+    # Split text into ANSI codes and visible characters
+    parts = ANSI_PATTERN.split(text)
+    ansi_codes = ANSI_PATTERN.findall(text)
+
+    # Reconstruct text while tracking visible width
     result = []
     accumulated_width = 0
+    part_idx = 0
+    ansi_idx = 0
 
-    for char in clean_text:
-        char_width = wcwidth.wcwidth(char)
-        if char_width == -1:
-            char_width = 1
+    while part_idx < len(parts):
+        # Add visible text from this part
+        part = parts[part_idx]
+        for char in part:
+            char_width = wcwidth.wcwidth(char)
+            if char_width == -1:
+                char_width = 1
 
-        if accumulated_width + char_width > target_width:
-            break
+            if accumulated_width + char_width > target_width:
+                # Add suffix and any trailing ANSI reset codes
+                result.append(suffix)
+                # Add reset code if text had any ANSI codes
+                if ansi_codes:
+                    result.append("\x1b[0m")
+                return "".join(result)
 
-        result.append(char)
-        accumulated_width += char_width
+            result.append(char)
+            accumulated_width += char_width
 
+        part_idx += 1
+
+        # Add ANSI code if there is one after this part
+        if ansi_idx < len(ansi_codes):
+            result.append(ansi_codes[ansi_idx])
+            ansi_idx += 1
+
+    # Shouldn't reach here, but just in case
     return "".join(result) + suffix
 
 

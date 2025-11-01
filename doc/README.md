@@ -1,50 +1,65 @@
-# Documentation Index# Documentation Index
+# Documentation Index
 
+**StyledConsole Documentation**
 
+**Version:** 0.3.0 (planning v0.4.0)
+**Last Updated:** November 1, 2025
 
-**StyledConsole Documentation**  This directory contains comprehensive documentation for StyledConsole.
+---
 
-**Version:** 0.1.0
+## 📁 Folder Structure
 
-**Last Updated:** October 19, 2025---
+### `/doc` (Root Level)
 
+Active reference documentation:
 
+- **Living documents** (TASKS.md, PLAN.md, ROADMAP.md)
+- **Guidelines & standards** (EMOJI_GUIDELINES.md, CSS4-COLORS.md, etc.)
+- **Technical references** (BORDER_GRADIENTS.md, GRADIENT_IMPLEMENTATION.md, etc.)
 
----## 📁 Folder Structure
+### `/doc/tasks/`
 
+**Planned** refactoring work (v0.4.0):
+- `planned/REFACTOR_001_DUAL_RENDERING_PATHS.md`
+- `planned/REFACTOR_002_COLOR_NORMALIZATION.md`
+- `planned/REFACTOR_003_GRADIENT_CONSOLIDATION.md`
+- `planned/README.md` - Overview & roadmap
 
+**Completed** historical documentation:
+- Completed work (refactoring summaries, testing reports, UX validation)
+- Finished analysis (Phase 4 analysis, legacy comparisons)
+- Code reviews (GPT-5 and Gemini reviews)
+- Status snapshots (historical status reports)
 
-## 🎯 Start Here### `/doc` (Root Level)
+### `/doc/project/`
 
+**Active tracking:**
+- `TASKS.md` - Current active tasks (unimplemented + v0.4.0 refactoring)
+- `TASKS_ARCHIVE.md` - Full v0.1.0-v0.3.0 implementation history (1,981 lines)
+- `PLAN.md` - System architecture
+- `ROADMAP.md` - Future plans
+- `SPECIFICATION.md` - What we're building
 
+---
 
-**New to StyledConsole?**Active reference documentation:
+## 🎯 Start Here
+
+**New to StyledConsole?**
 
 1. Read [project/SPECIFICATION.md](project/SPECIFICATION.md) - What we're building
-
-2. Review [project/PLAN.md](project/PLAN.md) - System architecture- **Living documents** (TASKS.md, PLAN.md, ROADMAP.md)
-
-3. Check [guides/EMOJI_GUIDELINES.md](guides/EMOJI_GUIDELINES.md) - Start using the library- **Guidelines & standards** (EMOJI_GUIDELINES.md, CSS4-COLORS.md, etc.)
-
-- **Technical references** (BORDER_GRADIENTS.md, GRADIENT_IMPLEMENTATION.md, etc.)
+2. Review [project/PLAN.md](project/PLAN.md) - System architecture
+3. Check [guides/EMOJI_GUIDELINES.md](guides/EMOJI_GUIDELINES.md) - Start using the library
 
 **Contributing?**
 
-1. Read [DOCUMENTATION_POLICY.md](DOCUMENTATION_POLICY.md) - Documentation rules### `/doc/tasks/completed/`
+1. Read [DOCUMENTATION_POLICY.md](DOCUMENTATION_POLICY.md) - Documentation rules
+2. Check [project/TASKS.md](project/TASKS.md) - Current active work (v0.4.0 refactoring)
+3. Review [project/ROADMAP.md](project/ROADMAP.md) - Future plans
 
-2. Check [project/TASKS.md](project/TASKS.md) - Current work
+**Historical Context?**
 
-3. Review [project/ROADMAP.md](project/ROADMAP.md) - Future plansHistorical documentation:
-
-
-
----- **Completed work** (refactoring summaries, testing reports, UX validation)
-
-- **Finished analysis** (Phase 4 analysis, legacy comparisons)
-
-## 📁 Folder Structure- **Code reviews** (GPT-5 and Gemini reviews)
-
-- **Status snapshots** (historical status reports)
+1. See [project/TASKS_ARCHIVE.md](project/TASKS_ARCHIVE.md) - Complete v0.1.0-v0.3.0 implementation history
+2. Review [tasks/completed/](tasks/completed/) - Finished work summaries
 
 ```
 

@@ -274,6 +274,63 @@ def color_distance(color1: str | RGBColor, color2: str | RGBColor) -> float:
     return ((rgb1[0] - rgb2[0]) ** 2 + (rgb1[1] - rgb2[1]) ** 2 + (rgb1[2] - rgb2[2]) ** 2) ** 0.5
 
 
+@lru_cache(maxsize=256)
+def normalize_color_for_rich(color: str | None) -> str | None:
+    """Convert CSS4/Rich color name to hex for Rich compatibility.
+
+    Rich's Panel and Text renderables prefer hex colors over named colors
+    for consistent rendering across terminals. This function normalizes
+    all color inputs to hex format.
+
+    Args:
+        color: Color in any supported format (CSS4 name, Rich name, hex, RGB tuple string)
+
+    Returns:
+        Hex color string (#RRGGBB) or None if color is None.
+        Returns original string if parsing fails (let Rich handle it).
+
+    Raises:
+        No exceptions raised - returns original on parse failure.
+
+    Example:
+        >>> normalize_color_for_rich("lime")
+        '#00FF00'
+        >>> normalize_color_for_rich("#FF0000")
+        '#FF0000'
+        >>> normalize_color_for_rich("bright_green")  # Rich color
+        '#00FF00'
+        >>> normalize_color_for_rich(None)
+        None
+        >>> normalize_color_for_rich("invalid_color")
+        'invalid_color'  # Returns original, let Rich handle
+
+    Note:
+        Cached with LRU cache (256 entries) for performance.
+        Cache size covers all CSS4 (148) + common Rich colors (100+).
+    """
+    if not color:
+        return None
+
+    color = color.strip()
+
+    # Empty after stripping - treat as None
+    if not color:
+        return None
+
+    # Already hex - return as-is
+    if color.startswith("#"):
+        return color
+
+    # Try parsing as CSS4/Rich color name
+    try:
+        r, g, b = parse_color(color)
+        return rgb_to_hex(r, g, b)
+    except (ValueError, KeyError):
+        # Parsing failed - return original and let Rich try
+        # This handles edge cases like Rich's special color names
+        return color
+
+
 def apply_line_gradient(
     lines: list[str],
     start_color: str,
@@ -346,6 +403,7 @@ __all__ = [
     "interpolate_color",
     "interpolate_rgb",
     "color_distance",
+    "normalize_color_for_rich",
     "apply_line_gradient",
     "colorize_text",
     "get_color_names",

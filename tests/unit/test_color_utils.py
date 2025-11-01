@@ -9,6 +9,7 @@ from styledconsole.utils.color import (
     get_color_names,
     hex_to_rgb,
     interpolate_color,
+    normalize_color_for_rich,
     parse_color,
     rgb_to_hex,
 )
@@ -386,3 +387,109 @@ class TestColorizeText:
         colored = colorize_text("!@#$%^&*()", "red")
         assert "!@#$%^&*()" in colored
         assert "\033[38;2;255;0;0m" in colored
+
+
+class TestNormalizeColorForRich:
+    """Test color normalization for Rich compatibility."""
+
+    def test_none_returns_none(self):
+        """None input returns None."""
+        assert normalize_color_for_rich(None) is None
+
+    def test_hex_passthrough(self):
+        """Hex colors are returned unchanged."""
+        assert normalize_color_for_rich("#FF0000") == "#FF0000"
+        assert normalize_color_for_rich("#00FF00") == "#00FF00"
+        assert normalize_color_for_rich("#0000FF") == "#0000FF"
+
+    def test_hex_lowercase(self):
+        """Lowercase hex colors work."""
+        assert normalize_color_for_rich("#ff0000") == "#ff0000"
+        assert normalize_color_for_rich("#abc123") == "#abc123"
+
+    def test_css4_color_names(self):
+        """CSS4 color names are normalized to hex."""
+        assert normalize_color_for_rich("red") == "#FF0000"
+        assert normalize_color_for_rich("lime") == "#00FF00"
+        assert normalize_color_for_rich("blue") == "#0000FF"
+        assert normalize_color_for_rich("white") == "#FFFFFF"
+        assert normalize_color_for_rich("black") == "#000000"
+
+    def test_css4_case_insensitive(self):
+        """CSS4 names are case-insensitive."""
+        assert normalize_color_for_rich("RED") == "#FF0000"
+        assert normalize_color_for_rich("Red") == "#FF0000"
+        assert normalize_color_for_rich("rEd") == "#FF0000"
+
+    def test_rich_color_names(self):
+        """Rich color names map to CSS4 equivalents."""
+        # Rich's bright_green should map to lime
+        assert normalize_color_for_rich("bright_green") == "#00FF00"
+        # Rich's bright_red maps to its own value
+        result = normalize_color_for_rich("bright_red")
+        assert result.startswith("#")  # Should return a hex color
+
+    def test_invalid_color_returns_original(self):
+        """Invalid color names return original string."""
+        # Let Rich handle unknown colors
+        assert normalize_color_for_rich("invalid_color") == "invalid_color"
+        assert normalize_color_for_rich("not_a_color") == "not_a_color"
+        # Empty string returns None (treated as no color)
+        assert normalize_color_for_rich("") is None
+
+    def test_whitespace_stripped(self):
+        """Whitespace is stripped from input."""
+        assert normalize_color_for_rich("  red  ") == "#FF0000"
+        assert normalize_color_for_rich("\t#FF0000\n") == "#FF0000"
+
+    def test_gray_grey_variants(self):
+        """Both gray and grey spellings work."""
+        assert normalize_color_for_rich("gray") == "#808080"
+        assert normalize_color_for_rich("grey") == "#808080"
+        assert normalize_color_for_rich("darkgray") == "#A9A9A9"
+        assert normalize_color_for_rich("darkgrey") == "#A9A9A9"
+
+    def test_cache_behavior(self):
+        """Function uses LRU cache correctly."""
+        # Clear cache first
+        normalize_color_for_rich.cache_clear()
+
+        # First call - cache miss
+        result1 = normalize_color_for_rich("red")
+        cache_info1 = normalize_color_for_rich.cache_info()
+        assert cache_info1.hits == 0
+        assert cache_info1.misses == 1
+
+        # Second call - cache hit
+        result2 = normalize_color_for_rich("red")
+        cache_info2 = normalize_color_for_rich.cache_info()
+        assert cache_info2.hits == 1
+        assert cache_info2.misses == 1
+
+        # Results are identical
+        assert result1 == result2 == "#FF0000"
+
+    def test_cache_size_limit(self):
+        """Cache respects maxsize=256."""
+        normalize_color_for_rich.cache_clear()
+
+        # Cache has maxsize=256
+        cache_info = normalize_color_for_rich.cache_info()
+        assert cache_info.maxsize == 256
+
+    def test_complex_css4_colors(self):
+        """Test various CSS4 color names."""
+        assert normalize_color_for_rich("coral") == "#FF7F50"
+        assert normalize_color_for_rich("skyblue") == "#87CEEB"
+        assert normalize_color_for_rich("gold") == "#FFD700"
+        assert normalize_color_for_rich("purple") == "#800080"
+        assert normalize_color_for_rich("orange") == "#FFA500"
+
+    def test_edge_cases(self):
+        """Test edge case inputs."""
+        # Empty string after strip returns None
+        assert normalize_color_for_rich("   ") is None
+
+        # Hex-like but invalid (would fail parse_color)
+        result = normalize_color_for_rich("#GGGGGG")
+        assert result == "#GGGGGG"  # Returns original

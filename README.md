@@ -156,8 +156,13 @@ This project is **production-ready** with comprehensive testing and documentatio
 - ✅ box_mapping.py for border style → Rich box mapping
 - ✅ LayoutComposer Rich-aware (backward compatible)
 - ✅ All examples refactored (43% code reduction)
-- ✅ Legacy utilities preserved (FrameRenderer, effects.py)
+- ⚠️ FrameRenderer deprecated (use Console.frame() for new code)
 - ✅ 100% backward compatible - v0.1.0 code still works
+
+**v0.4.0 Coming Soon:**
+- 🚧 Deprecation warnings for FrameRenderer (removed in v1.0.0)
+- 🚧 Gradient consolidation with Strategy pattern
+- 🚧 Color normalization utilities
 
 **Previous Milestones:**
 - ✅ Core Setup & Utilities (M1) - Complete
