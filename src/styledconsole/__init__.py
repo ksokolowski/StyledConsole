@@ -34,6 +34,7 @@ from styledconsole.core.styles import (
 from styledconsole.effects import (
     diagonal_gradient_frame,
     gradient_frame,
+    rainbow_cycling_frame,
     rainbow_frame,
 )
 
@@ -126,6 +127,7 @@ __all__ = [
     "gradient_frame",
     "diagonal_gradient_frame",
     "rainbow_frame",
+    "rainbow_cycling_frame",
     # Text utilities
     "visual_width",
     "strip_ansi",

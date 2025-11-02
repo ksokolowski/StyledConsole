@@ -897,7 +897,7 @@ def main() -> None:
         "[bold bright_white]BOLD TEXT[/bold bright_white]\n"
         "[italic bright_cyan]Italic Text[/italic bright_cyan]\n"
         "[underline bright_green]Underlined[/underline bright_green]\n"
-        "[strike bright_red]Strikethrough[/strike]\n"
+        "[strike]Strikethrough[/strike]\n"
         "[bright_yellow]Colors:[/bright_yellow] [red]Red[/red] [green]Green[/green]\n"
         "[blue]Blue[/blue] [magenta]Magenta[/magenta]\n"
         "[dim]Dim text[/dim] | [blink]Blinking text[/blink] | [reverse]Reversed[/reverse]",

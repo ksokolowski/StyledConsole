@@ -4,9 +4,16 @@ This example demonstrates the gradient effects available in StyledConsole:
 - Vertical gradients (content and borders)
 - Diagonal gradients (top-left to bottom-right)
 - Rainbow effects (7-color spectrum)
+- Rainbow cycling (each line cycles through ROYGBIV colors)
 """
 
-from styledconsole import Console, diagonal_gradient_frame, gradient_frame, rainbow_frame
+from styledconsole import (
+    Console,
+    diagonal_gradient_frame,
+    gradient_frame,
+    rainbow_cycling_frame,
+    rainbow_frame,
+)
 
 
 def main():
@@ -307,12 +314,12 @@ def main():
     print("-" * 80)
 
     # Poetry banner header with gradient - will be inside the frame
-    from styledconsole.core.banner import BannerRenderer
+    from io import StringIO
 
-    banner_renderer = BannerRenderer()
-    banner_lines = banner_renderer.render(
-        "POETRY", font="slant", start_color="magenta", end_color="cyan"
-    )
+    banner_buffer = StringIO()
+    banner_console = Console(file=banner_buffer, detect_terminal=False)
+    banner_console.banner("POETRY", font="slant", start_color="magenta", end_color="cyan")
+    banner_lines = banner_buffer.getvalue().splitlines()
 
     # Digital poetry content with banner at the top
     poetry_lines = banner_lines + [
@@ -348,57 +355,15 @@ def main():
         "Let StyledConsole be your guide!",
     ]
 
-    # Apply full rainbow spectrum to content (cycling through ROYGBIV)
-    # Create frame first (without gradient)
-    from styledconsole.core.frame import FrameRenderer
-    from styledconsole.effects import _colorize, get_rainbow_color
-    from styledconsole.utils.color import interpolate_color
-    from styledconsole.utils.text import strip_ansi
-
-    frame_renderer = FrameRenderer()
-    poetry_frame = frame_renderer.render(
+    # Apply rainbow cycling effect: each content line gets a different rainbow color
+    # while borders have a smooth gold-to-purple gradient
+    colored_poetry = rainbow_cycling_frame(
         poetry_lines,
+        border_gradient_start="gold",
+        border_gradient_end="purple",
         border="heavy",
         # No width specified - auto-width calculation!
     )
-
-    # Apply rainbow to content lines (skip borders)
-    from styledconsole.core.styles import get_border_style
-
-    style = get_border_style("heavy")
-    colored_poetry = []
-
-    content_line_count = 0
-    for idx, line in enumerate(poetry_frame):
-        clean = strip_ansi(line)
-
-        if clean and clean[0] in {style.top_left, style.bottom_left}:
-            # Top or bottom border - apply gradient
-            position = idx / max(len(poetry_frame) - 1, 1)
-            color = interpolate_color("gold", "purple", position)
-            colored_poetry.append(_colorize(clean, color))
-        elif clean and clean[0] == style.vertical:
-            # Content line - apply rainbow to content, gradient to borders
-            position = idx / max(len(poetry_frame) - 1, 1)
-            border_color = interpolate_color("gold", "purple", position)
-
-            # Get rainbow color for this content line (cycling through 7 colors)
-            rainbow_position = (content_line_count % 7) / 6.0  # Convert to 0.0-1.0 range
-            rainbow_color = get_rainbow_color(rainbow_position)
-            content_line_count += 1
-
-            left_border = clean[0]
-            right_border = clean[-1]
-            content = clean[len(left_border) : -len(right_border)]
-
-            colored_line = (
-                _colorize(left_border, border_color)
-                + _colorize(content, rainbow_color)
-                + _colorize(right_border, border_color)
-            )
-            colored_poetry.append(colored_line)
-        else:
-            colored_poetry.append(line)
 
     for line in colored_poetry:
         print(line)
@@ -410,6 +375,7 @@ def main():
     console.text("  • Use gradient_frame() for vertical gradients")
     console.text("  • Use diagonal_gradient_frame() for diagonal effects")
     console.text("  • Use rainbow_frame() with direction='vertical' or 'diagonal'")
+    console.text("  • Use rainbow_cycling_frame() for per-line rainbow colors!")
     console.text("  • Set target='content', 'border', or 'both'")
     console.text("  • All CSS4 color names and hex codes supported!")
     console.text("  • Width auto-calculated when not specified!")

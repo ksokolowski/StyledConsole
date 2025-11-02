@@ -29,6 +29,7 @@ __all__ = [
     "gradient_frame",
     "diagonal_gradient_frame",
     "rainbow_frame",
+    "rainbow_cycling_frame",
 ]
 
 # Rainbow color spectrum (7 colors: ROYGBIV)
@@ -334,6 +335,126 @@ def rainbow_frame(
         lines = _apply_diagonal_rainbow(lines, style, title, apply_to_border, apply_to_content)
 
     return lines
+
+
+def rainbow_cycling_frame(
+    content: str | list[str],
+    *,
+    border_gradient_start: str = "gold",
+    border_gradient_end: str = "purple",
+    title: str | None = None,
+    border: str = "rounded",
+    width: int | None = None,
+    padding: int = 1,
+    align: Literal["left", "center", "right"] = "left",
+) -> list[str]:
+    """Create a frame with cycling rainbow content and gradient borders.
+
+    Each content line cycles through the 7-color ROYGBIV spectrum:
+    - Line 1: Red, Line 2: Orange, Line 3: Yellow, etc.
+    - After violet (line 7), cycles back to red (line 8)
+
+    Borders use a vertical gradient (top to bottom) with custom colors.
+
+    This creates a unique effect where:
+    - Content: Rainbow colors cycling per line (discrete colors)
+    - Borders: Smooth gradient from start to end color
+
+    Args:
+        content: Content to display in frame
+        border_gradient_start: Start color for border gradient (default: gold)
+        border_gradient_end: End color for border gradient (default: purple)
+        title: Optional frame title
+        border: Border style name
+        width: Frame width (auto-calculated if None)
+        padding: Padding around content
+        align: Text alignment
+
+    Returns:
+        List of rendered lines with cycling rainbow content and gradient borders
+
+    Example:
+        >>> from styledconsole.effects import rainbow_cycling_frame
+        >>> lines = rainbow_cycling_frame(
+        ...     ["Line 1 (Red)", "Line 2 (Orange)", "Line 3 (Yellow)",
+        ...      "Line 4 (Green)", "Line 5 (Blue)", "Line 6 (Indigo)",
+        ...      "Line 7 (Violet)", "Line 8 (Red again)"],
+        ...     border_gradient_start="gold",
+        ...     border_gradient_end="purple",
+        ...     border="heavy"
+        ... )
+    """
+    from io import StringIO
+
+    from styledconsole.console import Console
+    from styledconsole.core.styles import get_border_style
+    from styledconsole.utils.color import interpolate_color
+    from styledconsole.utils.text import strip_ansi
+
+    # Build base frame
+    if isinstance(content, str):
+        content_lines = content.splitlines() if content else [""]
+    else:
+        content_lines = content if content else [""]
+
+    buffer = StringIO()
+    console = Console(file=buffer, detect_terminal=False, record=False)
+    console.frame(
+        content_lines,
+        title=title,
+        border=border,
+        width=width,
+        padding=padding,
+        align=align,
+    )
+
+    # Get rendered lines
+    lines = buffer.getvalue().splitlines()
+    style = get_border_style(border)
+    colored_lines = []
+    content_line_count = 0  # Track content lines for cycling
+
+    for idx, line in enumerate(lines):
+        clean = strip_ansi(line)
+
+        # Calculate gradient position for borders (vertical gradient)
+        position = idx / max(len(lines) - 1, 1)
+        border_color = interpolate_color(border_gradient_start, border_gradient_end, position)
+
+        # Check line type
+        is_top_bottom_border = clean and clean[0] in {
+            style.top_left,
+            style.bottom_left,
+            style.horizontal,
+        }
+        is_content_line = clean and clean[0] == style.vertical
+
+        if is_top_bottom_border:
+            # Top or bottom border - apply gradient
+            colored_lines.append(_colorize(clean, border_color))
+        elif is_content_line:
+            # Content line - rainbow cycling for content, gradient for borders
+            left_border = clean[0]
+            right_border = clean[-1]
+            content_text = clean[len(left_border) : -len(right_border)]
+
+            # Get cycling rainbow color (0-6 maps to ROYGBIV)
+            rainbow_position = (content_line_count % 7) / 6.0
+            content_color = get_rainbow_color(rainbow_position)
+            content_line_count += 1
+
+            # Combine: gradient borders + rainbow content
+            colored_line = (
+                _colorize(left_border, border_color)
+                + _colorize(content_text, content_color)
+                + _colorize(right_border, border_color)
+            )
+            colored_lines.append(colored_line)
+        else:
+            # Other lines (shouldn't happen, but preserve as-is)
+            colored_lines.append(line)
+
+    return colored_lines
 
 
 # Internal helper functions

@@ -3,33 +3,33 @@
 Banner Showcase
 
 A visual demonstration of the best banner rendering capabilities.
+
+v0.4.0: Updated to use Console.banner() instead of BannerRenderer.
 """
 
-from styledconsole import BannerRenderer
+from styledconsole import Console
 
-renderer = BannerRenderer()
+console = Console()
 
 # Application Launch
 print()
-for line in renderer.render(
+console.banner(
     "WELCOME",
     font="slant",
     start_color="dodgerblue",
     end_color="purple",
     border="double",
     width=80,
-):
-    print(line)
+)
 
 print()
-for line in renderer.render(
+console.banner(
     "StyledConsole v0.1",
     font="standard",
     start_color="lightseagreen",
     end_color="coral",
     border="rounded",
-):
-    print(line)
+)
 
 print()
 print()
@@ -38,39 +38,36 @@ print()
 print("Status Messages:")
 print()
 
-for line in renderer.render(
+console.banner(
     "SUCCESS",
     font="banner",
     start_color="lime",
     end_color="green",
     border="heavy",
     width=65,
-):
-    print(line)
+)
 
 print()
 
-for line in renderer.render(
+console.banner(
     "ERROR",
     font="banner",
     start_color="red",
     end_color="darkred",
     border="heavy",
     width=65,
-):
-    print(line)
+)
 
 print()
 
-for line in renderer.render(
+console.banner(
     "WARNING",
     font="banner",
     start_color="orange",
     end_color="orangered",
     border="heavy",
     width=65,
-):
-    print(line)
+)
 
 print()
 print()
@@ -79,33 +76,30 @@ print()
 print("Section Headers:")
 print()
 
-for line in renderer.render(
+console.banner(
     "API",
     font="big",
     start_color="cyan",
     end_color="blue",
-):
-    print(line)
+)
 
 print()
 
-for line in renderer.render(
+console.banner(
     "DATABASE",
     font="big",
     start_color="green",
     end_color="teal",
-):
-    print(line)
+)
 
 print()
 
-for line in renderer.render(
+console.banner(
     "TESTS",
     font="big",
     start_color="yellow",
     end_color="orange",
-):
-    print(line)
+)
 
 print()
 print()
@@ -114,7 +108,7 @@ print()
 print("Feature Showcase:")
 print()
 
-for line in renderer.render(
+console.banner(
     "ASCII ART",
     font="slant",
     start_color="red",
@@ -122,12 +116,11 @@ for line in renderer.render(
     border="solid",
     width=70,
     padding=2,
-):
-    print(line)
+)
 
 print()
 
-for line in renderer.render(
+console.banner(
     "GRADIENTS",
     font="slant",
     start_color="purple",
@@ -135,12 +128,11 @@ for line in renderer.render(
     border="solid",
     width=70,
     padding=2,
-):
-    print(line)
+)
 
 print()
 
-for line in renderer.render(
+console.banner(
     "BORDERS",
     font="slant",
     start_color="blue",
@@ -148,21 +140,19 @@ for line in renderer.render(
     border="solid",
     width=70,
     padding=2,
-):
-    print(line)
+)
 
 print()
 print()
 
 # Final Message
-for line in renderer.render(
+console.banner(
     "ENJOY",
     font="banner",
     start_color="gold",
     end_color="orange",
     border="thick",
     width=60,
-):
-    print(line)
+)
 
 print()

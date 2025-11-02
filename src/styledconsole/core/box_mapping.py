@@ -23,7 +23,7 @@ def get_box_style(border_name: str) -> box.Box:
     """Get Rich box style from border name.
 
     Args:
-        border_name: Border style name (solid, rounded, double, etc.)
+        border_name: Border style name (case-insensitive: solid, rounded, double, etc.)
 
     Returns:
         Rich Box instance for the requested style.
@@ -34,9 +34,13 @@ def get_box_style(border_name: str) -> box.Box:
     Example:
         >>> box_style = get_box_style("rounded")
         >>> # Use with Panel: Panel("content", box=box_style)
+        >>> box_style = get_box_style("SOLID")  # Case insensitive
     """
-    if border_name not in BORDER_TO_BOX:
+    # Normalize to lowercase for case-insensitive matching
+    border_name_lower = border_name.lower()
+
+    if border_name_lower not in BORDER_TO_BOX:
         raise ValueError(
             f"Unknown border style: {border_name}. Valid options: {', '.join(BORDER_TO_BOX.keys())}"
         )
-    return BORDER_TO_BOX[border_name]
+    return BORDER_TO_BOX[border_name_lower]

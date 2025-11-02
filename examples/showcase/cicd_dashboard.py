@@ -2,25 +2,44 @@
 
 A comprehensive example demonstrating a CI/CD pipeline dashboard using:
 - Banner header with gradient
-- 3x3 grid layout for pipeline stages
+- Grid layout using manual formatting
 - Color-coded status indicators
 - Emojis for visual status
 - Pass/fail ratios with progress indicators
 - Gradients for visual appeal
+
+v0.4.0: Updated to use Console.banner() and Console.frame() exclusively.
 """
 
-from styledconsole import BannerRenderer, FrameRenderer, LayoutComposer
+from io import StringIO
+
+from styledconsole import Console
+
+
+def print_row(buffers, spacing=2):
+    """Print multiple frames side by side."""
+    all_lines = [buf.getvalue().splitlines() for buf in buffers]
+    max_lines = max(len(lines) for lines in all_lines)
+
+    for i in range(max_lines):
+        row_parts = []
+        for lines in all_lines:
+            if i < len(lines):
+                row_parts.append(lines[i])
+            else:
+                # Get width from first line if available
+                width = len(lines[0]) if lines else 24
+                row_parts.append(" " * width)
+        print((" " * spacing).join(row_parts))
 
 
 def create_cicd_dashboard():
     """Create a full CI/CD pipeline dashboard."""
-    composer = LayoutComposer()
-    banner_renderer = BannerRenderer()
-    frame_renderer = FrameRenderer()
+    console = Console()
 
     # Header banner with gradient
     print("\n")
-    title_banner = banner_renderer.render(
+    console.banner(
         "CI/CD PIPELINE",
         font="banner",
         start_color="deepskyblue",
@@ -28,38 +47,54 @@ def create_cicd_dashboard():
         width=80,
         align="center",
     )
+    print()
 
-    # Pipeline stages with status - 3x3 grid
     # Row 1: Build stages
-    build_lint = frame_renderer.render(
+    print("BUILD STAGE")
+    print("=" * 80)
+
+    buffer1 = StringIO()
+    Console(file=buffer1, detect_terminal=False).frame(
         ["✅ Passed", "Duration: 1.2s", "Pass Rate: 100%"],
         title="🔍 Lint",
         border="rounded",
         content_color="lime",
         border_color="lime",
         title_color="white",
+        width=24,
     )
 
-    build_compile = frame_renderer.render(
+    buffer2 = StringIO()
+    Console(file=buffer2, detect_terminal=False).frame(
         ["✅ Passed", "Duration: 45s", "Pass Rate: 98%"],
         title="⚙️  Compile",
         border="rounded",
         content_color="lime",
         border_color="lime",
         title_color="white",
+        width=24,
     )
 
-    build_security = frame_renderer.render(
+    buffer3 = StringIO()
+    Console(file=buffer3, detect_terminal=False).frame(
         ["⚠️  Warning", "Duration: 8s", "3 minor issues"],
         title="🔒 Security",
         border="rounded",
         content_color="orange",
         border_color="orange",
         title_color="white",
+        width=24,
     )
 
+    print_row([buffer1, buffer2, buffer3])
+    print()
+
     # Row 2: Test stages
-    test_unit = frame_renderer.render(
+    print("TEST STAGE")
+    print("=" * 80)
+
+    buffer4 = StringIO()
+    Console(file=buffer4, detect_terminal=False).frame(
         ["✅ Passed", "329/329 tests", "Coverage: 99%"],
         title="🧪 Unit Tests",
         border="rounded",
@@ -67,9 +102,11 @@ def create_cicd_dashboard():
         end_color="darkgreen",
         border_color="lime",
         title_color="white",
+        width=24,
     )
 
-    test_integration = frame_renderer.render(
+    buffer5 = StringIO()
+    Console(file=buffer5, detect_terminal=False).frame(
         ["✅ Passed", "47/47 tests", "Duration: 2m"],
         title="🔗 Integration",
         border="rounded",
@@ -77,55 +114,66 @@ def create_cicd_dashboard():
         end_color="darkgreen",
         border_color="lime",
         title_color="white",
+        width=24,
     )
 
-    test_e2e = frame_renderer.render(
+    buffer6 = StringIO()
+    Console(file=buffer6, detect_terminal=False).frame(
         ["❌ Failed", "12/15 passed", "3 failures"],
         title="🌐 E2E Tests",
         border="rounded",
         content_color="red",
         border_color="red",
         title_color="white",
+        width=24,
     )
 
+    print_row([buffer4, buffer5, buffer6])
+    print()
+
     # Row 3: Deploy stages
-    deploy_staging = frame_renderer.render(
+    print("DEPLOY STAGE")
+    print("=" * 80)
+
+    buffer7 = StringIO()
+    Console(file=buffer7, detect_terminal=False).frame(
         ["✅ Deployed", "Version: 1.2.3", "Healthy"],
         title="🚀 Staging",
         border="rounded",
-        start_color="#00d4ff",  # Cyan
-        end_color="#0066ff",  # Blue
+        start_color="#00d4ff",
+        end_color="#0066ff",
         border_color="#00d4ff",
         title_color="#ffffff",
+        width=24,
     )
 
-    deploy_prod = frame_renderer.render(
+    buffer8 = StringIO()
+    Console(file=buffer8, detect_terminal=False).frame(
         ["⏸️  Waiting", "Approval needed", "ETA: pending"],
         title="🌟 Production",
         border="rounded",
-        content_color="#888888",  # Gray
+        content_color="#888888",
         border_color="#888888",
         title_color="#ffffff",
+        width=24,
     )
 
-    deploy_rollback = frame_renderer.render(
+    buffer9 = StringIO()
+    Console(file=buffer9, detect_terminal=False).frame(
         ["✅ Ready", "Last: v1.2.2", "Available"],
         title="🔄 Rollback",
         border="rounded",
-        content_color="#00aaff",  # Light blue
+        content_color="#00aaff",
         border_color="#00aaff",
         title_color="#ffffff",
+        width=24,
     )
 
-    # Create 3x3 grid
-    row1 = [build_lint, build_compile, build_security]
-    row2 = [test_unit, test_integration, test_e2e]
-    row3 = [deploy_staging, deploy_prod, deploy_rollback]
-
-    pipeline_grid = composer.grid([row1, row2, row3], column_spacing=2, row_spacing=1)
+    print_row([buffer7, buffer8, buffer9])
+    print()
 
     # Overall summary frame
-    summary = frame_renderer.render(
+    console.frame(
         [
             "Pipeline Status: 🔴 FAILED (E2E tests)",
             "Total Duration: 3m 45s",
@@ -134,34 +182,25 @@ def create_cicd_dashboard():
         ],
         title="📊 Summary",
         border="double",
-        start_color="#ff0000",  # Red at top
-        end_color="#ffaa00",  # Orange at bottom
+        start_color="#ff0000",
+        end_color="#ffaa00",
         border_color="#ffaa00",
         title_color="#ffffff",
         width=80,
         align="left",
         padding=2,
     )
-
-    # Combine all sections
-    dashboard = composer.stack([title_banner, pipeline_grid, summary], spacing=1, width=80)
-
-    # Print the dashboard
-    for line in dashboard:
-        print(line)
     print()
 
 
 def create_success_dashboard():
     """Create a dashboard showing all stages passed."""
-    composer = LayoutComposer()
-    banner_renderer = BannerRenderer()
-    frame_renderer = FrameRenderer()
+    console = Console()
 
     print("\n")
 
     # Success banner
-    title_banner = banner_renderer.render(
+    console.banner(
         "ALL CLEAR",
         font="slant",
         start_color="#00ff00",
@@ -169,27 +208,41 @@ def create_success_dashboard():
         width=80,
         align="center",
     )
+    print()
 
     # Mini stats grid (2x2)
-    stats_build = frame_renderer.render(
+    print("STATS")
+    print("=" * 80)
+
+    # Row 1
+    buffer1 = StringIO()
+    Console(file=buffer1, detect_terminal=False).frame(
         ["✅ 100%", "0 errors"],
         title="Build",
         border="solid",
         content_color="#00ff00",
         border_color="#00ff00",
         title_color="#ffffff",
+        width=24,
     )
 
-    stats_test = frame_renderer.render(
+    buffer2 = StringIO()
+    Console(file=buffer2, detect_terminal=False).frame(
         ["✅ 100%", "376 passed"],
         title="Tests",
         border="solid",
         content_color="#00ff00",
         border_color="#00ff00",
         title_color="#ffffff",
+        width=24,
     )
 
-    stats_coverage = frame_renderer.render(
+    print_row([buffer1, buffer2], spacing=10)
+    print()
+
+    # Row 2
+    buffer3 = StringIO()
+    Console(file=buffer3, detect_terminal=False).frame(
         ["✅ 99.03%", "514 lines"],
         title="Coverage",
         border="solid",
@@ -197,23 +250,25 @@ def create_success_dashboard():
         end_color="#00cc00",
         border_color="#00ff00",
         title_color="#ffffff",
+        width=24,
     )
 
-    stats_deploy = frame_renderer.render(
+    buffer4 = StringIO()
+    Console(file=buffer4, detect_terminal=False).frame(
         ["✅ Live", "v1.2.4"],
         title="Deploy",
         border="solid",
         content_color="#00ff00",
         border_color="#00ff00",
         title_color="#ffffff",
+        width=24,
     )
 
-    stats_row1 = [stats_build, stats_test]
-    stats_row2 = [stats_coverage, stats_deploy]
-    stats_grid = composer.grid([stats_row1, stats_row2], column_spacing=2, row_spacing=1)
+    print_row([buffer3, buffer4], spacing=10)
+    print()
 
     # Success message
-    message = frame_renderer.render(
+    console.frame(
         [
             "🎉 All pipeline stages completed successfully!",
             "",
@@ -234,100 +289,108 @@ def create_success_dashboard():
         align="left",
         padding=2,
     )
-
-    dashboard = composer.stack([title_banner, stats_grid, message], spacing=1, width=80)
-
-    for line in dashboard:
-        print(line)
     print()
 
 
 def create_monitoring_dashboard():
     """Create a system monitoring dashboard."""
-    composer = LayoutComposer()
-    banner_renderer = BannerRenderer()
-    frame_renderer = FrameRenderer()
+    console = Console()
 
     print("\n")
 
     # Header
-    header = banner_renderer.render(
+    console.banner(
         "MONITORING",
         font="standard",
-        start_color="#ff00ff",  # Magenta
-        end_color="#00ffff",  # Cyan
+        start_color="#ff00ff",
+        end_color="#00ffff",
         width=80,
     )
+    print()
 
     # System metrics (3x2 grid)
-    cpu_metric = frame_renderer.render(
+    print("SYSTEM METRICS")
+    print("=" * 80)
+
+    # Row 1
+    buffer1 = StringIO()
+    Console(file=buffer1, detect_terminal=False).frame(
         ["Usage: 34%", "Load: 1.2", "Cores: 8"],
         title="💻 CPU",
         border="rounded",
         start_color="#00ff00",
         end_color="#ffff00",
         border_color="#00ff00",
+        width=24,
     )
 
-    memory_metric = frame_renderer.render(
+    buffer2 = StringIO()
+    Console(file=buffer2, detect_terminal=False).frame(
         ["Used: 8.2GB", "Free: 7.8GB", "Total: 16GB"],
         title="🧠 Memory",
         border="rounded",
         start_color="#00ff00",
         end_color="#ffaa00",
         border_color="#ffaa00",
+        width=24,
     )
 
-    disk_metric = frame_renderer.render(
+    buffer3 = StringIO()
+    Console(file=buffer3, detect_terminal=False).frame(
         ["Used: 145GB", "Free: 355GB", "Total: 500GB"],
         title="💾 Disk",
         border="rounded",
         content_color="#00ff00",
         border_color="#00ff00",
+        width=24,
     )
 
-    network_metric = frame_renderer.render(
+    print_row([buffer1, buffer2, buffer3])
+    print()
+
+    # Row 2
+    buffer4 = StringIO()
+    Console(file=buffer4, detect_terminal=False).frame(
         ["↓ 1.2 Mbps", "↑ 0.8 Mbps", "Latency: 12ms"],
         title="🌐 Network",
         border="rounded",
         content_color="#00aaff",
         border_color="#00aaff",
+        width=24,
     )
 
-    services_metric = frame_renderer.render(
+    buffer5 = StringIO()
+    Console(file=buffer5, detect_terminal=False).frame(
         ["Running: 12", "Stopped: 0", "All healthy"],
         title="⚙️  Services",
         border="rounded",
         content_color="#00ff00",
         border_color="#00ff00",
+        width=24,
     )
 
-    uptime_metric = frame_renderer.render(
+    buffer6 = StringIO()
+    Console(file=buffer6, detect_terminal=False).frame(
         ["42 days", "99.98%", "Last boot: OK"],
         title="⏱️  Uptime",
         border="rounded",
         start_color="#00ffff",
         end_color="#0066ff",
         border_color="#00ffff",
+        width=24,
     )
 
-    row1 = [cpu_metric, memory_metric, disk_metric]
-    row2 = [network_metric, services_metric, uptime_metric]
-    metrics_grid = composer.grid([row1, row2], column_spacing=2, row_spacing=1)
+    print_row([buffer4, buffer5, buffer6])
+    print()
 
     # Status bar
-    status = frame_renderer.render(
+    console.frame(
         ["🟢 All systems operational  |  Last updated: 2025-10-18 14:23:15"],
         border="solid",
         content_color="#00ff00",
         border_color="#00ff00",
         width=80,
     )
-
-    dashboard = composer.stack([header, metrics_grid, status], spacing=1, width=80)
-
-    for line in dashboard:
-        print(line)
     print()
 
 
@@ -338,7 +401,9 @@ def main():
     print("=" * 80)
 
     create_cicd_dashboard()
+    print("\n" + "=" * 80)
     create_success_dashboard()
+    print("\n" + "=" * 80)
     create_monitoring_dashboard()
 
     print("=" * 80)

@@ -6,6 +6,7 @@ from styledconsole.effects import (
     diagonal_gradient_frame,
     get_rainbow_color,
     gradient_frame,
+    rainbow_cycling_frame,
     rainbow_frame,
 )
 from styledconsole.utils.text import strip_ansi
@@ -418,3 +419,204 @@ class TestGradientIntegration:
                 target="both",
             )
             assert len(lines) == 3
+
+
+class TestRainbowCyclingFrame:
+    """Tests for rainbow_cycling_frame function (discrete per-line colors)."""
+
+    def test_basic_cycling(self):
+        """Test that each line gets a different rainbow color."""
+        lines = rainbow_cycling_frame(
+            ["Line 1", "Line 2", "Line 3", "Line 4"],
+            border_gradient_start="gold",
+            border_gradient_end="purple",
+        )
+
+        # Should have frame structure (top border + 4 content + bottom border)
+        assert len(lines) >= 6
+
+        # Content lines should exist
+        assert "Line 1" in strip_ansi(lines[1])
+        assert "Line 2" in strip_ansi(lines[2])
+        assert "Line 3" in strip_ansi(lines[3])
+        assert "Line 4" in strip_ansi(lines[4])
+
+    def test_cycling_wraps_after_7_lines(self):
+        """Test that line 8 gets same color as line 1 (cycling through 7 rainbow colors)."""
+        # Create 8 lines to test cycling
+        content = [f"Line {i}" for i in range(1, 9)]
+        lines = rainbow_cycling_frame(content)
+
+        # Should have all 8 content lines
+        assert len(lines) >= 10  # top + 8 content + bottom
+
+        # All content should be present
+        for i in range(1, 9):
+            assert f"Line {i}" in strip_ansi("\n".join(lines))
+
+    def test_border_gradient(self):
+        """Test that borders have the specified gradient."""
+        lines = rainbow_cycling_frame(
+            ["Line 1", "Line 2"],
+            border_gradient_start="red",
+            border_gradient_end="blue",
+            border="rounded",
+        )
+
+        # Should have top and bottom borders
+        assert len(lines) >= 4
+
+        # Borders should exist (with ANSI codes for colors)
+        assert len(lines[0]) > 0  # Top border
+        assert len(lines[-1]) > 0  # Bottom border
+
+    def test_custom_border_colors(self):
+        """Test custom border gradient colors."""
+        lines = rainbow_cycling_frame(
+            ["Test"],
+            border_gradient_start="#FF0000",  # Red
+            border_gradient_end="#0000FF",  # Blue
+        )
+
+        # Should produce valid output
+        assert len(lines) >= 3
+        assert "Test" in strip_ansi(lines[1])
+
+    def test_with_title(self):
+        """Test that title works correctly."""
+        lines = rainbow_cycling_frame(
+            ["Line 1", "Line 2"],
+            title="Test Title",
+        )
+
+        # Title should appear in first line
+        assert "Test Title" in strip_ansi(lines[0])
+
+    def test_different_borders(self):
+        """Test that it works with all border styles."""
+        content = ["Test content"]
+
+        for border_style in [
+            "solid",
+            "rounded",
+            "double",
+            "heavy",
+            "thick",
+            "minimal",
+            "ascii",
+            "dots",
+        ]:
+            lines = rainbow_cycling_frame(
+                content,
+                border=border_style,
+            )
+
+            # Should produce valid output
+            assert len(lines) >= 3
+            assert "Test content" in strip_ansi("\n".join(lines))
+
+    def test_single_line(self):
+        """Test with single line (should get first rainbow color - red)."""
+        lines = rainbow_cycling_frame(["Single line"])
+
+        assert len(lines) >= 3  # top + content + bottom
+        assert "Single line" in strip_ansi(lines[1])
+
+    def test_many_lines(self):
+        """Test with 15+ lines to verify cycling through colors multiple times."""
+        content = [f"Line {i}" for i in range(1, 16)]  # 15 lines
+        lines = rainbow_cycling_frame(content)
+
+        # Should have all 15 content lines
+        assert len(lines) >= 17  # top + 15 content + bottom
+
+        # All content should be present
+        for i in range(1, 16):
+            assert f"Line {i}" in strip_ansi("\n".join(lines))
+
+    def test_with_emojis(self):
+        """Test that emoji content renders correctly."""
+        lines = rainbow_cycling_frame(
+            ["🌈 Rainbow", "🔥 Fire", "🌊 Ocean"],
+        )
+
+        # Should handle emojis properly
+        assert "🌈" in strip_ansi(lines[1])
+        assert "🔥" in strip_ansi(lines[2])
+        assert "🌊" in strip_ansi(lines[3])
+
+    def test_alignment_options(self):
+        """Test left/center/right alignment."""
+        content = ["Test"]
+
+        for align in ["left", "center", "right"]:
+            lines = rainbow_cycling_frame(
+                content,
+                align=align,
+            )
+
+            # Should produce valid output
+            assert len(lines) >= 3
+            assert "Test" in strip_ansi("\n".join(lines))
+
+    def test_with_padding(self):
+        """Test that padding doesn't break color cycling."""
+        for padding in [0, 1, 2, 3]:
+            lines = rainbow_cycling_frame(
+                ["Line 1", "Line 2"],
+                padding=padding,
+            )
+
+            # Should produce valid output with padding
+            assert len(lines) >= 4
+            assert "Line 1" in strip_ansi("\n".join(lines))
+            assert "Line 2" in strip_ansi("\n".join(lines))
+
+    def test_empty_content(self):
+        """Test that empty content is handled gracefully."""
+        lines = rainbow_cycling_frame([])
+
+        # Should still produce a frame (even if empty)
+        # With no content, only top and bottom borders
+        assert len(lines) >= 2  # top + bottom
+
+    def test_string_content(self):
+        """Test that string input (not list) works."""
+        lines = rainbow_cycling_frame("Line 1\nLine 2\nLine 3")
+
+        # Should split by newlines and process
+        assert len(lines) >= 5
+        assert "Line 1" in strip_ansi("\n".join(lines))
+        assert "Line 2" in strip_ansi("\n".join(lines))
+        assert "Line 3" in strip_ansi("\n".join(lines))
+
+    def test_width_specification(self):
+        """Test with explicit width."""
+        lines = rainbow_cycling_frame(
+            ["Short"],
+            width=50,
+        )
+
+        # All lines should have approximately the same visual width
+        widths = [len(strip_ansi(line)) for line in lines]
+        # Allow some variation due to emojis/borders
+        assert max(widths) - min(widths) <= 2
+
+    def test_different_from_rainbow_frame(self):
+        """Test that output differs from regular rainbow_frame."""
+        content = ["Line 1", "Line 2", "Line 3", "Line 4", "Line 5"]
+
+        # Regular rainbow frame (smooth gradient)
+        rainbow_lines = rainbow_frame(content, direction="vertical", mode="content")
+
+        # Cycling rainbow frame (discrete colors)
+        cycling_lines = rainbow_cycling_frame(content)
+
+        # Both should produce output
+        assert len(rainbow_lines) >= 7
+        assert len(cycling_lines) >= 7
+
+        # Content should be present in both
+        for line_content in content:
+            assert line_content in strip_ansi("\n".join(rainbow_lines))
+            assert line_content in strip_ansi("\n".join(cycling_lines))

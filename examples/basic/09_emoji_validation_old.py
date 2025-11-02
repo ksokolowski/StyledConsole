@@ -22,6 +22,8 @@ from styledconsole import (
     rainbow_frame,
     validate_emoji,
 )
+from styledconsole.core.frame import FrameRenderer
+from styledconsole.core.layout import LayoutComposer
 from styledconsole.utils.text import format_emoji_with_spacing, visual_width
 
 print("=" * 70)
