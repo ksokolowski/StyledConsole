@@ -138,6 +138,102 @@ def visual_width(text: str) -> int:
 
 ---
 
+## Terminal Gluing Behavior (Discovered 2025-11-02)
+
+### The Problem
+
+Some VS16 emojis exhibit an additional terminal-specific quirk: **visual space collapse** or "gluing" where the space after the emoji is invisible, making the emoji appear directly attached to following text.
+
+**Example:**
+```python
+title = "⚙️ Services"  # Code has space
+# Terminal displays: ⚙️Services (NO visible space - "glued")
+```
+
+### Why Width Calculation Isn't Enough
+
+Our `visual_width()` correctly calculates these emojis:
+- `visual_width("⚙️ Services")` returns 10 (correct!)
+- Rich Panel uses this for border alignment (correct!)
+
+But **terminals render them differently**:
+- Base char `⚙` (U+2699) has `wcwidth=1`
+- Adding VS16 (U+FE0F) requests emoji presentation
+- Terminal renders it as **2-width emoji** (like 🚀)
+- The 2-width rendering "consumes" the following space position
+- Result: space is there in calculations but invisible in display
+
+### Known Gluing Emojis
+
+**Confirmed (GNOME Terminal, tested 2025-11-02):**
+
+| Emoji | Unicode | Name | Base Width | Display Width | Status |
+|-------|---------|------|------------|---------------|---------|
+| ⚙️ | U+2699+FE0F | GEAR | 1 | 2 | 🔴 Glues |
+| ⏱️ | U+23F1+FE0F | STOPWATCH | 1 | 2 | 🔴 Glues |
+| ⏸️ | U+23F8+FE0F | PAUSE BUTTON | 1 | 2 | 🔴 Glues* |
+
+**Non-gluing (for comparison):**
+
+| Emoji | Unicode | Name | Base Width | Display Width | Status |
+|-------|---------|------|------------|---------------|---------|
+| ⚠️ | U+26A0+FE0F | WARNING SIGN | 1 | 1 | ✅ No glue |
+| ℹ️ | U+2139+FE0F | INFORMATION | 1 | 1 | ✅ No glue |
+
+*Not fully tested yet, inferred from similar pattern
+
+### Current Workaround (Manual)
+
+**Solution:** Add extra space in code so one space remains visible after terminal "consumes" it:
+
+```python
+# v0.3.0 - v1.0.0: Manual workaround required
+console.frame(
+    ["Running: 12", "Stopped: 0"],
+    title="⚙️  Services",  # Double space (emoji + space + space)
+    border="rounded",
+    width=24,
+)
+# Terminal displays: ⚙️ Services (single space visible)
+```
+
+**When to use:**
+- Frame titles with ⚙️, ⏱️, ⏸️
+- Banner text with these emojis
+- Any formatted output where visual spacing matters
+
+**When NOT needed:**
+- Content inside frames (only affects titles)
+- Emojis like ⚠️, ℹ️ (don't glue)
+- Standard emojis without VS16 (🚀, 🎨, etc.)
+
+### Pattern Analysis
+
+**Hypothesis:** Gluing occurs when:
+1. Base character is narrow (wcwidth=1)
+2. Character is from Miscellaneous Symbols block (U+2600-U+26FF) or similar
+3. VS16 selector triggers 2-width emoji presentation in terminal
+4. Terminal's emoji rendering "overlaps" the next character position
+
+**Needs research:** Full testing across terminals and complete emoji set (see `doc/tasks/VS16_EMOJI_TERMINAL_GLUING.md`)
+
+### Future: Automatic Fix (Planned v1.1.0)
+
+```python
+# Planned for v1.1.0: Automatic detection and fix
+console.frame(
+    ["Running: 12", "Stopped: 0"],
+    title="⚙️ Services",  # Single space - library auto-adds second
+    auto_spacing=True,  # Default: True
+    border="rounded",
+    width=24,
+)
+```
+
+See task: `doc/tasks/VS16_EMOJI_TERMINAL_GLUING.md`
+
+---
+
 ## Testing
 
 ### Unit Tests

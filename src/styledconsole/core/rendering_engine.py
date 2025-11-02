@@ -183,14 +183,13 @@ class RenderingEngine:
         # Add width if provided
         if width:
             panel_kwargs["width"] = width
-            # When explicit width is provided with matching console width, expand to fill
-            if self._rich_console.width == width:
-                panel_kwargs["expand"] = True
+            # Always expand to fill the specified width for proper title centering
+            panel_kwargs["expand"] = True
 
         # Add title if provided
         if title:
             panel_kwargs["title"] = title
-            panel_kwargs["title_align"] = align
+            panel_kwargs["title_align"] = "center"  # Titles always centered for balanced borders
             # Title color: use title_color if set, else border_color, else default
             if title_color:
                 panel_kwargs["title"] = f"[{title_color}]{title}[/]"
