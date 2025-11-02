@@ -183,10 +183,9 @@ class RenderingEngine:
         # Add width if provided
         if width:
             panel_kwargs["width"] = width
-            # When explicit width is provided, we want Rich to honor it exactly
-            # But we can't use expand=True because it expands to console width
-            # Instead, we'll need to pad the content to fill the width
-            pass  # Handled below
+            # When explicit width is provided with matching console width, expand to fill
+            if self._rich_console.width == width:
+                panel_kwargs["expand"] = True
 
         # Add title if provided
         if title:

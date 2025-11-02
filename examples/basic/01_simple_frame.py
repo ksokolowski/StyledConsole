@@ -72,11 +72,8 @@ console.frame(
 )
 print()
 
-# Pro Tip: For advanced use cases where you need manual control,
-# you can still use FrameRenderer directly:
+# Pro Tip: For advanced customization, explore the effects module:
 #
-# from styledconsole import FrameRenderer
-# renderer = FrameRenderer()
-# lines = renderer.render("content", title="Manual", border="solid")
-# for line in lines:
-#     print(line)
+# from styledconsole import gradient_frame, rainbow_frame
+# gradient_frame("content", start_color="red", end_color="blue")
+# rainbow_frame(["line 1", "line 2"], direction="vertical")

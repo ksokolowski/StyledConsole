@@ -13,7 +13,6 @@ Example:
 
 from styledconsole.console import Console
 from styledconsole.core.banner import Banner, BannerRenderer
-from styledconsole.core.frame import Frame, FrameRenderer
 from styledconsole.core.layout import Layout, LayoutComposer
 from styledconsole.core.styles import (
     ASCII,
@@ -117,9 +116,6 @@ __all__ = [
     # Banner rendering
     "Banner",
     "BannerRenderer",
-    # Frame rendering
-    "Frame",
-    "FrameRenderer",
     # Layout composition
     "Layout",
     "LayoutComposer",

@@ -1,12 +1,22 @@
 """Integration tests for Layout Composer with real-world scenarios."""
 
+from io import StringIO
+
 from styledconsole import (
     BannerRenderer,
-    FrameRenderer,
+    Console,
     Layout,
     LayoutComposer,
 )
 from styledconsole.utils.text import visual_width
+
+
+def render_frame_to_lines(content, title=None, **kwargs):
+    """Helper to render frame and return lines (replaces FrameRenderer.render())."""
+    buffer = StringIO()
+    console = Console(file=buffer)
+    console.frame(content, title=title, **kwargs)
+    return buffer.getvalue().splitlines()
 
 
 class TestLayoutWithFrames:
@@ -15,12 +25,11 @@ class TestLayoutWithFrames:
     def test_stack_multiple_frames(self):
         """Test stacking multiple frames vertically."""
         composer = LayoutComposer()
-        frame_renderer = FrameRenderer()
 
-        # Render frames
-        rendered1 = frame_renderer.render(["Header Section"], title="Top")
-        rendered2 = frame_renderer.render(["Main Content", "Line 2"], title="Middle")
-        rendered3 = frame_renderer.render(["Footer"], title="Bottom")
+        # Render frames using Console
+        rendered1 = render_frame_to_lines(["Header Section"], title="Top")
+        rendered2 = render_frame_to_lines(["Main Content", "Line 2"], title="Middle")
+        rendered3 = render_frame_to_lines(["Footer"], title="Bottom")
 
         # Stack them
         result = composer.stack([rendered1, rendered2, rendered3], spacing=1)
@@ -34,10 +43,9 @@ class TestLayoutWithFrames:
     def test_side_by_side_frames(self):
         """Test placing frames side by side."""
         composer = LayoutComposer()
-        frame_renderer = FrameRenderer()
 
-        left_rendered = frame_renderer.render(["Left", "Panel"], title="L")
-        right_rendered = frame_renderer.render(["Right", "Panel"], title="R")
+        left_rendered = render_frame_to_lines(["Left", "Panel"], title="L")
+        right_rendered = render_frame_to_lines(["Right", "Panel"], title="R")
 
         result = composer.side_by_side(left_rendered, right_rendered, spacing=2)
 
@@ -50,14 +58,13 @@ class TestLayoutWithFrames:
     def test_grid_of_frames(self):
         """Test creating a grid of frames."""
         composer = LayoutComposer()
-        frame_renderer = FrameRenderer()
 
         # Create 2x2 grid of frames
         frames = []
         for i in range(2):
             row = []
             for j in range(2):
-                row.append(frame_renderer.render([f"Cell {i}{j}"], title=f"{i}{j}"))
+                row.append(render_frame_to_lines([f"Cell {i}{j}"], title=f"{i}{j}"))
             frames.append(row)
 
         result = composer.grid(frames, column_spacing=2, row_spacing=1)
@@ -72,18 +79,17 @@ class TestLayoutWithFrames:
     def test_nested_layout_with_frames(self):
         """Test nested layouts with frames."""
         composer = LayoutComposer()
-        frame_renderer = FrameRenderer()
 
         # Create header
-        header = frame_renderer.render(["HEADER"], title="Top")
+        header = render_frame_to_lines(["HEADER"], title="Top")
 
         # Create main content area with side-by-side frames
-        left = frame_renderer.render(["Left"], title="L")
-        right = frame_renderer.render(["Right"], title="R")
+        left = render_frame_to_lines(["Left"], title="L")
+        right = render_frame_to_lines(["Right"], title="R")
         main = composer.side_by_side(left, right, spacing=1)
 
         # Create footer
-        footer = frame_renderer.render(["FOOTER"], title="Bottom")
+        footer = render_frame_to_lines(["FOOTER"], title="Bottom")
 
         # Stack all sections
         result = composer.stack([header, main, footer], spacing=1)
@@ -103,13 +109,12 @@ class TestLayoutWithBanners:
         """Test combining banners and frames in layout."""
         composer = LayoutComposer()
         banner_renderer = BannerRenderer()
-        frame_renderer = FrameRenderer()
 
         # Create banner
         banner_rendered = banner_renderer.render("TITLE", font="banner")
 
         # Create content frame
-        frame_rendered = frame_renderer.render(["Content line 1", "Content line 2"])
+        frame_rendered = render_frame_to_lines(["Content line 1", "Content line 2"])
 
         # Stack them
         result = composer.stack([banner_rendered, frame_rendered], spacing=2)
@@ -187,10 +192,9 @@ class TestComplexLayouts:
     def test_dashboard_layout(self):
         """Test creating a dashboard-style layout."""
         composer = LayoutComposer()
-        frame_renderer = FrameRenderer()
 
         # Header
-        header = frame_renderer.render(["Dashboard v1.0"], title="App")
+        header = render_frame_to_lines(["Dashboard v1.0"], title="App")
 
         # Stats grid (2x2)
         stats = []
@@ -198,14 +202,14 @@ class TestComplexLayouts:
             row = []
             for j in range(2):
                 row.append(
-                    frame_renderer.render([f"Metric {i}{j}", "Value: 100"], title=f"Stat {i}{j}")
+                    render_frame_to_lines([f"Metric {i}{j}", "Value: 100"], title=f"Stat {i}{j}")
                 )
             stats.append(row)
 
         stats_grid = composer.grid(stats, column_spacing=1, row_spacing=1)
 
         # Footer
-        footer = frame_renderer.render(["Status: OK"])
+        footer = render_frame_to_lines(["Status: OK"])
 
         # Combine all
         result = composer.stack([header, stats_grid, footer], spacing=1)

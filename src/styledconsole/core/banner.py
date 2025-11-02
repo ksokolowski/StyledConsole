@@ -10,10 +10,11 @@ This module provides high-level banner rendering with:
 
 from dataclasses import dataclass
 from functools import lru_cache
+from io import StringIO
 
 import pyfiglet
+from rich.console import Console as RichConsole
 
-from styledconsole.core.frame import FrameRenderer
 from styledconsole.core.styles import BorderStyle, get_border_style
 from styledconsole.types import AlignType
 from styledconsole.utils.color import apply_line_gradient
@@ -73,8 +74,22 @@ class BannerRenderer:
     """
 
     def __init__(self):
-        """Initialize banner renderer."""
-        self._frame_renderer = FrameRenderer()
+        """Initialize banner renderer with Rich rendering engine."""
+        # Lazy import to avoid circular dependency
+        from styledconsole.core.rendering_engine import RenderingEngine
+
+        # Create buffer for capturing frame output
+        self._buffer = StringIO()
+        self._rich_console = RichConsole(
+            file=self._buffer,
+            record=False,
+            force_terminal=True,
+            force_jupyter=False,
+            force_interactive=False,
+            width=999,
+            height=999,
+        )
+        self._rendering_engine = RenderingEngine(self._rich_console, debug=False)
         self._available_fonts = set(pyfiglet.FigletFont.getFonts())
 
     @staticmethod
@@ -177,18 +192,54 @@ class BannerRenderer:
         if banner.border is None:
             return ascii_lines
 
-        # Wrap in frame border
+        # Wrap in frame border using RenderingEngine
         border_style = (
             get_border_style(banner.border) if isinstance(banner.border, str) else banner.border
         )
 
-        return self._frame_renderer.render(
-            content=ascii_lines,
-            border=border_style,
-            width=banner.width,
-            align=banner.align,
-            padding=banner.padding,
-        )
+        # Reset buffer
+        self._buffer.seek(0)
+        self._buffer.truncate(0)
+
+        # If width is specified, we need to recreate console with proper width
+        # Otherwise Rich Panel won't expand to the requested width
+        if banner.width:
+            # Create temporary console with desired width
+            temp_console = RichConsole(
+                file=self._buffer,
+                record=False,
+                force_terminal=True,
+                force_jupyter=False,
+                force_interactive=False,
+                width=banner.width,
+                height=999,
+            )
+            # Import lazily
+            from styledconsole.core.rendering_engine import RenderingEngine
+
+            temp_engine = RenderingEngine(temp_console, debug=False)
+
+            # Use temporary engine
+            temp_engine.print_frame(
+                content=ascii_lines,
+                border=border_style.name if hasattr(border_style, "name") else str(border_style),
+                width=banner.width,
+                align=banner.align,
+                padding=banner.padding,
+            )
+        else:
+            # Use default engine
+            self._rendering_engine.print_frame(
+                content=ascii_lines,
+                border=border_style.name if hasattr(border_style, "name") else str(border_style),
+                width=banner.width,
+                align=banner.align,
+                padding=banner.padding,
+            )
+
+        # Get output and return as list of lines
+        output = self._buffer.getvalue()
+        return output.splitlines()
 
     def list_fonts(self, limit: int | None = None) -> list[str]:
         """Get list of available pyfiglet fonts.
