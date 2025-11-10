@@ -201,6 +201,23 @@ Instead of ZWJ emojis, use combinations:
 | 🖥️ | 🖥 | Desktop computer |
 | ➡️ | → or ➡ | Right arrow |
 
+## 🔧 Default VS16 spacing assumption (v0.3.0+)
+
+StyledConsole applies a conservative spacing fix by default for emojis with Variation Selector‑16 (VS16). This prevents the common “emoji gluing” issue in many terminals (notably some VS Code integrated terminals), where sequences like `⚙️ Services` visually collapse.
+
+- What it does: inserts one extra space after VS16 emojis when immediately followed by text
+- Scope: only affects Tier 1 VS16 emojis; non‑VS16 emojis are unchanged
+- Idempotent: running the adjustment multiple times won’t add more spaces
+
+Opt‑out (environment variable):
+
+```bash
+# Disable default VS16 spacing adjustment
+STYLEDCONSOLE_ASSUME_VS16=0
+```
+
+This preserves previous behavior for environments where VS16 gluing does not occur.
+
 ## Examples
 
 ### ✅ Good Example

@@ -40,6 +40,7 @@ dev = [
     "pytest-snapshot>=0.9",
     "ruff>=0.3",
     "pre-commit>=3.6",
+    "radon>=6.0",
 ]
 
 [build-system]

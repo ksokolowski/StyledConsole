@@ -93,6 +93,38 @@ def rgb_to_hex(r: int, g: int, b: int) -> str:
     return f"#{r:02X}{g:02X}{b:02X}"
 
 
+def _try_named_color(value_lower: str) -> RGBColor | None:
+    """Try to parse as CSS4 or Rich named color."""
+    if value_lower in CSS4_COLORS:
+        return hex_to_rgb(CSS4_COLORS[value_lower])
+    if value_lower in RICH_TO_CSS4_MAPPING:
+        return hex_to_rgb(RICH_TO_CSS4_MAPPING[value_lower])
+    return None
+
+
+def _validate_rgb_range(r: int, g: int, b: int) -> None:
+    """Validate RGB values are in 0-255 range."""
+    if not (0 <= r <= 255 and 0 <= g <= 255 and 0 <= b <= 255):
+        raise ValueError(f"RGB values must be 0-255, got ({r}, {g}, {b})")
+
+
+def _try_rgb_pattern(value: str) -> RGBColor | None:
+    """Try to parse as rgb(r, g, b) or (r, g, b) format."""
+    rgb_match = RGB_PATTERN.match(value)
+    if rgb_match:
+        r, g, b = map(int, rgb_match.groups())
+        _validate_rgb_range(r, g, b)
+        return (r, g, b)
+
+    tuple_match = TUPLE_PATTERN.match(value)
+    if tuple_match:
+        r, g, b = map(int, tuple_match.groups())
+        _validate_rgb_range(r, g, b)
+        return (r, g, b)
+
+    return None
+
+
 @lru_cache(maxsize=512)
 def parse_color(value: str) -> RGBColor:
     """Parse color string in any supported format to RGB tuple.
@@ -130,35 +162,21 @@ def parse_color(value: str) -> RGBColor:
         (30, 144, 255)
     """
     value = value.strip()
-
-    # Try CSS4 named color first (case-insensitive)
     value_lower = value.lower()
-    if value_lower in CSS4_COLORS:
-        return hex_to_rgb(CSS4_COLORS[value_lower])
 
-    # Try Rich named color (case-insensitive, with underscore)
-    if value_lower in RICH_TO_CSS4_MAPPING:
-        return hex_to_rgb(RICH_TO_CSS4_MAPPING[value_lower])
+    # Try named colors first (most common)
+    named_result = _try_named_color(value_lower)
+    if named_result:
+        return named_result
 
     # Try hex format
     if HEX_PATTERN.match(value):
         return hex_to_rgb(value)
 
-    # Try rgb(r, g, b) format
-    rgb_match = RGB_PATTERN.match(value)
-    if rgb_match:
-        r, g, b = map(int, rgb_match.groups())
-        if not (0 <= r <= 255 and 0 <= g <= 255 and 0 <= b <= 255):
-            raise ValueError(f"RGB values must be 0-255, got ({r}, {g}, {b})")
-        return (r, g, b)
-
-    # Try tuple format (r, g, b)
-    tuple_match = TUPLE_PATTERN.match(value)
-    if tuple_match:
-        r, g, b = map(int, tuple_match.groups())
-        if not (0 <= r <= 255 and 0 <= g <= 255 and 0 <= b <= 255):
-            raise ValueError(f"RGB values must be 0-255, got ({r}, {g}, {b})")
-        return (r, g, b)
+    # Try rgb/tuple formats
+    pattern_result = _try_rgb_pattern(value)
+    if pattern_result:
+        return pattern_result
 
     # No match found
     raise ValueError(

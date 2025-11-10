@@ -53,83 +53,44 @@ def visual_width(text: str) -> int:
     1. Strips ANSI escape sequences
     2. Uses wcwidth for accurate Unicode width calculation
     3. Handles Tier 1 emojis correctly (width=2)
-    4. Applies terminal-specific workarounds for variation selectors
-
-    Known Issues:
-    - Emoji Variation Selector-16 (U+FE0F) has inconsistent terminal support
-    - Some terminals render "⚠️" (warning + VS16) as width=1, not width=2
-    - wcwidth reports width=2 but actual display may be width=1
-    - This affects: ⚠️ ℹ️ and other symbol+VS16 combinations
-
-    Workaround: We detect character+VS16 patterns and calculate width based
-    on the base character only, since many terminals ignore the VS16 width.
-
-    Note: Tier 2 (skin tones) and Tier 3 (ZWJ sequences) will be
-    addressed in future versions (v0.2+).
+    4. Applies a VS16 workaround: many terminals render base_char+VS16 with the
+       width of the base character only.
 
     Args:
         text: String to measure (may contain ANSI codes, emojis, etc.)
 
     Returns:
         Visual width in terminal columns
-
-    Example:
-        >>> visual_width("Hello")
-        5
-        >>> visual_width("🚀")
-        2
-        >>> visual_width("Test 🚀 🎉")
-        11
-        >>> visual_width("\\033[31mRed\\033[0m")
-        3
-        >>> visual_width("⚠️")  # Warning sign + variation selector
-        1
-        >>> visual_width("⚠️  Warning")
-        11
     """
     # Strip ANSI codes first
     clean_text = strip_ansi(text)
 
-    # Workaround for variation selector emoji rendering inconsistency
-    # Many terminals render base_char + VS16 with the width of base_char only
-    # This fixes alignment for ⚠️, ℹ️, etc.
+    # Special-case VS16 sequences: treat base+VS16 as width of base char
     if VARIATION_SELECTOR_16 in clean_text:
-        # Calculate width character by character, treating VS16 sequences specially
         width = 0
         i = 0
-        while i < len(clean_text):
-            # Check if next character is VS16
-            if i + 1 < len(clean_text) and clean_text[i + 1] == VARIATION_SELECTOR_16:
-                # This is a char + VS16 combination
-                # Use only the base character's width (many terminals ignore VS16)
-                base_char = clean_text[i]
-                char_width = wcwidth.wcwidth(base_char)
-                width += char_width if char_width > 0 else 1
-                i += 2  # Skip both base char and VS16
+        n = len(clean_text)
+        while i < n:
+            # If next codepoint is VS16, measure base only and skip VS16
+            if i + 1 < n and clean_text[i + 1] == VARIATION_SELECTOR_16:
+                base = clean_text[i]
+                w = wcwidth.wcwidth(base)
+                width += w if w > 0 else 1
+                i += 2
             else:
-                # Regular character
-                char_width = wcwidth.wcwidth(clean_text[i])
-                width += char_width if char_width > 0 else 1
+                w = wcwidth.wcwidth(clean_text[i])
+                width += w if w > 0 else 1
                 i += 1
         return width
 
-    # Standard path: use wcwidth for accurate width calculation
-    # wcwidth handles emojis, wide characters, zero-width, etc.
+    # Standard path
     width = wcwidth.wcswidth(clean_text)
-
-    # wcswidth returns -1 if string contains non-printable characters
-    # Fall back to character count in that case
     if width == -1:
-        # Count characters, treating common emojis as width=2
+        # Fallback to per-char accumulation
         width = 0
-        for char in clean_text:
-            char_width = wcwidth.wcwidth(char)
-            if char_width == -1:
-                # Unknown character, assume width=1
-                width += 1
-            else:
-                width += char_width
-
+        for ch in clean_text:
+            w = wcwidth.wcwidth(ch)
+            width += w if w >= 0 else 1
     return width
 
 
@@ -237,6 +198,58 @@ def pad_to_width(
         raise ValueError(f"Invalid align value: {align}")
 
 
+def _truncate_plain_text(text: str, target_width: int, suffix: str) -> str:
+    """Truncate text without ANSI codes."""
+    result = []
+    accumulated_width = 0
+
+    for char in text:
+        char_width = wcwidth.wcwidth(char) if wcwidth.wcwidth(char) != -1 else 1
+
+        if accumulated_width + char_width > target_width:
+            break
+
+        result.append(char)
+        accumulated_width += char_width
+
+    return "".join(result) + suffix
+
+
+def _truncate_ansi_text(text: str, target_width: int, suffix: str) -> str:
+    """Truncate text with ANSI codes, preserving them."""
+    parts = ANSI_PATTERN.split(text)
+    ansi_codes = ANSI_PATTERN.findall(text)
+
+    result = []
+    accumulated_width = 0
+    part_idx = 0
+    ansi_idx = 0
+
+    while part_idx < len(parts):
+        part = parts[part_idx]
+
+        for char in part:
+            char_width = wcwidth.wcwidth(char) if wcwidth.wcwidth(char) != -1 else 1
+
+            if accumulated_width + char_width > target_width:
+                result.append(suffix)
+                if ansi_codes:
+                    result.append("\x1b[0m")  # Reset code
+                return "".join(result)
+
+            result.append(char)
+            accumulated_width += char_width
+
+        part_idx += 1
+
+        # Add ANSI code if there is one after this part
+        if ansi_idx < len(ansi_codes):
+            result.append(ansi_codes[ansi_idx])
+            ansi_idx += 1
+
+    return "".join(result) + suffix
+
+
 def truncate_to_width(text: str, width: int, suffix: str = "...") -> str:
     """Truncate text to fit within a specific visual width.
 
@@ -259,7 +272,6 @@ def truncate_to_width(text: str, width: int, suffix: str = "...") -> str:
         '🚀...'
     """
     current_width = visual_width(text)
-
     if current_width <= width:
         return text
 
@@ -267,67 +279,13 @@ def truncate_to_width(text: str, width: int, suffix: str = "...") -> str:
     target_width = width - suffix_width
 
     if target_width <= 0:
-        # Not enough space for suffix, just truncate
         return suffix[:width] if len(suffix) > 0 else ""
 
-    # If text has no ANSI codes, use simple truncation
+    # Dispatch to appropriate truncation strategy
     if "\x1b" not in text:
-        # Build truncated string character by character
-        result = []
-        accumulated_width = 0
-
-        for char in text:
-            char_width = wcwidth.wcwidth(char)
-            if char_width == -1:
-                char_width = 1
-
-            if accumulated_width + char_width > target_width:
-                break
-
-            result.append(char)
-            accumulated_width += char_width
-
-        return "".join(result) + suffix
-
-    # Text has ANSI codes - need to preserve them
-    # Split text into ANSI codes and visible characters
-    parts = ANSI_PATTERN.split(text)
-    ansi_codes = ANSI_PATTERN.findall(text)
-
-    # Reconstruct text while tracking visible width
-    result = []
-    accumulated_width = 0
-    part_idx = 0
-    ansi_idx = 0
-
-    while part_idx < len(parts):
-        # Add visible text from this part
-        part = parts[part_idx]
-        for char in part:
-            char_width = wcwidth.wcwidth(char)
-            if char_width == -1:
-                char_width = 1
-
-            if accumulated_width + char_width > target_width:
-                # Add suffix and any trailing ANSI reset codes
-                result.append(suffix)
-                # Add reset code if text had any ANSI codes
-                if ansi_codes:
-                    result.append("\x1b[0m")
-                return "".join(result)
-
-            result.append(char)
-            accumulated_width += char_width
-
-        part_idx += 1
-
-        # Add ANSI code if there is one after this part
-        if ansi_idx < len(ansi_codes):
-            result.append(ansi_codes[ansi_idx])
-            ansi_idx += 1
-
-    # Shouldn't reach here, but just in case
-    return "".join(result) + suffix
+        return _truncate_plain_text(text, target_width, suffix)
+    else:
+        return _truncate_ansi_text(text, target_width, suffix)
 
 
 def normalize_content(content: str | list[str]) -> list[str]:
@@ -671,6 +629,130 @@ def format_emoji_with_spacing(emoji: str, text: str = "", sep: str = " ") -> str
     return emoji + (" " * total_spaces) + text
 
 
+def _collect_vs16_emojis() -> set[str]:
+    """Collect SAFE_EMOJIS that use VS16 (variation selector).
+
+    Returns:
+        Set of emojis considered likely to glue in some terminals.
+    """
+    vs16_set: set[str] = set()
+    for e, info in SAFE_EMOJIS.items():
+        if info.get("has_vs16") or VARIATION_SELECTOR_16 in e:
+            vs16_set.add(e)
+    return vs16_set
+
+
+def _assume_vs16_enabled() -> bool:
+    """Determine if we should assume VS16 emojis glue by default.
+
+    Controlled via env var STYLEDCONSOLE_ASSUME_VS16:
+      - "0"/"false" (any case) disables the assumption
+      - "1"/"true" enables the assumption
+      - unset: defaults to enabled (pragmatic default for VS Code terminals)
+    """
+    import os as _os
+
+    val = _os.getenv("STYLEDCONSOLE_ASSUME_VS16")
+    if val is None:
+        return True
+    val_lower = str(val).lower().strip()
+    if val_lower in ("", "0", "false", "no"):  # explicit off
+        return False
+    return True
+
+
+def default_gluing_emojis() -> set[str]:
+    """Default set of emojis to adjust when gluing_emojis is not provided.
+
+    By default (and unless explicitly disabled via STYLEDCONSOLE_ASSUME_VS16=0),
+    we assume VS16 emojis may glue in common terminals and return that set.
+    """
+    return _collect_vs16_emojis() if _assume_vs16_enabled() else set()
+
+
+def adjust_emoji_spacing_in_text(
+    text: str,
+    separator: str = " ",
+    *,
+    gluing_emojis: set[str] | None = None,
+) -> str:
+    """Adjust spacing after emojis inside arbitrary text.
+
+    Scans the string for occurrences of SAFE_EMOJIS and ensures the number of
+    spaces after each emoji matches what :func:`get_emoji_spacing_adjustment`
+    recommends. This makes the function:
+      - Idempotent: running it multiple times won't add extra spaces
+      - Conservative: only adjusts when exactly one separator is found and
+        an adjustment > 0 is required
+
+    Limitations:
+      - Only handles simple patterns: ``<emoji><separator><non-space>``
+      - Does not attempt to cross ANSI sequences inserted between emoji and
+        the following text (rare in practice for titles)
+
+    Args:
+        text: Arbitrary string (may contain multiple emojis)
+        separator: The base separator to normalize (default: single space)
+        gluing_emojis: Optional set of emojis to adjust. When provided, only
+            emojis in this set will be adjusted. If None, no adjustments are
+            applied by default. This prevents over-adjusting VS16 emojis that
+            don't glue in the current terminal/font.
+
+    Returns:
+        Text with spacing after emojis adjusted where needed.
+
+    Examples:
+        >>> adjust_emoji_spacing_in_text("⚙️ Services")
+        '⚙️  Services'
+        >>> adjust_emoji_spacing_in_text("⚠️ Warning")
+        '⚠️ Warning'
+        >>> adjust_emoji_spacing_in_text("✅ Done")
+        '✅ Done'
+    """
+    if not text or separator == "":
+        return text
+
+    # Determine which emojis to consider
+    targets: set[str]
+    if gluing_emojis is None:
+        # Use library default assumption (can be disabled via env)
+        targets = default_gluing_emojis()
+    else:
+        targets = set(gluing_emojis)
+
+    if not targets:
+        return text
+
+    # Quick path: if none of the target emojis are present, return early
+    if not any(e in text for e in targets):
+        return text
+
+    # Regex-based replacement: match any target emoji followed by exactly one
+    # separator and then a non-space (lookahead). This avoids over-adjusting
+    # already-correct double-spacing and is resilient to multiple emojis.
+    import re as _re
+
+    alt = "|".join(_re.escape(e) for e in sorted(targets, key=len, reverse=True))
+    pattern = _re.compile(rf"(?P<emo>{alt}){_re.escape(separator)}(?=\S)")
+
+    def _compute_adjustment(emo: str) -> int:
+        if emo in SAFE_EMOJIS:
+            try:
+                return max(0, min(2, get_emoji_spacing_adjustment(emo)))
+            except Exception:
+                return 0
+        return 1 if VARIATION_SELECTOR_16 in emo else 0
+
+    def _repl(m: "_re.Match[str]") -> str:
+        emo = m.group("emo")
+        adj = _compute_adjustment(emo)
+        if adj <= 0:
+            return m.group(0)
+        return emo + (separator * (1 + adj))
+
+    return pattern.sub(_repl, text)
+
+
 __all__ = [
     "visual_width",
     "strip_ansi",
@@ -682,6 +764,8 @@ __all__ = [
     "get_safe_emojis",
     "get_emoji_spacing_adjustment",
     "format_emoji_with_spacing",
+    "adjust_emoji_spacing_in_text",
+    "default_gluing_emojis",
     "SAFE_EMOJIS",
     "AlignType",
 ]

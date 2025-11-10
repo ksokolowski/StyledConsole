@@ -546,21 +546,18 @@ def _apply_vertical_border_gradient(
     return colored_lines
 
 
-def _apply_diagonal_gradient(
-    lines: list[str],
-    start_color: str,
-    end_color: str,
-    style,
-    title: str | None,
-    apply_to_border: bool,
-    apply_to_content: bool,
-) -> list[str]:
-    """Apply diagonal gradient (top-left to bottom-right) character-by-character."""
-    total_rows = len(lines)
-    max_col = max(visual_width(strip_ansi(line)) for line in lines)
+def _calculate_diagonal_position(
+    row_idx: int, visual_col: int, total_rows: int, max_col: int
+) -> float:
+    """Calculate diagonal gradient position (0.0 to 1.0) for a character."""
+    row_progress = row_idx / max(total_rows - 1, 1)
+    col_progress = visual_col / max(max_col - 1, 1)
+    return (row_progress + col_progress) / 2.0
 
-    # Define border characters for detection
-    border_chars = {
+
+def _get_border_chars(style):
+    """Extract all border characters from a style for efficient lookup."""
+    return {
         style.top_left,
         style.top_right,
         style.bottom_left,
@@ -574,85 +571,144 @@ def _apply_diagonal_gradient(
         style.cross,
     }
 
+
+def _process_title_in_line(
+    clean_line: str,
+    title: str,
+    row_idx: int,
+    total_rows: int,
+    max_col: int,
+    start_color: str,
+    end_color: str,
+    border_chars: set,
+    apply_to_border: bool,
+    apply_to_content: bool,
+) -> str:
+    """Process a line containing the title, applying gradient selectively."""
+    colored_line = ""
+    visual_col = 0
+    i = 0
+
+    while i < len(clean_line):
+        char = clean_line[i]
+
+        # Calculate color for current position
+        diagonal_position = _calculate_diagonal_position(row_idx, visual_col, total_rows, max_col)
+        char_color = interpolate_color(start_color, end_color, diagonal_position)
+
+        # Check if we're at the title position
+        if title in clean_line[i : i + len(title) + 2]:  # +2 for spaces
+            title_part = clean_line[i : i + len(title) + 2]
+
+            if apply_to_content:
+                # Color the title portion character by character
+                for tc in title_part:
+                    tc_position = _calculate_diagonal_position(
+                        row_idx, visual_col, total_rows, max_col
+                    )
+                    tc_color = interpolate_color(start_color, end_color, tc_position)
+                    colored_line += _colorize(tc, tc_color)
+                    visual_col += 1
+            else:
+                # Keep title as-is
+                colored_line += title_part
+                visual_col += len(title_part)
+
+            i += len(title_part)
+            continue
+
+        # Regular border character
+        if apply_to_border and char in border_chars:
+            colored_line += _colorize(char, char_color)
+        else:
+            colored_line += char
+
+        visual_col += 1
+        i += 1
+
+    return colored_line
+
+
+def _process_regular_line(
+    clean_line: str,
+    row_idx: int,
+    total_rows: int,
+    max_col: int,
+    start_color: str,
+    end_color: str,
+    border_chars: set,
+    apply_to_border: bool,
+    apply_to_content: bool,
+) -> str:
+    """Process a regular line (no title) with gradient coloring."""
+    colored_chars = []
+    visual_col = 0
+
+    for char in clean_line:
+        # Calculate color for this position
+        diagonal_position = _calculate_diagonal_position(row_idx, visual_col, total_rows, max_col)
+        char_color = interpolate_color(start_color, end_color, diagonal_position)
+
+        # Determine if this is border or content character
+        is_border_char = row_idx == 0 or row_idx == total_rows - 1 or char in border_chars
+
+        # Apply color based on settings
+        if (is_border_char and apply_to_border) or (not is_border_char and apply_to_content):
+            colored_chars.append(_colorize(char, char_color))
+        else:
+            colored_chars.append(char)
+
+        visual_col += 1
+
+    return "".join(colored_chars)
+
+
+def _apply_diagonal_gradient(
+    lines: list[str],
+    start_color: str,
+    end_color: str,
+    style,
+    title: str | None,
+    apply_to_border: bool,
+    apply_to_content: bool,
+) -> list[str]:
+    """Apply diagonal gradient (top-left to bottom-right) character-by-character."""
+    total_rows = len(lines)
+    max_col = max(visual_width(strip_ansi(line)) for line in lines)
+    border_chars = _get_border_chars(style)
+
     colored_lines = []
     for row_idx, line in enumerate(lines):
-        # Strip ANSI codes to work with clean text
         clean_line = strip_ansi(line)
 
         # Special handling for title line (first line with title)
         if row_idx == 0 and title:
-            colored_line = ""
-            visual_col = 0
-            i = 0
-
-            while i < len(clean_line):
-                char = clean_line[i]
-
-                # Calculate position
-                row_progress = row_idx / max(total_rows - 1, 1)
-                col_progress = visual_col / max(max_col - 1, 1)
-                diagonal_position = (row_progress + col_progress) / 2.0
-                char_color = interpolate_color(start_color, end_color, diagonal_position)
-
-                # Check if we're at the title position
-                if title in clean_line[i : i + len(title) + 2]:  # +2 for spaces
-                    # We're at the title - color title if content coloring is on
-                    if apply_to_content:
-                        # Color the title portion
-                        title_part = clean_line[i : i + len(title) + 2]
-                        for tc in title_part:
-                            tc_progress = visual_col / max(max_col - 1, 1)
-                            tc_position = (row_progress + tc_progress) / 2.0
-                            tc_color = interpolate_color(start_color, end_color, tc_position)
-                            colored_line += _colorize(tc, tc_color)
-                            visual_col += 1
-                        i += len(title_part)
-                    else:
-                        # Keep title as-is
-                        colored_line += clean_line[i : i + len(title) + 2]
-                        visual_col += len(title) + 2
-                        i += len(title) + 2
-                    continue
-
-                # Regular border character
-                if apply_to_border and char in border_chars:
-                    colored_line += _colorize(char, char_color)
-                else:
-                    colored_line += char
-
-                visual_col += 1
-                i += 1
-
-            colored_lines.append(colored_line)
+            colored_line = _process_title_in_line(
+                clean_line,
+                title,
+                row_idx,
+                total_rows,
+                max_col,
+                start_color,
+                end_color,
+                border_chars,
+                apply_to_border,
+                apply_to_content,
+            )
         else:
-            # Regular line without title
-            colored_chars = []
-            visual_col = 0
+            colored_line = _process_regular_line(
+                clean_line,
+                row_idx,
+                total_rows,
+                max_col,
+                start_color,
+                end_color,
+                border_chars,
+                apply_to_border,
+                apply_to_content,
+            )
 
-            for char in clean_line:
-                # Calculate diagonal position (0.0 to 1.0)
-                row_progress = row_idx / max(total_rows - 1, 1)
-                col_progress = visual_col / max(max_col - 1, 1)
-                diagonal_position = (row_progress + col_progress) / 2.0
-
-                # Get color for this position
-                char_color = interpolate_color(start_color, end_color, diagonal_position)
-
-                # Determine if this is border or content character
-                is_border_char = row_idx == 0 or row_idx == total_rows - 1 or char in border_chars
-
-                # Apply color based on settings
-                if (is_border_char and apply_to_border) or (
-                    not is_border_char and apply_to_content
-                ):
-                    colored_chars.append(_colorize(char, char_color))
-                else:
-                    colored_chars.append(char)
-
-                # Update visual column position
-                visual_col += 1
-
-            colored_lines.append("".join(colored_chars))
+        colored_lines.append(colored_line)
 
     return colored_lines
 

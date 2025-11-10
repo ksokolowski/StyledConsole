@@ -17,6 +17,7 @@ from rich.text import Text as RichText
 from styledconsole.core.banner import Banner, BannerRenderer
 from styledconsole.core.box_mapping import get_box_style
 from styledconsole.utils.color import normalize_color_for_rich
+from styledconsole.utils.text import adjust_emoji_spacing_in_text
 
 
 class RenderingEngine:
@@ -115,12 +116,10 @@ class RenderingEngine:
                 f"width={width}, padding={padding}"
             )
 
-        # Normalize all colors to hex for Rich compatibility
-        content_color = normalize_color_for_rich(content_color)
-        border_color = normalize_color_for_rich(border_color)
-        title_color = normalize_color_for_rich(title_color)
-        start_color = normalize_color_for_rich(start_color)
-        end_color = normalize_color_for_rich(end_color)
+        # Normalize colors (kept separate for testability and lower cyclomatic complexity)
+        content_color, border_color, title_color, start_color, end_color = self._normalize_colors(
+            content_color, border_color, title_color, start_color, end_color
+        )
 
         # Normalize content to string
         if isinstance(content, list):
@@ -128,40 +127,16 @@ class RenderingEngine:
         else:
             content_str = str(content)
 
-        # Check if content contains ANSI codes (from banner gradients, etc.)
-        has_ansi_codes = "\x1b" in content_str
+        # Default: adjust emoji spacing in content (VS16 assumption on by default)
+        if content_str:
+            content_str = adjust_emoji_spacing_in_text(content_str)
 
-        # If content has ANSI codes, convert to Rich Text object for proper handling
-        # This prevents Rich from mis-parsing ANSI sequences and breaking line wrapping
-        if has_ansi_codes:
-            from rich.text import Text
-
-            # Convert ANSI string to Rich Text object (preserves colors)
-            content_renderable = Text.from_ansi(content_str)
-
-            # Note: We skip gradient/color application since content already has ANSI formatting
-            # This typically happens when banner renderer has applied gradients
-        else:
-            # Apply gradient if requested (our unique feature!)
-            if start_color and end_color:
-                from styledconsole.utils.color import interpolate_color
-
-                lines = content_str.split("\n")
-                if len(lines) > 1:
-                    styled_lines = []
-                    for i, line in enumerate(lines):
-                        ratio = i / (len(lines) - 1) if len(lines) > 1 else 0
-                        color = interpolate_color(start_color, end_color, ratio)
-                        styled_lines.append(f"[{color}]{line}[/]")
-                    content_str = "\n".join(styled_lines)
-                else:
-                    # Single line: use start_color
-                    content_str = f"[{start_color}]{content_str}[/]"
-            elif content_color:
-                # Apply solid color
-                content_str = f"[{content_color}]{content_str}[/]"
-
-            content_renderable = content_str
+        content_renderable = self._build_content_renderable(
+            content_str,
+            content_color=content_color,
+            start_color=start_color,
+            end_color=end_color,
+        )
 
         # Apply content alignment using Rich's Align
         if align == "center":
@@ -188,13 +163,15 @@ class RenderingEngine:
 
         # Add title if provided
         if title:
-            panel_kwargs["title"] = title
+            # Adjust emoji spacing in title before styling
+            adj_title = adjust_emoji_spacing_in_text(str(title))
+            panel_kwargs["title"] = adj_title
             panel_kwargs["title_align"] = "center"  # Titles always centered for balanced borders
             # Title color: use title_color if set, else border_color, else default
             if title_color:
-                panel_kwargs["title"] = f"[{title_color}]{title}[/]"
+                panel_kwargs["title"] = f"[{title_color}]{adj_title}[/]"
             elif border_color:
-                panel_kwargs["title"] = f"[{border_color}]{title}[/]"
+                panel_kwargs["title"] = f"[{border_color}]{adj_title}[/]"
 
         # Add border color if provided
         if border_color:
@@ -207,6 +184,77 @@ class RenderingEngine:
 
         if self._debug:
             self._logger.debug("Frame rendered using Rich Panel")
+
+    # ----------------------------- Helper Methods -----------------------------
+    def _normalize_colors(
+        self,
+        content_color: str | None,
+        border_color: str | None,
+        title_color: str | None,
+        start_color: str | None,
+        end_color: str | None,
+    ) -> tuple[str | None, str | None, str | None, str | None, str | None]:
+        """Normalize optional color inputs to Rich-compatible hex codes.
+
+        Keeping this logic isolated reduces branching inside print_frame and
+        allows future caching/validation (e.g., ensuring start/end pairs).
+        """
+        return (
+            normalize_color_for_rich(content_color),
+            normalize_color_for_rich(border_color),
+            normalize_color_for_rich(title_color),
+            normalize_color_for_rich(start_color),
+            normalize_color_for_rich(end_color),
+        )
+
+    def _build_content_renderable(
+        self,
+        content_str: str,
+        *,
+        content_color: str | None,
+        start_color: str | None,
+        end_color: str | None,
+    ):
+        """Return a Rich-compatible renderable for frame content.
+
+        Applies ANSI-aware handling and gradient/color styling. Separated from
+        print_frame to keep responsibilities focused:
+
+        - Detect ANSI → convert to Text early (skip further styling)
+        - Multi-line gradients → per-line interpolation
+        - Single-line gradient → start_color only
+        - Solid color → wrap entire content in Rich markup
+
+        Returns:
+            Renderable object (string with markup or Rich Text instance).
+        """
+        # If ANSI already present (e.g., prior gradient/banner), wrap via Text.from_ansi
+        if "\x1b" in content_str:
+            from rich.text import Text
+
+            return Text.from_ansi(content_str)
+
+        # Gradient application
+        if start_color and end_color:
+            from styledconsole.utils.color import interpolate_color
+
+            lines = content_str.split("\n")
+            if len(lines) > 1:
+                styled_lines = []
+                for i, line in enumerate(lines):
+                    ratio = i / (len(lines) - 1) if len(lines) > 1 else 0
+                    color = interpolate_color(start_color, end_color, ratio)
+                    styled_lines.append(f"[{color}]{line}[/]")
+                return "\n".join(styled_lines)
+            else:
+                return f"[{start_color}]{content_str}[/]"
+
+        # Solid color
+        if content_color:
+            return f"[{content_color}]{content_str}[/]"
+
+        # No styling needed
+        return content_str
 
     def print_banner(
         self,
@@ -291,9 +339,10 @@ class RenderingEngine:
             style_parts.append("underline")
         if color:
             style_parts.append(color)
-
+        # Adjust emoji spacing by default for plain text printing
+        adj_text = adjust_emoji_spacing_in_text(text)
         style = " ".join(style_parts) if style_parts else None
-        rich_text = RichText(text, style=style)
+        rich_text = RichText(adj_text, style=style)
         self._rich_console.print(rich_text, end=end, highlight=False)
 
     def print_rule(
@@ -315,8 +364,11 @@ class RenderingEngine:
         if self._debug:
             self._logger.debug(f"Rendering rule: title='{title}', color={color}")
 
+        # Adjust emoji spacing in rule title if provided
+        rule_title = adjust_emoji_spacing_in_text(title) if title else None
+
         self._rich_console.rule(
-            title=title,
+            title=rule_title,
             style=color,
             align=align,
         )

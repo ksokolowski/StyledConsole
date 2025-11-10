@@ -181,6 +181,49 @@ class LayoutComposer:
             right_pad = padding_needed - left_pad
             return (" " * left_pad) + line + (" " * right_pad)
 
+    def _calculate_column_widths(self, row: list[list[str]]) -> list[int]:
+        """Calculate maximum width for each column in a row."""
+        col_widths = []
+        for col_idx in range(len(row)):
+            max_col_width = max(visual_width(line) for line in row[col_idx])
+            col_widths.append(max_col_width)
+        return col_widths
+
+    def _get_cell_line(
+        self, element: list[str], line_idx: int, col_width: int, align: AlignType
+    ) -> str:
+        """Get and align a single cell line from an element."""
+        if line_idx < len(element):
+            cell_line = element[line_idx]
+        else:
+            cell_line = ""
+        return self._align_line(cell_line, col_width, align)
+
+    def _render_grid_row(
+        self,
+        row: list[list[str]],
+        max_height: int,
+        col_widths: list[int],
+        column_spacing: int,
+        align: AlignType,
+    ) -> list[str]:
+        """Render all lines for a single grid row."""
+        lines = []
+        for line_idx in range(max_height):
+            line_parts = [
+                self._get_cell_line(element, line_idx, col_widths[col_idx], align)
+                for col_idx, element in enumerate(row)
+            ]
+            lines.append((" " * column_spacing).join(line_parts))
+        return lines
+
+    def _add_row_spacing(
+        self, col_widths: list[int], column_spacing: int, row_spacing: int
+    ) -> list[str]:
+        """Generate spacing lines between grid rows."""
+        total_width = sum(col_widths) + (column_spacing * (len(col_widths) - 1))
+        return [" " * total_width for _ in range(row_spacing)]
+
     def grid(
         self,
         rows: list[list[list[str]]],
@@ -211,39 +254,17 @@ class LayoutComposer:
         result = []
 
         for row_idx, row in enumerate(rows):
-            # Calculate max height for this row
             max_height = max(len(element) for element in row)
+            col_widths = self._calculate_column_widths(row)
 
-            # Calculate column widths
-            col_widths = []
-            for col_idx in range(len(row)):
-                max_col_width = max(visual_width(line) for line in row[col_idx])
-                col_widths.append(max_col_width)
-
-            # Render each line of the row
-            for line_idx in range(max_height):
-                line_parts = []
-
-                for col_idx, element in enumerate(row):
-                    # Get the line from this element (or empty if past end)
-                    if line_idx < len(element):
-                        cell_line = element[line_idx]
-                    else:
-                        cell_line = ""
-
-                    # Align to column width
-                    aligned = self._align_line(cell_line, col_widths[col_idx], align)
-                    line_parts.append(aligned)
-
-                # Join columns with spacing
-                result.append((" " * column_spacing).join(line_parts))
+            # Render all lines for this row
+            row_lines = self._render_grid_row(row, max_height, col_widths, column_spacing, align)
+            result.extend(row_lines)
 
             # Add row spacing (but not after last row)
             if row_idx < len(rows) - 1 and row_spacing > 0:
-                # Width is sum of column widths plus spacing
-                total_width = sum(col_widths) + (column_spacing * (len(row) - 1))
-                for _ in range(row_spacing):
-                    result.append(" " * total_width)
+                spacing_lines = self._add_row_spacing(col_widths, column_spacing, row_spacing)
+                result.extend(spacing_lines)
 
         return result
 

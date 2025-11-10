@@ -3,9 +3,9 @@
 from rich.console import Console as RichConsole
 from rich.console import Group
 from rich.text import Text
+from styledconsole.core.frame import FrameRenderer
 
 from styledconsole import SOLID
-from styledconsole.core.frame import FrameRenderer
 
 
 def test_group_approach():

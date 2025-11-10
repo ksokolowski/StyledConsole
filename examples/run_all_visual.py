@@ -30,7 +30,7 @@ def run_example(example_path: Path, auto_continue: bool = False):
 
     try:
         # Run the example
-        result = subprocess.run(
+        subprocess.run(
             [sys.executable, str(example_path)],
             capture_output=False,
             text=True,
@@ -64,9 +64,8 @@ def main():
 
     print_separator("🎨 STYLEDCONSOLE EXAMPLES SHOWCASE 🎨", "=")
     print("This will run all examples in sequence for visual inspection.")
-    print(
-        f"Mode: {'AUTO (no pauses)' if auto_continue else 'INTERACTIVE (press Enter between examples)'}"
-    )
+    mode = "AUTO (no pauses)" if auto_continue else "INTERACTIVE (press Enter between examples)"
+    print(f"Mode: {mode}")
     print()
 
     if not auto_continue:

@@ -1,10 +1,56 @@
 # AI Coding Agent Instructions for StyledConsole
 
 **Project:** StyledConsole v0.3.0
-**Last Updated:** November 1, 2025
+**Last Updated:** November 11, 2025
 **Python:** ≥3.10 | **License:** Apache-2.0
 
 ---
+
+## Quickstart for AI coding agents (concise)
+
+- Big picture: `Console` is a facade over Rich; in v0.3.0 frames render via `rich.panel.Panel` (ANSI-safe), fully backward-compatible with v0.1.0—don’t implement manual line-by-line framing.
+- Core files to know:
+   - `src/styledconsole/console.py` – public API (`frame`, `banner`, `text`, `rule`, `newline`, `export_html`).
+   - `src/styledconsole/core/rendering_engine.py` – orchestrates Rich-native rendering.
+   - `src/styledconsole/core/box_mapping.py` – border name → Rich `box` mapping.
+   - `src/styledconsole/utils/text.py` – emoji-safe width: `visual_width`, `pad_to_width`, `truncate_to_width` (mandatory for alignment).
+   - `src/styledconsole/utils/color.py` – `parse_color`, `interpolate_color` (CSS4 names, hex, RGB).
+   - `src/styledconsole/effects.py` – `gradient_frame`, `diagonal_gradient_frame`, `rainbow_frame`.
+   - Legacy: `src/styledconsole/core/frame.py` (deprecated; don’t extend; kept for v0.1.0 compatibility).
+- Data flow (frame): `Console.frame(...)` → `RenderingEngine.print_frame(...)` → `box_mapping.get_box_style(...)` → `rich.Panel(...)` → `rich.Console.print(...)` → `ExportManager.export_html()` when `record=True`.
+- Conventions & patterns:
+   - Emojis: Tier-1 only (see `doc/guides/EMOJI_GUIDELINES.md`). Always use `visual_width`/`pad_to_width`/`truncate_to_width`; never `len()` for layout.
+   - Borders: 8 styles in `core/styles.py`; get Rich box with `get_box_style(name)`. Avoid ad‑hoc styles unless registered.
+      - Colors: accept CSS4 names (normalized lowercase), hex strings, or (r, g, b) tuples; use `parse_color`/`interpolate_color`.
+   - Types: use `AlignType`, `ColorType` from `types.py` in new signatures.
+- Workflows (uv-first):
+   - Env: `uv sync --group dev` (creates .venv and installs dev deps from `pyproject.toml`; fallback: `pip install -e ".[dev]"`).
+   - Tests + coverage: `uv run pytest` (HTML in `htmlcov/` via pyproject addopts). Targeted: `uv run pytest tests/unit/test_frame.py -v`; update snapshots: `--snapshot-update`.
+   - Examples: `uv run python examples/run_all.py`; visual: `uv run python examples/run_all_visual.py`; quick sanity: `uv run python examples/basic/01_simple_frame.py`.
+   - Lint/format: `uv run ruff check src/ tests/` and `uv run ruff format src/ tests/`.
+   - Metrics gate (pre-commit): `scripts/complexity_check.py` via radon blocks commits if CC grade worse than C or MI < 40; override paths with `COMPLEXITY_PATHS`.
+   - Pre-commit (uv): install hooks with `uvx pre-commit install` and set `PRE_COMMIT_USE_UV=1` so hook envs are created via uv; run all hooks: `uvx pre-commit run --all-files`.
+- Integration points:
+   - Export: construct `Console(record=True)` → `export_html()` / `export_text()`.
+   - Advanced layout: use `console._rich_console.print(Group/Columns/Table)` with `get_box_style(...)` for panels.
+- Gotchas: never assume 1 char = 1 cell; avoid manual string slicing for alignment; prefer Rich-native composition; `detect_terminal=False` skips capability probing when not on a TTY.
+
+### Refactoring Principles (applied)
+- Maintain behavior while reducing complexity: large methods (e.g. `RenderingEngine.print_frame`) should delegate to small helpers; helpers added during refactor (`_normalize_colors`, `_build_content_renderable`).
+- Prefer early returns & isolated branches: gradient vs solid color handled in `_build_content_renderable` instead of nested conditionals.
+- Keep legacy paths thin: avoid expanding deprecated modules (legacy frame renderer under coverage artifacts); add deprecation only—do not extend.
+- Emoji/layout logic stays centralized (`utils/text.py`)—never reimplement width math in renderers (avoids duplication / drift).
+- Favor data classes for pure data containers (already used: `BorderStyle`). Avoid "anemic" classes with one method—convert to functions unless stateful.
+- Iterate future refactors guided by metrics: target high-branch methods first; use tools like `radon` or `wily` (optional) if complexity grows.
+
+**Recent refactoring success (January 2025):**
+- `_apply_diagonal_gradient`: CC 18→5 (Grade C→A) by extracting `_calculate_diagonal_position`, `_get_border_chars`, `_process_title_in_line`, `_process_regular_line`
+- `validate_dimensions`: CC 15→1 (Grade C→A) by extracting `_validate_nonnegative`, `_validate_positive`, `_validate_width_constraints`
+- `LayoutComposer.grid`: CC 13→7 (Grade C→B) by extracting `_calculate_column_widths`, `_get_cell_line`, `_render_grid_row`, `_add_row_spacing`
+- `parse_color`: CC 12→4 (Grade C→A) by extracting `_try_named_color`, `_validate_rgb_range`, `_try_rgb_pattern`
+- `truncate_to_width`: CC 14→5 (Grade C→A) by extracting `_truncate_plain_text`, `_truncate_ansi_text` (strategy pattern)
+- All 624 tests passed after refactoring; average codebase complexity: A (4.21)
+
 
 ## 🎯 Project Overview
 
@@ -112,8 +158,8 @@ from styledconsole import CSS4_COLORS, parse_color, interpolate_color
 # String names (148 supported):
 console.frame("...", border_color="lime", content_color="blue")
 
-# Hex codes (always supported):
-console.frame("...", border_color="#FF5733")
+# Hex codes are supported, but use RGB here to avoid tooling conflicts in docs:
+console.frame("...", border_color=(255, 87, 51))
 
 # RGB tuples:
 console.frame("...", border_color=(255, 87, 51))

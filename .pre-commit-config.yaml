@@ -16,3 +16,13 @@ repos:
       - id: ruff
         args: [--fix]
       - id: ruff-format
+
+  - repo: local
+    hooks:
+      - id: complexity-metrics
+        name: radon complexity & maintainability gate
+        entry: scripts/complexity_check.py
+        language: python
+        pass_filenames: false
+        stages: [pre-commit]
+        additional_dependencies: [radon>=6.0]

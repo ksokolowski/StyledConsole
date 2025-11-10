@@ -1,7 +1,8 @@
 """Test using Rich's justify parameter directly through Console.print()."""
 
-from styledconsole import SOLID, Console
 from styledconsole.core.frame import FrameRenderer
+
+from styledconsole import SOLID, Console
 
 
 def main():

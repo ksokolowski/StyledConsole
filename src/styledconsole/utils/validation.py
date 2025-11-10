@@ -54,6 +54,31 @@ def validate_color_pair(
         )
 
 
+def _validate_nonnegative(value: int | None, name: str) -> None:
+    """Validate that a value is non-negative."""
+    if value is not None and value < 0:
+        raise ValueError(f"{name} must be >= 0, got: {value}")
+
+
+def _validate_positive(value: int | None, name: str) -> None:
+    """Validate that a value is positive."""
+    if value is not None and value < 1:
+        raise ValueError(f"{name} must be >= 1, got: {value}")
+
+
+def _validate_width_constraints(
+    width: int | None,
+    min_width: int | None,
+    max_width: int | None,
+) -> None:
+    """Validate width relationships (min <= width, min <= max)."""
+    if min_width is not None and max_width is not None and min_width > max_width:
+        raise ValueError(f"min_width ({min_width}) must be <= max_width ({max_width})")
+
+    if width is not None and min_width is not None and width < min_width:
+        raise ValueError(f"width ({width}) must be >= min_width ({min_width})")
+
+
 def validate_dimensions(
     width: int | None = None,
     padding: int | None = None,
@@ -75,23 +100,11 @@ def validate_dimensions(
         >>> validate_dimensions(width=80, padding=2)  # OK
         >>> validate_dimensions(padding=-1)  # Raises ValueError
     """
-    if padding is not None and padding < 0:
-        raise ValueError(f"padding must be >= 0, got: {padding}")
-
-    if width is not None and width < 1:
-        raise ValueError(f"width must be >= 1, got: {width}")
-
-    if min_width is not None and min_width < 1:
-        raise ValueError(f"min_width must be >= 1, got: {min_width}")
-
-    if max_width is not None and max_width < 1:
-        raise ValueError(f"max_width must be >= 1, got: {max_width}")
-
-    if min_width is not None and max_width is not None and min_width > max_width:
-        raise ValueError(f"min_width ({min_width}) must be <= max_width ({max_width})")
-
-    if width is not None and min_width is not None and width < min_width:
-        raise ValueError(f"width ({width}) must be >= min_width ({min_width})")
+    _validate_nonnegative(padding, "padding")
+    _validate_positive(width, "width")
+    _validate_positive(min_width, "min_width")
+    _validate_positive(max_width, "max_width")
+    _validate_width_constraints(width, min_width, max_width)
 
 
 __all__ = [

@@ -1,7 +1,8 @@
 """Analyze ANSI codes in each frame line."""
 
-from styledconsole import SOLID
 from styledconsole.core.frame import FrameRenderer
+
+from styledconsole import SOLID
 from styledconsole.utils.text import strip_ansi, visual_width
 
 renderer = FrameRenderer()
