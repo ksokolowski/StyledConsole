@@ -78,6 +78,46 @@ class TestEmojiConstants:
         assert EMOJI.LIGHTBULB == "💡"
         assert EMOJI.BELL == "🔔"
 
+    def test_file_and_folder_emojis(self):
+        """Test file, folder, and storage emojis."""
+        # Folders & Storage
+        assert EMOJI.FOLDER == "📁"
+        assert EMOJI.OPEN_FOLDER == "📂"
+        assert EMOJI.FILE_CABINET == "🗄"
+        assert EMOJI.CARD_FILE_BOX == "🗃"
+        assert EMOJI.WASTEBASKET == "🗑"
+
+        # Files & Documents
+        assert EMOJI.FILE == "📄"
+        assert EMOJI.PAGE == "📄"  # Alias
+        assert EMOJI.DOCUMENT == "📃"
+        assert EMOJI.SCROLL == "📜"
+        assert EMOJI.MEMO == "📝"
+        assert EMOJI.CLIPBOARD == "📋"
+
+        # File organization
+        assert EMOJI.PUSHPIN == "📌"
+        assert EMOJI.PAPERCLIP == "📎"
+        assert EMOJI.BOOKMARK == "🔖"
+        assert EMOJI.LABEL == "🏷"
+        assert EMOJI.CARD_INDEX == "📇"
+
+    def test_book_emojis(self):
+        """Test book and reading-related emojis."""
+        assert EMOJI.BOOK == "📖"
+        assert EMOJI.BOOKS == "📚"
+        assert EMOJI.NOTEBOOK == "📓"
+        assert EMOJI.LEDGER == "📒"
+        assert EMOJI.CLOSED_BOOK == "📕"
+        assert EMOJI.GREEN_BOOK == "📗"
+        assert EMOJI.BLUE_BOOK == "📘"
+        assert EMOJI.ORANGE_BOOK == "📙"
+
+    def test_news_media_emojis(self):
+        """Test news and media emojis."""
+        assert EMOJI.NEWSPAPER == "📰"
+        assert EMOJI.ROLLED_NEWSPAPER == "🗞"
+
     def test_helper_methods(self):
         """Test helper methods for common patterns."""
         assert EMOJI.success("Done") == "✅ Done"

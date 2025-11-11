@@ -111,8 +111,43 @@ print(f"{E.SPARKLES} New feature")
 - `CHART_INCREASING` 📈
 - `CHART_DECREASING` 📉
 - `PACKAGE` 📦
-- `FOLDER` 📁
-- `MEMO` 📝
+
+### Files & Folders
+
+- `FOLDER` 📁 - Closed folder
+- `OPEN_FOLDER` 📂 - Open folder
+- `FILE_CABINET` 🗄 - Storage cabinet
+- `CARD_FILE_BOX` 🗃 - File box
+- `WASTEBASKET` 🗑 - Trash/recycle bin
+
+### Documents & Papers
+
+- `FILE` / `PAGE` 📄 - Generic file
+- `DOCUMENT` 📃 - Document page
+- `SCROLL` 📜 - Scroll/certificate
+- `MEMO` 📝 - Memo with pencil
+- `CLIPBOARD` 📋 - Clipboard
+- `PUSHPIN` 📌 - Pin
+- `PAPERCLIP` 📎 - Attachment
+- `BOOKMARK` 🔖 - Bookmark ribbon
+- `LABEL` 🏷 - Tag/label
+- `CARD_INDEX` 📇 - Card index
+
+### Books & Reading
+
+- `BOOK` 📖 - Open book
+- `BOOKS` 📚 - Stack of books
+- `NOTEBOOK` 📓 - Notebook
+- `LEDGER` 📒 - Ledger
+- `CLOSED_BOOK` 📕 - Red closed book
+- `GREEN_BOOK` 📗 - Green book
+- `BLUE_BOOK` 📘 - Blue book
+- `ORANGE_BOOK` 📙 - Orange book
+
+### News & Media
+
+- `NEWSPAPER` 📰 - Newspaper
+- `ROLLED_NEWSPAPER` 🗞 - Rolled newspaper
 
 ### Stars & Celebration
 - `STAR` ⭐

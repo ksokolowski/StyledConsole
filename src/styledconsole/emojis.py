@@ -63,11 +63,40 @@ class EmojiConstants:
     CHART_INCREASING: Final[str] = "📈"
     CHART_DECREASING: Final[str] = "📉"
     PACKAGE: Final[str] = "📦"
+
+    # Folders & Storage
     FOLDER: Final[str] = "📁"
     OPEN_FOLDER: Final[str] = "📂"
-    PAGE: Final[str] = "📄"
+    FILE_CABINET: Final[str] = "🗄"  # Note: No variation selector version
+    CARD_FILE_BOX: Final[str] = "🗃"  # Note: No variation selector version
+    WASTEBASKET: Final[str] = "🗑"  # Note: No variation selector version
+
+    # Files & Documents
+    FILE: Final[str] = "📄"
+    PAGE: Final[str] = "📄"  # Alias
+    DOCUMENT: Final[str] = "📃"
+    SCROLL: Final[str] = "📜"
     MEMO: Final[str] = "📝"
     CLIPBOARD: Final[str] = "📋"
+    PUSHPIN: Final[str] = "📌"
+    PAPERCLIP: Final[str] = "📎"
+    BOOKMARK: Final[str] = "🔖"
+    LABEL: Final[str] = "🏷"  # Note: No variation selector version
+    CARD_INDEX: Final[str] = "📇"
+
+    # Books & Reading
+    BOOK: Final[str] = "📖"
+    BOOKS: Final[str] = "📚"
+    NOTEBOOK: Final[str] = "📓"
+    LEDGER: Final[str] = "📒"
+    CLOSED_BOOK: Final[str] = "📕"
+    GREEN_BOOK: Final[str] = "📗"
+    BLUE_BOOK: Final[str] = "📘"
+    ORANGE_BOOK: Final[str] = "📙"
+
+    # News & Media
+    NEWSPAPER: Final[str] = "📰"
+    ROLLED_NEWSPAPER: Final[str] = "🗞"  # Note: No variation selector version
 
     # Technology
     COMPUTER: Final[str] = "💻"
