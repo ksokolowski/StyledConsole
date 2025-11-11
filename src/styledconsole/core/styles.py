@@ -320,10 +320,10 @@ THICK = BorderStyle(
 
 ROUNDED_THICK = BorderStyle(
     name="rounded_thick",
-    top_left="╭",
-    top_right="╮",
-    bottom_left="╰",
-    bottom_right="╯",
+    top_left="▛",
+    top_right="▜",
+    bottom_left="▙",
+    bottom_right="▟",
     horizontal="▀",
     vertical="█",
     left_joint="█",
