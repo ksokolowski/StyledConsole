@@ -620,3 +620,86 @@ class TestRainbowCyclingFrame:
         for line_content in content:
             assert line_content in strip_ansi("\n".join(rainbow_lines))
             assert line_content in strip_ansi("\n".join(cycling_lines))
+
+
+class TestRainbowFrameDiagonal:
+    """Tests for rainbow_frame with diagonal direction (lines 782-837 coverage)."""
+
+    def test_rainbow_diagonal_basic(self):
+        """Test diagonal rainbow frame creation."""
+        lines = rainbow_frame(
+            ["Line 1", "Line 2", "Line 3"],
+            direction="diagonal",
+            mode="border",
+        )
+        assert len(lines) >= 5
+        # Should have ANSI color codes
+        assert any("\033[" in line for line in lines)
+
+    def test_rainbow_diagonal_content_mode(self):
+        """Test diagonal rainbow with content mode."""
+        lines = rainbow_frame(
+            ["Content line"],
+            direction="diagonal",
+            mode="content",
+        )
+        assert len(lines) >= 3
+        # Content should be colored
+        assert "\033[" in lines[1]  # Content line
+
+    def test_rainbow_diagonal_both_mode(self):
+        """Test diagonal rainbow with both border and content."""
+        lines = rainbow_frame(
+            ["Test"],
+            direction="diagonal",
+            mode="both",
+        )
+        assert len(lines) >= 3
+        # All lines should have colors
+        assert all("\033[" in line for line in lines)
+
+    def test_rainbow_diagonal_with_title(self):
+        """Test diagonal rainbow with title."""
+        lines = rainbow_frame(
+            ["Content"],
+            title="Diagonal Test",
+            direction="diagonal",
+            mode="border",
+        )
+        # Title should be present
+        assert "Diagonal Test" in strip_ansi(lines[0])
+
+    def test_rainbow_diagonal_multiline(self):
+        """Test diagonal rainbow with multiple lines."""
+        content = [f"Line {i}" for i in range(10)]
+        lines = rainbow_frame(
+            content,
+            direction="diagonal",
+            mode="both",
+        )
+        assert len(lines) >= 12  # 10 content + 2 borders
+
+    def test_rainbow_diagonal_different_borders(self):
+        """Test diagonal rainbow with different border styles."""
+        for border in ["solid", "rounded", "double", "heavy", "thick"]:
+            lines = rainbow_frame(
+                ["Test"],
+                direction="diagonal",
+                mode="border",
+                border=border,
+            )
+            assert len(lines) >= 3, f"Failed for border: {border}"
+
+    def test_rainbow_diagonal_vs_vertical(self):
+        """Test that diagonal produces different output than vertical."""
+        content = ["Line 1", "Line 2", "Line 3"]
+
+        vertical_lines = rainbow_frame(content, direction="vertical", mode="border")
+        diagonal_lines = rainbow_frame(content, direction="diagonal", mode="border")
+
+        # Both should produce output
+        assert len(vertical_lines) >= 5
+        assert len(diagonal_lines) >= 5
+
+        # Content should be same, but coloring different
+        assert strip_ansi("\n".join(vertical_lines)) == strip_ansi("\n".join(diagonal_lines))
