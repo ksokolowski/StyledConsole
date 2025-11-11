@@ -128,6 +128,9 @@ class EmojiConstants:
     BALLOON: Final[str] = "🎈"
     TROPHY: Final[str] = "🏆"
     MEDAL: Final[str] = "🏅"
+    FIREWORKS: Final[str] = "🎆"
+    CIRCUS_TENT: Final[str] = "🎪"
+    PERFORMING_ARTS: Final[str] = "🎭"
 
     # ============================================================================
     # Transportation & Speed
@@ -147,11 +150,15 @@ class EmojiConstants:
     MOON: Final[str] = "🌙"
     STAR_SIMPLE: Final[str] = "⭐"  # Alias
     DROPLET: Final[str] = "💧"
+    WATER_WAVE: Final[str] = "🌊"
+    OCEAN: Final[str] = "🌊"  # Alias
     FIRE: Final[str] = "🔥"
     SNOWFLAKE: Final[str] = "❄️"
     CLOUD: Final[str] = "☁️"
     LIGHTNING: Final[str] = "⚡"
     TORNADO: Final[str] = "🌪"  # Note: No variation selector version
+    MILKY_WAY: Final[str] = "🌌"
+    GALAXY: Final[str] = "🌌"  # Alias
 
     # Plants
     TREE: Final[str] = "🌲"
@@ -162,6 +169,10 @@ class EmojiConstants:
     HERB: Final[str] = "🌿"
     SHAMROCK: Final[str] = "☘"  # Note: No variation selector version
     FOUR_LEAF_CLOVER: Final[str] = "🍀"
+    BLOSSOM: Final[str] = "🌸"
+    CHERRY_BLOSSOM: Final[str] = "🌸"  # Alias
+    LEAVES: Final[str] = "🍃"
+    MAPLE_LEAF: Final[str] = "🍁"
 
     # ============================================================================
     # Food & Drink
@@ -175,6 +186,10 @@ class EmojiConstants:
     COCKTAIL: Final[str] = "🍹"
     CAKE: Final[str] = "🍰"
     COOKIE: Final[str] = "🍪"
+    ORANGE_FRUIT: Final[str] = "🍊"
+    TANGERINE: Final[str] = "🍊"  # Alias
+    GRAPES: Final[str] = "🍇"
+    WATERMELON: Final[str] = "🍉"
 
     # ============================================================================
     # People & Gestures (Simple Only)
@@ -187,6 +202,7 @@ class EmojiConstants:
     HANDS_UP: Final[str] = "🙌"
     CLAP: Final[str] = "👏"
     MUSCLE: Final[str] = "💪"
+    FLEXED_BICEPS: Final[str] = "💪"  # Alias
 
     # ============================================================================
     # Symbols & Arrows
@@ -220,6 +236,8 @@ class EmojiConstants:
     CHAIN: Final[str] = "⛓"  # Note: No variation selector version
     MAG: Final[str] = "🔍"
     MAGNIFYING_GLASS: Final[str] = "🔍"  # Alias
+    SHIELD: Final[str] = "🛡"  # Note: No variation selector version
+    CROWN: Final[str] = "👑"
 
     # Math & Logic
     PLUS: Final[str] = "➕"
@@ -249,6 +267,7 @@ class EmojiConstants:
     CREDIT_CARD: Final[str] = "💳"
     GEM: Final[str] = "💎"
     DIAMOND: Final[str] = "💎"  # Alias
+    GEM_STONE: Final[str] = "💎"  # Alias
 
     # ============================================================================
     # Time & Calendar
@@ -285,6 +304,9 @@ class EmojiConstants:
     SCHOOL: Final[str] = "🏫"
     BANK: Final[str] = "🏦"
     HOTEL: Final[str] = "🏨"
+    CASTLE: Final[str] = "🏰"
+    CLASSICAL_BUILDING: Final[str] = "🏛"  # Note: No variation selector version
+    STADIUM: Final[str] = "🏟"  # Note: No variation selector version
 
     # ============================================================================
     # Flags & Symbols (Simple)
@@ -292,6 +314,16 @@ class EmojiConstants:
     FLAG_CHECKERED: Final[str] = "🏁"
     FLAG_TRIANGULAR: Final[str] = "🚩"
     WHITE_FLAG: Final[str] = "🏳"  # Note: No variation selector version
+
+    # ============================================================================
+    # Animals & Nature (Simple)
+    # ============================================================================
+    BUTTERFLY: Final[str] = "🦋"
+    BUG: Final[str] = "🐛"
+    BEE: Final[str] = "🐝"
+    LADY_BEETLE: Final[str] = "🐞"
+    SNAIL: Final[str] = "🐌"
+    TURTLE: Final[str] = "🐢"
 
     # ============================================================================
     # Common Combinations (for convenience)
