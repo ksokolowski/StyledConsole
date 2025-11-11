@@ -24,12 +24,14 @@ console.text(f"{E.ROCKET} Launching...")
 ## Why Use Emoji Constants?
 
 ### ❌ Before (Raw UTF-8)
+
 ```python
 console.frame("Done!", title="✅ Complete")  # Hard to read
 console.text("🚀 Deploying...")  # Can't search/autocomplete
 ```
 
 ### ✅ After (Named Constants)
+
 ```python
 console.frame("Done!", title=f"{EMOJI.CHECK} Complete")  # Readable!
 console.text(f"{E.ROCKET} Deploying...")  # IDE autocomplete works!
@@ -38,14 +40,15 @@ console.text(f"{E.ROCKET} Deploying...")  # IDE autocomplete works!
 ## Benefits
 
 1. **Readable** - `E.CHECK` is clearer than `✅` in source code
-2. **Discoverable** - IDE autocomplete shows all available emojis
-3. **Searchable** - `grep "EMOJI.ROCKET"` finds all rocket emojis
-4. **Maintainable** - Change emoji in one place
-5. **Safe** - Only Tier 1 (tested, safe) emojis included
+1. **Discoverable** - IDE autocomplete shows all available emojis
+1. **Searchable** - `grep "EMOJI.ROCKET"` finds all rocket emojis
+1. **Maintainable** - Change emoji in one place
+1. **Safe** - Only Tier 1 (tested, safe) emojis included
 
 ## Usage Patterns
 
 ### Basic Usage
+
 ```python
 from styledconsole import EMOJI
 
@@ -57,6 +60,7 @@ print(f"{EMOJI.INFO} Backup completed")
 ```
 
 ### In Frames
+
 ```python
 console.frame(
     "Deployment complete!",
@@ -66,6 +70,7 @@ console.frame(
 ```
 
 ### Helper Methods
+
 ```python
 # Convenience methods for common patterns
 title = EMOJI.success("Deployed")   # "✅ Deployed"
@@ -75,6 +80,7 @@ info = EMOJI.info("Note")           # "ℹ️ Note"
 ```
 
 ### Short Alias
+
 ```python
 from styledconsole import E  # Ultra-short alias
 
@@ -85,12 +91,14 @@ print(f"{E.SPARKLES} New feature")
 ## Available Categories
 
 ### Status & Indicators
+
 - `CHECK` ✅ - Success, completion
 - `CROSS` ❌ - Error, failure
 - `WARNING` ⚠️ - Caution, warning
 - `INFO` ℹ️ - Information, note
 
 ### Colored Circles
+
 - `RED_CIRCLE` 🔴
 - `YELLOW_CIRCLE` 🟡
 - `GREEN_CIRCLE` 🟢
@@ -99,6 +107,7 @@ print(f"{E.SPARKLES} New feature")
 - `ORANGE_CIRCLE` 🟠
 
 ### Technology & Tools
+
 - `COMPUTER` / `LAPTOP` 💻
 - `ROCKET` 🚀
 - `GEAR` ⚙️
@@ -107,6 +116,7 @@ print(f"{E.SPARKLES} New feature")
 - `TEST_TUBE` 🧪
 
 ### Charts & Documents
+
 - `CHART_BAR` 📊
 - `CHART_INCREASING` 📈
 - `CHART_DECREASING` 📉
@@ -150,6 +160,7 @@ print(f"{E.SPARKLES} New feature")
 - `ROLLED_NEWSPAPER` 🗞 - Rolled newspaper
 
 ### Stars & Celebration
+
 - `STAR` ⭐
 - `SPARKLES` ✨
 - `PARTY` 🎉
@@ -158,6 +169,7 @@ print(f"{E.SPARKLES} New feature")
 - `FIRE` 🔥
 
 ### Nature & Weather
+
 - `RAINBOW` 🌈
 - `LIGHTNING` ⚡
 - `FIRE` 🔥
@@ -165,12 +177,14 @@ print(f"{E.SPARKLES} New feature")
 - `SNOWFLAKE` ❄️
 
 ### Transportation
+
 - `ROCKET` 🚀
 - `AIRPLANE` ✈️
 - `CAR` 🚗
 - `BIKE` 🚲
 
 ### Currency
+
 - `DOLLAR` 💵
 - `MONEY_BAG` 💰
 - `GEM` / `DIAMOND` 💎
@@ -180,6 +194,7 @@ print(f"{E.SPARKLES} New feature")
 ## Real-World Examples
 
 ### CLI Status Messages
+
 ```python
 from styledconsole import Console, EMOJI
 
@@ -208,6 +223,7 @@ console.frame(
 ```
 
 ### Deployment Workflow
+
 ```python
 # Starting
 console.text(f"{EMOJI.ROCKET} Initiating deployment...")
@@ -226,6 +242,7 @@ console.frame(
 ```
 
 ### Dashboard Panels
+
 ```python
 # Service status
 console.frame(
@@ -244,12 +261,14 @@ console.frame(
 ## Design Guidelines
 
 ### ✅ Do
+
 - Use consistent emoji + color pairings
 - Match emoji to message context
 - Use `E.` for brevity in code
 - Leverage helper methods (`EMOJI.success()`)
 
 ### ❌ Don't
+
 - Mix emoji styles inconsistently
 - Use emojis for every word (overwhelming)
 - Assume all terminals render emojis (check capabilities)
@@ -258,6 +277,7 @@ console.frame(
 ## Compatibility
 
 All emojis in `EMOJI` are:
+
 - ✅ **Tier 1** - Simple, single-codepoint emojis
 - ✅ **Width-safe** - Correct visual width calculation
 - ✅ **Terminal-safe** - Work across major terminals
@@ -268,11 +288,13 @@ See `doc/guides/EMOJI_GUIDELINES.md` for technical details on emoji support.
 ## IDE Support
 
 ### VS Code
+
 - Full autocomplete after typing `EMOJI.`
 - Type hints show emoji character
 - Go-to-definition works
 
 ### PyCharm
+
 - Autocomplete with emoji preview
 - Quick documentation shows character
 - Find usages works perfectly
@@ -280,6 +302,7 @@ See `doc/guides/EMOJI_GUIDELINES.md` for technical details on emoji support.
 ## API Reference
 
 ### Main Classes
+
 ```python
 class EmojiConstants:
     """Container for all emoji constants."""
@@ -310,6 +333,7 @@ class EmojiConstants:
 ```
 
 ### Imports
+
 ```python
 from styledconsole import EMOJI      # Full name
 from styledconsole import E          # Short alias
@@ -319,6 +343,7 @@ from styledconsole.emojis import EmojiConstants  # Class
 ## Migration from Raw Emojis
 
 ### Search & Replace Pattern
+
 ```bash
 # Find all raw emojis in your code
 grep -r "✅\|❌\|⚠️\|ℹ️" examples/
@@ -328,7 +353,9 @@ sed -i 's/"✅/"f"{EMOJI.CHECK}/g' file.py
 ```
 
 ### Gradual Migration
+
 You can mix raw emojis and constants:
+
 ```python
 # Works fine
 print("✅ Old way")
@@ -338,6 +365,7 @@ print(f"{EMOJI.CHECK} New way")
 ## Testing
 
 Emoji constants are fully tested:
+
 ```python
 from styledconsole import EMOJI
 
@@ -347,9 +375,10 @@ assert EMOJI.success("Done") == "✅ Done"
 
 See `tests/unit/test_emojis.py` for 21 comprehensive tests.
 
----
+______________________________________________________________________
 
 **See also:**
+
 - `doc/guides/EMOJI_GUIDELINES.md` - Technical emoji support details
 - `examples/usecases/alerts.py` - Real-world usage examples
 - `src/styledconsole/emojis.py` - Full source code

@@ -8,7 +8,7 @@
 **Target Version:** v0.4.0
 **Dependencies:** REFACTOR-002 (color normalization utility)
 
----
+______________________________________________________________________
 
 ## Problem Statement
 
@@ -17,9 +17,9 @@
 Gradient coloring logic is **duplicated across 4 functions** in `effects.py`:
 
 1. `_apply_vertical_content_gradient()` (lines 327-380, ~53 LOC)
-2. `_apply_diagonal_gradient()` (lines 382-500, ~118 LOC)
-3. `_apply_vertical_rainbow()` (lines 502-560, ~58 LOC)
-4. `_apply_diagonal_rainbow()` (lines 562-637, ~75 LOC)
+1. `_apply_diagonal_gradient()` (lines 382-500, ~118 LOC)
+1. `_apply_vertical_rainbow()` (lines 502-560, ~58 LOC)
+1. `_apply_diagonal_rainbow()` (lines 562-637, ~75 LOC)
 
 **Total:** ~304 LOC with **70% similarity** in structure
 
@@ -45,11 +45,13 @@ for idx, line in enumerate(lines):
 ### Why This Is Critical
 
 **Maintenance Burden:**
+
 - Bug fixes require updates in 4 places
 - New features (e.g., horizontal gradients) = copy-paste-modify
 - Testing overhead: 4 similar code paths to cover
 
 **Example Bug Scenario:**
+
 - Fix emoji width calculation in diagonal gradient
 - Must also fix in vertical gradient, vertical rainbow, diagonal rainbow
 - Easy to miss one → inconsistent behavior
@@ -57,12 +59,14 @@ for idx, line in enumerate(lines):
 ### Evidence of Duplication
 
 **ANSI stripping (4 occurrences):**
+
 ```python
 # Line 332, 409, 513, 574 - identical
 clean_line = strip_ansi(line)
 ```
 
 **Character iteration (4 occurrences):**
+
 ```python
 # Similar structure in all 4 functions
 for char in clean_line:
@@ -71,6 +75,7 @@ for char in clean_line:
 ```
 
 **Border detection (4 occurrences with minor variations):**
+
 ```python
 # Line 349, 455, 520, 605 - nearly identical
 is_border_char = char in border_chars
@@ -78,17 +83,17 @@ if (is_border_char and apply_to_border) or (not is_border_char and apply_to_cont
     colored_chars.append(_colorize(char, color))
 ```
 
----
+______________________________________________________________________
 
 ## Specification
 
 ### Goals
 
 1. **Single gradient engine:** One function handles all gradient types
-2. **Strategy pattern:** Pluggable position calculators and color sources
-3. **Code reduction:** 304 LOC → ~120 LOC (60% reduction)
-4. **Maintainability:** Fix once, works everywhere
-5. **Extensibility:** Easy to add new gradient types (horizontal, radial, etc.)
+1. **Strategy pattern:** Pluggable position calculators and color sources
+1. **Code reduction:** 304 LOC → ~120 LOC (60% reduction)
+1. **Maintainability:** Fix once, works everywhere
+1. **Extensibility:** Easy to add new gradient types (horizontal, radial, etc.)
 
 ### Non-Goals
 
@@ -96,7 +101,7 @@ if (is_border_char and apply_to_border) or (not is_border_char and apply_to_cont
 - ❌ Alter visual output (pixel-perfect compatibility required)
 - ❌ Performance regression (must be ≥ current speed)
 
----
+______________________________________________________________________
 
 ## Architecture Design
 
@@ -168,7 +173,7 @@ class TargetFilter(Protocol):
         ...
 ```
 
----
+______________________________________________________________________
 
 ## Implementation Plan
 
@@ -275,12 +280,13 @@ class Both:
 **File Size:** ~120 LOC (well-structured, documented)
 
 **Acceptance Criteria:**
+
 - [ ] All 3 strategy types defined
 - [ ] Protocol-based (duck typing)
 - [ ] Comprehensive docstrings
 - [ ] No external dependencies (uses existing utils)
 
----
+______________________________________________________________________
 
 ### Phase 2: Create Unified Gradient Engine (2 days)
 
@@ -371,25 +377,28 @@ def apply_gradient(
 **File Size:** ~70 LOC (clean, focused)
 
 **Benefits:**
+
 - **Single implementation:** Bug fixes apply to all gradient types
 - **Extensible:** Add new strategies without touching engine
 - **Testable:** Each strategy testable in isolation
 - **Readable:** Clear separation of concerns
 
 **Acceptance Criteria:**
+
 - [ ] Single `apply_gradient()` function
 - [ ] Uses all 3 strategy types
 - [ ] Handles ANSI stripping correctly
 - [ ] Preserves emoji width calculation
 - [ ] ~70 LOC total
 
----
+______________________________________________________________________
 
 ### Phase 3: Refactor Public API Functions (1 day)
 
 **File:** `src/styledconsole/effects.py`
 
 **Before (gradient_frame - lines 88-150, 63 LOC):**
+
 ```python
 def gradient_frame(...):
     renderer = FrameRenderer()
@@ -400,6 +409,7 @@ def gradient_frame(...):
 ```
 
 **After (gradient_frame - ~30 LOC):**
+
 ```python
 def gradient_frame(
     content: str | list[str],
@@ -455,6 +465,7 @@ def gradient_frame(
 ```
 
 **Refactor diagonal_gradient_frame() similarly (~30 LOC):**
+
 ```python
 def diagonal_gradient_frame(...):
     # ... same setup as gradient_frame ...
@@ -467,6 +478,7 @@ def diagonal_gradient_frame(...):
 ```
 
 **Refactor rainbow_frame() (~25 LOC):**
+
 ```python
 def rainbow_frame(...):
     # ... same setup ...
@@ -481,6 +493,7 @@ def rainbow_frame(...):
 ```
 
 **Code Reduction:**
+
 - `gradient_frame()`: 63 → 30 LOC (-33)
 - `diagonal_gradient_frame()`: 65 → 30 LOC (-35)
 - `rainbow_frame()`: 55 → 25 LOC (-30)
@@ -489,12 +502,13 @@ def rainbow_frame(...):
 - **Net reduction:** -242 LOC (38% of effects.py)
 
 **Acceptance Criteria:**
+
 - [ ] All 3 public functions refactored
 - [ ] Use unified gradient engine
 - [ ] Signatures unchanged (backward compatible)
 - [ ] Output pixel-perfect identical
 
----
+______________________________________________________________________
 
 ### Phase 4: Testing & Validation (2 days)
 
@@ -671,6 +685,7 @@ class TestGradientIntegration:
 #### Visual Regression Testing
 
 **Use snapshot tests:**
+
 ```python
 def test_gradient_frame_snapshot(snapshot):
     """Gradient output matches v0.3 snapshot."""
@@ -684,12 +699,13 @@ def test_gradient_frame_snapshot(snapshot):
 ```
 
 **Acceptance Criteria:**
+
 - [ ] All strategy unit tests pass (30+ tests)
 - [ ] All integration tests pass
 - [ ] Snapshot tests confirm visual parity with v0.3
 - [ ] Coverage for new modules ≥95%
 
----
+______________________________________________________________________
 
 ### Phase 5: Performance Validation (1 day)
 
@@ -727,20 +743,20 @@ print(f"Speedup: {speedup:.2f}x")
 
 **Acceptance:** Refactored version ≥ 95% speed of original (no significant regression)
 
-**Expected:** Strategy pattern overhead negligible (<5%) due to small method calls
+**Expected:** Strategy pattern overhead negligible (\<5%) due to small method calls
 
----
+______________________________________________________________________
 
 ## Success Metrics
 
 ### Code Quality
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| effects.py LOC | 637 | ~395 | -38% ✅ |
-| Duplicate gradient functions | 4 | 0 | -100% ✅ |
-| Code duplication % | 70% | 0% | Eliminated ✅ |
-| Strategy implementations | 0 | 9 | Extensible ✅ |
+| Metric                       | Before | After | Improvement   |
+| ---------------------------- | ------ | ----- | ------------- |
+| effects.py LOC               | 637    | ~395  | -38% ✅       |
+| Duplicate gradient functions | 4      | 0     | -100% ✅      |
+| Code duplication %           | 70%    | 0%    | Eliminated ✅ |
+| Strategy implementations     | 0      | 9     | Extensible ✅ |
 
 ### Maintainability
 
@@ -756,7 +772,7 @@ print(f"Speedup: {speedup:.2f}x")
 - [ ] Snapshot tests: Visual parity confirmed
 - [ ] Coverage: ≥95% maintained
 
----
+______________________________________________________________________
 
 ## Risk Analysis
 
@@ -766,6 +782,7 @@ print(f"Speedup: {speedup:.2f}x")
 **Impact:** Medium
 
 **Mitigation:**
+
 - Benchmark before/after
 - If >5% slower, optimize hot paths
 - Strategy method calls are cheap (no heavy computation)
@@ -776,6 +793,7 @@ print(f"Speedup: {speedup:.2f}x")
 **Impact:** High (breaks user expectations)
 
 **Mitigation:**
+
 - Snapshot testing for pixel-perfect comparison
 - Manual visual inspection of all gradient examples
 - If changes detected, analyze and fix before merge
@@ -786,33 +804,36 @@ print(f"Speedup: {speedup:.2f}x")
 **Impact:** Low
 
 **Mitigation:**
+
 - Keep strategies simple (single responsibility)
 - Don't add strategies speculatively (YAGNI)
 - Current 9 strategies all have immediate use cases
 
----
+______________________________________________________________________
 
 ## Timeline
 
-| Phase | Duration | Blocker |
-|-------|----------|---------|
-| Phase 1: Strategy classes | 2 days | None |
-| Phase 2: Gradient engine | 2 days | Phase 1 |
-| Phase 3: Refactor API | 1 day | Phase 2 |
-| Phase 4: Testing | 2 days | Phase 3 |
-| Phase 5: Performance | 1 day | Phase 4 |
-| **Total** | **8 days** | |
+| Phase                     | Duration   | Blocker |
+| ------------------------- | ---------- | ------- |
+| Phase 1: Strategy classes | 2 days     | None    |
+| Phase 2: Gradient engine  | 2 days     | Phase 1 |
+| Phase 3: Refactor API     | 1 day      | Phase 2 |
+| Phase 4: Testing          | 2 days     | Phase 3 |
+| Phase 5: Performance      | 1 day      | Phase 4 |
+| **Total**                 | **8 days** |         |
 
 **Can be completed in:** 2 weeks (1 engineer, half-time)
 
 **Dependencies:**
+
 - **REFACTOR-002** (color normalization) - Recommended first
 - **REFACTOR-001** (dual paths) - Can be parallel
 
 **Recommended after:**
+
 - All high-priority refactors complete (easier to work in clean codebase)
 
----
+______________________________________________________________________
 
 ## References
 
@@ -832,20 +853,20 @@ print(f"Speedup: {speedup:.2f}x")
 - **Strategy Pattern:** Gang of Four design pattern for algorithm families
 - **Protocol-based:** Python 3.8+ structural subtyping
 
----
+______________________________________________________________________
 
 **Status Log:**
 
 - [ ] Task created: 2025-11-01
-- [ ] Phase 1 started: [DATE]
-- [ ] Phase 1 completed: [DATE]
-- [ ] Phase 2 started: [DATE]
-- [ ] Phase 2 completed: [DATE]
-- [ ] Phase 3 started: [DATE]
-- [ ] Phase 3 completed: [DATE]
-- [ ] Phase 4 started: [DATE]
-- [ ] Phase 4 completed: [DATE]
-- [ ] Phase 5 started: [DATE]
-- [ ] Phase 5 completed: [DATE]
-- [ ] Merged to main: [DATE]
+- [ ] Phase 1 started: \[DATE\]
+- [ ] Phase 1 completed: \[DATE\]
+- [ ] Phase 2 started: \[DATE\]
+- [ ] Phase 2 completed: \[DATE\]
+- [ ] Phase 3 started: \[DATE\]
+- [ ] Phase 3 completed: \[DATE\]
+- [ ] Phase 4 started: \[DATE\]
+- [ ] Phase 4 completed: \[DATE\]
+- [ ] Phase 5 started: \[DATE\]
+- [ ] Phase 5 completed: \[DATE\]
+- [ ] Merged to main: \[DATE\]
 - [ ] Included in release: v0.4.0

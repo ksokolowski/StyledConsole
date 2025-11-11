@@ -152,6 +152,7 @@ text = console.export_text()  # Get plain text
 This project is **production-ready** with comprehensive testing and documentation.
 
 **v0.3.0 Rich-Native Migration:**
+
 - ✅ Console.frame() uses Rich Panel internally (ANSI-safe)
 - ✅ box_mapping.py for border style → Rich box mapping
 - ✅ LayoutComposer Rich-aware (backward compatible)
@@ -160,11 +161,13 @@ This project is **production-ready** with comprehensive testing and documentatio
 - ✅ 100% backward compatible - v0.1.0 code still works
 
 **v0.4.0 Coming Soon:**
+
 - 🚧 Deprecation warnings for FrameRenderer (removed in v1.0.0)
 - 🚧 Gradient consolidation with Strategy pattern
 - 🚧 Color normalization utilities
 
 **Previous Milestones:**
+
 - ✅ Core Setup & Utilities (M1) - Complete
 - ✅ Rendering Engine (M2) - Complete
 - ✅ Console API & Effects (M3) - Complete
@@ -172,6 +175,7 @@ This project is **production-ready** with comprehensive testing and documentatio
 - ✅ Testing & Documentation (M5) - Complete
 
 **Quality Metrics:**
+
 - 654 tests passing (100%)
 - 95.96% test coverage
 - Zero known bugs
@@ -181,6 +185,7 @@ This project is **production-ready** with comprehensive testing and documentatio
 ## 📚 Documentation
 
 **User Documentation:**
+
 - `README.md` - This file with quick start and examples
 - `CHANGELOG.md` - Version history and release notes
 - `doc/migration/v0.1_to_v0.3.md` - **Migration guide** for v0.3.0 (v0.1.0 code still works!)
@@ -188,6 +193,7 @@ This project is **production-ready** with comprehensive testing and documentatio
 - `RELEASE_ANNOUNCEMENT.md` - Release details
 
 **Developer Documentation:**
+
 - `doc/project/PLAN.md` - Architecture overview with v0.3.0 changes
 - `doc/guides/EMOJI_GUIDELINES.md` - Emoji support and safe usage guide
 - `doc/guides/COLOR_STANDARDIZATION.md` - CSS4 color system
@@ -201,19 +207,23 @@ All public APIs include comprehensive docstrings with type hints.
 StyledConsole follows [Semantic Versioning 2.0.0](https://semver.org/):
 
 - **Public API**: All items in `__all__` are considered public and stable
+
   - Breaking changes will increment the major version (e.g., 1.x.x → 2.0.0)
   - New features will increment the minor version (e.g., 1.1.x → 1.2.0)
   - Bug fixes will increment the patch version (e.g., 1.1.1 → 1.1.2)
 
 - **Internal APIs**: Items prefixed with `_` are internal and may change without notice
+
   - Not part of the public API contract
   - Should not be used in production code
 
 - **Type Safety**: All public APIs include type hints
+
   - Use `Literal` types for parameters with specific valid values (e.g., `align: Literal["left", "center", "right"]`)
   - IDE autocomplete and type checkers will help catch errors early
 
 - **Deprecation Policy**: When removing features
+
   - Deprecated features will show warnings for at least one minor version
   - Alternatives will be documented in deprecation messages
   - Deprecated features removed only in major version bumps
@@ -231,6 +241,7 @@ Apache License 2.0 - See LICENSE file for details.
 ## 🙏 Acknowledgments
 
 Built with:
+
 - [Rich](https://github.com/Textualize/rich) - Terminal formatting
 - [PyFiglet](https://github.com/pwaller/pyfiglet) - ASCII art text
 - [wcwidth](https://github.com/jquast/wcwidth) - Unicode width calculation

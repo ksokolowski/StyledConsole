@@ -8,7 +8,7 @@
 **Target Version:** v0.4.0
 **Dependencies:** None (can start immediately)
 
----
+______________________________________________________________________
 
 ## Problem Statement
 
@@ -55,21 +55,21 @@ def _colorize(text: str, color: str) -> str:
 ### Why This Matters
 
 1. **Performance:** Function recreated on every `print_frame()` call (no caching possible)
-2. **Testing:** Cannot unit test color normalization logic independently
-3. **Reusability:** Other modules (banner, layout) may need same normalization
-4. **Error handling:** Broad `except Exception` hides real bugs
+1. **Testing:** Cannot unit test color normalization logic independently
+1. **Reusability:** Other modules (banner, layout) may need same normalization
+1. **Error handling:** Broad `except Exception` hides real bugs
 
----
+______________________________________________________________________
 
 ## Specification
 
 ### Goals
 
 1. Extract `normalize_color()` to `utils/color.py` as standalone function
-2. Add LRU caching for repeated color lookups
-3. Improve error handling (specific exceptions)
-4. Make function unit-testable
-5. Reuse in `effects.py` and other modules
+1. Add LRU caching for repeated color lookups
+1. Improve error handling (specific exceptions)
+1. Make function unit-testable
+1. Reuse in `effects.py` and other modules
 
 ### Non-Goals
 
@@ -77,7 +77,7 @@ def _colorize(text: str, color: str) -> str:
 - ❌ Modify Rich integration behavior
 - ❌ Break existing API
 
----
+______________________________________________________________________
 
 ## Implementation Plan
 
@@ -158,7 +158,7 @@ from styledconsole.utils.color import (
 - [ ] Comprehensive docstring with examples
 - [ ] Exported in `__init__.py`
 
----
+______________________________________________________________________
 
 ### Step 2: Add Unit Tests (1 hour)
 
@@ -257,7 +257,7 @@ pytest tests/unit/test_color_utils.py::TestNormalizeColorForRich -v
 - [ ] Coverage for normalize_color_for_rich() = 100%
 - [ ] Cache behavior verified
 
----
+______________________________________________________________________
 
 ### Step 3: Refactor RenderingEngine (30 minutes)
 
@@ -302,7 +302,7 @@ def print_frame(self, content, ...):
 - [ ] All 5 colors normalized using utility
 - [ ] Code reduction: -20 LOC
 
----
+______________________________________________________________________
 
 ### Step 4: Update Effects Module (1 hour)
 
@@ -356,7 +356,7 @@ def _colorize(text: str, color: str) -> str:
 - [ ] All gradient functions work unchanged
 - [ ] `test_effects.py` tests pass
 
----
+______________________________________________________________________
 
 ### Step 5: Integration Testing (30 minutes)
 
@@ -418,7 +418,7 @@ benchmark_normalization()
 - [ ] No visual regressions
 - [ ] Cache provides 10x+ speedup on repeated colors
 
----
+______________________________________________________________________
 
 ## Documentation Updates
 
@@ -426,7 +426,7 @@ benchmark_normalization()
 
 **File:** `doc/reference/COLOR_SYSTEM.md` (create if doesn't exist)
 
-```markdown
+````markdown
 ## Color Normalization
 
 ### `normalize_color_for_rich(color)`
@@ -451,12 +451,14 @@ normalize_color_for_rich("#FF0000")  # '#FF0000'
 
 # Rich colors
 normalize_color_for_rich("bright_green")  # '#00FF00'
-```
+````
 
 **Performance:**
+
 - Cached with LRU (256 entries)
 - 100K+ normalizations/sec with caching
-```
+
+````
 
 ### Update Copilot Instructions
 
@@ -480,7 +482,7 @@ panel = Panel("content", border_style=hex_color)
 def my_function():
     def normalize(c):  # Don't nest - use utility!
         ...
-```
+````
 
 **Acceptance Criteria:**
 
@@ -488,18 +490,18 @@ def my_function():
 - [ ] Copilot instructions updated
 - [ ] Examples demonstrate usage
 
----
+______________________________________________________________________
 
 ## Success Metrics
 
 ### Code Quality
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Nested functions in rendering_engine.py | 1 | 0 | ✅ Eliminated |
-| LOC in print_frame() | 117 | ~97 | -17% |
-| Testable color utils | 9 | 10 | +1 function |
-| Cache hit rate (repeated colors) | 0% | 99%+ | 🚀 Major speedup |
+| Metric                                  | Before | After | Improvement      |
+| --------------------------------------- | ------ | ----- | ---------------- |
+| Nested functions in rendering_engine.py | 1      | 0     | ✅ Eliminated    |
+| LOC in print_frame()                    | 117    | ~97   | -17%             |
+| Testable color utils                    | 9      | 10    | +1 function      |
+| Cache hit rate (repeated colors)        | 0%     | 99%+  | 🚀 Major speedup |
 
 ### Testing
 
@@ -514,7 +516,7 @@ def my_function():
 - [ ] Reusable by future modules (banner, layout, etc.)
 - [ ] Clear error handling (no broad exceptions)
 
----
+______________________________________________________________________
 
 ## Risk Analysis
 
@@ -524,6 +526,7 @@ def my_function():
 **Impact:** Low (graceful fallback)
 
 **Mitigation:**
+
 - Return original string if parsing fails (Rich tries as fallback)
 - Document known edge cases in function docstring
 
@@ -533,6 +536,7 @@ def my_function():
 **Impact:** Negligible
 
 **Analysis:**
+
 - Cache size: 256 entries × ~40 bytes/entry = ~10 KB
 - Trade-off: 10 KB memory for 100x speedup = worth it
 
@@ -542,33 +546,36 @@ def my_function():
 **Impact:** High (build failure)
 
 **Mitigation:**
+
 - `utils/color.py` has no dependencies on `core/` modules
 - Verify import structure before commit
 
----
+______________________________________________________________________
 
 ## Timeline
 
-| Task | Duration | Blocker |
-|------|----------|---------|
-| Step 1: Create utility | 30 min | None |
-| Step 2: Unit tests | 1 hour | Step 1 |
-| Step 3: Refactor RenderingEngine | 30 min | Step 1 |
-| Step 4: Update effects | 1 hour | Step 1 |
-| Step 5: Integration testing | 30 min | Steps 2-4 |
-| Documentation | 30 min | All steps |
-| **Total** | **4 hours** | |
+| Task                             | Duration    | Blocker   |
+| -------------------------------- | ----------- | --------- |
+| Step 1: Create utility           | 30 min      | None      |
+| Step 2: Unit tests               | 1 hour      | Step 1    |
+| Step 3: Refactor RenderingEngine | 30 min      | Step 1    |
+| Step 4: Update effects           | 1 hour      | Step 1    |
+| Step 5: Integration testing      | 30 min      | Steps 2-4 |
+| Documentation                    | 30 min      | All steps |
+| **Total**                        | **4 hours** |           |
 
 **Can be completed in:** 1 day (half-day coding sprint)
 
 **Dependencies:**
+
 - None (independent task, can start immediately)
 
 **Recommended before:**
+
 - REFACTOR-001 (simplifies that refactor)
 - REFACTOR-003 (provides utility for gradient consolidation)
 
----
+______________________________________________________________________
 
 ## References
 
@@ -583,12 +590,12 @@ def my_function():
 - **A2:** Color Normalization Duplication (Architecture Review)
 - **Q4:** Inconsistent Error Handling (Code Quality Review)
 
----
+______________________________________________________________________
 
 **Status Log:**
 
 - [ ] Task created: 2025-11-01
-- [ ] Implementation started: [DATE]
-- [ ] Testing completed: [DATE]
-- [ ] Merged to main: [DATE]
+- [ ] Implementation started: \[DATE\]
+- [ ] Testing completed: \[DATE\]
+- [ ] Merged to main: \[DATE\]
 - [ ] Included in release: v0.4.0

@@ -17,8 +17,8 @@ The example had **23 emojis appearing "glued" to text** due to grapheme cluster 
 These emojis report `visual_width=1` via `wcwidth` but actually display as `visual_width=2` on most terminals due to:
 
 1. **Grapheme cluster composition** - emojis composed of multiple Unicode characters
-2. **Terminal rendering inconsistencies** - VS16 selector handling varies by terminal
-3. **Width calculation workaround** - `visual_width()` has logic to handle VS16 but missed others
+1. **Terminal rendering inconsistencies** - VS16 selector handling varies by terminal
+1. **Width calculation workaround** - `visual_width()` has logic to handle VS16 but missed others
 
 ### Previous Partial Fix
 
@@ -35,6 +35,7 @@ Implemented a **smart automatic API** that detects ALL spacing issues systematic
 **Purpose:** Detect how many extra spaces an emoji needs
 
 **Logic:**
+
 ```python
 if grapheme_count > 1 AND visual_width < metadata_width:
     return adjustment  # 0, 1, or 2
@@ -43,11 +44,13 @@ else:
 ```
 
 **Returns:**
+
 - `0` - No adjustment needed (emoji displays correctly)
 - `1` - Add 1 extra space (common for multi-grapheme emojis)
 - `2` - Add 2 extra spaces (edge cases)
 
 **Example:**
+
 ```python
 from styledconsole.utils.text import get_emoji_spacing_adjustment
 
@@ -63,6 +66,7 @@ get_emoji_spacing_adjustment("⬅️")  # → 1 (multi-grapheme arrow)
 **Returns:** Formatted string with correct spacing applied
 
 **Example:**
+
 ```python
 from styledconsole.utils.text import format_emoji_with_spacing
 
@@ -76,6 +80,7 @@ format_emoji_with_spacing("⬅️", "Back")      # "⬅️  Back" (2 spaces)
 #### 1. **New API Functions** (`src/styledconsole/utils/text.py`)
 
 Added two new public functions:
+
 - `get_emoji_spacing_adjustment()` - Core detection logic
 - `format_emoji_with_spacing()` - Convenience wrapper
 
@@ -85,13 +90,13 @@ Updated `__all__` exports to include new functions.
 
 Corrected `width` field for emojis that had inconsistent metadata:
 
-| Emoji | Old | New | Category |
-|-------|-----|-----|----------|
-| ↖️ | 1 | 2 | direction |
-| ↗️ | 1 | 2 | direction |
-| ↘️ | 1 | 2 | direction |
-| ↙️ | 1 | 2 | direction |
-| ▶️ | 1 | 2 | progress |
+| Emoji | Old | New | Category  |
+| ----- | --- | --- | --------- |
+| ↖️    | 1   | 2   | direction |
+| ↗️    | 1   | 2   | direction |
+| ↘️    | 1   | 2   | direction |
+| ↙️    | 1   | 2   | direction |
+| ▶️    | 1   | 2   | progress  |
 
 **Why:** These emojis display as width=2 but had metadata width=1, causing the algorithm to miss them.
 
@@ -100,13 +105,15 @@ Corrected `width` field for emojis that had inconsistent metadata:
 Added 2 new test classes with 12 tests total:
 
 **TestEmojiSpacingAdjustment (9 tests):**
+
 - Standard emojis return 0 adjustment
 - VS16 emojis return 1 adjustment
 - Multi-grapheme emojis return 1 adjustment
 - Non-safe emoji raises ValueError
-- Adjustment always in range [0, 1, 2]
+- Adjustment always in range \[0, 1, 2\]
 
 **TestFormatEmojiWithSpacing (3 tests):**
+
 - Standard emojis use single space
 - VS16 emojis get double space
 - Custom separators work correctly
@@ -117,6 +124,7 @@ Added 2 new test classes with 12 tests total:
 Replaced manual `has_vs16` checking with automatic API:
 
 **Before:**
+
 ```python
 has_vs16 = info.get('has_vs16', False)
 if has_vs16:
@@ -126,6 +134,7 @@ else:
 ```
 
 **After:**
+
 ```python
 from styledconsole.utils.text import format_emoji_with_spacing
 
@@ -144,11 +153,11 @@ line = format_emoji_with_spacing(emoji, desc)  # Fixes ALL 23 emojis
 
 ### Emoji Fix Coverage
 
-| Category | Count | Before | After |
-|----------|-------|--------|-------|
-| VS16 (with flag) | 5 | ✅ Fixed | ✅ Fixed |
-| Multi-grapheme (no flag) | 18 | ❌ Glued | ✅ Fixed |
-| **Total** | **23** | **22%** | **100%** |
+| Category                 | Count  | Before   | After    |
+| ------------------------ | ------ | -------- | -------- |
+| VS16 (with flag)         | 5      | ✅ Fixed | ✅ Fixed |
+| Multi-grapheme (no flag) | 18     | ❌ Glued | ✅ Fixed |
+| **Total**                | **23** | **22%**  | **100%** |
 
 ### Visual Verification
 
@@ -189,9 +198,9 @@ For each emoji:
 ### Why This Works
 
 1. **Systematic:** Detects ANY emoji with grapheme mismatch, not just VS16
-2. **Metadata-driven:** Uses documented width values as source of truth
-3. **Robust:** Caps adjustment at 2 spaces to prevent over-spacing
-4. **Extensible:** Will handle future emoji additions automatically
+1. **Metadata-driven:** Uses documented width values as source of truth
+1. **Robust:** Caps adjustment at 2 spaces to prevent over-spacing
+1. **Extensible:** Will handle future emoji additions automatically
 
 ## Usage Guide
 
@@ -239,6 +248,7 @@ for emoji in get_safe_emojis():
 ### Grapheme Count Detection
 
 Uses existing `split_graphemes()` function which handles:
+
 - Regular ASCII characters (count=1)
 - Standard emojis (count=1 or 2)
 - VS16 sequences (count=2)
@@ -253,9 +263,9 @@ The core issue: wcwidth library and terminal rendering have different assumption
 This approach naturally scales:
 
 1. **New emoji categories:** Just add to SAFE_EMOJIS with correct width field
-2. **Different terminal profiles:** Could adjust spacing_adjustment() based on detected terminal type
-3. **Custom emoji sets:** Anyone implementing custom emoji validation can use same pattern
-4. **Tier 2+ emojis:** When skin tones/ZWJ sequences are added, same detection works
+1. **Different terminal profiles:** Could adjust spacing_adjustment() based on detected terminal type
+1. **Custom emoji sets:** Anyone implementing custom emoji validation can use same pattern
+1. **Tier 2+ emojis:** When skin tones/ZWJ sequences are added, same detection works
 
 ## References
 

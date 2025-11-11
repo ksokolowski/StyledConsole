@@ -30,7 +30,7 @@ content, width = auto_size_content(error_log, max_width=80)
 console.frame(content, title="Error", width=width + 4)
 ```
 
----
+______________________________________________________________________
 
 ## Core Functions
 
@@ -221,7 +221,7 @@ code_lines = [
 wrapped = wrap_multiline(code_lines, width=50, preserve_indentation=True)
 ```
 
----
+______________________________________________________________________
 
 ## Real-World Use Cases
 
@@ -372,7 +372,7 @@ config = {
 display_config(config)
 ```
 
----
+______________________________________________________________________
 
 ## Best Practices
 
@@ -424,7 +424,7 @@ content = prepare_frame_content(text, max_width=200)
 content = prepare_frame_content(text, max_width=80)
 ```
 
----
+______________________________________________________________________
 
 ## Parameter Guide
 
@@ -484,7 +484,7 @@ text = "Paragraph 1.\n\nParagraph 2."
 prepare_frame_content(text, preserve_paragraphs=True)
 ```
 
----
+______________________________________________________________________
 
 ## Advanced Patterns
 
@@ -537,7 +537,7 @@ def show_with_fallback(data: list[str]):
             break
 ```
 
----
+______________________________________________________________________
 
 ## Performance Tips
 
@@ -572,7 +572,7 @@ content = prepare_frame_content(wrapped, max_width=60)  # Redundant!
 content = prepare_frame_content(text, max_width=60)
 ```
 
----
+______________________________________________________________________
 
 ## Troubleshooting
 
@@ -624,7 +624,7 @@ content, width = auto_size_content(
 )
 ```
 
----
+______________________________________________________________________
 
 ## Summary
 

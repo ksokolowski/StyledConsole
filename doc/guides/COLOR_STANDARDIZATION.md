@@ -20,6 +20,7 @@ Replaced all hardcoded hex color codes in the emoji validation example with huma
 #### 1. Category Color Mapping (Lines 420-429)
 
 **Before (Hex codes):**
+
 ```python
 category_colors = {
     "status": "#00FF00",      # Green
@@ -34,6 +35,7 @@ category_colors = {
 ```
 
 **After (CSS4 color names):**
+
 ```python
 category_colors = {
     "status": "lime",          # Bright green
@@ -50,12 +52,14 @@ category_colors = {
 #### 2. Hand & Other Frames (Lines 489-490)
 
 **Before:**
+
 ```python
 hand_frame = create_complete_emoji_frame("hand", "👆 Hand", "#FF9999", max_width=40)
 other_frame = create_complete_emoji_frame("other", "🎀 Other", "#99CCFF", max_width=40)
 ```
 
 **After:**
+
 ```python
 hand_frame = create_complete_emoji_frame("hand", "👆 Hand", "lightsalmon", max_width=40)
 other_frame = create_complete_emoji_frame("other", "🎀 Other", "skyblue", max_width=40)
@@ -64,6 +68,7 @@ other_frame = create_complete_emoji_frame("other", "🎀 Other", "skyblue", max_
 #### 3. Summary Frame (Lines 510-512)
 
 **Before:**
+
 ```python
 summary_frame = frame_renderer.render(
     "\n".join(summary_content),
@@ -76,6 +81,7 @@ summary_frame = frame_renderer.render(
 ```
 
 **After:**
+
 ```python
 summary_frame = frame_renderer.render(
     "\n".join(summary_content),
@@ -89,37 +95,42 @@ summary_frame = frame_renderer.render(
 
 ## Color Mapping Reference
 
-| Hex Code | CSS4 Name | Usage |
-|----------|-----------|-------|
-| `#00FF00` | `lime` | Status emojis |
-| `#00CCFF` | `cyan` | Tech emojis |
-| `#FF6600` | `orange` | Nature emojis |
-| `#FF00FF` | `fuchsia` | Activity emojis |
-| `#FFFF00` | `yellow` | Direction emojis |
-| `#00FF99` | `turquoise` | Progress emojis |
-| `#FF0099` | `hotpink` | Data emojis |
-| `#FF6666` | `salmon` | Food emojis |
-| `#FF9999` | `lightsalmon` | Hand gesture frame |
-| `#99CCFF` | `skyblue` | Other emojis frame |
-| `#CCCCCC` | `silver` | Summary frame borders |
+| Hex Code  | CSS4 Name     | Usage                 |
+| --------- | ------------- | --------------------- |
+| `#00FF00` | `lime`        | Status emojis         |
+| `#00CCFF` | `cyan`        | Tech emojis           |
+| `#FF6600` | `orange`      | Nature emojis         |
+| `#FF00FF` | `fuchsia`     | Activity emojis       |
+| `#FFFF00` | `yellow`      | Direction emojis      |
+| `#00FF99` | `turquoise`   | Progress emojis       |
+| `#FF0099` | `hotpink`     | Data emojis           |
+| `#FF6666` | `salmon`      | Food emojis           |
+| `#FF9999` | `lightsalmon` | Hand gesture frame    |
+| `#99CCFF` | `skyblue`     | Other emojis frame    |
+| `#CCCCCC` | `silver`      | Summary frame borders |
 
 ## Available CSS4 Colors
 
 The library provides **148 named CSS4 colors** from the W3C standard. Common ones include:
 
 **Primary Colors:**
+
 - `red`, `green`, `blue`, `yellow`, `cyan`, `magenta` (fuchsia)
 
 **Bright Variants:**
+
 - `lime`, `aqua`, `maroon`, `navy`, `olive`, `purple`, `teal`
 
 **Pastel Variants:**
+
 - `pink`, `lightblue`, `lightgreen`, `lightyellow`, `lightcyan`, `lightgray` (lightgrey)
 
 **Earth Tones:**
+
 - `orange`, `brown`, `tan`, `beige`, `salmon`, `coral`, `gold`
 
 **Named Colors:**
+
 - `skyblue`, `turquoise`, `hotpink`, `tomato`, `chocolate`, `khaki`, and 100+ more
 
 See `src/styledconsole/utils/color_data.py` for the complete list.
@@ -127,6 +138,7 @@ See `src/styledconsole/utils/color_data.py` for the complete list.
 ## Best Practices
 
 1. **Always use CSS4 names when possible**
+
    ```python
    # ✅ Good
    frame(content, border_color="skyblue", content_color="lightgray")
@@ -135,13 +147,15 @@ See `src/styledconsole/utils/color_data.py` for the complete list.
    frame(content, border_color="#87CEEB", content_color="#D3D3D3")
    ```
 
-2. **Use hex only when CSS4 name doesn't exist**
+1. **Use hex only when CSS4 name doesn't exist**
+
    ```python
    # Acceptable if needed
    frame(content, border_color="#1a2b3c")  # Custom color
    ```
 
-3. **Document color choices in comments**
+1. **Document color choices in comments**
+
    ```python
    colors = {
        "success": "green",      # Success state
@@ -150,7 +164,8 @@ See `src/styledconsole/utils/color_data.py` for the complete list.
    }
    ```
 
-4. **Reference library docs for names**
+1. **Reference library docs for names**
+
    - Browse `color_data.py` for all 148 names
    - Use standard English color names when unsure
 
@@ -169,7 +184,7 @@ See `src/styledconsole/utils/color_data.py` for the complete list.
 - **Discovery** - Users learn about library's color capability
 - **Maintenance** - Easier to find and modify color choices
 
----
+______________________________________________________________________
 
 ## v0.3.0 Rich Color Integration
 
@@ -277,10 +292,10 @@ console.frame("Hello", border_color="lime")  # CSS4 name
 The `parse_color()` function checks colors in this order:
 
 1. **CSS4_COLORS** dictionary (148 names)
-2. **RICH_TO_CSS4_MAPPING** dictionary (251 names)
-3. Hex format (`#FF0000`)
-4. RGB format (`rgb(255, 0, 0)`)
-5. Tuple format (`(255, 0, 0)`)
+1. **RICH_TO_CSS4_MAPPING** dictionary (251 names)
+1. Hex format (`#FF0000`)
+1. RGB format (`rgb(255, 0, 0)`)
+1. Tuple format (`(255, 0, 0)`)
 
 ```python
 from styledconsole import parse_color
@@ -299,13 +314,13 @@ parse_color((0, 255, 0))      # Tuple: (0, 255, 0)
 
 Many colors have equivalents in both systems:
 
-| CSS4 Name | Rich Name | Hex Code | Visual |
-|-----------|-----------|----------|--------|
-| `lime` | `bright_green` | `#00FF00` | 🟢 Bright green |
-| `dodgerblue` | `dodger_blue` | `#1E90FF` | 🔵 Dodger blue |
-| `orangered` | N/A | `#FF4500` | 🟠 Orange-red |
-| `hotpink` | `hot_pink` | `#FF69B4` | 💗 Hot pink |
-| `gold` | `gold1` | `#FFD700` | 🟡 Gold |
+| CSS4 Name    | Rich Name      | Hex Code  | Visual          |
+| ------------ | -------------- | --------- | --------------- |
+| `lime`       | `bright_green` | `#00FF00` | 🟢 Bright green |
+| `dodgerblue` | `dodger_blue`  | `#1E90FF` | 🔵 Dodger blue  |
+| `orangered`  | N/A            | `#FF4500` | 🟠 Orange-red   |
+| `hotpink`    | `hot_pink`     | `#FF69B4` | 💗 Hot pink     |
+| `gold`       | `gold1`        | `#FFD700` | 🟡 Gold         |
 
 #### Using Both Systems Together
 
@@ -502,29 +517,29 @@ See `examples/basic/10_color_system.py` for a comprehensive demonstration of the
 
 #### Popular CSS4 Colors
 
-| Name | Hex | Category |
-|------|-----|----------|
-| `lime` | `#00FF00` | Primary bright |
-| `dodgerblue` | `#1E90FF` | Blue variant |
-| `orangered` | `#FF4500` | Orange-red |
-| `hotpink` | `#FF69B4` | Pink variant |
-| `gold` | `#FFD700` | Yellow-gold |
-| `skyblue` | `#87CEEB` | Light blue |
-| `coral` | `#FF7F50` | Orange-pink |
-| `tomato` | `#FF6347` | Red-orange |
+| Name         | Hex       | Category       |
+| ------------ | --------- | -------------- |
+| `lime`       | `#00FF00` | Primary bright |
+| `dodgerblue` | `#1E90FF` | Blue variant   |
+| `orangered`  | `#FF4500` | Orange-red     |
+| `hotpink`    | `#FF69B4` | Pink variant   |
+| `gold`       | `#FFD700` | Yellow-gold    |
+| `skyblue`    | `#87CEEB` | Light blue     |
+| `coral`      | `#FF7F50` | Orange-pink    |
+| `tomato`     | `#FF6347` | Red-orange     |
 
 #### Popular Rich Colors
 
-| Name | Hex | Category |
-|------|-----|----------|
-| `bright_green` | `#00FF00` | Terminal bright |
-| `bright_red` | `#FF5555` | Terminal bright |
-| `bright_cyan` | `#00FFFF` | Terminal bright |
+| Name           | Hex       | Category         |
+| -------------- | --------- | ---------------- |
+| `bright_green` | `#00FF00` | Terminal bright  |
+| `bright_red`   | `#FF5555` | Terminal bright  |
+| `bright_cyan`  | `#00FFFF` | Terminal bright  |
 | `dodger_blue1` | `#1E90FF` | Numbered variant |
-| `gold1` | `#FFD700` | Numbered variant |
-| `hot_pink` | `#FF69B4` | Underscore name |
-| `gray50` | `#808080` | Gray scale |
-| `chartreuse1` | `#7FFF00` | Numbered variant |
+| `gold1`        | `#FFD700` | Numbered variant |
+| `hot_pink`     | `#FF69B4` | Underscore name  |
+| `gray50`       | `#808080` | Gray scale       |
+| `chartreuse1`  | `#7FFF00` | Numbered variant |
 
 ### Color System Verification
 
@@ -578,11 +593,11 @@ All existing code continues to work:
 ### Benefits
 
 1. **More Color Options** - 396 vs 148 (2.7x increase)
-2. **Terminal Standard** - Rich colors match terminal palettes
-3. **Numbered Variants** - Precise shade control (dodger_blue1-3)
-4. **Gray Scales** - 101 gray levels (gray0-gray100)
-5. **Human-Readable** - Both systems use clear names
-6. **Full Compatibility** - Works everywhere colors are accepted
+1. **Terminal Standard** - Rich colors match terminal palettes
+1. **Numbered Variants** - Precise shade control (dodger_blue1-3)
+1. **Gray Scales** - 101 gray levels (gray0-gray100)
+1. **Human-Readable** - Both systems use clear names
+1. **Full Compatibility** - Works everywhere colors are accepted
 
 ### Technical Details
 

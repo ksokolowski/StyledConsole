@@ -23,19 +23,22 @@ Common emojis that include variation selectors:
 ### Why It Happens
 
 1. **Normal rendering**: The library's `visual_width()` function correctly handles variation selectors:
+
    ```python
    visual_width("↘️")  # Returns 1 (correct)
    ```
 
-2. **Character-by-character iteration**: When we iterate using `for char in text`:
+1. **Character-by-character iteration**: When we iterate using `for char in text`:
+
    ```python
    for char in "↘️":
        # First iteration: char = "↘" (base)
        # Second iteration: char = "\uFE0F" (variation selector)
    ```
+
    The variation selector is treated as a separate character, breaking the emoji apart.
 
-3. **Result**: Gradients and color application work on individual characters, splitting the emoji into two parts and causing misalignment.
+1. **Result**: Gradients and color application work on individual characters, splitting the emoji into two parts and causing misalignment.
 
 ## Root Cause
 
@@ -67,11 +70,13 @@ title = "↘ Full Diagonal"   # len("↘") = 1
 ```
 
 **Advantages**:
+
 - Simple fix
 - Works perfectly with character-by-character iteration
 - No special handling needed
 
 **Changes Made**:
+
 - `↘️` → `↘` (South-East Arrow)
 - `➡️` → `→` (Right Arrow)
 
@@ -148,8 +153,8 @@ if VARIATION_SELECTOR_16 in clean_text:
 ⚠️ **Requires special handling** - Any code that iterates character-by-character needs to:
 
 1. **Avoid variation selector emojis** (simplest)
-2. **Use grapheme clustering** (robust but complex)
-3. **Manually handle VS16** (similar to `visual_width()`)
+1. **Use grapheme clustering** (robust but complex)
+1. **Manually handle VS16** (similar to `visual_width()`)
 
 ## Examples Updated
 
@@ -158,6 +163,7 @@ if VARIATION_SELECTOR_16 in clean_text:
 **File**: `examples/prototype/rainbow_gradient_prototype.py`
 
 **Changes**:
+
 - Line 618: `"🔴➡️🔵"` → `"🔴→🔵"`
 - Line 718: `"↘️ Full Diagonal"` → `"↘ Full Diagonal"`
 - Line 767: `"🌈↘️ ULTIMATE DIAGONAL 🌈"` → `"🌈↘ ULTIMATE DIAGONAL 🌈"`
@@ -169,7 +175,7 @@ if VARIATION_SELECTOR_16 in clean_text:
 ### For Library Users
 
 1. **Prefer simple emojis** without variation selectors in titles
-2. **Test emojis** before using them in custom processing:
+1. **Test emojis** before using them in custom processing:
    ```python
    emoji = "↘️"
    if len(emoji) > 1:
@@ -179,16 +185,16 @@ if VARIATION_SELECTOR_16 in clean_text:
 ### For Library Developers
 
 1. **Document** which emojis work in all contexts vs. just normal rendering
-2. **Consider** adding a `normalize_emoji()` utility that strips variation selectors
-3. **Update** `EMOJI_GUIDELINES.md` with variation selector warnings
+1. **Consider** adding a `normalize_emoji()` utility that strips variation selectors
+1. **Update** `EMOJI_GUIDELINES.md` with variation selector warnings
 
 ### For Prototype Integration
 
 If integrating diagonal gradients into core library:
 
 1. **Option A**: Restrict to base emojis (document limitation)
-2. **Option B**: Add grapheme cluster support (increases complexity)
-3. **Option C**: Provide both modes:
+1. **Option B**: Add grapheme cluster support (increases complexity)
+1. **Option C**: Provide both modes:
    ```python
    def render_diagonal_gradient(..., grapheme_aware=False):
        if grapheme_aware:
@@ -214,6 +220,6 @@ If integrating diagonal gradients into core library:
 
 **Status**: ✅ Fixed in prototype, documented for future reference.
 
----
+______________________________________________________________________
 
 **Last Updated**: October 19, 2025

@@ -4,7 +4,7 @@
 
 StyledConsole implements **emoji-safe rendering** that handles the complex reality of terminal emoji display. This document explains the challenges and our solutions.
 
----
+______________________________________________________________________
 
 ## The Challenge: Terminal-Specific Rendering
 
@@ -16,18 +16,19 @@ Unicode provides theoretical width calculations, but actual terminal emulators o
 
 Some emojis include an invisible modifier (VS16) to request "emoji-style" rendering:
 
-| Character | Without VS16 | With VS16 | Description |
-|-----------|--------------|-----------|-------------|
-| WARNING SIGN | ⚠ | ⚠️ | Adds color/emoji styling |
-| INFORMATION | ℹ | ℹ️ | Adds color/emoji styling |
-| HEART | ❤ | ❤️ | Adds color/emoji styling |
+| Character    | Without VS16 | With VS16 | Description              |
+| ------------ | ------------ | --------- | ------------------------ |
+| WARNING SIGN | ⚠            | ⚠️        | Adds color/emoji styling |
+| INFORMATION  | ℹ            | ℹ️        | Adds color/emoji styling |
+| HEART        | ❤            | ❤️        | Adds color/emoji styling |
 
 **The Unicode Sequence:**
+
 ```
 "⚠️" = U+26A0 (WARNING SIGN) + U+FE0F (VARIATION SELECTOR-16)
 ```
 
----
+______________________________________________________________________
 
 ## The Width Calculation Problem
 
@@ -58,6 +59,7 @@ Result:          Misalignment by 1 position per emoji
 ### Visual Impact
 
 **Before Fix:**
+
 ```
 ┌───────── Warning ⚠️──────────┐
 │                              │ ← Misaligned by 1 char
@@ -65,13 +67,14 @@ Result:          Misalignment by 1 position per emoji
 ```
 
 **After Fix:**
+
 ```
 ┌────────── Warning ⚠️─────────┐
 │                              │ ← Perfect alignment
 └──────────────────────────────┘
 ```
 
----
+______________________________________________________________________
 
 ## Our Solution
 
@@ -115,28 +118,28 @@ def visual_width(text: str) -> int:
 ### Key Decisions
 
 1. **Detect VS16 presence:** Only apply special handling when needed
-2. **Use base char width:** Match what terminals actually render
-3. **Skip VS16 in count:** Don't add width for invisible modifier
-4. **Fallback to wcwidth:** Use standard calculation for normal text
+1. **Use base char width:** Match what terminals actually render
+1. **Skip VS16 in count:** Don't add width for invisible modifier
+1. **Fallback to wcwidth:** Use standard calculation for normal text
 
----
+______________________________________________________________________
 
 ## Affected Characters
 
 ### Common Tier 1 Emojis with VS16
 
-| Emoji | Name | Unicode | Without VS16 | Terminal Width |
-|-------|------|---------|--------------|----------------|
-| ⚠️ | Warning Sign | U+26A0 + U+FE0F | ⚠ | 1 |
-| ℹ️ | Information | U+2139 + U+FE0F | ℹ | 1 |
-| ❤️ | Red Heart | U+2764 + U+FE0F | ❤ | 1 |
-| ✅ | Check Mark | U+2705 + U+FE0F | ✅ | 1 |
-| ❌ | Cross Mark | U+274C + U+FE0F | ❌ | 1 |
-| 🏗️ | Building | U+1F3D7 + U+FE0F | 🏗 | 2 |
+| Emoji | Name         | Unicode          | Without VS16 | Terminal Width |
+| ----- | ------------ | ---------------- | ------------ | -------------- |
+| ⚠️    | Warning Sign | U+26A0 + U+FE0F  | ⚠            | 1              |
+| ℹ️    | Information  | U+2139 + U+FE0F  | ℹ            | 1              |
+| ❤️    | Red Heart    | U+2764 + U+FE0F  | ❤            | 1              |
+| ✅    | Check Mark   | U+2705 + U+FE0F  | ✅           | 1              |
+| ❌    | Cross Mark   | U+274C + U+FE0F  | ❌           | 1              |
+| 🏗️    | Building     | U+1F3D7 + U+FE0F | 🏗            | 2              |
 
 **Note:** Most emojis (like 🚀 🎨 🎯) don't use VS16 and work correctly with standard wcwidth.
 
----
+______________________________________________________________________
 
 ## Terminal Gluing Behavior (Discovered 2025-11-02)
 
@@ -145,6 +148,7 @@ def visual_width(text: str) -> int:
 Some VS16 emojis exhibit an additional terminal-specific quirk: **visual space collapse** or "gluing" where the space after the emoji is invisible, making the emoji appear directly attached to following text.
 
 **Example:**
+
 ```python
 title = "⚙️ Services"  # Code has space
 # Terminal displays: ⚙️Services (NO visible space - "glued")
@@ -153,10 +157,12 @@ title = "⚙️ Services"  # Code has space
 ### Why Width Calculation Isn't Enough
 
 Our `visual_width()` correctly calculates these emojis:
+
 - `visual_width("⚙️ Services")` returns 10 (correct!)
 - Rich Panel uses this for border alignment (correct!)
 
 But **terminals render them differently**:
+
 - Base char `⚙` (U+2699) has `wcwidth=1`
 - Adding VS16 (U+FE0F) requests emoji presentation
 - Terminal renders it as **2-width emoji** (like 🚀)
@@ -167,20 +173,20 @@ But **terminals render them differently**:
 
 **Confirmed (GNOME Terminal, tested 2025-11-02):**
 
-| Emoji | Unicode | Name | Base Width | Display Width | Status |
-|-------|---------|------|------------|---------------|---------|
-| ⚙️ | U+2699+FE0F | GEAR | 1 | 2 | 🔴 Glues |
-| ⏱️ | U+23F1+FE0F | STOPWATCH | 1 | 2 | 🔴 Glues |
-| ⏸️ | U+23F8+FE0F | PAUSE BUTTON | 1 | 2 | 🔴 Glues* |
+| Emoji | Unicode     | Name         | Base Width | Display Width | Status     |
+| ----- | ----------- | ------------ | ---------- | ------------- | ---------- |
+| ⚙️    | U+2699+FE0F | GEAR         | 1          | 2             | 🔴 Glues   |
+| ⏱️    | U+23F1+FE0F | STOPWATCH    | 1          | 2             | 🔴 Glues   |
+| ⏸️    | U+23F8+FE0F | PAUSE BUTTON | 1          | 2             | 🔴 Glues\* |
 
 **Non-gluing (for comparison):**
 
-| Emoji | Unicode | Name | Base Width | Display Width | Status |
-|-------|---------|------|------------|---------------|---------|
-| ⚠️ | U+26A0+FE0F | WARNING SIGN | 1 | 1 | ✅ No glue |
-| ℹ️ | U+2139+FE0F | INFORMATION | 1 | 1 | ✅ No glue |
+| Emoji | Unicode     | Name         | Base Width | Display Width | Status     |
+| ----- | ----------- | ------------ | ---------- | ------------- | ---------- |
+| ⚠️    | U+26A0+FE0F | WARNING SIGN | 1          | 1             | ✅ No glue |
+| ℹ️    | U+2139+FE0F | INFORMATION  | 1          | 1             | ✅ No glue |
 
-*Not fully tested yet, inferred from similar pattern
+\*Not fully tested yet, inferred from similar pattern
 
 ### Current Workaround (Manual)
 
@@ -198,11 +204,13 @@ console.frame(
 ```
 
 **When to use:**
+
 - Frame titles with ⚙️, ⏱️, ⏸️
 - Banner text with these emojis
 - Any formatted output where visual spacing matters
 
 **When NOT needed:**
+
 - Content inside frames (only affects titles)
 - Emojis like ⚠️, ℹ️ (don't glue)
 - Standard emojis without VS16 (🚀, 🎨, etc.)
@@ -210,10 +218,11 @@ console.frame(
 ### Pattern Analysis
 
 **Hypothesis:** Gluing occurs when:
+
 1. Base character is narrow (wcwidth=1)
-2. Character is from Miscellaneous Symbols block (U+2600-U+26FF) or similar
-3. VS16 selector triggers 2-width emoji presentation in terminal
-4. Terminal's emoji rendering "overlaps" the next character position
+1. Character is from Miscellaneous Symbols block (U+2600-U+26FF) or similar
+1. VS16 selector triggers 2-width emoji presentation in terminal
+1. Terminal's emoji rendering "overlaps" the next character position
 
 **Needs research:** Full testing across terminals and complete emoji set (see `doc/tasks/VS16_EMOJI_TERMINAL_GLUING.md`)
 
@@ -232,7 +241,7 @@ console.frame(
 
 See task: `doc/tasks/VS16_EMOJI_TERMINAL_GLUING.md`
 
----
+______________________________________________________________________
 
 ## Testing
 
@@ -274,7 +283,7 @@ print(SOLID.render_line(50, "ℹ️ Information message"))
 print(SOLID.render_bottom_border(50))
 ```
 
----
+______________________________________________________________________
 
 ## Performance Impact
 
@@ -284,19 +293,21 @@ print(SOLID.render_bottom_border(50))
 **With VS16:** ~15µs per operation (+5µs overhead)
 
 **Cost Breakdown:**
+
 - VS16 detection: ~2µs (string contains check)
 - Character iteration: ~2µs (when VS16 present)
 - Width calculation: ~1µs (wcwidth calls)
 
-**Conclusion:** Negligible impact (< 0.1% in typical usage)
+**Conclusion:** Negligible impact (\< 0.1% in typical usage)
 
----
+______________________________________________________________________
 
 ## Terminal Compatibility
 
 ### Tested Terminals
 
 ✅ **Full Support:**
+
 - GNOME Terminal (Linux)
 - Konsole (KDE)
 - iTerm2 (macOS)
@@ -305,10 +316,12 @@ print(SOLID.render_bottom_border(50))
 - Kitty
 
 ⚠️ **Partial Support:**
+
 - xterm (basic emojis only)
 - older terminals (may not render emojis at all)
 
 🚫 **No Emoji Support:**
+
 - Pure text terminals (dumb, linux console)
 - SSH without proper locale
 - CI environments (GitHub Actions, etc.)
@@ -316,6 +329,7 @@ print(SOLID.render_bottom_border(50))
 ### Detection
 
 StyledConsole detects emoji safety via:
+
 - UTF-8 locale detection
 - TTY detection
 - Color support detection
@@ -323,7 +337,7 @@ StyledConsole detects emoji safety via:
 
 See `src/styledconsole/utils/terminal.py` for implementation.
 
----
+______________________________________________________________________
 
 ## Best Practices
 
@@ -369,29 +383,33 @@ else:
 ### 4. Stick to Tier 1 Emojis
 
 For maximum compatibility, use simple emojis without:
+
 - Skin tone modifiers (👍🏻 👍🏼 etc.)
 - ZWJ sequences (👨‍👩‍👧‍👦 family)
 - Complex combinations
 
 See `doc/EMOJI-STRATEGY.md` for tier definitions.
 
----
+______________________________________________________________________
 
 ## Future Considerations
 
 ### Potential Improvements
 
 1. **Grapheme Cluster Support**
+
    - Handle complex emoji sequences (families, flags)
    - Requires grapheme segmentation library
    - Tier 3 in our emoji strategy
 
-2. **Terminal-Specific Profiles**
+1. **Terminal-Specific Profiles**
+
    - Detect specific terminal emulator
    - Apply known rendering quirks
    - Maintain compatibility database
 
-3. **Fallback Rendering**
+1. **Fallback Rendering**
+
    - Detect when emoji won't display
    - Provide ASCII alternatives
    - Graceful degradation
@@ -399,11 +417,11 @@ See `doc/EMOJI-STRATEGY.md` for tier definitions.
 ### Known Limitations
 
 1. **Skin Tone Modifiers:** May cause misalignment (Tier 2)
-2. **ZWJ Sequences:** Complex families may not work (Tier 3)
-3. **Regional Indicators:** Flag emojis may have issues (Tier 3)
-4. **Font Dependency:** Requires terminal with emoji font
+1. **ZWJ Sequences:** Complex families may not work (Tier 3)
+1. **Regional Indicators:** Flag emojis may have issues (Tier 3)
+1. **Font Dependency:** Requires terminal with emoji font
 
----
+______________________________________________________________________
 
 ## Related Documentation
 
@@ -412,7 +430,7 @@ See `doc/EMOJI-STRATEGY.md` for tier definitions.
 - **Recent Changes:** `doc/notes/CHANGELOG_2025-10-18.md` - Latest improvements
 - **API Reference:** Coming in M2 - Full API documentation
 
----
+______________________________________________________________________
 
 ## References
 
@@ -428,7 +446,7 @@ See `doc/EMOJI-STRATEGY.md` for tier definitions.
 - [Terminal.app emoji support](https://support.apple.com/guide/terminal/)
 - [Windows Terminal docs](https://docs.microsoft.com/en-us/windows/terminal/)
 
----
+______________________________________________________________________
 
 **Last Updated:** October 18, 2025
 **Status:** Production Ready ✅

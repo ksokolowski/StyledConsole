@@ -5,18 +5,19 @@
 **Next Version:** v0.4.0 (Refactoring Sprint)
 **Status:** ✅ v0.3.0 Complete | 🚧 Planning v0.4.0
 
----
+______________________________________________________________________
 
 ## 🎯 Active Focus: v0.4.0 Refactoring (November 2025)
 
 Following comprehensive Design & Code Quality Analysis (November 1, 2025), we're executing a focused refactoring sprint to eliminate technical debt and improve maintainability.
 
 **Current Status:**
+
 - v0.3.0: ✅ Released (654 tests @ 95.96% coverage)
 - v0.4.0: ⏳ Planned (3-week sprint, targeting -520 LOC / -9.5%)
 - v1.0.0: 📋 December 2025 (legacy code removal)
 
----
+______________________________________________________________________
 
 ## � Refactoring Action Plans (v0.4.0)
 
@@ -25,6 +26,7 @@ Following comprehensive Design & Code Quality Analysis (November 1, 2025), we're
 **Details:** See [`doc/tasks/planned/README.md`](../tasks/planned/README.md) for comprehensive roadmap
 
 ### REFACTOR-001: Dual Rendering Path Elimination ⏳
+
 **Priority:** HIGH
 **Impact:** -400 LOC, 40% maintenance reduction
 **Timeline:** 7 days (v0.4.0-alpha → v0.4.0-release)
@@ -35,13 +37,15 @@ Following comprehensive Design & Code Quality Analysis (November 1, 2025), we're
 **Solution:** Adapter pattern → deprecation warnings → v1.0.0 removal
 
 **Key Phases:**
+
 1. Create `RichPanelAdapter` (FrameRenderer → RenderingEngine proxy)
-2. Add deprecation warnings with migration hints
-3. Refactor `effects.py` to use RenderingEngine directly
-4. Comprehensive testing (654+ tests maintained)
-5. v1.0.0 cleanup (remove legacy code)
+1. Add deprecation warnings with migration hints
+1. Refactor `effects.py` to use RenderingEngine directly
+1. Comprehensive testing (654+ tests maintained)
+1. v1.0.0 cleanup (remove legacy code)
 
 ### REFACTOR-002: Color Normalization Utility ⏳
+
 **Priority:** HIGH
 **Impact:** +testability, +caching, -20 LOC duplication
 **Timeline:** 4 hours (half-day sprint)
@@ -52,15 +56,17 @@ Following comprehensive Design & Code Quality Analysis (November 1, 2025), we're
 **Solution:** Extract to `utils/color.py` with `@lru_cache(maxsize=256)`
 
 **Steps:**
+
 1. Create `normalize_color()` utility with error handling (30min)
-2. Add comprehensive tests (1h)
-3. Refactor RenderingEngine to use utility (30min)
-4. Update effects.py to use utility (1h)
-5. Integration testing (30min)
+1. Add comprehensive tests (1h)
+1. Refactor RenderingEngine to use utility (30min)
+1. Update effects.py to use utility (1h)
+1. Integration testing (30min)
 
 **Expected Performance:** 100K+ ops/sec with 99%+ cache hit rate
 
 ### REFACTOR-003: Gradient Logic Consolidation ⏳
+
 **Priority:** HIGH
 **Impact:** -280 LOC (-70% duplication), Strategy pattern architecture
 **Timeline:** 8 days (2 weeks half-time)
@@ -71,20 +77,23 @@ Following comprehensive Design & Code Quality Analysis (November 1, 2025), we're
 **Solution:** Strategy pattern with Position/ColorSource/TargetFilter protocols
 
 **New Architecture:**
+
 - `strategies.py`: Position strategies (Vertical, Diagonal, Horizontal)
 - `strategies.py`: Color sources (LinearGradient, RainbowSpectrum)
 - `effects.py`: Unified `apply_gradient()` engine
 
 **Key Benefits:**
+
 - Reduces effects.py from 637 → 395 LOC (-38%)
 - Enables new gradients without code duplication
 - 100% backward compatible (existing functions become thin wrappers)
 
----
+______________________________________________________________________
 
 ## �🐛 Critical Bugs (High Priority)
 
 ### BUG-001: ANSI Layout Wrapping
+
 **Status:** ✅ **SOLVED** - Using Rich's Text.align()
 **Priority:** HIGH
 **Discovered:** 2025-10-20
@@ -113,7 +122,7 @@ console._rich_console.print(text)
 
 **Key Lesson:** Rely on Rich's native ANSI-aware methods instead of reimplementing alignment ourselves.
 
----
+______________________________________________________________________
 
 ### Project Statistics (Oct 21, 2025)
 
@@ -127,34 +136,37 @@ console._rich_console.print(text)
 ## Task Organization
 
 Tasks are organized into **5 milestones** (M1-M5). Each task includes:
+
 - ✅ Clear acceptance criteria (checkboxes)
 - 📅 Effort estimate in days
 - 🔗 Dependencies on other tasks
 - 📝 Implementation notes and guidance
 
 **Task Status Legend:**
+
 - ⬜ Not started
 - 🚧 In progress
 - ✅ Completed
 - ⏸️ Blocked
 
----
+______________________________________________________________________
 
 ## Milestones Overview
 
-| Milestone | Focus | Duration | Dependencies |
-|-----------|-------|----------|--------------|
-| **M1** | Core Setup & Utilities | Week 1-2 | None |
-| **M2** | Rendering Engine | Week 3-4 | M1 complete |
-| **M3** | Preset Functions & Layouts | Week 5-6 | M2 complete |
-| **M4** | Terminal Detection & HTML Export | Week 7 | M2 complete |
-| **M5** | Testing, Documentation, Release | Week 8 | M1-M4 complete |
+| Milestone | Focus                            | Duration | Dependencies   |
+| --------- | -------------------------------- | -------- | -------------- |
+| **M1**    | Core Setup & Utilities           | Week 1-2 | None           |
+| **M2**    | Rendering Engine                 | Week 3-4 | M1 complete    |
+| **M3**    | Preset Functions & Layouts       | Week 5-6 | M2 complete    |
+| **M4**    | Terminal Detection & HTML Export | Week 7   | M2 complete    |
+| **M5**    | Testing, Documentation, Release  | Week 8   | M1-M4 complete |
 
----
+______________________________________________________________________
 
 ## M1: Core Setup & Utilities (Week 1-2)
 
 ### T-001: Project Setup & Structure ✅
+
 **Priority:** High
 **Effort:** 0.5 days
 **Dependencies:** None
@@ -164,6 +176,7 @@ Tasks are organized into **5 milestones** (M1-M5). Each task includes:
 Initialize project repository with proper structure, dependency management, and development tools.
 
 **Acceptance Criteria:**
+
 - [x] Repository created with proper `.gitignore`
 - [x] `pyproject.toml` configured with UV (PEP 621 format)
 - [x] Core dependencies declared: rich, pyfiglet, wcwidth, ansi2html
@@ -174,6 +187,7 @@ Initialize project repository with proper structure, dependency management, and 
 - [x] README.md with project description
 
 **Completion Notes:**
+
 - ✅ Installed UV 0.9.3
 - ✅ Configured hatchling build backend (not uv_build)
 - ✅ Created complete package structure: src/styledconsole/{core,utils,presets,export}
@@ -184,6 +198,7 @@ Initialize project repository with proper structure, dependency management, and 
 - ✅ Commit: 32eadca "T-001: Complete project setup and structure"
 
 **Implementation Notes:**
+
 ```bash
 # Install UV (if not installed): curl -LsSf https://astral.sh/uv/install.sh | sh
 
@@ -200,9 +215,10 @@ uv add --dev "pytest>=8.0" "pytest-cov>=4.1" "pytest-snapshot>=0.9" "ruff>=0.3" 
 uv sync
 ```
 
----
+______________________________________________________________________
 
 ### T-002: Text Width Utilities ✅
+
 **Priority:** High
 **Effort:** 2 days
 **Dependencies:** T-001
@@ -212,11 +228,13 @@ uv sync
 Implement emoji-safe text width calculation and grapheme handling. **MVP focuses on Tier 1 (Basic Icons)** - single codepoint emojis that are well-supported across terminals.
 
 **Emoji Support Tiers:**
+
 - **Tier 1 (MVP v0.1):** Basic icons (✅ ❌ ⚠️ ℹ️ ⭐ 🚀 ❤️ 🎉) - single codepoint, width=2
 - **Tier 2 (v0.2):** Modified emojis with skin tones (👍🏽 👨🏻) - 2-3 codepoints
 - **Tier 3 (v0.3+):** ZWJ sequences (👨‍👩‍👧‍👦 👨‍💻) - complex multi-codepoint
 
 **Acceptance Criteria:**
+
 - [x] `visual_width(text: str) -> int` function implemented
 - [x] Handles Tier 1 basic icons correctly (e.g., "🚀" returns 2)
 - [x] Strips ANSI codes before width calculation
@@ -227,6 +245,7 @@ Implement emoji-safe text width calculation and grapheme handling. **MVP focuses
 - [x] Test coverage ≥95% (achieved 97.62%)
 
 **Completion Notes:**
+
 - ✅ Implemented 5 text utility functions: visual_width, strip_ansi, split_graphemes, pad_to_width, truncate_to_width
 - ✅ All 37 unit tests passing
 - ✅ Test coverage: 97.62% (72/74 lines covered)
@@ -236,6 +255,7 @@ Implement emoji-safe text width calculation and grapheme handling. **MVP focuses
 - ✅ Branch: feature/T-002-text-width-utilities
 
 **Test Cases:**
+
 ```python
 def test_basic_icon_width():
     """Test Tier 1: Basic single-codepoint icons"""
@@ -261,12 +281,14 @@ def test_tier2_tier3_not_yet_supported():
 ```
 
 **Implementation Files:**
+
 - `styledconsole/utils/text.py`
 - `tests/unit/test_text_utils.py`
 
----
+______________________________________________________________________
 
 ### T-003: Color Utilities ✅
+
 **Priority:** High
 **Effort:** 2 days
 **Dependencies:** T-001
@@ -276,11 +298,13 @@ def test_tier2_tier3_not_yet_supported():
 Implement color parsing, conversion, and gradient interpolation with **CSS4 named color support** (148 colors from W3C/matplotlib standard).
 
 **Color Input Formats:**
+
 - **Hex:** `#FF0000`, `#f00` (shorthand)
 - **RGB:** `rgb(255, 0, 0)`, `(255, 0, 0)`
 - **Named:** CSS4 color names (e.g., `red`, `dodgerblue`, `coral`, `lightseagreen`)
 
 **Acceptance Criteria:**
+
 - [x] `parse_color(value: str) -> tuple[int, int, int]` handles all formats
 - [x] `rgb_to_hex(r, g, b) -> str` conversion
 - [x] `hex_to_rgb(hex_str) -> tuple[int, int, int]` conversion
@@ -293,6 +317,7 @@ Implement color parsing, conversion, and gradient interpolation with **CSS4 name
 - [x] Test coverage ≥90% (achieved 98.39%)
 
 **Completion Notes:**
+
 - ✅ Implemented 5 color utility functions: parse_color, hex_to_rgb, rgb_to_hex, interpolate_color, color_distance
 - ✅ Full CSS4 color support: 148 named colors from W3C standard
 - ✅ Multiple format support: hex (#FF0000, #f00), rgb(r,g,b), tuples, named colors
@@ -306,6 +331,7 @@ Implement color parsing, conversion, and gradient interpolation with **CSS4 name
 - ✅ Files: src/styledconsole/utils/color.py, src/styledconsole/utils/color_data.py, tests/unit/test_color_utils.py
 
 **Test Cases:**
+
 ```python
 def test_color_parsing_hex():
     assert parse_color("#FF0000") == (255, 0, 0)
@@ -351,6 +377,7 @@ def test_get_color_names():
 ```
 
 **Implementation Notes:**
+
 ```python
 # CSS4_COLORS dictionary - 148 named colors from W3C standard
 # Can be copied from matplotlib.colors.CSS4_COLORS or defined manually
@@ -371,14 +398,16 @@ def parse_color(value: str) -> tuple[int, int, int]:
 ```
 
 **Implementation Files:**
+
 - `styledconsole/utils/color.py`
 - `styledconsole/utils/color_data.py` (CSS4_COLORS dictionary)
 - `tests/unit/test_color_utils.py`
 - `tests/unit/test_css4_colors.py`
 
----
+______________________________________________________________________
 
 ### T-004: Terminal Detection
+
 **Priority:** High
 **Effort:** 1.5 days
 **Dependencies:** T-001
@@ -388,6 +417,7 @@ def parse_color(value: str) -> tuple[int, int, int]:
 Implement terminal capability detection (color depth, emoji support, dimensions).
 
 **Acceptance Criteria:**
+
 - [x] `TerminalProfile` dataclass defined
 - [x] `detect_terminal_capabilities()` function implemented
 - [x] Detects ANSI support via `isatty()` and `TERM` env var
@@ -398,6 +428,7 @@ Implement terminal capability detection (color depth, emoji support, dimensions)
 - [x] Test coverage ≥85% (achieved 100%)
 
 **Completion Notes:**
+
 - TerminalProfile dataclass with 7 fields (ansi_support, color_depth, emoji_safe, width, height, term, colorterm)
 - Comprehensive detection logic with multiple environment variable checks
 - NO_COLOR and ANSI_COLORS_DISABLED support
@@ -411,6 +442,7 @@ Implement terminal capability detection (color depth, emoji support, dimensions)
 - Files: src/styledconsole/utils/terminal.py, tests/unit/test_terminal.py
 
 **Test Cases:**
+
 ```python
 def test_detect_truecolor(monkeypatch):
     monkeypatch.setenv("COLORTERM", "truecolor")
@@ -424,12 +456,14 @@ def test_detect_no_tty(monkeypatch):
 ```
 
 **Implementation Files:**
+
 - `styledconsole/utils/terminal.py`
 - `tests/unit/test_terminal.py`
 
----
+______________________________________________________________________
 
 ### T-005: Border Styles Definition
+
 **Priority:** Medium
 **Effort:** 1.5 days
 **Dependencies:** T-001
@@ -439,6 +473,7 @@ def test_detect_no_tty(monkeypatch):
 Define border style character sets and rendering logic.
 
 **Acceptance Criteria:**
+
 - [x] `BorderStyle` dataclass defined
 - [x] Predefined styles: solid, double, rounded, heavy, ascii (plus thick, minimal, dots)
 - [x] `BORDERS` dictionary with all styles
@@ -447,6 +482,7 @@ Define border style character sets and rendering logic.
 - [x] Test coverage ≥90% (achieved 100%)
 
 **Completion Notes:**
+
 - BorderStyle frozen dataclass with 12 character fields
 - 8 predefined border styles: SOLID, DOUBLE, ROUNDED, HEAVY, THICK, ASCII, MINIMAL, DOTS
 - Complete Unicode box-drawing character sets
@@ -465,6 +501,7 @@ Define border style character sets and rendering logic.
 - Files: src/styledconsole/core/styles.py, tests/unit/test_styles.py
 
 **Emoji-Safe Improvements:**
+
 - ✅ render_line() method added for automatic content line rendering with perfect alignment
 - ✅ render_top_border() updated to use visual_width() for emoji-safe title centering
 - ✅ All padding calculations use visual_width() instead of len()
@@ -474,14 +511,16 @@ Define border style character sets and rendering logic.
 - ✅ Visual alignment verified: All borders display at exact specified width regardless of emoji content
 
 **Implementation Files:**
+
 - `styledconsole/core/styles.py`
 - `tests/unit/test_styles.py`
 
----
+______________________________________________________________________
 
 ## M2: Rendering Engine (Week 3-4)
 
 ### T-006: Frame Renderer Core ✅
+
 **Priority:** High
 **Effort:** 3 days
 **Dependencies:** T-002, T-003, T-005
@@ -491,6 +530,7 @@ Define border style character sets and rendering logic.
 Implement core frame rendering with borders, padding, and titles. High-level API for creating framed content with automatic width calculation.
 
 **Acceptance Criteria:**
+
 - [x] `Frame` dataclass defined (8 configuration fields)
 - [x] `FrameRenderer` class implemented
 - [x] Renders frames with all border styles (supports string names or BorderStyle objects)
@@ -506,10 +546,11 @@ Implement core frame rendering with borders, padding, and titles. High-level API
 - [x] All 231 tests passing with 98.92% coverage
 
 **Completion Notes:**
+
 - ✅ Frame dataclass with 8 fields: content, title, border, width, padding, align, min_width, max_width
 - ✅ FrameRenderer with render() and render_frame() methods
-- ✅ _calculate_width() for intelligent auto-width with constraints
-- ✅ _render_content_line() for padding and alignment with emoji-safe width
+- ✅ \_calculate_width() for intelligent auto-width with constraints
+- ✅ \_render_content_line() for padding and alignment with emoji-safe width
 - ✅ Support for both keyword arguments (render) and Frame objects (render_frame)
 - ✅ 27 unit tests: dataclass config, rendering, emoji, alignment, padding, truncation, auto-width
 - ✅ 10 integration tests: real-world workflows, all border styles, mixed content types
@@ -519,6 +560,7 @@ Implement core frame rendering with borders, padding, and titles. High-level API
 - ✅ Files: src/styledconsole/core/frame.py, tests/unit/test_frame.py, tests/integration/test_frame_integration.py
 
 **Example Usage:**
+
 ```python
 from styledconsole import FrameRenderer
 
@@ -557,6 +599,7 @@ lines = renderer.render_frame(frame)
 ```
 
 **Implementation Files:**
+
 - `styledconsole/core/frame.py`
 - `tests/unit/test_frame.py`
 - `tests/integration/test_frame_integration.py`
@@ -566,6 +609,7 @@ lines = renderer.render_frame(frame)
 - [ ] Test coverage ≥90%
 
 **Test Cases:**
+
 ```python
 def test_simple_frame():
     frame = FrameRenderer().render("Hello", border="solid")
@@ -579,13 +623,15 @@ def test_frame_with_emoji():
 ```
 
 **Implementation Files:**
+
 - `styledconsole/core/frame.py`
 - `tests/unit/test_frame.py`
 - `tests/integration/test_frame_rendering.py`
 
----
+______________________________________________________________________
 
 ### T-007: Banner Renderer ✅
+
 **Priority:** High
 **Effort:** 2 days
 **Dependencies:** T-003, T-006
@@ -595,6 +641,7 @@ def test_frame_with_emoji():
 Implement ASCII art banner rendering with pyfiglet, gradient coloring, and frame integration.
 
 **Acceptance Criteria:**
+
 - [x] `Banner` dataclass defined (8 configuration fields)
 - [x] `BannerRenderer` class implemented
 - [x] Integrates with pyfiglet for ASCII art rendering
@@ -609,6 +656,7 @@ Implement ASCII art banner rendering with pyfiglet, gradient coloring, and frame
 - [x] All 278 tests passing with 98.86% coverage
 
 **Completion Notes:**
+
 - ✅ Banner dataclass with 8 fields: text, font, gradient_start, gradient_end, border, width, align, padding
 - ✅ BannerRenderer with render() and render_banner() methods
 - ✅ ASCII art using pyfiglet with all available fonts
@@ -624,6 +672,7 @@ Implement ASCII art banner rendering with pyfiglet, gradient coloring, and frame
 - ✅ Files: src/styledconsole/core/banner.py, tests/unit/test_banner.py, tests/integration/test_banner_integration.py
 
 **Example Usage:**
+
 ```python
 from styledconsole import BannerRenderer
 
@@ -664,15 +713,17 @@ preview = renderer.preview_font("standard", "Test")
 ```
 
 **Implementation Files:**
+
 - `styledconsole/core/banner.py`
 - `tests/unit/test_banner.py`
 - `tests/integration/test_banner_integration.py`
 - `examples/basic/06_banner_renderer.py`
 - `examples/showcase/banner_showcase.py`
 
----
+______________________________________________________________________
 
 ### T-008: Layout Composer ✅
+
 **Priority:** Medium
 **Effort:** 2 days
 **Dependencies:** T-006
@@ -682,6 +733,7 @@ preview = renderer.preview_font("standard", "Test")
 Implement layout composition for nested frames and multi-section displays.
 
 **Acceptance Criteria:**
+
 - [x] `Layout` dataclass supports vertical stacking with configurable spacing
 - [x] `LayoutComposer` class with stack(), compose(), grid(), side_by_side() methods
 - [x] Frames can be nested without alignment issues (emoji-safe throughout)
@@ -694,6 +746,7 @@ Implement layout composition for nested frames and multi-section displays.
 - [x] All 329 tests passing with 99.03% overall coverage
 
 **Completion Notes:**
+
 - ✅ Layout dataclass (frozen): elements, align, spacing, width
 - ✅ LayoutComposer.stack(): vertical stacking with configurable spacing and alignment
 - ✅ LayoutComposer.compose(): renders Layout dataclass objects
@@ -709,6 +762,7 @@ Implement layout composition for nested frames and multi-section displays.
 - ✅ Files: src/styledconsole/core/layout.py, tests/unit/test_layout.py, tests/integration/test_layout_integration.py
 
 **Example Usage:**
+
 ```python
 from styledconsole import LayoutComposer, FrameRenderer
 
@@ -744,14 +798,16 @@ for line in side:
 ```
 
 **Implementation Files:**
+
 - `styledconsole/core/layout.py`
 - `tests/unit/test_layout.py`
 - `tests/integration/test_layout_integration.py`
 - `examples/basic/07_layout_composer.py`
 
----
+______________________________________________________________________
 
 ### T-009: Console Class Core API ✅
+
 **Priority:** High
 **Effort:** 2.5 days
 **Dependencies:** T-004, T-006, T-007
@@ -761,6 +817,7 @@ for line in side:
 Implement the main Console facade class with Rich backend integration and complete public API surface.
 
 **Acceptance Criteria:**
+
 - [x] `Console` class initialized with Rich console
 - [x] `frame()` method with all parameters (title, border, colors, padding, width)
 - [x] `banner()` method delegates to BannerRenderer
@@ -780,6 +837,7 @@ Implement the main Console facade class with Rich backend integration and comple
 - [x] Test coverage ≥90% (achieved 92.31%)
 
 **Completion Notes:**
+
 - ✅ Console class with Rich backend integration (104 statements, 92.31% coverage)
 - ✅ All 10 core methods implemented: __init__, frame, banner, text, rule, newline, clear, export_html, export_text, print
 - ✅ Terminal detection with TerminalProfile integration
@@ -794,6 +852,7 @@ Implement the main Console facade class with Rich backend integration and comple
 - ✅ Files: src/styledconsole/console.py, tests/unit/test_console.py, tests/integration/test_console_integration.py, examples/basic/08_console_api.py
 
 **Example Usage:**
+
 ```python
 from styledconsole import Console
 
@@ -827,17 +886,19 @@ console.frame("Test")  # Logs to stderr
 ```
 
 **Implementation Files:**
+
 - `styledconsole/console.py` - 104 statements, 92.31% coverage
 - `styledconsole/__init__.py` - Console export added
 - `tests/unit/test_console.py` - 63 unit tests
 - `tests/integration/test_console_integration.py` - 25 integration tests
 - `examples/basic/08_console_api.py` - 15 examples
 
----
+______________________________________________________________________
 
 ## M3: Preset Functions & Layouts (Week 5-6)
 
 ### T-010: Gradient Effects ✅
+
 **Priority:** High
 **Effort:** 1.5 days
 **Dependencies:** T-009
@@ -847,6 +908,7 @@ console.frame("Test")  # Logs to stderr
 Implement gradient and rainbow effects for stunning visual output with CSS4 color support.
 
 **Acceptance Criteria:**
+
 - [x] `gradient_frame()` - Vertical gradients with custom start/end colors
 - [x] `diagonal_gradient_frame()` - Diagonal gradients (top-left to bottom-right)
 - [x] `rainbow_frame()` - 7-color rainbow spectrum effects with direction parameter
@@ -861,6 +923,7 @@ Implement gradient and rainbow effects for stunning visual output with CSS4 colo
 - [x] Full ROYGBIV rainbow spectrum implementation
 
 **Completion Notes:**
+
 - ✅ 3 gradient functions: `gradient_frame()`, `diagonal_gradient_frame()`, `rainbow_frame()`
 - ✅ RAINBOW_COLORS using CSS4 names: red, orange, yellow, lime, blue, indigo, darkviolet
 - ✅ Direction parameter for rainbows: "vertical" (default) or "diagonal"
@@ -879,6 +942,7 @@ Implement gradient and rainbow effects for stunning visual output with CSS4 colo
   - All 502 tests passing after migration
 
 **Example Usage:**
+
 ```python
 from styledconsole import gradient_frame, diagonal_gradient_frame, rainbow_frame
 
@@ -907,12 +971,14 @@ lines = rainbow_frame(
 ```
 
 **Implementation Files:**
+
 - `src/styledconsole/effects.py` (199 statements, 83.42% coverage)
 - `tests/test_effects.py` (36 tests, all passing)
 - `examples/showcase/gradient_effects.py` (428 lines, comprehensive showcase)
 - `doc/EMOJI_GUIDELINES.md` (100+ safe emojis cataloged)
 
 **Key Features:**
+
 - 🌈 Vertical gradients with any CSS4 color or hex code
 - ↘️ Diagonal gradients from top-left to bottom-right
 - 🎨 Rainbow effects with 7-color ROYGBIV spectrum
@@ -921,18 +987,20 @@ lines = rainbow_frame(
 - ⚡ Fast rendering with minimal overhead
 
 **Discovered Issues & Solutions:**
+
 - Variation selector emojis (↘️) cause alignment issues → Use base emojis (↘)
 - Character-by-character coloring needs ANSI stripping → Implemented strip_ansi
 - Title alignment in diagonal gradients → Special handling for title lines
 - Border character detection → Manual border_chars set construction
 
 **Stats:**
+
 - 502 total tests passing (466 + 36 new)
 - 95.90% overall coverage (up from 95.76%)
 - 125 new statements in effects.py
 - 0 regressions
 
----
+______________________________________________________________________
 
 ### ✅ T-010a: Safe Emoji List & Validation
 
@@ -961,7 +1029,7 @@ Create a curated list of safe, tested emojis that work correctly with gradient e
 
 - ✅ 83 safe emojis organized in 10 categories with metadata (name, width, category, VS16 flag)
 - ✅ Comprehensive validation detecting: ZWJ sequences, skin tones, variation selectors, unknown emojis
-- ✅ Performance validated: 5 emoji validations in <10ms
+- ✅ Performance validated: 5 emoji validations in \<10ms
 - ✅ 30 unit tests: structure validation, safety checks, category filtering, edge cases, performance
 - ✅ Visual example showcases:
   - Category overview with distribution
@@ -1012,7 +1080,7 @@ result = validate_emoji("👨‍💻")
 - `➡️` (VS16) - Now detected and marked as potentially problematic
 - All VS16 emojis now have `has_vs16` flag for awareness
 
----
+______________________________________________________________________
 
 ### T-011: Status Frame Preset
 
@@ -1046,7 +1114,7 @@ status_frame("Login test", status="PASS", duration="2.3s", message="All checks p
 - `tests/unit/test_status_preset.py`
 - `tests/visual/test_status_snapshots.py`
 
----
+______________________________________________________________________
 
 ### T-012: Test Summary Preset
 
@@ -1059,6 +1127,7 @@ status_frame("Login test", status="PASS", duration="2.3s", message="All checks p
 Implement `test_summary()` preset for displaying test statistics.
 
 **Acceptance Criteria:**
+
 - [ ] `test_summary(stats: dict)` implemented
 - [ ] Displays passed, failed, skipped counts
 - [ ] Color-coded statistics
@@ -1069,17 +1138,20 @@ Implement `test_summary()` preset for displaying test statistics.
 - [ ] Test coverage ≥90%
 
 **Example Usage:**
+
 ```python
 test_summary({"passed": 182, "failed": 3, "skipped": 7}, title="Regression Tests")
 ```
 
 **Implementation Files:**
+
 - `styledconsole/presets/reports.py`
 - `tests/unit/test_reports_preset.py`
 
----
+______________________________________________________________________
 
 ### T-012: Dashboard Presets (Small/Medium/Large)
+
 **Priority:** High
 **Effort:** 3 days
 **Dependencies:** T-008, T-009, T-010, T-011
@@ -1089,6 +1161,7 @@ test_summary({"passed": 182, "failed": 3, "skipped": 7}, title="Regression Tests
 Implement three dashboard presets with varying complexity.
 
 **Acceptance Criteria:**
+
 - [ ] `dashboard_small(stats, title)` - Compact 1-section layout
 - [ ] `dashboard_medium(stats, sections)` - 2-3 section layout
 - [ ] `dashboard_large(stats, sections, banner)` - Full dashboard with banner
@@ -1099,6 +1172,7 @@ Implement three dashboard presets with varying complexity.
 - [ ] Test coverage ≥85%
 
 **Example Usage:**
+
 ```python
 dashboard_small({"passed": 10, "failed": 2}, title="Quick Status")
 
@@ -1110,13 +1184,15 @@ dashboard_large(
 ```
 
 **Implementation Files:**
+
 - `styledconsole/presets/dashboards.py`
 - `tests/unit/test_dashboards_preset.py`
 - `tests/visual/test_dashboard_snapshots.py`
 
----
+______________________________________________________________________
 
 ### T-013: Preset Function Documentation
+
 **Priority:** Medium
 **Effort:** 1 day
 **Dependencies:** T-010, T-011, T-012
@@ -1126,6 +1202,7 @@ dashboard_large(
 Create comprehensive documentation and examples for all preset functions.
 
 **Acceptance Criteria:**
+
 - [ ] Docstrings complete for all preset functions
 - [ ] Example code in docstrings
 - [ ] `examples/` directory with runnable scripts
@@ -1134,15 +1211,17 @@ Create comprehensive documentation and examples for all preset functions.
 - [ ] Coverage: 100% of public preset API
 
 **Implementation Files:**
+
 - `examples/status_examples.py`
 - `examples/dashboard_examples.py`
 - `docs/presets.md`
 
----
+______________________________________________________________________
 
 ## M4: Terminal Detection & HTML Export (Week 7)
 
 ### T-014: HTML Exporter Implementation
+
 **Priority:** High
 **Effort:** 2 days
 **Dependencies:** T-009
@@ -1152,6 +1231,7 @@ Create comprehensive documentation and examples for all preset functions.
 Implement HTML export using ansi2html with inline CSS.
 
 **Acceptance Criteria:**
+
 - [ ] `HtmlExporter` class implemented
 - [ ] `Console.export_html()` method functional
 - [ ] Captures recorded Rich output
@@ -1163,6 +1243,7 @@ Implement HTML export using ansi2html with inline CSS.
 - [ ] Test coverage ≥85%
 
 **Test Cases:**
+
 ```python
 def test_html_export():
     console = Console(record=True)
@@ -1176,13 +1257,15 @@ def test_html_export():
 ```
 
 **Implementation Files:**
+
 - `styledconsole/export/html.py`
 - `tests/unit/test_html_export.py`
 - `tests/integration/test_html_fidelity.py`
 
----
+______________________________________________________________________
 
 ### T-015: Terminal Capability Fallbacks
+
 **Priority:** Medium
 **Effort:** 2 days
 **Dependencies:** T-004, T-009
@@ -1192,24 +1275,27 @@ def test_html_export():
 Implement graceful degradation for limited terminal capabilities.
 
 **Acceptance Criteria:**
+
 - [ ] ASCII-only mode for basic terminals
 - [ ] Emoji replacement with ASCII alternatives
 - [ ] Color degradation for 8-color terminals
-- [ ] Width warnings for narrow terminals (<80 cols)
+- [ ] Width warnings for narrow terminals (\<80 cols)
 - [ ] Logging/warning system for capability issues
 - [ ] Unit tests with simulated limited terminals
 - [ ] Integration tests with environment mocking
 - [ ] Test coverage ≥80%
 
 **Implementation Files:**
+
 - `styledconsole/core/fallbacks.py`
 - `tests/unit/test_fallbacks.py`
 
----
+______________________________________________________________________
 
 ## M5: Testing, Documentation, Release (Week 8)
 
 ### T-016: Visual Snapshot Test Suite
+
 **Priority:** High
 **Effort:** 2 days
 **Dependencies:** T-006 through T-012
@@ -1219,6 +1305,7 @@ Implement graceful degradation for limited terminal capabilities.
 Create comprehensive visual regression tests using pytest-snapshot.
 
 **Acceptance Criteria:**
+
 - [ ] Snapshot tests for all frame styles
 - [ ] Snapshot tests for all banner fonts
 - [ ] Snapshot tests for all preset functions
@@ -1228,14 +1315,16 @@ Create comprehensive visual regression tests using pytest-snapshot.
 - [ ] Coverage: All rendering outputs
 
 **Implementation Files:**
+
 - `tests/visual/test_frame_snapshots.py`
 - `tests/visual/test_banner_snapshots.py`
 - `tests/visual/test_preset_snapshots.py`
 - `tests/visual/snapshots/` (baseline files)
 
----
+______________________________________________________________________
 
 ### T-017: Cross-Platform Testing
+
 **Priority:** High
 **Effort:** 1 day
 **Dependencies:** All M1-M4 tasks
@@ -1245,6 +1334,7 @@ Create comprehensive visual regression tests using pytest-snapshot.
 Setup and verify cross-platform test execution in CI.
 
 **Acceptance Criteria:**
+
 - [ ] GitHub Actions workflow configured
 - [ ] Test matrix: Linux, macOS, Windows
 - [ ] Test matrix: Python 3.10, 3.11, 3.12
@@ -1253,12 +1343,14 @@ Setup and verify cross-platform test execution in CI.
 - [ ] Badge added to README
 
 **Implementation Files:**
+
 - `.github/workflows/test.yml`
 - `.github/workflows/coverage.yml`
 
----
+______________________________________________________________________
 
 ### T-018: Performance Benchmarks
+
 **Priority:** Medium
 **Effort:** 1.5 days
 **Dependencies:** T-009, T-012
@@ -1268,20 +1360,23 @@ Setup and verify cross-platform test execution in CI.
 Create performance benchmarks and verify targets are met.
 
 **Acceptance Criteria:**
+
 - [ ] Benchmark suite using `pytest-benchmark`
-- [ ] Frame rendering: <10ms verified
-- [ ] Dashboard rendering: <50ms verified
-- [ ] HTML export (100 frames): <200ms verified
+- [ ] Frame rendering: \<10ms verified
+- [ ] Dashboard rendering: \<50ms verified
+- [ ] HTML export (100 frames): \<200ms verified
 - [ ] Benchmark results documented
 - [ ] CI runs benchmarks on each commit
 
 **Implementation Files:**
+
 - `tests/benchmarks/test_rendering_performance.py`
 - `tests/benchmarks/test_export_performance.py`
 
----
+______________________________________________________________________
 
 ### T-019: API Documentation (Sphinx/MkDocs)
+
 **Priority:** High
 **Effort:** 2 days
 **Dependencies:** All M1-M4 tasks
@@ -1291,6 +1386,7 @@ Create performance benchmarks and verify targets are met.
 Generate comprehensive API documentation.
 
 **Acceptance Criteria:**
+
 - [ ] MkDocs configured with Material theme
 - [ ] API reference auto-generated from docstrings
 - [ ] Quick start guide written
@@ -1300,15 +1396,17 @@ Generate comprehensive API documentation.
 - [ ] Coverage: 100% of public API
 
 **Implementation Files:**
+
 - `docs/index.md`
 - `docs/quickstart.md`
 - `docs/api/` (auto-generated)
 - `docs/examples.md`
 - `mkdocs.yml`
 
----
+______________________________________________________________________
 
 ### T-020: Release Preparation
+
 **Priority:** High
 **Effort:** 1 day
 **Dependencies:** T-016, T-017, T-018, T-019
@@ -1318,6 +1416,7 @@ Generate comprehensive API documentation.
 Prepare for v0.1.0 release to PyPI with Apache 2.0 license.
 
 **Acceptance Criteria:**
+
 - [ ] **LICENSE file created** (Apache License 2.0 full text)
 - [ ] **NOTICE file with copyright** (Apache 2.0 requirement)
 - [ ] `__init__.py` with complete public API exports (see PLAN.md)
@@ -1331,6 +1430,7 @@ Prepare for v0.1.0 release to PyPI with Apache 2.0 license.
 - [ ] GitHub release created with notes
 
 **Implementation Files:**
+
 - `LICENSE` (Apache 2.0 full text from apache.org)
 - `NOTICE` (Copyright and attribution)
 - `styledconsole/__init__.py` (public API exports)
@@ -1339,6 +1439,7 @@ Prepare for v0.1.0 release to PyPI with Apache 2.0 license.
 - Release notes
 
 **License Checklist:**
+
 ```toml
 # pyproject.toml
 [project]
@@ -1349,6 +1450,7 @@ classifiers = [
 ```
 
 **NOTICE Template:**
+
 ```
 StyledConsole
 Copyright 2025 [Your Name/Organization]
@@ -1363,9 +1465,10 @@ You may obtain a copy of the License at
     http://www.apache.org/licenses/LICENSE-2.0
 ```
 
----
+______________________________________________________________________
 
-### T-021: Enhanced Emoji Support (Tier 2 & 3) [POST-MVP]
+### T-021: Enhanced Emoji Support (Tier 2 & 3) \[POST-MVP\]
+
 **Priority:** Low
 **Effort:** 3 days
 **Dependencies:** T-002, v0.1.0 release
@@ -1376,6 +1479,7 @@ You may obtain a copy of the License at
 Extend emoji support beyond basic icons to handle modified emojis (skin tones) and ZWJ sequences (compound emojis).
 
 **Acceptance Criteria:**
+
 - [ ] **Tier 2 (v0.2):** Skin tone modifiers (👍🏽 👨🏻) align correctly
 - [ ] **Tier 2:** Emoji presentation selectors (🏳️ text vs emoji) handled
 - [ ] **Tier 3 (v0.3):** ZWJ sequences (👨‍👩‍👧‍👦 👨‍💻 🏳️‍🌈) detected as single unit
@@ -1385,6 +1489,7 @@ Extend emoji support beyond basic icons to handle modified emojis (skin tones) a
 - [ ] Test coverage ≥90%
 
 **Implementation Notes:**
+
 ```python
 # May require grapheme library or custom Unicode segmentation
 import grapheme
@@ -1396,12 +1501,13 @@ def visual_width_enhanced(text: str) -> int:
 ```
 
 **Implementation Files:**
+
 - `styledconsole/utils/text_enhanced.py`
 - `tests/unit/test_emoji_tier2.py`
 - `tests/unit/test_emoji_tier3.py`
 - `docs/emoji-support.md`
 
----
+______________________________________________________________________
 
 ## Summary Statistics
 
@@ -1426,25 +1532,28 @@ def visual_width_enhanced(text: str) -> int:
 - **Medium Priority:** 5 tasks (25%)
 - **Low Priority:** 1 task (5% - post-MVP)
 
----
+______________________________________________________________________
 
 ## Task Tracking Guide
 
 ### How to Update Progress
 
 **When starting a task:**
+
 1. Change task status: `⬜ T-XXX` → `🚧 T-XXX`
-2. Update milestone progress bar at the top
-3. Update "Overall Progress" section
+1. Update milestone progress bar at the top
+1. Update "Overall Progress" section
 
 **When completing a task:**
+
 1. Check all acceptance criteria boxes: `- [ ]` → `- [x]`
-2. Change task status: `🚧 T-XXX` → `✅ T-XXX`
-3. Update milestone progress: `⬜` → `✅`
-4. Update "Days Completed" count
-5. Add completion date to task header: `**Completed:** YYYY-MM-DD`
+1. Change task status: `🚧 T-XXX` → `✅ T-XXX`
+1. Update milestone progress: `⬜` → `✅`
+1. Update "Days Completed" count
+1. Add completion date to task header: `**Completed:** YYYY-MM-DD`
 
 **Example:**
+
 ```markdown
 ### ✅ T-001: Project Setup & Structure
 **Priority:** High
@@ -1469,7 +1578,7 @@ def visual_width_enhanced(text: str) -> int:
 ⚠️ Blockers: None / [describe blocker]
 ```
 
----
+______________________________________________________________________
 
 ## Completed Tasks Log
 
@@ -1478,7 +1587,9 @@ def visual_width_enhanced(text: str) -> int:
 ### Week 1 (Oct 17-18, 2025)
 
 **Oct 17, 2025:**
+
 - ✅ **T-001**: Project Setup & Structure (0.5 days)
+
   - Installed UV 0.9.3 package manager
   - Created complete src/styledconsole/ structure (core, utils, presets, export)
   - Configured pyproject.toml with hatchling build backend
@@ -1490,6 +1601,7 @@ def visual_width_enhanced(text: str) -> int:
   - Commit: 32eadca
 
 - ✅ **T-002**: Text Width Utilities (2 days)
+
   - Implemented emoji-safe text width calculation with wcwidth
   - Created 5 utility functions: visual_width, strip_ansi, split_graphemes, pad_to_width, truncate_to_width
   - Tier 1 emoji support validated (✅ ❌ ⚠️ 🚀 ❤️ 🎉 ⭐ ℹ️ and 15+ common emojis)
@@ -1500,6 +1612,7 @@ def visual_width_enhanced(text: str) -> int:
   - Files: src/styledconsole/utils/text.py, tests/unit/test_text_utils.py
 
 - ✅ **T-003**: Color Utilities (2 days)
+
   - Implemented color parsing for multiple formats (hex, rgb(), tuples, named)
   - Added 148 CSS4 named colors from W3C standard (matplotlib compatible)
   - Created 5 utility functions: parse_color, hex_to_rgb, rgb_to_hex, interpolate_color, color_distance
@@ -1511,6 +1624,7 @@ def visual_width_enhanced(text: str) -> int:
   - Files: src/styledconsole/utils/color.py, src/styledconsole/utils/color_data.py, tests/unit/test_color_utils.py
 
 - ✅ **T-004**: Terminal Detection (1.5 days)
+
   - Implemented TerminalProfile dataclass with comprehensive capability tracking
   - Created detect_terminal_capabilities() with environment-based detection
   - ANSI support detection via isatty() and TERM variable
@@ -1525,6 +1639,7 @@ def visual_width_enhanced(text: str) -> int:
   - Files: src/styledconsole/utils/terminal.py, tests/unit/test_terminal.py
 
 - ✅ **T-005**: Border Styles Definition (1.5 days)
+
   - Implemented BorderStyle frozen dataclass with 12 character fields
   - Created 8 predefined border styles: SOLID, DOUBLE, ROUNDED, HEAVY, THICK, ASCII, MINIMAL, DOTS
   - Complete Unicode box-drawing character sets for beautiful borders
@@ -1541,7 +1656,9 @@ def visual_width_enhanced(text: str) -> int:
 **🎉 MILESTONE M1 COMPLETE! Core Setup & Utilities - 5/5 tasks (100%)**
 
 **Oct 18, 2025:**
+
 - ✅ **T-006**: Frame Renderer Core (3 days)
+
   - Implemented Frame dataclass (8 configuration fields)
   - Created FrameRenderer with render() and render_frame() methods
   - Auto-width calculation with min_width and max_width constraints
@@ -1557,6 +1674,7 @@ def visual_width_enhanced(text: str) -> int:
   - Files: src/styledconsole/core/frame.py, tests/unit/test_frame.py, tests/integration/test_frame_integration.py
 
 - ✅ **T-007**: Banner Renderer (2 days)
+
   - Implemented Banner dataclass (8 configuration fields)
   - Created BannerRenderer with render() and render_banner() methods
   - ASCII art using pyfiglet with all available fonts
@@ -1573,6 +1691,7 @@ def visual_width_enhanced(text: str) -> int:
   - Files: src/styledconsole/core/banner.py, tests/unit/test_banner.py, tests/integration/test_banner_integration.py
 
 - ✅ **T-008**: Layout Composer (2 days)
+
   - Implemented Layout dataclass (frozen): elements, align, spacing, width
   - Created LayoutComposer with stack(), compose(), grid(), side_by_side() methods
   - Vertical stacking with configurable spacing and alignment
@@ -1588,6 +1707,7 @@ def visual_width_enhanced(text: str) -> int:
   - Files: src/styledconsole/core/layout.py, tests/unit/test_layout.py, tests/integration/test_layout_integration.py
 
 - ✅ **T-009**: Console Class Core API (2.5 days)
+
   - Implemented Console class with Rich backend integration (104 statements)
   - All 10 core methods: __init__, frame, banner, text, rule, newline, clear, export_html, export_text, print
   - Terminal detection with TerminalProfile integration
@@ -1616,9 +1736,10 @@ def visual_width_enhanced(text: str) -> int:
   - Commit: a0b227e "feat(examples): Modernize all examples to use Console API"
 
 ### Week 2 (Oct 21-25, 2025)
+
 - *TBD: Start M3 - Preset Functions*
 
----
+______________________________________________________________________
 
 ## Validation Checklist
 
@@ -1632,7 +1753,7 @@ def visual_width_enhanced(text: str) -> int:
 
 **Status:** ✅ Tasks phase complete - Ready for Implementation (Phase 4)
 
----
+______________________________________________________________________
 
 ## M6: Post-v0.1.0 Enhancements (Future Roadmap)
 
@@ -1640,6 +1761,7 @@ def visual_width_enhanced(text: str) -> int:
 **Based on:** Legacy StyledConsole Analysis (doc/LEGACY_ANALYSIS_AND_IMPROVEMENTS.md)
 
 ### T-020: Icon Provider System (v0.2.0)
+
 **Priority:** High
 **Effort:** 2-3 days
 **Dependencies:** v0.1.0 released
@@ -1649,14 +1771,16 @@ def visual_width_enhanced(text: str) -> int:
 Add a simple icon provider system with Unicode/ASCII fallback for limited terminal environments.
 
 **Legacy Lessons:**
+
 - ✅ Keep it simple (avoid complex icon families/categories from legacy)
 - ✅ Focus on common icons (status, progress, etc.)
 - ❌ Avoid plugin architecture complexity
 
 **Acceptance Criteria:**
+
 - [ ] `IconProvider` class with `get(name: str) -> str` method
 - [ ] Predefined icon sets: `unicode_icons` and `ascii_icons`
-- [ ] Common icons: success (✅/[OK]), error (❌/[X]), warning (⚠️/[!]), info (ℹ️/[i]), debug (🔍/[?]), critical (🔥/[!!])
+- [ ] Common icons: success (✅/\[OK\]), error (❌/\[X\]), warning (⚠️/\[!\]), info (ℹ️/\[i\]), debug (🔍/\[?\]), critical (🔥/\[!!\])
 - [ ] Context manager support for temporary icon provider switching
 - [ ] Global `set_icon_provider()` function
 - [ ] Unit tests with 95%+ coverage
@@ -1664,6 +1788,7 @@ Add a simple icon provider system with Unicode/ASCII fallback for limited termin
 - [ ] Integration with Console class
 
 **Implementation Notes:**
+
 ```python
 # Simple, focused implementation
 class IconProvider:
@@ -1679,9 +1804,10 @@ console.text(f"{icons.get('success')} Operation completed!")
 
 **Estimated LOC:** ~80 lines (plus 150 test lines)
 
----
+______________________________________________________________________
 
 ### T-021: Runtime Policy System (v0.2.0)
+
 **Priority:** High
 **Effort:** 3-4 days
 **Dependencies:** T-020
@@ -1691,11 +1817,13 @@ console.text(f"{icons.get('success')} Operation completed!")
 Add runtime policy for graceful degradation in different terminal environments (CI/CD, ASCII-only, etc.)
 
 **Legacy Lessons:**
+
 - ✅ Environment-driven rendering decisions
 - ✅ Support NO_COLOR standard
 - ❌ Keep it simple (3-4 settings max, not complex policy system)
 
 **Acceptance Criteria:**
+
 - [ ] `RenderPolicy` dataclass with fields: unicode, color, emoji
 - [ ] `from_env()` classmethod for automatic environment detection
 - [ ] NO_COLOR environment variable support (disable colors)
@@ -1707,6 +1835,7 @@ Add runtime policy for graceful degradation in different terminal environments (
 - [ ] Documentation with CI/CD examples
 
 **Implementation Notes:**
+
 ```python
 @dataclass
 class RenderPolicy:
@@ -1728,9 +1857,10 @@ class RenderPolicy:
 
 **Estimated LOC:** ~100 lines (plus 200 test lines)
 
----
+______________________________________________________________________
 
 ### T-022: Enhanced HTML Export (v0.2.0)
+
 **Priority:** Medium
 **Effort:** 4-6 days
 **Dependencies:** T-020, T-021
@@ -1740,11 +1870,13 @@ class RenderPolicy:
 Enhance HTML export with gradient support, CSS classes, and better styling options.
 
 **Legacy Lessons:**
+
 - ✅ HTML export preserves visual styling
 - ✅ Useful for documentation/reports
 - ❌ Keep it lightweight (no external dependencies)
 
 **Acceptance Criteria:**
+
 - [ ] Add `css_classes: bool` parameter to `export_html()` (use classes instead of inline styles)
 - [ ] Add `include_gradients: bool` parameter (render gradient banners in HTML)
 - [ ] Generate CSS stylesheet when `css_classes=True`
@@ -1755,6 +1887,7 @@ Enhance HTML export with gradient support, CSS classes, and better styling optio
 - [ ] Documentation with screenshot comparisons
 
 **Implementation Notes:**
+
 ```python
 # Extended export_manager.py
 class ExportManager:
@@ -1770,9 +1903,10 @@ class ExportManager:
 
 **Estimated LOC:** ~150 lines (plus 250 test lines)
 
----
+______________________________________________________________________
 
 ### T-023: Theme System (v0.2.0)
+
 **Priority:** Medium
 **Effort:** 6-8 days
 **Dependencies:** T-021
@@ -1782,11 +1916,13 @@ class ExportManager:
 Add predefined color themes for consistent styling across frames, banners, and text.
 
 **Legacy Lessons:**
+
 - ✅ Aesthetic consistency
 - ✅ Optional feature (doesn't break existing code)
 - ❌ Keep it simple (3-5 predefined themes)
 
 **Acceptance Criteria:**
+
 - [ ] `Theme` dataclass with color fields: primary, success, warning, error, border
 - [ ] Predefined themes: DARK, LIGHT, SOLARIZED, MONOKAI, NORD
 - [ ] Console class accepts `theme` parameter
@@ -1798,6 +1934,7 @@ Add predefined color themes for consistent styling across frames, banners, and t
 - [ ] Documentation with screenshots
 
 **Implementation Notes:**
+
 ```python
 @dataclass
 class Theme:
@@ -1815,9 +1952,10 @@ SOLARIZED = Theme(primary='#268bd2', success='#859900', ...)
 
 **Estimated LOC:** ~120 lines (plus 200 test lines)
 
----
+______________________________________________________________________
 
 ### T-024: Animation Support (v0.3.0)
+
 **Priority:** Low
 **Effort:** 8-10 days
 **Dependencies:** v0.2.0 released
@@ -1827,11 +1965,13 @@ SOLARIZED = Theme(primary='#268bd2', success='#859900', ...)
 Add simple frame-based animations for spinners and progress indicators.
 
 **Legacy Lessons:**
+
 - ⚠️ Nice for progress indicators
 - ⚠️ Terminal clearing complexities
 - ❌ Don't over-engineer (simple frame iteration)
 
 **Acceptance Criteria:**
+
 - [ ] `Animator` class with `spinner()` method
 - [ ] Predefined spinners: DOTS, MOON, ARROW, BOUNCE, PULSE
 - [ ] Frame iteration with configurable delay
@@ -1842,6 +1982,7 @@ Add simple frame-based animations for spinners and progress indicators.
 - [ ] Documentation with warnings about terminal support
 
 **Implementation Notes:**
+
 ```python
 class Animator:
     DOTS = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
@@ -1855,9 +1996,10 @@ class Animator:
 
 **Estimated LOC:** ~100 lines (plus 150 test lines)
 
----
+______________________________________________________________________
 
 ### T-025: Progress Bar Wrapper (v0.3.0)
+
 **Priority:** Low
 **Effort:** 4-6 days
 **Dependencies:** v0.2.0 released
@@ -1867,11 +2009,13 @@ class Animator:
 Convenience wrapper for Rich's progress bars with StyledConsole styling.
 
 **Legacy Lessons:**
+
 - ✅ Common need for CLI applications
 - ❌ Don't build from scratch - use Rich
 - ✅ Provide convenience wrapper only
 
 **Acceptance Criteria:**
+
 - [ ] `ProgressBar` wrapper class using Rich's Progress
 - [ ] Console integration for styled progress
 - [ ] Support for multiple concurrent progress bars
@@ -1881,6 +2025,7 @@ Convenience wrapper for Rich's progress bars with StyledConsole styling.
 - [ ] Documentation
 
 **Implementation Notes:**
+
 ```python
 # Simple wrapper, leverage Rich's battle-tested implementation
 class ProgressBar:
@@ -1893,9 +2038,10 @@ class ProgressBar:
 
 **Estimated LOC:** ~80 lines (plus 100 test lines)
 
----
+______________________________________________________________________
 
 ### T-026: Tier 2 Emoji Support (v0.4.0+)
+
 **Priority:** Low
 **Effort:** 10-15 days
 **Dependencies:** v0.3.0 released, user demand proven
@@ -1905,11 +2051,13 @@ class ProgressBar:
 Add support for Tier 2 emoji (skin tones, ZWJ sequences) IF users request it and clear use cases are identified.
 
 **Legacy Lessons:**
+
 - ❌ Legacy's complex emoji handling caused 248 lines of alignment hacks
 - ❌ Over-engineering led to maintenance nightmare
 - ⚠️ Only proceed if there's real user demand
 
 **Acceptance Criteria:**
+
 - [ ] ⚠️ User demand validated (GitHub issues, feedback)
 - [ ] ⚠️ Clear use cases documented
 - [ ] Add grapheme library for ZWJ support
@@ -1920,6 +2068,7 @@ Add support for Tier 2 emoji (skin tones, ZWJ sequences) IF users request it and
 - [ ] Opt-in feature (default stays Tier 1)
 
 **Implementation Notes:**
+
 ```python
 # Only if we can do it WITHOUT legacy's complexity
 # Must work correctly without post-rendering hacks
@@ -1931,25 +2080,26 @@ Add support for Tier 2 emoji (skin tones, ZWJ sequences) IF users request it and
 
 **Estimated LOC:** ~200 lines (plus 300 test lines)
 
----
+______________________________________________________________________
 
 ### M6 Task Summary
 
-| Task | Priority | Effort | Target Version | Risk |
-|------|----------|--------|----------------|------|
-| **T-020: Icon Provider** | High | 2-3 days | v0.2.0 | ✅ Low |
-| **T-021: Runtime Policy** | High | 3-4 days | v0.2.0 | ✅ Low |
-| **T-022: Enhanced HTML Export** | Medium | 4-6 days | v0.2.0 | ✅ Low |
-| **T-023: Theme System** | Medium | 6-8 days | v0.2.0 | ✅ Low |
-| **T-024: Animation Support** | Low | 8-10 days | v0.3.0 | ⚠️ Medium |
-| **T-025: Progress Bar Wrapper** | Low | 4-6 days | v0.3.0 | ✅ Low |
-| **T-026: Tier 2 Emoji** | Low | 10-15 days | v0.4.0+ | ⚠️ HIGH |
+| Task                            | Priority | Effort     | Target Version | Risk      |
+| ------------------------------- | -------- | ---------- | -------------- | --------- |
+| **T-020: Icon Provider**        | High     | 2-3 days   | v0.2.0         | ✅ Low    |
+| **T-021: Runtime Policy**       | High     | 3-4 days   | v0.2.0         | ✅ Low    |
+| **T-022: Enhanced HTML Export** | Medium   | 4-6 days   | v0.2.0         | ✅ Low    |
+| **T-023: Theme System**         | Medium   | 6-8 days   | v0.2.0         | ✅ Low    |
+| **T-024: Animation Support**    | Low      | 8-10 days  | v0.3.0         | ⚠️ Medium |
+| **T-025: Progress Bar Wrapper** | Low      | 4-6 days   | v0.3.0         | ✅ Low    |
+| **T-026: Tier 2 Emoji**         | Low      | 10-15 days | v0.4.0+        | ⚠️ HIGH   |
 
 **v0.2.0 Scope:** T-020 through T-023 (15-21 days, ~3-4 weeks)
 **v0.3.0 Scope:** T-024, T-025 (12-16 days, ~2-3 weeks)
 **v0.4.0+ Scope:** T-026 (only if justified)
 
 **Architecture Principles to Maintain:**
+
 - ✅ Keep modules under 200 lines each
 - ✅ Maintain 95%+ test coverage
 - ✅ Single responsibility per module
@@ -1958,6 +2108,7 @@ Add support for Tier 2 emoji (skin tones, ZWJ sequences) IF users request it and
 - ✅ Stay under 8,000 total lines (currently 4,696)
 
 **What NOT to do (Learn from Legacy):**
+
 - ❌ No factory factories or over-abstraction
 - ❌ No multiple competing implementations
 - ❌ No premature optimization (no numpy for simple tasks)

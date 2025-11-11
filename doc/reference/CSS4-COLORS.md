@@ -5,7 +5,7 @@
 **Standard:** CSS4 / W3C Color Module Level 4
 **Total Colors:** 148
 
----
+______________________________________________________________________
 
 ## Overview
 
@@ -25,11 +25,11 @@ console.frame("Text", color=(255, 127, 80))     # RGB tuple ✅
 ### Why CSS4 Colors?
 
 1. **Memorable:** `dodgerblue` is easier to remember than `#1E90FF`
-2. **Standard:** Same names as CSS, matplotlib, web browsers
-3. **Discoverable:** Use `get_color_names()` to see all options
-4. **Compatible:** Works with gradients and all color features
+1. **Standard:** Same names as CSS, matplotlib, web browsers
+1. **Discoverable:** Use `get_color_names()` to see all options
+1. **Compatible:** Works with gradients and all color features
 
----
+______________________________________________________________________
 
 ## Color Categories
 
@@ -80,7 +80,7 @@ console.frame("⚠️ Rate limit exceeded", color="gold", title="Warning")
 console.frame("ℹ️ Deployment started", color="dodgerblue", title="Info")
 ```
 
----
+______________________________________________________________________
 
 ### Blues (50+ shades)
 
@@ -106,7 +106,7 @@ console.frame("ℹ️ Deployment started", color="dodgerblue", title="Info")
 'midnightblue'   # #191970 - Midnight
 ```
 
----
+______________________________________________________________________
 
 ### Greens (40+ shades)
 
@@ -131,7 +131,7 @@ console.frame("ℹ️ Deployment started", color="dodgerblue", title="Info")
 'darkolivegreen' # #556B2F - Olive
 ```
 
----
+______________________________________________________________________
 
 ### Reds & Pinks (30+ shades)
 
@@ -157,7 +157,7 @@ console.frame("ℹ️ Deployment started", color="dodgerblue", title="Info")
 'maroon'         # #800000 - Maroon
 ```
 
----
+______________________________________________________________________
 
 ### Yellows & Oranges (20+ shades)
 
@@ -178,7 +178,7 @@ console.frame("ℹ️ Deployment started", color="dodgerblue", title="Info")
 'peru'           # #CD853F - Peru
 ```
 
----
+______________________________________________________________________
 
 ### Purples & Magentas (25+ shades)
 
@@ -209,7 +209,7 @@ console.frame("ℹ️ Deployment started", color="dodgerblue", title="Info")
 'deeppink'       # #FF1493 - Deep pink
 ```
 
----
+______________________________________________________________________
 
 ### Greens/Cyans/Teals (30+ shades)
 
@@ -232,7 +232,7 @@ console.frame("ℹ️ Deployment started", color="dodgerblue", title="Info")
 'mediumaquamarine' # #66CDAA - Medium aquamarine
 ```
 
----
+______________________________________________________________________
 
 ### Browns & Naturals (20+ shades)
 
@@ -255,7 +255,7 @@ console.frame("ℹ️ Deployment started", color="dodgerblue", title="Info")
 'maroon'         # #800000 - Maroon
 ```
 
----
+______________________________________________________________________
 
 ### Grays (20+ shades)
 
@@ -286,7 +286,7 @@ console.frame("ℹ️ Deployment started", color="dodgerblue", title="Info")
 'black'          # #000000 - Pure black
 ```
 
----
+______________________________________________________________________
 
 ## Usage Examples
 
@@ -340,7 +340,7 @@ dashboard_large(
 )
 ```
 
----
+______________________________________________________________________
 
 ## Color Discovery
 
@@ -379,7 +379,7 @@ print(light_colors)
 # ['lightblue', 'lightcoral', 'lightcyan', 'lightgoldenrodyellow', ...]
 ```
 
----
+______________________________________________________________________
 
 ## Implementation Details
 
@@ -388,9 +388,9 @@ print(light_colors)
 When you specify a color, StyledConsole tries formats in this order:
 
 1. **CSS4 named color** (case-insensitive)
-2. **Hex format** (`#RRGGBB` or `#RGB`)
-3. **RGB function** (`rgb(r, g, b)`)
-4. **RGB tuple** (`(r, g, b)`)
+1. **Hex format** (`#RRGGBB` or `#RGB`)
+1. **RGB function** (`rgb(r, g, b)`)
+1. **RGB tuple** (`(r, g, b)`)
 
 ```python
 # All of these produce the same color:
@@ -416,7 +416,7 @@ CSS4_COLORS = {
 }
 ```
 
----
+______________________________________________________________________
 
 ## Compatibility
 
@@ -446,7 +446,7 @@ These are **standard CSS4 colors**, so they match web development:
 console.frame("Alert", color='coral')
 ```
 
----
+______________________________________________________________________
 
 ## Reference: Complete Color List
 
@@ -477,7 +477,7 @@ slategray, slategrey, snow, springgreen, steelblue, tan, teal, thistle,
 tomato, turquoise, violet, wheat, white, whitesmoke, yellow, yellowgreen
 ```
 
----
+______________________________________________________________________
 
 ## Testing
 
@@ -501,7 +501,7 @@ def test_css4_color_support():
     print("✅ All 148 CSS4 colors validated!")
 ```
 
----
+______________________________________________________________________
 
 ## External References
 
@@ -509,7 +509,7 @@ def test_css4_color_support():
 - **Matplotlib Named Colors:** https://matplotlib.org/stable/gallery/color/named_colors.html
 - **MDN CSS Colors:** https://developer.mozilla.org/en-US/docs/Web/CSS/named-color
 
----
+______________________________________________________________________
 
 **Status:** ✅ Full CSS4 color support in StyledConsole v0.1
 **Maintained by:** StyledConsole project

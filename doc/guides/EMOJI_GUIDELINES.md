@@ -9,6 +9,7 @@ StyledConsole supports emoji rendering with proper width calculation for **simpl
 These emojis work perfectly and are recommended:
 
 ### Status & Symbols
+
 - ✅ ❌ ⚠️ ℹ️ ⏭️ ⏸️ ⏹️
 - 🔴 🟡 🟢 🔵 🟣 🟠
 - ⭐ ✨ 💫 🌟
@@ -16,16 +17,19 @@ These emojis work perfectly and are recommended:
 **Note**: Some symbols like ⚠️ and ℹ️ include a variation selector (U+FE0F) but are fully supported by the library's `visual_width()` function. However, **avoid using variation selector emojis in custom character-by-character processing** (like diagonal gradients) as they require special handling.
 
 ### Objects & Activities
+
 - 📊 📈 📉 📦 📁 📂 📄 📝
 - 🎯 🎨 🎉 🎊 🎁
 - 🚀 💻 🖥️ ⌨️ 🖱️ 💾 💿
 - 🧪 🔬 🔧 🔨 ⚙️
 
 ### People (Simple)
+
 - 👥 👤
 - 👍 👎 👋 🙌
 
 ### Nature & Food
+
 - 🌈 ☀️ 🌙 ⭐ 💧
 - 🍕 🍔 🍟 ☕ 🍺
 
@@ -34,6 +38,7 @@ These emojis work perfectly and are recommended:
 **Zero-Width Joiner (ZWJ) emojis are NOT supported** in the current version due to width calculation complexity:
 
 ### Avoid These:
+
 - 👨‍💻 👩‍💻 🧑‍💻 (person + laptop)
 - 👨‍🔬 👩‍🔬 (person + science)
 - 👨‍🎨 👩‍🎨 (person + art)
@@ -46,15 +51,17 @@ These emojis work perfectly and are recommended:
 ### Why Not Supported?
 
 ZWJ emojis are composed of multiple codepoints joined together:
+
 ```
 👨‍💻 = 👨 (man) + ZWJ + 💻 (laptop) = 3 codepoints but displays as 1 glyph
 ```
 
 This causes:
+
 1. **Width miscalculation**: Library counts it as 3-4 characters wide but terminal renders it as 2
-2. **Border misalignment**: Frame borders don't line up correctly
-3. **Content overflow**: Text appears to spill outside frames
-4. **Padding issues**: Alignment calculations are off
+1. **Border misalignment**: Frame borders don't line up correctly
+1. **Content overflow**: Text appears to spill outside frames
+1. **Padding issues**: Alignment calculations are off
 
 ## ⚠️ Variation Selector Issues
 
@@ -64,29 +71,30 @@ This causes:
 
 **AVOID these in gradient effects or character-level processing:**
 
-| Emoji | Codepoints | Issue | Safe Alternative |
-|-------|-----------|-------|-----------------|
-| 🖥️ | U+1F5A5 + U+FE0F | 2 codepoints | � (U+1F5A5 only) |
-| ↘️ | U+2198 + U+FE0F | 2 codepoints | ↘ (U+2198 only) |
-| ➡️ | U+27A1 + U+FE0F | 2 codepoints | → or ➡ (base) |
-| ⬆️ | U+2B06 + U+FE0F | 2 codepoints | ↑ or ⬆ (base) |
-| ⬇️ | U+2B07 + U+FE0F | 2 codepoints | ↓ or ⬇ (base) |
-| ⬅️ | U+2B05 + U+FE0F | 2 codepoints | ← or ⬅ (base) |
+| Emoji | Codepoints       | Issue        | Safe Alternative |
+| ----- | ---------------- | ------------ | ---------------- |
+| 🖥️    | U+1F5A5 + U+FE0F | 2 codepoints | � (U+1F5A5 only) |
+| ↘️    | U+2198 + U+FE0F  | 2 codepoints | ↘ (U+2198 only)  |
+| ➡️    | U+27A1 + U+FE0F  | 2 codepoints | → or ➡ (base)    |
+| ⬆️    | U+2B06 + U+FE0F  | 2 codepoints | ↑ or ⬆ (base)    |
+| ⬇️    | U+2B07 + U+FE0F  | 2 codepoints | ↓ or ⬇ (base)    |
+| ⬅️    | U+2B05 + U+FE0F  | 2 codepoints | ← or ⬅ (base)    |
 
 **Safe to use everywhere:**
 
-| Emoji | Codepoint | Visual Width | Use Case |
-|-------|----------|--------------|----------|
-| ✨ | U+2728 | 2 | Sparkles, highlights |
-| 🌈 | U+1F308 | 2 | Rainbow, colors |
-| 🎨 | U+1F3A8 | 2 | Art, creativity |
-| 🚀 | U+1F680 | 2 | Speed, launch |
-| 💻 | U+1F4BB | 2 | Computer, code |
-| 📊 | U+1F4CA | 2 | Charts, data |
-| 🔥 | U+1F525 | 2 | Fire, trending |
-| ⭐ | U+2B50 | 2 | Star, favorite |
+| Emoji | Codepoint | Visual Width | Use Case             |
+| ----- | --------- | ------------ | -------------------- |
+| ✨    | U+2728    | 2            | Sparkles, highlights |
+| 🌈    | U+1F308   | 2            | Rainbow, colors      |
+| 🎨    | U+1F3A8   | 2            | Art, creativity      |
+| 🚀    | U+1F680   | 2            | Speed, launch        |
+| 💻    | U+1F4BB   | 2            | Computer, code       |
+| 📊    | U+1F4CA   | 2            | Charts, data         |
+| 🔥    | U+1F525   | 2            | Fire, trending       |
+| ⭐    | U+2B50    | 2            | Star, favorite       |
 
 **How to check:**
+
 ```python
 # Check if emoji has variation selector
 emoji = "🖥️"
@@ -107,6 +115,7 @@ print(f"{emoji} - codepoints: {codepoints}")
 These emojis are **single codepoint** (or safe multi-codepoint) and work perfectly with all StyledConsole features including gradient effects:
 
 #### Status & Indicators (Width: 1-2)
+
 ```
 ✅ ❌ ⭕ 🔴 🟡 🟢 🔵 🟣 🟠 ⚫ ⚪
 ✓ ✗ ○ ● ◆ ◇ ■ □ ▪ ▫
@@ -114,6 +123,7 @@ These emojis are **single codepoint** (or safe multi-codepoint) and work perfect
 ```
 
 #### Arrows & Direction (Width: 1-2)
+
 ```
 ← → ↑ ↓ ↔ ↕ ↖ ↗ ↘ ↙
 ⬆ ⬇ ⬅ ➡ ⬈ ⬉ ⬊ ⬋
@@ -121,6 +131,7 @@ These emojis are **single codepoint** (or safe multi-codepoint) and work perfect
 ```
 
 #### Tech & Objects (Width: 2)
+
 ```
 💻 🖥 ⌨ 🖱 🖨 💾 💿 📀
 📱 📞 ☎ 📟 📠 📡
@@ -129,6 +140,7 @@ These emojis are **single codepoint** (or safe multi-codepoint) and work perfect
 ```
 
 #### Nature & Weather (Width: 2)
+
 ```
 🌈 ☀ 🌙 ⭐ 💧 ☁ ⛅ 🌤
 🌱 🌿 🍀 🌸 🌺 🌻 🌼
@@ -136,12 +148,14 @@ These emojis are **single codepoint** (or safe multi-codepoint) and work perfect
 ```
 
 #### Charts & Data (Width: 2)
+
 ```
 📊 📈 📉 📋 📌 📍 📎
 📦 📁 📂 📄 📃 📝 📜
 ```
 
 #### Symbols & Misc (Width: 1-2)
+
 ```
 🎯 🎨 🎭 🎪 🎉 🎊 🎁
 🏆 🥇 🥈 🥉 🏅 🎖
@@ -150,6 +164,7 @@ These emojis are **single codepoint** (or safe multi-codepoint) and work perfect
 ```
 
 #### Food & Drink (Width: 2)
+
 ```
 🍕 🍔 🍟 🌭 🍿 🧂
 ☕ 🍵 🥤 🍺 🍻 🥂
@@ -157,6 +172,7 @@ These emojis are **single codepoint** (or safe multi-codepoint) and work perfect
 ```
 
 #### People (Simple) (Width: 2)
+
 ```
 👥 👤 👣
 👍 👎 👋 🙌 👏 🤝
@@ -166,23 +182,27 @@ These emojis are **single codepoint** (or safe multi-codepoint) and work perfect
 ### ❌ UNSAFE - Avoid These
 
 **Variation Selector Emojis** (Use base version instead):
+
 ```
 ❌ AVOID: 🖥️ ↘️ ➡️ ⬆️ ⬇️ ⬅️ ☝️ ✌️ ☺️
 ✅ USE: 🖥 ↘ → ↑ ↓ ← (base versions)
 ```
 
 **ZWJ Sequences** (Multiple codepoints joined):
+
 ```
 ❌ AVOID: 👨‍💻 👩‍💻 🧑‍💻 👨‍🔬 👩‍🔬 👨‍🎨 👩‍🎨
 👨‍🚀 👩‍🚀 👨‍⚕️ 👩‍⚕️ 🏳️‍🌈 👨‍👩‍👧‍👦
 ```
 
 **Flag Emojis** (Regional indicators):
+
 ```
 ❌ AVOID: 🇺🇸 🇬🇧 🇨🇦 🇯🇵 (any country flags)
 ```
 
 **Skin Tone Modifiers**:
+
 ```
 ❌ AVOID: 👋🏻 👋🏼 👋🏽 👋🏾 👋🏿
 ✅ USE: 👋 (default without modifier)
@@ -192,14 +212,14 @@ These emojis are **single codepoint** (or safe multi-codepoint) and work perfect
 
 Instead of ZWJ emojis, use combinations:
 
-| ❌ Don't Use | ✅ Use Instead | Description |
-|-------------|---------------|-------------|
-| 👨‍💻 | 💻 or 👥💻 (separate) | Developer |
-| 👨‍🔬 | 🧪 or 🔬 | Scientist |
-| 👨‍🎨 | 🎨 | Artist |
-| 🏳️‍🌈 | 🌈 | Rainbow |
-| 🖥️ | 🖥 | Desktop computer |
-| ➡️ | → or ➡ | Right arrow |
+| ❌ Don't Use | ✅ Use Instead        | Description      |
+| ------------ | --------------------- | ---------------- |
+| 👨‍💻           | 💻 or 👥💻 (separate) | Developer        |
+| 👨‍🔬           | 🧪 or 🔬              | Scientist        |
+| 👨‍🎨           | 🎨                    | Artist           |
+| 🏳️‍🌈           | 🌈                    | Rainbow          |
+| 🖥️           | 🖥                     | Desktop computer |
+| ➡️           | → or ➡                | Right arrow      |
 
 ## 🔧 Default VS16 spacing assumption (v0.3.0+)
 
@@ -221,6 +241,7 @@ This preserves previous behavior for environments where VS16 gluing does not occ
 ## Examples
 
 ### ✅ Good Example
+
 ```python
 console.frame(
     ["Status: Online", "Users: 342"],
@@ -230,6 +251,7 @@ console.frame(
 ```
 
 ### ❌ Bad Example
+
 ```python
 console.frame(
     ["Status: Online", "Users: 342"],
@@ -281,9 +303,10 @@ See documentation:
 - `doc/GRADIENT_IMPLEMENTATION.md` - Gradient effects and emoji handling
 - `doc/TASKS.md` (T-010a) - Future safe emoji list & validation
 
----
+______________________________________________________________________
 
 **Last Updated**: October 19, 2025 (v0.1.0)
+
 - Added comprehensive safe emoji list (100+ tested emojis)
 - Added variation selector warnings and alternatives
 - Added quick reference for character-by-character processing

@@ -4,17 +4,17 @@
 
 The THICK border style creates a visual illusion of thick borders using Unicode block drawing characters. This document explains the character choices and rendering logic.
 
----
+______________________________________________________________________
 
 ## Unicode Block Characters
 
 ### Character Set
 
-| Character | Unicode | Name | Visual | Height Fill |
-|-----------|---------|------|--------|-------------|
-| `█` | U+2588 | FULL BLOCK | █ | 100% (full) |
-| `▀` | U+2580 | UPPER HALF BLOCK | ▀ | Top 50% |
-| `▄` | U+2584 | LOWER HALF BLOCK | ▄ | Bottom 50% |
+| Character | Unicode | Name             | Visual | Height Fill |
+| --------- | ------- | ---------------- | ------ | ----------- |
+| `█`       | U+2588  | FULL BLOCK       | █      | 100% (full) |
+| `▀`       | U+2580  | UPPER HALF BLOCK | ▀      | Top 50%     |
+| `▄`       | U+2584  | LOWER HALF BLOCK | ▄      | Bottom 50%  |
 
 ### Visual Properties
 
@@ -26,7 +26,7 @@ The THICK border style creates a visual illusion of thick borders using Unicode 
 ████████████
 ```
 
----
+______________________________________________________________________
 
 ## Border Construction
 
@@ -42,6 +42,7 @@ The THICK border style creates a visual illusion of thick borders using Unicode 
 ```
 
 **Visual Effect:**
+
 - Creates a thick line at the top of the character row
 - Leaves bottom half empty (transparent)
 - Appears as a solid cap above the content
@@ -58,6 +59,7 @@ The THICK border style creates a visual illusion of thick borders using Unicode 
 ```
 
 **Visual Effect:**
+
 - Creates a thick line at the bottom of the character row
 - Leaves top half empty (transparent)
 - Appears as a solid cap below the content
@@ -75,6 +77,7 @@ The THICK border style creates a visual illusion of thick borders using Unicode 
 ```
 
 **Visual Effect:**
+
 - Solid vertical lines on both sides
 - Full character height (100%)
 - Creates continuous walls
@@ -89,11 +92,12 @@ The THICK border style creates a visual illusion of thick borders using Unicode 
 ```
 
 **Visual Effect:**
+
 - Same as top border
 - Creates horizontal separation
 - Maintains visual consistency
 
----
+______________________________________________________________________
 
 ## Complete Frame Example
 
@@ -107,7 +111,7 @@ The THICK border style creates a visual illusion of thick borders using Unicode 
 █▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█  ← Bottom: LOWER HALF caps from below
 ```
 
----
+______________________________________________________________________
 
 ## Implementation
 
@@ -157,12 +161,13 @@ def render_bottom_border(self, width: int) -> str:
 **Why Special Logic?**
 
 The `BorderStyle` dataclass has a single `horizontal` field used for all horizontal lines. For THICK style:
+
 - Top border and dividers: Use `▀` (UPPER HALF) ✓
 - Bottom border: Needs `▄` (LOWER HALF) for proper visual effect
 
 Rather than adding new fields to `BorderStyle`, we detect THICK style and swap the character for bottom borders only.
 
----
+______________________________________________________________________
 
 ## Design Decisions
 
@@ -180,9 +185,9 @@ class BorderStyle:
 **Rejected Because:**
 
 1. **Breaking Change:** Would require updating all 8 predefined styles
-2. **Rare Use Case:** Only THICK style needs different characters
-3. **Code Complexity:** Adds field that's unused by 7 of 8 styles
-4. **Migration Burden:** Users with custom styles would need updates
+1. **Rare Use Case:** Only THICK style needs different characters
+1. **Code Complexity:** Adds field that's unused by 7 of 8 styles
+1. **Migration Burden:** Users with custom styles would need updates
 
 **Chosen Solution:**
 
@@ -193,16 +198,16 @@ class BorderStyle:
 
 ### Alternative Characters Considered
 
-| Option | Character | Issue |
-|--------|-----------|-------|
-| `▁` | LOWER ONE EIGHTH | Too thin, doesn't match top |
-| `▂` | LOWER ONE QUARTER | Still too thin |
-| `▃` | LOWER THREE EIGHTHS | Better but not half |
-| `▄` | LOWER HALF | ✅ **Perfect match** |
+| Option | Character           | Issue                       |
+| ------ | ------------------- | --------------------------- |
+| `▁`    | LOWER ONE EIGHTH    | Too thin, doesn't match top |
+| `▂`    | LOWER ONE QUARTER   | Still too thin              |
+| `▃`    | LOWER THREE EIGHTHS | Better but not half         |
+| `▄`    | LOWER HALF          | ✅ **Perfect match**        |
 
 **Conclusion:** `▄` LOWER HALF BLOCK is the exact mirror of `▀` UPPER HALF BLOCK.
 
----
+______________________________________________________________________
 
 ## Visual Comparison
 
@@ -228,13 +233,14 @@ class BorderStyle:
 
 **Result:** Perfect visual illusion of thick frame with proper caps.
 
----
+______________________________________________________________________
 
 ## Terminal Compatibility
 
 ### Full Support
 
 ✅ All modern terminals with Unicode support:
+
 - GNOME Terminal
 - Konsole
 - iTerm2
@@ -246,19 +252,21 @@ class BorderStyle:
 ### Partial Support
 
 ⚠️ Older terminals:
+
 - xterm (may show as boxes)
 - Terminal.app (older macOS versions)
 
 ### No Support
 
 🚫 ASCII-only terminals:
+
 - dumb terminal
 - Basic linux console
 - Very old SSH clients
 
 **Recommendation:** Use `ASCII` style as fallback for maximum compatibility.
 
----
+______________________________________________________________________
 
 ## Performance
 
@@ -288,7 +296,7 @@ Complete frame:            ~45µs
 
 **Overhead:** +2µs for THICK style detection (negligible)
 
----
+______________________________________________________________________
 
 ## Usage Examples
 
@@ -305,6 +313,7 @@ print(THICK.render_bottom_border(width))
 ```
 
 **Output:**
+
 ```
 █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ THICK Frame ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█
 █Content here                                            █
@@ -322,6 +331,7 @@ print(THICK.render_bottom_border(width))
 ```
 
 **Output:**
+
 ```
 █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ Sections ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█
 █Section 1                                               █
@@ -339,7 +349,7 @@ for line in ["Line 1", "Line 2", "Line 3"]:
 print(THICK.render_bottom_border(width))
 ```
 
----
+______________________________________________________________________
 
 ## Testing
 
@@ -368,28 +378,31 @@ def test_thick_style():
 
 Run to see THICK style in context with all other styles.
 
----
+______________________________________________________________________
 
 ## Future Enhancements
 
 ### Possible Improvements
 
 1. **Rounded THICK Style**
+
    - Use `▛▜` (quadrant blocks) for corners
    - Creates softer visual appearance
    - More complex rendering logic
 
-2. **Color Variations**
+1. **Color Variations**
+
    - Top/bottom different colors
    - Gradient effects
    - Requires color support (M3)
 
-3. **Double-Thick Style**
+1. **Double-Thick Style**
+
    - Use full blocks for horizontal lines
    - Even thicker appearance
    - May be too heavy for some uses
 
----
+______________________________________________________________________
 
 ## Related Documentation
 
@@ -397,7 +410,7 @@ Run to see THICK style in context with all other styles.
 - **Border Gallery:** `examples/gallery/border_gallery.py`
 - **All Styles:** `src/styledconsole/core/styles.py`
 
----
+______________________________________________________________________
 
 **Version:** 1.0 (October 18, 2025)
 **Status:** Production Ready ✅

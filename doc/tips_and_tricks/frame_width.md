@@ -13,8 +13,8 @@ When using `Console.frame()` with multi-line content, you may see truncation lik
 ## Why It Happens
 
 1. **Default max_width constraint** - Frames limit width to prevent overflow
-2. **Multi-line string parsing** - Using `'''` makes width calculation harder
-3. **Auto-sizing behavior** - Without explicit width, frames may be too narrow
+1. **Multi-line string parsing** - Using `'''` makes width calculation harder
+1. **Auto-sizing behavior** - Without explicit width, frames may be too narrow
 
 ## Solutions
 
@@ -102,7 +102,8 @@ console.frame([
 ## When to Omit Width
 
 Omit `width` parameter when:
-- ✅ Content is short (< 30 chars)
+
+- ✅ Content is short (\< 30 chars)
 - ✅ You want auto-sizing based on content
 - ✅ Using with `max_width` to prevent overflow
 
@@ -123,12 +124,14 @@ console.frame(content, width=frame_width)
 ## Summary
 
 **Quick Fix Checklist:**
+
 - [ ] Use list of strings instead of multi-line `'''` strings
 - [ ] Add explicit `width` parameter if content is wide
 - [ ] Keep individual lines under ~70 characters
 - [ ] Test output to verify no truncation (look for `...`)
 
 **See Also:**
+
 - `examples/testing/ux_validation_summary.py` - Working example
 - `examples/basic/01_simple_frame.py` - Basic frame usage
 - `examples/basic/08_console_api.py` - Various frame examples

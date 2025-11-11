@@ -5,7 +5,7 @@
 **Version:** 0.3.0 (planning v0.4.0)
 **Last Updated:** November 1, 2025
 
----
+______________________________________________________________________
 
 ## 📁 Folder Structure
 
@@ -20,12 +20,14 @@ Active reference documentation:
 ### `/doc/tasks/`
 
 **Planned** refactoring work (v0.4.0):
+
 - `planned/REFACTOR_001_DUAL_RENDERING_PATHS.md`
 - `planned/REFACTOR_002_COLOR_NORMALIZATION.md`
 - `planned/REFACTOR_003_GRADIENT_CONSOLIDATION.md`
 - `planned/README.md` - Overview & roadmap
 
 **Completed** historical documentation:
+
 - Completed work (refactoring summaries, testing reports, UX validation)
 - Finished analysis (Phase 4 analysis, legacy comparisons)
 - Code reviews (GPT-5 and Gemini reviews)
@@ -34,32 +36,33 @@ Active reference documentation:
 ### `/doc/project/`
 
 **Active tracking:**
+
 - `TASKS.md` - Current active tasks (unimplemented + v0.4.0 refactoring)
 - `TASKS_ARCHIVE.md` - Full v0.1.0-v0.3.0 implementation history (1,981 lines)
 - `PLAN.md` - System architecture
 - `ROADMAP.md` - Future plans
 - `SPECIFICATION.md` - What we're building
 
----
+______________________________________________________________________
 
 ## 🎯 Start Here
 
 **New to StyledConsole?**
 
 1. Read [project/SPECIFICATION.md](project/SPECIFICATION.md) - What we're building
-2. Review [project/PLAN.md](project/PLAN.md) - System architecture
-3. Check [guides/EMOJI_GUIDELINES.md](guides/EMOJI_GUIDELINES.md) - Start using the library
+1. Review [project/PLAN.md](project/PLAN.md) - System architecture
+1. Check [guides/EMOJI_GUIDELINES.md](guides/EMOJI_GUIDELINES.md) - Start using the library
 
 **Contributing?**
 
 1. Read [DOCUMENTATION_POLICY.md](DOCUMENTATION_POLICY.md) - Documentation rules
-2. Check [project/TASKS.md](project/TASKS.md) - Current active work (v0.4.0 refactoring)
-3. Review [project/ROADMAP.md](project/ROADMAP.md) - Future plans
+1. Check [project/TASKS.md](project/TASKS.md) - Current active work (v0.4.0 refactoring)
+1. Review [project/ROADMAP.md](project/ROADMAP.md) - Future plans
 
 **Historical Context?**
 
 1. See [project/TASKS_ARCHIVE.md](project/TASKS_ARCHIVE.md) - Complete v0.1.0-v0.3.0 implementation history
-2. Review [tasks/completed/](tasks/completed/) - Finished work summaries
+1. Review [tasks/completed/](tasks/completed/) - Finished work summaries
 
 ```
 
@@ -125,9 +128,9 @@ doc/### `/doc/tasks/planned/`
 
 ```
 
----
+______________________________________________________________________
 
----
+______________________________________________________________________
 
 ### 🎨 [EMOJI_RENDERING.md](EMOJI_RENDERING.md)
 
@@ -159,7 +162,7 @@ doc/### `/doc/tasks/planned/`
 
 - [Emoji Rendering](guides/EMOJI_RENDERING.md) - Technical: VS16 fix explained
 
----
+______________________________________________________________________
 
 #### **Create Visual Effects**
 
@@ -169,7 +172,7 @@ doc/### `/doc/tasks/planned/`
 
 **Purpose:** Technical details of THICK border style
 
-#### **Look Up Technical Details****Audience:** Developers understanding Unicode block characters
+#### **Look Up Technical Details\*\*\*\*Audience:** Developers understanding Unicode block characters
 
 - [CSS4 Colors](reference/CSS4-COLORS.md) - 148 named colors**Status:** Complete (October 18, 2025)
 
@@ -191,9 +194,9 @@ doc/### `/doc/tasks/planned/`
 
 - [tasks/completed/](tasks/completed/) - Refactoring summaries, analysis, reviews
 
----
+______________________________________________________________________
 
----
+______________________________________________________________________
 
 ## Notes & Reports
 
@@ -225,7 +228,7 @@ doc/### `/doc/tasks/planned/`
 
 | Document | Purpose | Status |- Follow-up improvements (THICK style, empty string)
 
-|----------|---------|--------|
+|\----------|---------|--------|
 
 | [EMOJI_GUIDELINES.md](guides/EMOJI_GUIDELINES.md) | Emoji usage guide | ✅ Complete (M1) |
 
@@ -243,11 +246,9 @@ doc/### `/doc/tasks/planned/`
 
 ### Reference Material (Grows Over Time)**Status:** Complete
 
-
-
 | Document | Purpose | Status |**Contents:**
 
-|----------|---------|--------|
+|\----------|---------|--------|
 
 | [CSS4-COLORS.md](reference/CSS4-COLORS.md) | Color reference | ✅ Complete (148 colors) |- THICK style visual illusion fix
 
@@ -261,7 +262,7 @@ doc/### `/doc/tasks/planned/`
 
 ## 🗂️ Historical Documentation
 
----
+______________________________________________________________________
 
 ### Archived Work (tasks/completed/)
 
@@ -274,8 +275,6 @@ doc/### `/doc/tasks/planned/`
 - REFACTORING_PLAN_v2.md - Original plan (executed)
 
 - EARLY_IMPROVEMENT_PLAN.md - Early improvements**Emoji Support:**
-
-
 
 **Analysis & Research (Finished):**- Strategy: `EMOJI-STRATEGY.md`
 
@@ -303,25 +302,21 @@ doc/### `/doc/tasks/planned/`
 
 - VARIATION_SELECTOR_ISSUE.md - VS16 issue fixed**Recent Changes:**
 
-
-
 **Reviews (Completed):**- October 18 updates: `notes/CHANGELOG_2025-10-18.md`
 
 - GPT5-codebase-review.md - AI code review- VS16 fix: `notes/VERIFICATION_REPORT.md`
 
 - Gemini_codebase-review_v2.md - AI code review v2
 
----
+______________________________________________________________________
 
 **Historical:**
 
 - STATUS_REPORT.md - Status snapshot## Document Status
 
-
-
 ---| Document | Date | Status | Coverage |
 
-|----------|------|--------|----------|
+|\----------|------|--------|----------|
 
 ## 📝 Documentation Policy| EMOJI-STRATEGY.md | M1 | ✅ Complete | Tier 1-3 roadmap |
 
@@ -333,19 +328,17 @@ doc/### `/doc/tasks/planned/`
 
 ### Quick Rules| CHANGELOG_2025-10-18.md | 2025-10-18 | ✅ Complete | Recent fixes |
 
-
-
 **Creating Documents:**---
 
 1. ✅ Check if document already exists (avoid duplicates)
 
-2. ✅ Place in correct folder (project/, guides/, reference/)## Future Documentation (Planned)
+1. ✅ Place in correct folder (project/, guides/, reference/)## Future Documentation (Planned)
 
-3. ✅ Follow naming conventions (UPPERCASE_WITH_UNDERSCORES.md)
+1. ✅ Follow naming conventions (UPPERCASE_WITH_UNDERSCORES.md)
 
-4. ✅ Include: Title, Purpose, Audience, Status### Coming in M2: Rendering Engine
+1. ✅ Include: Title, Purpose, Audience, Status### Coming in M2: Rendering Engine
 
-5. ✅ Add to this README.md index
+1. ✅ Add to this README.md index
 
 - **API_REFERENCE.md** - Complete API documentation
 
@@ -353,13 +346,11 @@ doc/### `/doc/tasks/planned/`
 
 1. ✅ Update docs when code changes (same PR)- **RENDERING.md** - Rendering engine internals
 
-2. ✅ Test code examples- **PERFORMANCE.md** - Benchmarks and optimization
+1. ✅ Test code examples- **PERFORMANCE.md** - Benchmarks and optimization
 
-3. ✅ Mark tasks complete in TASKS.md ✅
+1. ✅ Mark tasks complete in TASKS.md ✅
 
-4. ✅ Archive completed work to tasks/completed/### Coming in M3: Styling System
-
-
+1. ✅ Archive completed work to tasks/completed/### Coming in M3: Styling System
 
 **Quality Standards:**- **COLOR_SYSTEM.md** - Color parsing and operations
 
@@ -371,19 +362,13 @@ doc/### `/doc/tasks/planned/`
 
 - ✅ Table of contents if > 200 lines### Coming in M4: Export Formats
 
-
-
 ---- **EXPORT_HTML.md** - HTML export with CSS
 
 - **EXPORT_SVG.md** - SVG export for graphics
 
 ## 🔍 Finding Documentation- **EXPORT_IMAGE.md** - PNG/JPEG rendering
 
-
-
 ### By Topic---
-
-
 
 **Emojis:**## How to Read
 
@@ -395,7 +380,7 @@ doc/### `/doc/tasks/planned/`
 
 1. Start with examples: `examples/basic/01_simple_frame.py`
 
-**Borders & Styles:**2. Read `EMOJI-STRATEGY.md` for emoji support levels
+\*\*Borders & Styles:\*\*2. Read `EMOJI-STRATEGY.md` for emoji support levels
 
 - Gradients: [guides/BORDER_GRADIENTS.md](guides/BORDER_GRADIENTS.md)3. Explore border gallery: `examples/gallery/border_gallery.py`
 
@@ -403,15 +388,11 @@ doc/### `/doc/tasks/planned/`
 
 - Border styles definition: [project/PLAN.md](project/PLAN.md#border-styles)### For Emoji Issues
 
-
-
-**Colors:**1. Read `EMOJI_RENDERING.md` for VS16 explanation
+\*\*Colors:\*\*1. Read `EMOJI_RENDERING.md` for VS16 explanation
 
 - CSS4 palette: [reference/CSS4-COLORS.md](reference/CSS4-COLORS.md)2. Check `VERIFICATION_REPORT.md` for test coverage
 
 - Color utilities: [project/PLAN.md](project/PLAN.md#color-utilities)3. Review `notes/CHANGELOG_2025-10-18.md` for recent fixes
-
-
 
 **Architecture:**### For Border Customization
 
@@ -421,21 +402,17 @@ doc/### `/doc/tasks/planned/`
 
 2. Explore `src/styledconsole/core/styles.py` for all styles
 
-**Project Management:**3. Run `examples/gallery/border_gallery.py` for visuals
+\*\*Project Management:\*\*3. Run `examples/gallery/border_gallery.py` for visuals
 
 - Tasks: [project/TASKS.md](project/TASKS.md)
 
 - Roadmap: [project/ROADMAP.md](project/ROADMAP.md)### For Contributors
-
-
 
 ---1. Read all docs in order
 
 2. Check `notes/VERIFICATION_REPORT.md` for test standards
 
 ## 📈 Project Statistics3. Review `notes/CHANGELOG_2025-10-18.md` for recent patterns
-
-
 
 **Documentation:**---
 
@@ -465,8 +442,6 @@ doc/### `/doc/tasks/planned/`
 
 - All code examples tested ✅**Documentation Standards:**
 
-
-
 ---- Use Markdown format
 
 - Include code examples
@@ -476,8 +451,6 @@ doc/### `/doc/tasks/planned/`
 - Keep examples working (test with actual code)
 
 ### For Writers- Update index when adding new docs
-
-
 
 **Do:**---
 
@@ -493,7 +466,7 @@ doc/### `/doc/tasks/planned/`
 
 1. Check examples directory for working code
 
-**Don't:**2. Review test files for usage patterns
+\*\*Don't:\*\*2. Review test files for usage patterns
 
 - ❌ Create duplicate docs3. File an issue describing what's needed
 
@@ -509,32 +482,35 @@ doc/### `/doc/tasks/planned/`
 
 ### For Readers**Status:** M1 documentation complete ✅
 
-
 **Finding Information:**
+
 1. Check this README.md index
-2. Look in appropriate folder (project/, guides/, reference/)
-3. Search for keywords
-4. Check archived docs if historical context needed
+1. Look in appropriate folder (project/, guides/, reference/)
+1. Search for keywords
+1. Check archived docs if historical context needed
 
 **Can't Find What You Need?**
-1. Search existing docs (might be in different section)
-2. Check notes/ for ad-hoc information
-3. Review tasks/completed/ for historical context
-4. Open an issue with `[docs]` prefix
 
----
+1. Search existing docs (might be in different section)
+1. Check notes/ for ad-hoc information
+1. Review tasks/completed/ for historical context
+1. Open an issue with `[docs]` prefix
+
+______________________________________________________________________
 
 ## 🔧 Maintenance
 
 ### Regular Updates Needed
 
 **When code changes:**
+
 - Update guides if APIs change
 - Update examples if syntax changes
 - Update PLAN.md if architecture changes
 - Update SPECIFICATION.md if features change
 
 **When tasks complete:**
+
 - Mark complete in TASKS.md ✅
 - Update milestone progress
 - Archive analysis to tasks/completed/
@@ -551,24 +527,27 @@ grep -r "TODO" doc/          # Unfinished sections
 grep -r "Status: Draft" doc/ # Incomplete docs
 ```
 
----
+______________________________________________________________________
 
 ## 📞 Questions?
 
 **Documentation Issues:**
+
 - Missing documentation → Open issue with `[docs]` prefix
 - Outdated information → Open PR with fix
 - Unclear explanations → Open issue with specific questions
 
 **Policy Questions:**
+
 - Read [DOCUMENTATION_POLICY.md](DOCUMENTATION_POLICY.md) first
 - Still unclear? → Open issue with `[docs]` prefix
 
----
+______________________________________________________________________
 
 ## 🎯 Summary
 
 **This documentation is:**
+
 - ✅ Organized by purpose (project/, guides/, reference/)
 - ✅ Living (updated with code changes)
 - ✅ Tested (all code examples work)
@@ -576,6 +555,7 @@ grep -r "Status: Draft" doc/ # Incomplete docs
 - ✅ Maintained (policy enforces quality)
 
 **Navigate:**
+
 - **Learning?** → Start with [SPECIFICATION.md](project/SPECIFICATION.md)
 - **Using?** → Check [guides/](guides/)
 - **Contributing?** → Read [DOCUMENTATION_POLICY.md](DOCUMENTATION_POLICY.md)

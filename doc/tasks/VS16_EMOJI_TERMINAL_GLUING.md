@@ -5,7 +5,7 @@
 **Created:** 2025-11-02
 **Target:** v1.1.0
 
----
+______________________________________________________________________
 
 ## Problem Statement
 
@@ -14,6 +14,7 @@ Some VS16 (Variation Selector-16) emojis exhibit "gluing" behavior in terminals 
 ### Observed Behavior
 
 **Gluing emojis (double space needed):**
+
 ```
 ⚙️ Services  → displays as: ⚙️Services (no visible space)
 ⏱️ Uptime    → displays as: ⏱️Uptime (no visible space)
@@ -21,6 +22,7 @@ Some VS16 (Variation Selector-16) emojis exhibit "gluing" behavior in terminals 
 ```
 
 **Non-gluing emojis (work correctly):**
+
 ```
 ⚠️ Warning   → displays as: ⚠️ Warning (space visible)
 ℹ️ Info      → displays as: ℹ️ Info (space visible)
@@ -29,6 +31,7 @@ Some VS16 (Variation Selector-16) emojis exhibit "gluing" behavior in terminals 
 ### Current Workaround
 
 Manually add double space after gluing emojis:
+
 ```python
 # Code has double space, terminal displays single space
 title="⚙️  Services"  # ⚙️ + VS16 + space + space
@@ -41,16 +44,16 @@ title="⚙️  Services"  # ⚙️ + VS16 + space + space
 - **Impact:** Visual appearance only (width calculations are correct)
 - **Affects:** Frame titles, banner text, formatted output with VS16 emojis
 
----
+______________________________________________________________________
 
 ## Research Phase: Systematic Discovery
 
 ### Objectives
 
 1. **Identify all gluing VS16 emojis** from our Tier 1 supported set
-2. **Test across multiple terminals** to understand terminal-specific behavior
-3. **Find the pattern** - what characteristic causes gluing?
-4. **Document findings** in emoji guidelines
+1. **Test across multiple terminals** to understand terminal-specific behavior
+1. **Find the pattern** - what characteristic causes gluing?
+1. **Document findings** in emoji guidelines
 
 ### Research Script Requirements
 
@@ -97,28 +100,30 @@ print("=" * 80)
 
 ### Testing Matrix
 
-| Terminal | Version | OS | Tester | Date | Results File |
-|----------|---------|----|---------| -----|--------------|
-| GNOME Terminal | ? | Linux | ? | ? | `results/gnome_terminal.txt` |
-| Kitty | ? | Linux | ? | ? | `results/kitty.txt` |
-| Alacritty | ? | Linux | ? | ? | `results/alacritty.txt` |
-| iTerm2 | ? | macOS | ? | ? | `results/iterm2.txt` |
-| Windows Terminal | ? | Windows | ? | ? | `results/windows_terminal.txt` |
-| VSCode Terminal | ? | All | ? | ? | `results/vscode_terminal.txt` |
+| Terminal         | Version | OS      | Tester | Date | Results File                   |
+| ---------------- | ------- | ------- | ------ | ---- | ------------------------------ |
+| GNOME Terminal   | ?       | Linux   | ?      | ?    | `results/gnome_terminal.txt`   |
+| Kitty            | ?       | Linux   | ?      | ?    | `results/kitty.txt`            |
+| Alacritty        | ?       | Linux   | ?      | ?    | `results/alacritty.txt`        |
+| iTerm2           | ?       | macOS   | ?      | ?    | `results/iterm2.txt`           |
+| Windows Terminal | ?       | Windows | ?      | ?    | `results/windows_terminal.txt` |
+| VSCode Terminal  | ?       | All     | ?      | ?    | `results/vscode_terminal.txt`  |
 
 ### Expected Outcomes
 
 **Pattern hypothesis:**
+
 - VS16 emojis where `wcwidth(base_char) == 1` but terminal renders as 2-width
 - Possibly related to Unicode blocks (e.g., Miscellaneous Symbols U+2600-U+26FF)
 - May vary by terminal emulator
 
 **Documentation deliverable:**
+
 - Create `doc/guides/VS16_TERMINAL_GLUING.md`
 - Update `doc/guides/EMOJI_RENDERING.md` with gluing section
 - Add table of known gluing emojis to `doc/guides/EMOJI_GUIDELINES.md`
 
----
+______________________________________________________________________
 
 ## Implementation Phase: Library Support
 
@@ -239,7 +244,7 @@ def detect_terminal_type() -> str:
     # ... more detection logic
 ```
 
----
+______________________________________________________________________
 
 ## Testing Strategy
 
@@ -288,11 +293,12 @@ def test_frame_respects_auto_spacing_false():
 ### Visual Tests
 
 Create `examples/testing/visual_vs16_spacing.py`:
+
 - Display frames with all known gluing emojis
 - Compare with/without workaround
 - Manual visual verification
 
----
+______________________________________________________________________
 
 ## Documentation Updates
 
@@ -300,7 +306,7 @@ Create `examples/testing/visual_vs16_spacing.py`:
 
 Add new section after "Variation Selector-16":
 
-```markdown
+````markdown
 ## Terminal Gluing Behavior (v1.1.0+)
 
 ### Problem: Visual Space Collapse
@@ -313,15 +319,15 @@ are correct.
 ```python
 title = "⚙️ Services"  # Has space in code
 # Terminal displays: ⚙️Services (no visible space!)
-```
+````
 
 ### Known Gluing Emojis
 
-| Emoji | Unicode | Name | Base Width | Rendered Width |
-|-------|---------|------|------------|----------------|
-| ⚙️ | U+2699+FE0F | GEAR | 1 | 2 |
-| ⏱️ | U+23F1+FE0F | STOPWATCH | 1 | 2 |
-| ⏸️ | U+23F8+FE0F | PAUSE BUTTON | 1 | 2 |
+| Emoji | Unicode     | Name         | Base Width | Rendered Width |
+| ----- | ----------- | ------------ | ---------- | -------------- |
+| ⚙️    | U+2699+FE0F | GEAR         | 1          | 2              |
+| ⏱️    | U+23F1+FE0F | STOPWATCH    | 1          | 2              |
+| ⏸️    | U+23F8+FE0F | PAUSE BUTTON | 1          | 2              |
 
 *(See full list in research results)*
 
@@ -344,7 +350,8 @@ rendering "consumes" the following space position, making it invisible.
 
 **Affected emojis:** Primarily narrow base characters (wcwidth=1) from
 Miscellaneous Symbols block (U+2600-U+26FF) with VS16 selector.
-```
+
+````
 
 ### 2. Update `doc/guides/EMOJI_GUIDELINES.md`
 
@@ -366,18 +373,21 @@ Some VS16 emojis appear "glued" to following text in terminals:
 ```python
 # Use double space in code
 title = "⚙️  Services"  # Terminal displays: ⚙️ Services (single space visible)
-```
+````
 
 **Automatic Fix (v1.1.0+):**
+
 ```python
 # Library auto-detects and fixes
 console.frame(["content"], title="⚙️ Services")  # Auto-converts to double space
 ```
 
 **Disable auto-fix:**
+
 ```python
 console.frame(["content"], title="⚙️  Services", auto_spacing=False)
 ```
+
 ```
 
 ### 3. Create `doc/guides/VS16_TERMINAL_GLUING.md`
@@ -449,3 +459,4 @@ Complete technical deep-dive document with:
 - Requires completion of deprecation removal (v1.0.0)
 - No external library dependencies needed
 - Benefits from existing terminal detection in `TerminalManager`
+```

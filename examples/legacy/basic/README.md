@@ -23,24 +23,28 @@ console.text("✓ Ready", color="green", bold=True)
 Start here to learn the recommended patterns:
 
 1. **01_simple_frame.py** - Frame rendering basics
+
    - Simple frames with titles and borders
    - Content alignment and width control
    - Multi-line content handling
    - **API Used**: `Console.frame()`
 
-2. **02_emoji_support.py** - Emoji and Unicode handling
+1. **02_emoji_support.py** - Emoji and Unicode handling
+
    - Emoji in titles and content
    - Proper width calculation for emojis
    - Styled text output
    - **API Used**: `Console.frame()`, `Console.text()`
 
-3. **03_alignments.py** - Content alignment options
+1. **03_alignments.py** - Content alignment options
+
    - Left, center, and right alignment
    - Multi-line alignment
    - Width-based alignment
    - **API Used**: `Console.frame()`
 
-4. **04_border_styles.py** - Border style showcase
+1. **04_border_styles.py** - Border style showcase
+
    - All 8 built-in border styles
    - Dynamic style selection
    - Case-insensitive style names
@@ -51,26 +55,30 @@ Start here to learn the recommended patterns:
 Use these when you need more control:
 
 5. **05_frame_renderer.py** - Direct FrameRenderer usage
+
    - **When to use**: Generating frames as `list[str]` for composition
    - **When to use**: Custom rendering pipelines
    - **When to use**: Integration with LayoutComposer
    - **Note**: For standard usage, prefer `Console.frame()`
 
-6. **06_banner_renderer.py** - Banner rendering with Console
+1. **06_banner_renderer.py** - Banner rendering with Console
+
    - ASCII art banners with pyfiglet fonts
    - Gradient coloring
    - Border frames around banners
    - **API Used**: `Console.banner()`
    - **Advanced**: Shows BannerRenderer utility methods (font listing, preview)
 
-7. **07_layout_composer.py** - Complex layouts
+1. **07_layout_composer.py** - Complex layouts
+
    - Vertical stacking of multiple elements
    - Side-by-side placement
    - Grid layouts (multi-column, multi-row)
    - **Integration**: Console + LayoutComposer + FrameRenderer
    - **When to use**: Dashboards, complex multi-section displays
 
-8. **08_console_api.py** - Comprehensive Console showcase
+1. **08_console_api.py** - Comprehensive Console showcase
+
    - Complete feature overview
    - Recording and export (HTML/text)
    - Terminal detection
@@ -98,6 +106,7 @@ console.text("Styled text", color="cyan", bold=True)
 ```
 
 **Pros:**
+
 - Simple, intuitive API
 - Automatic output to terminal
 - Built-in styling and formatting
@@ -127,12 +136,14 @@ for line in layout:
 ```
 
 **Pros:**
+
 - Fine-grained control over rendering
 - Composable elements (frames as data)
 - Integration with custom pipelines
 - No automatic output (you control when/how)
 
 **Use for:**
+
 - Complex multi-section layouts (LayoutComposer)
 - Custom rendering pipelines
 - Generating output for non-terminal destinations
@@ -140,19 +151,20 @@ for line in layout:
 
 ## Feature Matrix
 
-| Feature | Console API | Direct Renderers |
-|---------|-------------|------------------|
-| Frame rendering | ✅ `console.frame()` | ✅ `FrameRenderer.render()` |
-| Banner rendering | ✅ `console.banner()` | ✅ `BannerRenderer.render()` |
-| Styled text | ✅ `console.text()` | ❌ Use Rich directly |
-| Rules/dividers | ✅ `console.rule()` | ❌ Use Rich directly |
-| Layout composition | ⚠️ Via `console.print()` | ✅ `LayoutComposer` |
-| Auto output | ✅ Yes | ❌ Manual `print()` |
-| Recording/Export | ✅ Built-in | ❌ N/A |
-| Terminal detection | ✅ Built-in | ❌ N/A |
-| Debug logging | ✅ Built-in | ❌ N/A |
+| Feature            | Console API              | Direct Renderers             |
+| ------------------ | ------------------------ | ---------------------------- |
+| Frame rendering    | ✅ `console.frame()`     | ✅ `FrameRenderer.render()`  |
+| Banner rendering   | ✅ `console.banner()`    | ✅ `BannerRenderer.render()` |
+| Styled text        | ✅ `console.text()`      | ❌ Use Rich directly         |
+| Rules/dividers     | ✅ `console.rule()`      | ❌ Use Rich directly         |
+| Layout composition | ⚠️ Via `console.print()` | ✅ `LayoutComposer`          |
+| Auto output        | ✅ Yes                   | ❌ Manual `print()`          |
+| Recording/Export   | ✅ Built-in              | ❌ N/A                       |
+| Terminal detection | ✅ Built-in              | ❌ N/A                       |
+| Debug logging      | ✅ Built-in              | ❌ N/A                       |
 
 Legend:
+
 - ✅ Fully supported
 - ⚠️ Supported with helper
 - ❌ Not applicable / use alternative
@@ -160,6 +172,7 @@ Legend:
 ## When to Use What
 
 ### Use Console API when:
+
 - ✅ Building CLI applications
 - ✅ Creating user interfaces with styled output
 - ✅ Need automatic terminal detection
@@ -167,6 +180,7 @@ Legend:
 - ✅ Prefer simple, high-level interface
 
 ### Use Direct Renderers when:
+
 - ✅ Building complex layouts with LayoutComposer
 - ✅ Need frames as data (`list[str]`) for further processing
 - ✅ Integrating with custom rendering pipelines
@@ -174,6 +188,7 @@ Legend:
 - ✅ Need precise control over output timing
 
 ### Integration Pattern:
+
 You can mix both approaches:
 
 ```python
@@ -219,14 +234,15 @@ uv run examples/basic/01_simple_frame.py
 ## Contributing Examples
 
 When adding new examples:
-1. Follow the naming convention: `##_descriptive_name.py`
-2. Start with a clear docstring explaining the example
-3. Use Console API for basic examples
-4. Use direct renderers only when demonstrating advanced features
-5. Include comments explaining each step
-6. Show both simple and complex variations
-7. Test that examples run without errors
 
----
+1. Follow the naming convention: `##_descriptive_name.py`
+1. Start with a clear docstring explaining the example
+1. Use Console API for basic examples
+1. Use direct renderers only when demonstrating advanced features
+1. Include comments explaining each step
+1. Show both simple and complex variations
+1. Test that examples run without errors
+
+______________________________________________________________________
 
 *StyledConsole - Beautiful console output made simple*

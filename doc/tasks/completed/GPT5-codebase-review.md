@@ -33,7 +33,7 @@ Legend:
 
 - Criticality: High / Medium / Low
 - Impact: High / Medium / Low
-- Effort: S (small: <0.5d), M (medium: 0.5–2d), L (>2d)
+- Effort: S (small: \<0.5d), M (medium: 0.5–2d), L (>2d)
 
 ### Top Recommendations (Do First)
 
@@ -97,7 +97,7 @@ Legend:
 - Rationale: Today `interpolate_color` is used with both strings and tuples
 - Actions:
   - Create `interpolate_rgb(start: tuple, end: tuple, t)` and call after a single parse
-  - Avoid repeated hex<->rgb conversions in loops
+  - Avoid repeated hex\<->rgb conversions in loops
 
 1. Improve gradient API ergonomics
 
@@ -140,7 +140,7 @@ Legend:
 - Criticality: Low | Impact: Low/Medium | Effort: M
 - Rationale: Quantify improvements and guard against regressions
 - Actions:
-  - `pytest-benchmark` for frame render speed (<10ms), banners, and export
+  - `pytest-benchmark` for frame render speed (\<10ms), banners, and export
 
 1. Public API surfacing & stability
 
@@ -153,26 +153,32 @@ Legend:
 ## Concrete Code-Level Opportunities
 
 - Console.__init__
+
   - Set `color_system` to `"truecolor" | "256" | "standard"` based on detected depth instead of `"auto"`
   - Lazy-init renderers: create `_frame_renderer`/`_banner_renderer` on first call to `frame()`/`banner()`
 
 - FrameRenderer
+
   - Parameter validation: ensure `padding >= 0`, `min_width <= max_width`, and `width >= min_width`
   - When applying gradients, compute color list once per frame and reuse
 
 - BannerRenderer
+
   - Cache `pyfiglet.Figlet(font)` per font via `@lru_cache` on a helper to speed repeated renders
   - `_apply_gradient`: interpolate using tuple RGBs to avoid hex parse each iteration
 
 - utils.color
+
   - Add `@lru_cache(maxsize=512)` to `parse_color`
   - Introduce `interpolate_rgb` returning `(r, g, b)`
 
 - utils.text
+
   - Keep Tier 1 approach (fast and simple) for v0.1; plan Tier 2/3 with optional `grapheme` in v0.2
   - Add property tests with Hypothesis to stress tricky sequences (zero-width joiners, VS16, ANSI)
 
 - utils.terminal
+
   - Consider setting `color_system` mapping to match detected depth
   - Add an escape hatch env (e.g. `SC_FORCE_COLOR_SYSTEM`) for debugging
 
@@ -196,15 +202,18 @@ None of these should be mandatory for end users; gate behind dev deps or extras.
 ## Proposed Roadmap Alignment
 
 - Short-term (M3 start):
+
   - Implement presets on top of Console (no deep changes)
   - Add input validation + color system mapping (Quick Win)
   - Add caches (colors/fonts) + lazy renderers (Quick Win)
 
 - Mid-term (M4):
+
   - HtmlExporter consuming Rich recording (no extra deps beyond ansi2html)
   - CI + codecov + hypothesis
 
 - Longer-term (post v0.1.0):
+
   - Tier 2/3 emoji via optional extras
   - Theming system + presets documentation
   - Benchmarks and performance budget in CI
@@ -227,7 +236,7 @@ None of these should be mandatory for end users; gate behind dev deps or extras.
 - [ ] Prep HtmlExporter skeleton for M4
 - [ ] Consider mypy + extended ruff rules in dev
 
----
+______________________________________________________________________
 
 Prepared by: Internal review (automated + manual)
 Date: Oct 18, 2025

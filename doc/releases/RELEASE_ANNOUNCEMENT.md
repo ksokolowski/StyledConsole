@@ -4,7 +4,7 @@
 **Status:** ✅ Production Ready
 **License:** Apache-2.0
 
----
+______________________________________________________________________
 
 ## 📦 Installation
 
@@ -35,6 +35,7 @@ gradient_frame("Amazing gradients!", start_color="red", end_color="blue")
 ### Core Features
 
 #### 🎨 8 Border Styles
+
 - **solid** - Classic Unicode (┌─┐│└┘)
 - **rounded** - Smooth corners (╭─╮│╰╯)
 - **double** - Double lines (╔═╗║╚╝)
@@ -45,6 +46,7 @@ gradient_frame("Amazing gradients!", start_color="red", end_color="blue")
 - **dots** - Subtle (····)
 
 #### 🌈 Rich Color Support
+
 - **148 CSS4 color names** (red, lime, blue, etc.)
 - **Hex codes** (#RGB, #RRGGBB)
 - **RGB tuples** (r, g, b)
@@ -53,16 +55,19 @@ gradient_frame("Amazing gradients!", start_color="red", end_color="blue")
 - **Rainbow effects** (7-color ROYGBIV spectrum)
 
 #### 😀 Emoji Support (Tier 1)
+
 ✅ 🔥 🎉 🚀 ⚡ 💡 🎨 💎 🔴 🟢 🟡 🔵 🟣 🟠
 
 Proper visual width calculation and alignment!
 
 #### 📤 Export Capabilities
+
 - **HTML export** with inline styles
 - **Plain text export** (ANSI stripped)
 - **Recording mode** for batch operations
 
 #### 🏗️ Advanced Layouts
+
 - **Stack** - Vertical composition
 - **Side-by-side** - Horizontal layout
 - **Grid** - Multi-column layouts
@@ -82,14 +87,14 @@ Console (54 statements)
 
 ## 📊 Quality Metrics
 
-| Metric | Value |
-|--------|-------|
-| **Tests** | 612 passing (100%) |
-| **Coverage** | 96.30% |
+| Metric             | Value                  |
+| ------------------ | ---------------------- |
+| **Tests**          | 612 passing (100%)     |
+| **Coverage**       | 96.30%                 |
 | **Python Support** | 3.10, 3.11, 3.12, 3.13 |
-| **Known Bugs** | 0 |
-| **Examples** | 20+ working |
-| **Documentation** | Comprehensive |
+| **Known Bugs**     | 0                      |
+| **Examples**       | 20+ working            |
+| **Documentation**  | Comprehensive          |
 
 ## 📚 Documentation
 
@@ -101,6 +106,7 @@ Console (54 statements)
 ## 🎯 Use Cases
 
 Perfect for:
+
 - **CLI applications** - Beautiful terminal UIs
 - **Build systems** - Status reporting
 - **Dashboards** - System monitoring
@@ -130,11 +136,14 @@ ansi2html>=1.8.0
 ## 🎓 Example Gallery
 
 ### Basic Frame
+
 ```python
 console = Console()
 console.frame("Hello, World!", title="Greeting")
 ```
+
 Output:
+
 ```
 ┌──── Greeting ────┐
 │ Hello, World!    │
@@ -142,16 +151,20 @@ Output:
 ```
 
 ### Gradient Effect
+
 ```python
 from styledconsole.effects import gradient_frame
 gradient_frame("Beautiful!", start_color="red", end_color="blue")
 ```
 
 ### ASCII Banner
+
 ```python
 console.banner("LAUNCH", font="slant")
 ```
+
 Output:
+
 ```
    __    ___ __  ___   ____________  __
   / /   /   |  |/  /  / ____/ __ \ \/ /
@@ -161,6 +174,7 @@ Output:
 ```
 
 ### Dashboard Layout
+
 ```python
 from styledconsole.core.layout import LayoutComposer
 
@@ -174,6 +188,7 @@ dashboard = composer.grid([
 ## 🔮 What's Next (v0.2.0)
 
 Planned features:
+
 - Additional border styles
 - Theme presets
 - Animation support
@@ -190,6 +205,7 @@ Planned features:
 ## 🙏 Credits
 
 Built with excellent libraries:
+
 - **rich** - Terminal rendering
 - **pyfiglet** - ASCII art fonts
 - **wcwidth** - Unicode width
@@ -212,7 +228,7 @@ Thank you for using StyledConsole! We hope it makes your terminal output beautif
 
 **Happy coding!** 🚀
 
----
+______________________________________________________________________
 
 **Author:** Krzysztof Sokołowski
 **Email:** krzysiek.sokolowski@gmail.com

@@ -5,29 +5,32 @@
 **Target Version:** v0.4.0
 **Status:** 📋 Planning Phase
 
----
+______________________________________________________________________
 
 ## Overview
 
 This directory contains **specification-driven action plans** for architectural improvements and code quality enhancements identified in the comprehensive codebase review.
 
 Each plan follows the **Documentation Policy** (doc/DOCUMENTATION_POLICY.md):
+
 - ✅ Traceable findings (ID references)
 - ✅ Actionable steps with acceptance criteria
 - ✅ Prioritized by impact and complexity
 - ✅ Specification-based (why, what, how)
 
----
+______________________________________________________________________
 
 ## High Priority Plans (v0.4.0)
 
 ### 🔴 REFACTOR-001: Eliminate Dual Rendering Paths
+
 **File:** [`REFACTOR_001_DUAL_RENDERING_PATHS.md`](REFACTOR_001_DUAL_RENDERING_PATHS.md)
 **Finding:** A1 (Architecture Review)
 **Impact:** -400 LOC, 40% maintenance reduction
 **Duration:** 7 days (v0.4.0) + 1 day (v1.0.0 cleanup)
 
 **Problem:** v0.3.0 maintains both Rich-native (`RenderingEngine`) and legacy (`FrameRenderer`) implementations, causing:
+
 - Code duplication (width calc, padding, alignment)
 - Bug propagation risk (fix must apply to both)
 - API confusion (which to use?)
@@ -35,23 +38,26 @@ Each plan follows the **Documentation Policy** (doc/DOCUMENTATION_POLICY.md):
 **Solution:** Adapter pattern → deprecation (v0.4) → removal (v1.0)
 
 **Phases:**
+
 1. Create `FrameAdapter` (wraps legacy API with Rich backend)
-2. Add deprecation warnings
-3. Refactor `effects.py` to use Console API
-4. Code cleanup (-270 LOC)
-5. Complete removal in v1.0
+1. Add deprecation warnings
+1. Refactor `effects.py` to use Console API
+1. Code cleanup (-270 LOC)
+1. Complete removal in v1.0
 
 **Dependencies:** None (can start immediately)
 
----
+______________________________________________________________________
 
 ### 🔴 REFACTOR-002: Extract Color Normalization Utility
+
 **File:** [`REFACTOR_002_COLOR_NORMALIZATION.md`](REFACTOR_002_COLOR_NORMALIZATION.md)
 **Finding:** A2 (Architecture Review)
 **Impact:** +caching, +testability, -20 LOC duplication
 **Duration:** 4 hours (half-day sprint)
 
 **Problem:** `normalize_color()` defined as **nested function** in `RenderingEngine.print_frame()`:
+
 - Not testable in isolation
 - Not cacheable (recreated every call)
 - Duplicated logic in `effects.py`
@@ -59,23 +65,26 @@ Each plan follows the **Documentation Policy** (doc/DOCUMENTATION_POLICY.md):
 **Solution:** Extract to `utils/color.py` with LRU caching
 
 **Steps:**
+
 1. Create `normalize_color_for_rich()` utility (30 min)
-2. Add comprehensive unit tests (1 hour)
-3. Refactor RenderingEngine (30 min)
-4. Update effects module (1 hour)
-5. Integration testing (30 min)
+1. Add comprehensive unit tests (1 hour)
+1. Refactor RenderingEngine (30 min)
+1. Update effects module (1 hour)
+1. Integration testing (30 min)
 
 **Dependencies:** None (quick win, recommended first)
 
----
+______________________________________________________________________
 
 ### 🔴 REFACTOR-003: Consolidate Gradient Logic
+
 **File:** [`REFACTOR_003_GRADIENT_CONSOLIDATION.md`](REFACTOR_003_GRADIENT_CONSOLIDATION.md)
 **Finding:** Q1 (Code Quality Review)
 **Impact:** -280 LOC, eliminates 70% duplication
 **Duration:** 8 days (2 weeks half-time)
 
 **Problem:** **4 nearly-identical gradient functions** (304 LOC total):
+
 - `_apply_vertical_content_gradient()`
 - `_apply_diagonal_gradient()`
 - `_apply_vertical_rainbow()`
@@ -84,6 +93,7 @@ Each plan follows the **Documentation Policy** (doc/DOCUMENTATION_POLICY.md):
 **Solution:** Strategy pattern with pluggable components
 
 **Architecture:**
+
 ```
 Gradient Engine (unified)
 ├── Position Strategies (Vertical, Diagonal, Horizontal)
@@ -92,15 +102,16 @@ Gradient Engine (unified)
 ```
 
 **Phases:**
+
 1. Create strategy classes (2 days)
-2. Build unified gradient engine (2 days)
-3. Refactor public API functions (1 day)
-4. Testing & validation (2 days)
-5. Performance benchmarking (1 day)
+1. Build unified gradient engine (2 days)
+1. Refactor public API functions (1 day)
+1. Testing & validation (2 days)
+1. Performance benchmarking (1 day)
 
 **Dependencies:** REFACTOR-002 recommended first
 
----
+______________________________________________________________________
 
 ## Implementation Roadmap
 
@@ -137,19 +148,19 @@ REFACTOR-002 (Color norm)
 
 **Recommendation:** Execute in order (002 → 001 → 003) for cleanest implementation.
 
----
+______________________________________________________________________
 
 ## Success Metrics
 
 ### Code Quality Improvements
 
-| Metric | v0.3.0 | v0.4.0 Target | Improvement |
-|--------|--------|---------------|-------------|
-| Total LOC (src/) | 5,477 | 4,957 | -9.5% ✅ |
-| Code duplication | ~15% | ~5% | -67% ✅ |
-| Longest method | 132 lines | <60 lines | -54% ✅ |
-| Rendering implementations | 2 | 1 | -50% ✅ |
-| Test coverage | 95.96% | ≥96% | Maintained ✅ |
+| Metric                    | v0.3.0    | v0.4.0 Target | Improvement   |
+| ------------------------- | --------- | ------------- | ------------- |
+| Total LOC (src/)          | 5,477     | 4,957         | -9.5% ✅      |
+| Code duplication          | ~15%      | ~5%           | -67% ✅       |
+| Longest method            | 132 lines | \<60 lines    | -54% ✅       |
+| Rendering implementations | 2         | 1             | -50% ✅       |
+| Test coverage             | 95.96%    | ≥96%          | Maintained ✅ |
 
 ### Maintainability Gains
 
@@ -165,62 +176,71 @@ REFACTOR-002 (Color norm)
 - [ ] Extensible design (add gradient types easily)
 - [ ] Comprehensive tests (>95% coverage maintained)
 
----
+______________________________________________________________________
 
 ## Risk Management
 
 ### High-Risk Areas
 
 1. **Visual Output Changes** (REFACTOR-003)
+
    - **Mitigation:** Snapshot testing for pixel-perfect comparison
    - **Validation:** Manual inspection of all examples
 
-2. **Breaking Changes** (REFACTOR-001)
+1. **Breaking Changes** (REFACTOR-001)
+
    - **Mitigation:** Deprecation warnings in v0.4, removal in v1.0
    - **Validation:** Clear migration guide
 
-3. **Performance Regression** (REFACTOR-003)
-   - **Mitigation:** Benchmark before/after (accept <5% regression)
+1. **Performance Regression** (REFACTOR-003)
+
+   - **Mitigation:** Benchmark before/after (accept \<5% regression)
    - **Validation:** Strategy pattern overhead should be negligible
 
 ### Rollback Plan
 
 Each refactor is **atomic** with clear acceptance criteria:
+
 - If tests fail → investigate and fix
 - If >5% performance regression → optimize or revert
 - If visual regressions → analyze root cause, fix before merge
 
----
+______________________________________________________________________
 
 ## Medium Priority (v0.5.0+)
 
 These plans address medium-priority findings and can be tackled after v0.4.0 release:
 
 ### 🟡 Architecture Improvements
+
 - **A4:** Dependency injection for TerminalManager (+testability)
 - **A5:** Centralize logging setup (-60 LOC duplication)
 
 ### 🟡 Code Quality
+
 - **Q2:** Break up 100+ line methods (SRP violations)
 - **Q3:** Replace magic numbers with named constants
 - **Q4:** Improve error handling specificity
 
 ### 🟡 Performance
+
 - **P1:** Fix string concatenation in tight loops (O(n²) → O(n))
 - **P2:** Pre-strip ANSI codes in gradients (reduce regex overhead)
 - **P3:** Cache emoji width calculations
 
 ### 🟡 Extensibility
+
 - **E1:** BorderStyleRegistry for custom styles
 - **E2:** Theme system for color presets
 
----
+______________________________________________________________________
 
 ## Testing Strategy
 
 ### Per-Refactor Testing
 
 Each plan includes:
+
 - **Unit tests:** Isolated component testing
 - **Integration tests:** Cross-component workflows
 - **Snapshot tests:** Visual regression prevention
@@ -244,7 +264,7 @@ pytest -W error::DeprecationWarning
 
 **Acceptance:** All tests pass, coverage ≥95.96%, no visual regressions
 
----
+______________________________________________________________________
 
 ## References
 
@@ -268,33 +288,33 @@ pytest -W error::DeprecationWarning
 - **Semantic Versioning:** https://semver.org/
 - **Python Protocols:** PEP 544 (Structural Subtyping)
 
----
+______________________________________________________________________
 
 ## Status Updates
 
 ### Completion Tracking
 
-- [ ] REFACTOR-001 completed: [DATE] → v0.4.0 release
-- [ ] REFACTOR-002 completed: [DATE] → v0.4.0 release
-- [ ] REFACTOR-003 completed: [DATE] → v0.4.0 release
-- [ ] v0.4.0 released: [TARGET: November 15, 2025]
-- [ ] REFACTOR-001 Phase 5: [DATE] → v1.0.0 release
-- [ ] v1.0.0 released: [TARGET: December 1, 2025]
+- [ ] REFACTOR-001 completed: \[DATE\] → v0.4.0 release
+- [ ] REFACTOR-002 completed: \[DATE\] → v0.4.0 release
+- [ ] REFACTOR-003 completed: \[DATE\] → v0.4.0 release
+- [ ] v0.4.0 released: \[TARGET: November 15, 2025\]
+- [ ] REFACTOR-001 Phase 5: \[DATE\] → v1.0.0 release
+- [ ] v1.0.0 released: \[TARGET: December 1, 2025\]
 
 ### Change Log
 
 - **2025-11-01:** Initial plans created based on analysis
-- [Future entries as work progresses]
+- \[Future entries as work progresses\]
 
----
+______________________________________________________________________
 
 ## Contributing
 
 These action plans are **living documents**. Update status as work progresses:
 
 1. Mark phases complete with dates
-2. Note any deviations from plan (with rationale)
-3. Update metrics after completion
-4. Move completed plans to `doc/tasks/completed/` upon release
+1. Note any deviations from plan (with rationale)
+1. Update metrics after completion
+1. Move completed plans to `doc/tasks/completed/` upon release
 
 **Questions?** Refer to `doc/DOCUMENTATION_POLICY.md` for documentation guidelines.

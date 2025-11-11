@@ -4,7 +4,7 @@
 **Date:** October 18, 2025
 **Status:** 📋 Planning Phase (Review & Discussion)
 
----
+______________________________________________________________________
 
 ## Executive Summary
 
@@ -13,36 +13,41 @@ This document synthesizes recommendations from two independent expert reviews (G
 **Strategic Focus Areas:**
 
 1. **Reliability & Type Safety** - Prevent runtime errors through validation and stronger typing
-2. **Performance Optimization** - Smart caching and lazy initialization for common operations
-3. **Testing Excellence** - Property-based tests and comprehensive edge case coverage
-4. **Developer Experience** - Better tooling, clear contracts, and contribution workflows
-5. **Architectural Resilience** - SOLID principles for long-term maintainability
+1. **Performance Optimization** - Smart caching and lazy initialization for common operations
+1. **Testing Excellence** - Property-based tests and comprehensive edge case coverage
+1. **Developer Experience** - Better tooling, clear contracts, and contribution workflows
+1. **Architectural Resilience** - SOLID principles for long-term maintainability
 
 **Guiding Philosophy:** Pragmatic improvements that deliver immediate value without over-engineering.
 
----
+______________________________________________________________________
 
 ## SOLID Principles Analysis
 
 ### Current State Assessment
 
 **✅ Single Responsibility Principle (SRP)**
+
 - **Strong:** Clear separation between utils, core, and console layers
 - **Opportunity:** Console class handles too many concerns (rendering, recording, export, terminal detection)
 
 **✅ Open/Closed Principle (OCP)**
+
 - **Strong:** BorderStyle is extensible; new styles can be added without modifying existing code
 - **Opportunity:** Renderers are not easily extensible; custom renderer implementations require modification
 
 **⚠️ Liskov Substitution Principle (LSP)**
+
 - **N/A:** Currently no inheritance hierarchies (using composition instead, which is good)
 - **Future:** If renderer interfaces are formalized, ensure any custom implementations are substitutable
 
 **⚠️ Interface Segregation Principle (ISP)**
+
 - **Opportunity:** No explicit interfaces/protocols defined; renderers could benefit from clear contracts
 - **Future:** Define minimal protocols for Renderer, Exporter, and StyleProvider
 
 **⚠️ Dependency Inversion Principle (DIP)**
+
 - **Concern:** Console directly instantiates FrameRenderer and BannerRenderer (tight coupling)
 - **Opportunity:** Depend on abstractions (protocols) rather than concrete implementations
 
@@ -51,41 +56,43 @@ This document synthesizes recommendations from two independent expert reviews (G
 Based on SOLID analysis, we should:
 
 1. **Extract responsibilities from Console** → Introduce specialized managers (RenderManager, ExportManager)
-2. **Define renderer protocols** → Enable custom renderer implementations without modification
-3. **Dependency injection** → Pass renderer instances to Console, not create them internally
-4. **Theme/Style abstraction** → Introduce StyleProvider protocol for reusable configurations
+1. **Define renderer protocols** → Enable custom renderer implementations without modification
+1. **Dependency injection** → Pass renderer instances to Console, not create them internally
+1. **Theme/Style abstraction** → Introduce StyleProvider protocol for reusable configurations
 
----
+______________________________________________________________________
 
 ## Synthesis of Expert Reviews
 
 ### Consensus Recommendations (Both Reviews Agree)
 
-| Recommendation | GPT5 Priority | Gemini Priority | Effort | Impact |
-|----------------|---------------|-----------------|--------|--------|
-| **Input Validation** | High | High | S | High |
-| **Property-Based Tests (Hypothesis)** | Medium | High | M | High |
-| **Performance Caching** (parse_color, fonts) | Medium | Medium | S | Medium |
-| **Optional Extras** (pyproject.toml) | Low | Medium | S | Medium |
-| **Public API Definition** (`__all__`) | Low | Medium | S | Medium |
-| **Developer Tooling** (nox/mypy) | Low | Medium | M | High |
+| Recommendation                               | GPT5 Priority | Gemini Priority | Effort | Impact |
+| -------------------------------------------- | ------------- | --------------- | ------ | ------ |
+| **Input Validation**                         | High          | High            | S      | High   |
+| **Property-Based Tests (Hypothesis)**        | Medium        | High            | M      | High   |
+| **Performance Caching** (parse_color, fonts) | Medium        | Medium          | S      | Medium |
+| **Optional Extras** (pyproject.toml)         | Low           | Medium          | S      | Medium |
+| **Public API Definition** (`__all__`)        | Low           | Medium          | S      | Medium |
+| **Developer Tooling** (nox/mypy)             | Low           | Medium          | M      | High   |
 
 ### Complementary Recommendations (Unique Insights)
 
 **GPT5 Focus: Code-Level Optimizations**
+
 - Lazy renderer initialization in Console
 - Color system mapping (truecolor/256/standard) based on terminal detection
 - RGB tuple interpolation to avoid hex conversions
 - CI/CD with GitHub Actions + Codecov
 
 **Gemini Focus: API Design & Extensibility**
+
 - `Literal` types and Enums for stricter typing
 - Theme/Style object for reusable configurations
 - Dependency injection for renderer customization
 - Enhanced docstrings with comprehensive examples
 - Snapshot test organization
 
----
+______________________________________________________________________
 
 ## Prioritized Improvement Plan
 
@@ -98,6 +105,7 @@ Based on SOLID analysis, we should:
 **Rationale:** Prevents silent failures and improves error messages
 
 **Actions:**
+
 - [x] Add `_validate_align()` helper in Console/renderers
 - [x] Validate gradient pairs (both start and end required)
 - [x] Clamp/validate width, padding, min_width, max_width ranges
@@ -106,6 +114,7 @@ Based on SOLID analysis, we should:
 **SOLID Alignment:** SRP - Validation logic separated into dedicated methods
 
 **Files Modified:**
+
 - `src/styledconsole/console.py` - Added 3 validation methods:
   - `_validate_align()` - Validates alignment against VALID_ALIGNMENTS set
   - `_validate_gradient_pair()` - Ensures both gradient colors provided or both None
@@ -114,24 +123,27 @@ Based on SOLID analysis, we should:
 - `src/styledconsole/core/banner.py` - Validates gradient pairs in render method
 
 **Test Coverage:**
+
 - ✅ Failure test cases added for validation errors
 - ✅ Error messages are descriptive and user-friendly
 - ✅ All validation paths tested in unit tests
 
 **Implementation Notes:**
+
 - Console.VALID_ALIGNMENTS = {"left", "center", "right"}
 - All ValueError messages include actual values received
 - Validation methods are static for reusability
 
 **Effort:** 0.5 days | **Impact:** High | **Status:** ✅ Complete (Oct 18, 2025)
 
----
+______________________________________________________________________
 
 #### 1.2 Performance Caching (Priority: HIGH) ✅ COMPLETED
 
 **Rationale:** Color parsing and font lookups are called repeatedly in loops
 
 **Actions:**
+
 - [x] Add `@lru_cache(maxsize=512)` to `utils.color.parse_color()`
 - [x] Cache pyfiglet font objects in BannerRenderer (module-level or instance cache)
 - [x] Introduce `interpolate_rgb(start_rgb, end_rgb, t)` to avoid repeated hex parsing
@@ -139,6 +151,7 @@ Based on SOLID analysis, we should:
 **SOLID Alignment:** SRP - Caching separated from core logic
 
 **Files Modified:**
+
 - `src/styledconsole/utils/color.py`:
   - Added `@lru_cache(maxsize=512)` decorator to `parse_color()`
   - Implemented `interpolate_rgb(start_rgb, end_rgb, t)` for optimized RGB interpolation
@@ -150,11 +163,13 @@ Based on SOLID analysis, we should:
   - Comment in render(): "# Parse colors once (cached by lru_cache)"
 
 **Benchmarking:**
+
 - ⏳ pytest-benchmark not yet added (can be added in Phase 3)
 - ✅ Gradient performance improved with RGB tuple interpolation
 - ✅ Font loading optimized with LRU cache
 
 **Implementation Notes:**
+
 - Color parsing cache size: 512 (covers typical use cases)
 - Font cache size: 32 (reasonable for font variety)
 - `interpolate_rgb()` works with pre-parsed RGB tuples for tight loops
@@ -162,13 +177,14 @@ Based on SOLID analysis, we should:
 
 **Effort:** 0.5 days | **Impact:** Medium-High | **Status:** ✅ Complete (Oct 18, 2025)
 
----
+______________________________________________________________________
 
 #### 1.3 Lazy Renderer Initialization (Priority: HIGH) ✅ COMPLETED
 
 **Rationale:** Users calling only `console.text()` shouldn't pay pyfiglet import cost
 
 **Actions:**
+
 - [x] Convert `_frame_renderer` and `_banner_renderer` to properties
 - [x] Initialize on first access (lazy initialization pattern)
 - [x] Add debug logging for lazy initialization (when debug=True)
@@ -176,6 +192,7 @@ Based on SOLID analysis, we should:
 **SOLID Alignment:** SRP - Initialization logic separated from usage
 
 **Files Modified:**
+
 - `src/styledconsole/console.py`:
   - `__init__()`: Initialize `__frame_renderer` and `__banner_renderer` as None
   - Added `@property` decorator to `_frame_renderer`
@@ -184,6 +201,7 @@ Based on SOLID analysis, we should:
   - Debug logging: "FrameRenderer initialized (lazy)" / "BannerRenderer initialized (lazy)"
 
 **Implementation:**
+
 ```python
 @property
 def _frame_renderer(self) -> FrameRenderer:
@@ -205,19 +223,21 @@ def _banner_renderer(self) -> BannerRenderer:
 ```
 
 **Benefits:**
+
 - ✅ pyfiglet only imported when banner rendering is used
 - ✅ Faster console initialization for users not using banners
 - ✅ Debug mode shows when renderers are actually created
 
 **Effort:** 0.25 days | **Impact:** Medium | **Status:** ✅ Complete (Oct 18, 2025)
 
----
+______________________________________________________________________
 
 #### 1.4 Color System Mapping (Priority: MEDIUM) ✅ COMPLETED
 
 **Rationale:** Explicit color_system selection improves consistency across terminals
 
 **Actions:**
+
 - [x] Map detected color depth to Rich color_system enum
 - [x] Use `"standard"` (8 colors), `"256"`, or `"truecolor"` based on TerminalProfile
 - [x] Add environment variable override: `SC_FORCE_COLOR_SYSTEM`
@@ -225,18 +245,20 @@ def _banner_renderer(self) -> BannerRenderer:
 **SOLID Alignment:** OCP - Configuration remains flexible without modifying core logic
 
 **Files Modified:**
+
 - `src/styledconsole/console.py`:
   - Added `_determine_color_system()` method
   - Checks `SC_FORCE_COLOR_SYSTEM` environment variable first
   - Maps color_depth to Rich color system:
-    - >= 16,777,216 (24-bit) → "truecolor"
-    - >= 256 → "256"
-    - >= 8 → "standard"
+    - > = 16,777,216 (24-bit) → "truecolor"
+    - > = 256 → "256"
+    - > = 8 → "standard"
   - Falls back to "auto" if no profile detected
   - Passes result to RichConsole initialization
   - Debug logging for color system selection
 
 **Implementation:**
+
 ```python
 def _determine_color_system(self) -> str:
     """Determine appropriate color system based on terminal capabilities."""
@@ -262,26 +284,28 @@ def _determine_color_system(self) -> str:
 ```
 
 **Benefits:**
+
 - ✅ Consistent color rendering across different terminals
 - ✅ Environment variable for testing and CI/CD overrides
 - ✅ Automatic detection when env var not set
 
 **Effort:** 0.25 days | **Impact:** Medium | **Status:** ✅ Complete (Oct 18, 2025) | **Status:** ✅ Complete (Oct 18, 2025)
 
----
+______________________________________________________________________
 
 ### ✅ Phase 1 Summary: COMPLETE (Oct 18, 2025)
 
 **All Phase 1 "Quick Wins" have been successfully implemented!**
 
-| Task | Status | Impact | Files Modified |
-|------|--------|--------|-----------------|
-| 1.1 Input Validation | ✅ Complete | High | console.py, frame.py, banner.py |
-| 1.2 Performance Caching | ✅ Complete | Medium-High | color.py, banner.py |
-| 1.3 Lazy Renderer Init | ✅ Complete | Medium | console.py |
-| 1.4 Color System Mapping | ✅ Complete | Medium | console.py |
+| Task                     | Status      | Impact      | Files Modified                  |
+| ------------------------ | ----------- | ----------- | ------------------------------- |
+| 1.1 Input Validation     | ✅ Complete | High        | console.py, frame.py, banner.py |
+| 1.2 Performance Caching  | ✅ Complete | Medium-High | color.py, banner.py             |
+| 1.3 Lazy Renderer Init   | ✅ Complete | Medium      | console.py                      |
+| 1.4 Color System Mapping | ✅ Complete | Medium      | console.py                      |
 
 **Key Achievements:**
+
 - ✅ **Reliability**: Comprehensive input validation with clear error messages
 - ✅ **Performance**: LRU caching for color parsing (512 cache) and font loading (32 cache)
 - ✅ **Optimization**: RGB interpolation avoids repeated hex conversions in loops
@@ -290,6 +314,7 @@ def _determine_color_system(self) -> str:
 - ✅ **Quality**: All improvements maintain 95%+ test coverage
 
 **Test Results:**
+
 - 466 tests passing
 - 95.69% code coverage
 - No regressions introduced
@@ -297,7 +322,7 @@ def _determine_color_system(self) -> str:
 
 **Next Steps:** Proceed to Phase 2 (Type Safety & API Contracts) or Phase 3 (Testing Excellence)
 
----
+______________________________________________________________________
 
 ### Phase 2: Type Safety & API Contracts (Week 2) - Maintainability
 
@@ -308,6 +333,7 @@ def _determine_color_system(self) -> str:
 **Rationale:** Catch errors at development time, not runtime
 
 **Actions:**
+
 - [x] Replace `align: str` with `align: Literal["left", "center", "right"]` across codebase
 - [x] Define `AlignType = Literal["left", "center", "right"]` in shared types module
 - [x] Create `src/styledconsole/types.py` with type aliases and protocols
@@ -317,6 +343,7 @@ def _determine_color_system(self) -> str:
 **Implementation (Oct 19, 2025):**
 
 Created `src/styledconsole/types.py` with:
+
 ```python
 from typing import Literal, Protocol
 
@@ -328,9 +355,11 @@ class Renderer(Protocol):
 ```
 
 **Files Created:**
+
 - `src/styledconsole/types.py` - Centralized type definitions
 
 **Files Modified:**
+
 - `src/styledconsole/core/frame.py` - Import AlignType, remove duplicate definition
 - `src/styledconsole/core/banner.py` - Import AlignType, remove duplicate definition
 - `src/styledconsole/utils/text.py` - Import AlignType, update pad_to_width signature
@@ -340,6 +369,7 @@ class Renderer(Protocol):
 - `src/styledconsole/__init__.py` - Export AlignType, ColorType, Renderer
 
 **Benefits Achieved:**
+
 - ✅ IDE autocomplete shows only valid values: "left" | "center" | "right"
 - ✅ Type errors caught at edit time (e.g., `align="centre"` is highlighted)
 - ✅ Self-documenting code - clear what values are valid
@@ -348,21 +378,23 @@ class Renderer(Protocol):
 
 **Effort:** 0.5 days | **Impact:** High | **Status:** ✅ Complete (Oct 19, 2025)
 
----
+______________________________________________________________________
 
 #### 2.2 Define Public API with `__all__` (Priority: MEDIUM) ✅ COMPLETED
 
 **Rationale:** Clear contract for stable vs. internal APIs
 
 **Actions:**
+
 - [x] Audit current `__all__` in `__init__.py` (verified completeness)
-- [x] Add `__all__` to submodules (core/frame.py, core/banner.py, utils/*)
+- [x] Add `__all__` to submodules (core/frame.py, core/banner.py, utils/\*)
 - [x] Document versioning policy in README (semantic versioning for `__all__` items)
 - [x] Mark internal APIs with leading underscore consistently (already done)
 
 **SOLID Alignment:** ISP - Only expose necessary interfaces
 
 **Files Modified:**
+
 - `src/styledconsole/core/frame.py` - Added `__all__ = ["Frame", "FrameRenderer", "AlignType"]`
 - `src/styledconsole/core/banner.py` - Added `__all__ = ["Banner", "BannerRenderer", "AlignType"]`
 - `src/styledconsole/core/layout.py` - Added `__all__ = ["Layout", "LayoutComposer"]`
@@ -373,12 +405,14 @@ class Renderer(Protocol):
 - `README.md` - Added comprehensive "API Stability" section with semantic versioning policy
 
 **API Stability Policy (Documented):**
+
 - Public API: All items in `__all__` are stable (semantic versioning applies)
 - Internal APIs: Items with `_` prefix may change without notice
 - Deprecation: Features deprecated for at least one minor version before removal
 - Current version: 0.1.0 (Alpha - API may change before 1.0.0)
 
 **Benefits Achieved:**
+
 - ✅ Clear public vs internal API boundary
 - ✅ `from styledconsole.core.frame import *` only imports public items
 - ✅ Auto-generated docs will show only public APIs
@@ -387,21 +421,22 @@ class Renderer(Protocol):
 
 **Effort:** 0.3 days | **Impact:** Medium | **Status:** ✅ Complete (Oct 19, 2025)
 
----
+______________________________________________________________________
 
 ### ✅ Phase 2 Summary: COMPLETE (Oct 19, 2025)
 
 **All Phase 2 tasks successfully implemented (skipping mypy as planned)!**
 
-| Task | Status | Impact | Effort | Files Changed |
-|------|--------|--------|--------|---------------|
-| 2.1 Literal Types & Protocols | ✅ Complete | High | 0.5 days | 8 files (1 new) |
-| 2.2 Public API with __all__ | ✅ Complete | Medium | 0.3 days | 8 files |
-| 2.3 mypy Type Checking | ⏭️ Skipped | Low | 0 days | - |
+| Task                          | Status      | Impact | Effort   | Files Changed   |
+| ----------------------------- | ----------- | ------ | -------- | --------------- |
+| 2.1 Literal Types & Protocols | ✅ Complete | High   | 0.5 days | 8 files (1 new) |
+| 2.2 Public API with __all__   | ✅ Complete | Medium | 0.3 days | 8 files         |
+| 2.3 mypy Type Checking        | ⏭️ Skipped  | Low    | 0 days   | -               |
 
 **Total Effort:** 0.8 days (faster than 1.5 day estimate!)
 
 **Key Achievements:**
+
 - ✅ **Type Safety**: Literal types prevent invalid parameter values at edit time
 - ✅ **IDE Support**: Autocomplete shows only valid options ("left" | "center" | "right")
 - ✅ **Public API**: Clear boundary between stable and internal APIs
@@ -410,37 +445,43 @@ class Renderer(Protocol):
 - ✅ **Quality**: All 466 tests passing, 95.76% coverage maintained
 
 **Test Results:**
+
 - 466 tests passing ✅
 - 95.76% code coverage (849 statements, 36 missed)
 - No regressions introduced
 - list_border_styles() now returns sorted list
 
 **Created Files:**
+
 - `src/styledconsole/types.py` - Centralized type definitions (AlignType, ColorType, Renderer protocol)
 
 **Documentation:**
+
 - README.md now includes comprehensive API Stability section
 - Semantic versioning policy documented
 - Deprecation policy established
 
 **Next Steps:** Choose between:
+
 - **Option A**: Phase 3 (Property-Based Testing with Hypothesis) - Focus on quality
 - **Option B**: M3 Tasks (Preset Functions) from TASKS.md - Focus on features
 
----
+______________________________________________________________________
 
 **Rationale:** Static analysis catches type errors before runtime
 
 **⚠️ REASSESSMENT (Oct 19, 2025): Likely Over-Engineering**
 
 **Current Type Safety Coverage:**
-- ✅ **Ruff** already enabled with type-aware rules (ANN* family available)
+
+- ✅ **Ruff** already enabled with type-aware rules (ANN\* family available)
 - ✅ **Full type hints** already present in codebase (function signatures, return types)
 - ✅ **96% test coverage** catches type-related bugs at test time
 - ✅ **Small codebase** (~836 statements) - easy to review manually
 - ✅ **Single developer** - less coordination needed
 
 **mypy Benefits vs. Costs:**
+
 - ❓ **Benefit**: Catches type errors at static analysis time (but tests already do this)
 - ❓ **Benefit**: IDE integration (but type hints already provide autocomplete)
 - ❌ **Cost**: Additional tool to maintain and configure
@@ -460,19 +501,21 @@ ignore = ["ANN101", "ANN102"]  # Ignore missing type on self, cls
 This provides basic type annotation enforcement without mypy's complexity.
 
 **DECISION: SKIP mypy for now. Revisit only if:**
+
 1. Multiple contributors need stronger guardrails
-2. Complex type issues emerge that tests don't catch
-3. Library grows beyond 2000 statements
-4. Users request better type stubs for IDE support
+1. Complex type issues emerge that tests don't catch
+1. Library grows beyond 2000 statements
+1. Users request better type stubs for IDE support
 
 **Original Actions (for reference):**
+
 - [x] ~~Add `mypy>=1.0` to dev dependencies~~ - SKIPPED
 - [x] ~~Create mypy configuration~~ - SKIPPED
 - [x] ~~Add mypy to pre-commit hooks~~ - SKIPPED
 
 **Effort:** 0 days (skipped) | **Impact:** Low (better handled by existing tools)
 
----
+______________________________________________________________________
 
 ### Phase 3: Testing Excellence (Week 3) - Quality Assurance
 
@@ -483,6 +526,7 @@ This provides basic type annotation enforcement without mypy's complexity.
 **Rationale:** Unicode edge cases are impossible to enumerate manually
 
 **Actions:**
+
 - [ ] Add `hypothesis>=6.0` to dev dependencies
 - [ ] Create `tests/property/test_text_properties.py`
 - [ ] Test `visual_width()` with random Unicode strings
@@ -490,6 +534,7 @@ This provides basic type annotation enforcement without mypy's complexity.
 - [ ] Test `parse_color()` with fuzzed color strings (valid and invalid)
 
 **Test Examples:**
+
 ```python
 from hypothesis import given, strategies as st
 
@@ -506,19 +551,21 @@ def test_pad_to_width_produces_correct_width(text, width):
 ```
 
 **Files to Create:**
+
 - `tests/property/` - New directory for property tests
 - `tests/property/test_text_properties.py`
 - `tests/property/test_color_properties.py`
 
 **Effort:** 1.5 days | **Impact:** High
 
----
+______________________________________________________________________
 
 #### 3.2 Failure Test Cases (Priority: MEDIUM)
 
 **Rationale:** Validation improvements must be tested
 
 **Actions:**
+
 - [ ] Add test class `TestValidationErrors` to each test module
 - [ ] Test that invalid `align` values raise `ValueError`
 - [ ] Test that mismatched gradient pairs raise `ValueError`
@@ -526,6 +573,7 @@ def test_pad_to_width_produces_correct_width(text, width):
 - [ ] Verify error messages are descriptive
 
 **Example:**
+
 ```python
 def test_invalid_align_raises_error():
     with pytest.raises(ValueError, match="align must be one of"):
@@ -537,29 +585,32 @@ def test_gradient_requires_both_colors():
 ```
 
 **Files to Modify:**
+
 - All test files in `tests/unit/` - Add validation test cases
 
 **Effort:** 0.5 days | **Impact:** Medium
 
----
+______________________________________________________________________
 
 #### 3.3 Refined Snapshot Testing (Priority: MEDIUM)
 
 **Rationale:** Visual regression tests ensure rendering consistency
 
 **Actions:**
+
 - [ ] Organize snapshots by category: `tests/snapshots/frames/`, `tests/snapshots/banners/`
 - [ ] Add snapshot tests for all border style combinations
 - [ ] Add snapshot tests for gradient edge cases (single-line, multi-line, empty content)
 - [ ] Document snapshot update procedure in CONTRIBUTING.md
 
 **Files to Modify:**
+
 - Reorganize `tests/snapshots/` directory structure
 - Add comprehensive snapshot test cases
 
 **Effort:** 1 day | **Impact:** Medium
 
----
+______________________________________________________________________
 
 ### Phase 4: Architecture Refinement (Week 4) - SOLID Compliance
 
@@ -570,6 +621,7 @@ def test_gradient_requires_both_colors():
 **Rationale:** DIP - Depend on abstractions; enable custom renderer implementations
 
 **Actions:**
+
 - [ ] Add optional renderer parameters to `Console.__init__()`
 - [ ] Default to current implementations if not provided
 - [ ] Update type hints to accept `Renderer` protocol instances
@@ -577,6 +629,7 @@ def test_gradient_requires_both_colors():
 **SOLID Alignment:** DIP - Inversion of control for flexibility
 
 **Example:**
+
 ```python
 class Console:
     def __init__(
@@ -592,23 +645,26 @@ class Console:
 ```
 
 **Benefits:**
+
 - Easy to test with mock renderers
 - Users can provide custom renderer implementations
 - Plugin architecture becomes possible
 
 **Files to Modify:**
+
 - `src/styledconsole/console.py` - Update `__init__` signature
 - `tests/unit/test_console.py` - Add tests with custom renderers
 
 **Effort:** 1 day | **Impact:** Medium
 
----
+______________________________________________________________________
 
 #### 4.2 Theme/Style Configuration Object (Priority: MEDIUM)
 
 **Rationale:** SRP - Separate styling configuration from rendering logic
 
 **Actions:**
+
 - [ ] Create `src/styledconsole/themes.py` with `Theme` dataclass
 - [ ] Define default themes: `DEFAULT`, `SUCCESS`, `ERROR`, `WARNING`, `INFO`
 - [ ] Accept `theme: Theme | str` parameter in Console methods
@@ -617,6 +673,7 @@ class Console:
 **SOLID Alignment:** SRP + OCP - Styling configuration is isolated and extensible
 
 **Example:**
+
 ```python
 @dataclass(frozen=True)
 class Theme:
@@ -642,19 +699,21 @@ console.frame("Done!", theme=SUCCESS)     # Use Theme object
 ```
 
 **Files to Create/Modify:**
+
 - `src/styledconsole/themes.py` - New module
 - `src/styledconsole/console.py` - Accept theme parameter
 - `src/styledconsole/__init__.py` - Export Theme and predefined themes
 
 **Effort:** 1.5 days | **Impact:** Medium-High
 
----
+______________________________________________________________________
 
 #### 4.3 Extract Export Responsibilities (Priority: LOW)
 
 **Rationale:** SRP - Console handles too many concerns
 
 **Actions:**
+
 - [ ] Create `ExportManager` class to handle export logic
 - [ ] Move `export_html()` and `export_text()` to ExportManager
 - [ ] Console delegates to ExportManager
@@ -663,6 +722,7 @@ console.frame("Done!", theme=SUCCESS)     # Use Theme object
 **SOLID Alignment:** SRP - Single responsibility for export operations
 
 **Future Structure:**
+
 ```
 src/styledconsole/export/
   __init__.py
@@ -672,12 +732,13 @@ src/styledconsole/export/
 ```
 
 **Files to Create/Modify:**
+
 - `src/styledconsole/export/manager.py` - New ExportManager class
 - `src/styledconsole/console.py` - Delegate to ExportManager
 
 **Effort:** 1 day | **Impact:** Low (future-proofing)
 
----
+______________________________________________________________________
 
 ### Phase 5: Developer Experience & Tooling (Week 5) - Community
 
@@ -688,12 +749,14 @@ src/styledconsole/export/
 **Rationale:** Standardize development workflows across Python versions
 
 **Actions:**
+
 - [ ] Add `nox>=2023.4` to dev dependencies
 - [ ] Create `noxfile.py` with sessions: lint, test, coverage, typecheck, format
 - [ ] Document nox usage in CONTRIBUTING.md
 - [ ] Update CI to use nox sessions
 
 **Sessions to Implement:**
+
 - `nox -s lint` - Run ruff
 - `nox -s test` - Run pytest on all supported Python versions (3.10-3.13)
 - `nox -s coverage` - Generate coverage report
@@ -701,25 +764,28 @@ src/styledconsole/export/
 - `nox -s format` - Auto-format with ruff
 
 **Files to Create/Modify:**
+
 - `noxfile.py` - New file
 - `CONTRIBUTING.md` - Add nox usage section
 - `.github/workflows/` - Update CI to use nox (Phase 6)
 
 **Effort:** 1 day | **Impact:** High
 
----
+______________________________________________________________________
 
 #### 5.2 Enhanced Docstrings (Priority: MEDIUM)
 
 **Rationale:** Better IDE support and auto-generated documentation
 
 **Actions:**
+
 - [ ] Add `Example:` blocks to all public methods (if missing)
 - [ ] Ensure all parameters and return values are documented
 - [ ] Use numpy-style or Google-style consistently (currently Google-style)
 - [ ] Add `Raises:` sections for validation errors
 
 **Example:**
+
 ```python
 def frame(
     self,
@@ -747,17 +813,19 @@ def frame(
 ```
 
 **Files to Modify:**
+
 - All modules in `src/styledconsole/` - Enhance docstrings
 
 **Effort:** 1.5 days | **Impact:** Medium
 
----
+______________________________________________________________________
 
 #### 5.3 Formalize Optional Dependencies (Priority: MEDIUM)
 
 **Rationale:** Keep core minimal; users install only what they need
 
 **Actions:**
+
 - [ ] Move `ansi2html` to optional dependency group `[export]`
 - [ ] Create `[dev]` group (already exists via dependency-groups)
 - [ ] Create `[emoji]` group for future `grapheme` support
@@ -767,6 +835,7 @@ def frame(
 **SOLID Alignment:** ISP - Don't force dependencies users don't need
 
 **Configuration:**
+
 ```toml
 [project.optional-dependencies]
 export = ["ansi2html>=1.8.0"]
@@ -776,13 +845,14 @@ all = ["styledconsole[export,emoji,cli]"]
 ```
 
 **Files to Modify:**
+
 - `pyproject.toml` - Add optional-dependencies section
 - `README.md` - Update installation section
 - Move `ansi2html` from `dependencies` to `optional-dependencies`
 
 **Effort:** 0.5 days | **Impact:** Medium
 
----
+______________________________________________________________________
 
 ### Phase 6: CI/CD & Quality Gates (Week 6) - Automation
 
@@ -793,6 +863,7 @@ all = ["styledconsole[export,emoji,cli]"]
 **Rationale:** Automated testing across Python versions and platforms
 
 **Actions:**
+
 - [ ] Create `.github/workflows/ci.yml`
 - [ ] Test matrix: Python 3.10, 3.11, 3.12, 3.13 × Linux, macOS, Windows
 - [ ] Run linting (ruff), type checking (mypy), tests (pytest)
@@ -800,6 +871,7 @@ all = ["styledconsole[export,emoji,cli]"]
 - [ ] Add status badges to README
 
 **Workflow Structure:**
+
 ```yaml
 name: CI
 
@@ -822,111 +894,123 @@ jobs:
 ```
 
 **Files to Create:**
+
 - `.github/workflows/ci.yml` - Main CI pipeline
 - `.github/workflows/lint.yml` - Separate lint job (fast feedback)
 
 **Effort:** 1 day | **Impact:** High
 
----
+______________________________________________________________________
 
 #### 6.2 Codecov Integration (Priority: MEDIUM)
 
 **Rationale:** Track coverage trends and prevent regressions
 
 **Actions:**
+
 - [ ] Sign up for Codecov (free for open source)
 - [ ] Add `codecov/codecov-action` to GitHub Actions
 - [ ] Configure coverage thresholds (e.g., fail if coverage drops below 95%)
 - [ ] Add Codecov badge to README
 
 **Files to Modify:**
+
 - `.github/workflows/ci.yml` - Add Codecov upload step
 - `README.md` - Add coverage badge
 
 **Effort:** 0.5 days | **Impact:** Medium
 
----
+______________________________________________________________________
 
 #### 6.3 Pre-commit Hook Expansion (Priority: LOW)
 
 **Rationale:** Catch issues before commit
 
 **Actions:**
+
 - [ ] Add mypy to pre-commit hooks
 - [ ] Add trailing whitespace removal
 - [ ] Add end-of-file fixer
 - [ ] Expand ruff rules: `B` (bugbear), `C4` (comprehensions), `SIM` (simplify), `PERF` (performance)
 
 **Files to Modify:**
+
 - `.pre-commit-config.yaml` - Add hooks
 - `pyproject.toml` - Update ruff rule selection
 
 **Effort:** 0.5 days | **Impact:** Low-Medium
 
----
+______________________________________________________________________
 
 ## Implementation Timeline
 
-| Week | Phase | Focus Area | Deliverables |
-|------|-------|------------|--------------|
-| **W1** | Phase 1 | Quick Wins | Validation, Caching, Lazy Init, Color Mapping |
-| **W2** | Phase 2 | Type Safety | Literal Types, Protocols, mypy, `__all__` |
-| **W3** | Phase 3 | Testing | Hypothesis, Failure Tests, Snapshot Organization |
-| **W4** | Phase 4 | Architecture | DI, Themes, Export Separation |
-| **W5** | Phase 5 | Developer UX | Nox, Docstrings, Optional Deps |
-| **W6** | Phase 6 | CI/CD | GitHub Actions, Codecov, Pre-commit |
+| Week   | Phase   | Focus Area   | Deliverables                                     |
+| ------ | ------- | ------------ | ------------------------------------------------ |
+| **W1** | Phase 1 | Quick Wins   | Validation, Caching, Lazy Init, Color Mapping    |
+| **W2** | Phase 2 | Type Safety  | Literal Types, Protocols, mypy, `__all__`        |
+| **W3** | Phase 3 | Testing      | Hypothesis, Failure Tests, Snapshot Organization |
+| **W4** | Phase 4 | Architecture | DI, Themes, Export Separation                    |
+| **W5** | Phase 5 | Developer UX | Nox, Docstrings, Optional Deps                   |
+| **W6** | Phase 6 | CI/CD        | GitHub Actions, Codecov, Pre-commit              |
 
 **Total Effort:** ~6 weeks
 **Target Release:** v0.2.0 (Early December 2025)
 
----
+______________________________________________________________________
 
 ## Success Metrics
 
 ### Code Quality
+
 - [ ] Test coverage maintained at ≥97%
 - [ ] mypy passes with zero errors
 - [ ] All ruff rules pass (expanded ruleset)
 - [ ] 100% of public API has docstrings with examples
 
 ### Performance
-- [ ] Frame rendering <10ms for simple frames (benchmarked)
+
+- [ ] Frame rendering \<10ms for simple frames (benchmarked)
 - [ ] Gradient application 50% faster with RGB interpolation
 - [ ] Lazy init reduces startup time for text-only usage
 
 ### Developer Experience
+
 - [ ] Nox sessions work on all platforms (Linux, macOS, Windows)
-- [ ] CI pipeline runs in <5 minutes
+- [ ] CI pipeline runs in \<5 minutes
 - [ ] CONTRIBUTING.md includes clear setup instructions
 - [ ] All validation errors have helpful messages
 
 ### Architecture
-- [ ] Console class <200 lines (after extraction)
+
+- [ ] Console class \<200 lines (after extraction)
 - [ ] All renderers support custom implementations via DI
 - [ ] Themes reduce parameter count in typical usage by 50%
 
----
+______________________________________________________________________
 
 ## Risk Assessment
 
 ### Low Risk
+
 - ✅ Input validation (additive, non-breaking)
 - ✅ Performance caching (internal optimization)
 - ✅ Enhanced docstrings (documentation improvement)
 - ✅ CI/CD setup (external tooling)
 
 ### Medium Risk
+
 - ⚠️ Lazy initialization (potential edge cases in multi-threaded contexts)
 - ⚠️ mypy integration (may reveal existing type issues requiring fixes)
 - ⚠️ Dependency injection (API change, but backward compatible with defaults)
 
 ### Mitigation Strategies
+
 - Comprehensive test coverage before refactoring
 - Gradual rollout with feature flags if needed
 - Maintain backward compatibility for v0.1.x users
 - Document breaking changes clearly in CHANGELOG
 
----
+______________________________________________________________________
 
 ## Alignment with Project Roadmap
 
@@ -937,21 +1021,24 @@ This improvement plan complements the existing TASKS.md milestones:
 - **M5 (Testing & Release):** Hypothesis tests and CI pipeline align with testing milestone
 
 The plan can be executed in parallel with M3-M5 tasks, with some synergy:
+
 - Theme system supports preset implementation (T-011, T-012)
 - Export separation prepares for HtmlExporter (T-014)
 - CI pipeline enables T-016 (snapshot testing)
 
----
+______________________________________________________________________
 
 ## Next Steps
 
 ### Immediate Actions (This Week)
+
 1. **Review this plan** with the team and gather feedback
-2. **Prioritize** which phases to tackle first (recommend Phase 1 for immediate value)
-3. **Create tracking issues** in project management system (e.g., GitHub Issues)
-4. **Assign owners** for each phase
+1. **Prioritize** which phases to tackle first (recommend Phase 1 for immediate value)
+1. **Create tracking issues** in project management system (e.g., GitHub Issues)
+1. **Assign owners** for each phase
 
 ### Decision Points
+
 - [ ] Approve overall plan structure
 - [ ] Confirm timeline (6 weeks reasonable?)
 - [ ] Select CI platform (GitHub Actions confirmed?)
@@ -959,12 +1046,13 @@ The plan can be executed in parallel with M3-M5 tasks, with some synergy:
 - [ ] Decide on theme system scope (simple dict or full Theme class?)
 
 ### Open Questions
-1. Should we introduce breaking changes in v0.2.0, or maintain full backward compatibility?
-2. Is 6 weeks realistic given other priorities (M3-M5)?
-3. Should we add documentation generation (Sphinx/MkDocs) to the plan?
-4. Do we want a plugin system for renderers, or is DI sufficient?
 
----
+1. Should we introduce breaking changes in v0.2.0, or maintain full backward compatibility?
+1. Is 6 weeks realistic given other priorities (M3-M5)?
+1. Should we add documentation generation (Sphinx/MkDocs) to the plan?
+1. Do we want a plugin system for renderers, or is DI sufficient?
+
+______________________________________________________________________
 
 ## Conclusion
 
@@ -974,7 +1062,7 @@ This Early Improvement Plan balances **pragmatic enhancements** with **architect
 
 **Let's discuss and refine this plan before moving to implementation!** 🚀
 
----
+______________________________________________________________________
 
 **Document Version:** 1.0
 **Last Updated:** October 18, 2025

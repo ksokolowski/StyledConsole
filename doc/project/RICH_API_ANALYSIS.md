@@ -4,29 +4,30 @@
 **Purpose:** Comprehensive analysis of Rich library capabilities vs StyledConsole implementation
 **Audience:** Architectural planning for v0.2.0+
 
----
+______________________________________________________________________
 
 ## Executive Summary
 
 **Critical Finding:** We are reimplementing **60-70% of functionality that Rich already provides natively**, including:
 
 1. **Panel** class → Our `FrameRenderer` (borders, titles, padding, alignment)
-2. **Align** class → Our `LayoutComposer` alignment logic
-3. **Padding** class → Our manual padding calculations
-4. **Text.align()** → Our `pad_to_width()` / `truncate_to_width()`
-5. **Group** → Our layout stacking
-6. **Columns** → Our side-by-side layouts
-7. **Table.grid()** → Our grid layouts
+1. **Align** class → Our `LayoutComposer` alignment logic
+1. **Padding** class → Our manual padding calculations
+1. **Text.align()** → Our `pad_to_width()` / `truncate_to_width()`
+1. **Group** → Our layout stacking
+1. **Columns** → Our side-by-side layouts
+1. **Table.grid()** → Our grid layouts
 
 **Recommendation:** Major architectural rework in v0.2.0 to become a **thin wrapper around Rich renderables** instead of reimplementing rendering ourselves.
 
----
+______________________________________________________________________
 
 ## 1. What Rich Already Provides
 
 ### 1.1 Panel Class (Our FrameRenderer Equivalent)
 
 **Rich's Panel:**
+
 ```python
 from rich.panel import Panel
 
@@ -46,6 +47,7 @@ panel = Panel(
 ```
 
 **Rich's Box Styles (similar to our BorderStyle):**
+
 - `box.ROUNDED` → our `ROUNDED`
 - `box.DOUBLE` → our `DOUBLE`
 - `box.HEAVY` → our `HEAVY`
@@ -54,6 +56,7 @@ panel = Panel(
 - Plus 14 more styles we don't have!
 
 **What We're Reimplementing:**
+
 - Border rendering (top, middle, bottom lines)
 - Title positioning and truncation
 - Padding application
@@ -64,6 +67,7 @@ panel = Panel(
 ### 1.2 Align Class (Our Layout Alignment)
 
 **Rich's Align:**
+
 ```python
 from rich.align import Align
 
@@ -77,6 +81,7 @@ aligned = Align.center("content", vertical="middle", height=20)
 ```
 
 **Current StyledConsole (Manual):**
+
 ```python
 # We calculate padding ourselves:
 left_pad = (terminal_width - visual_width(line)) // 2
@@ -86,6 +91,7 @@ padded_line = " " * left_pad + line
 ```
 
 **What We're Reimplementing:**
+
 - Left/center/right alignment logic
 - Padding calculation
 - ANSI-aware width handling
@@ -94,6 +100,7 @@ padded_line = " " * left_pad + line
 ### 1.3 Padding Class (Our Manual Padding)
 
 **Rich's Padding:**
+
 ```python
 from rich.padding import Padding
 
@@ -104,6 +111,7 @@ padded = Padding("content", all_sides)
 ```
 
 **Current StyledConsole:**
+
 ```python
 # We do this manually:
 def _apply_padding(content, padding):
@@ -112,6 +120,7 @@ def _apply_padding(content, padding):
 ```
 
 **What We're Reimplementing:**
+
 - Padding unpacking (CSS style)
 - Padding application to renderables
 - **ALL OF THIS EXISTS IN PADDING!**
@@ -119,6 +128,7 @@ def _apply_padding(content, padding):
 ### 1.4 Text Class (Our text utilities)
 
 **Rich's Text:**
+
 ```python
 from rich.text import Text
 
@@ -131,6 +141,7 @@ visual_len = len(text)                  # ❌ We have visual_width()
 ```
 
 **What We're Reimplementing:**
+
 - `visual_width()` → Rich's `len(Text)` with cell_len
 - `pad_to_width()` → Rich's `text.pad()` or `text.align()`
 - `truncate_to_width()` → Rich's `text.truncate()`
@@ -140,6 +151,7 @@ visual_len = len(text)                  # ❌ We have visual_width()
 ### 1.5 Group (Our Layout Stacking)
 
 **Rich's Group:**
+
 ```python
 from rich.console import Group
 
@@ -153,6 +165,7 @@ console.print(layout)
 ```
 
 **Current StyledConsole:**
+
 ```python
 # We return list of strings:
 layout = composer.stack([banner, frame1, frame2])
@@ -161,6 +174,7 @@ for line in layout:
 ```
 
 **What We're Reimplementing:**
+
 - Vertical stacking of elements
 - Spacing between elements
 - **GROUP DOES THIS NATIVELY!**
@@ -168,6 +182,7 @@ for line in layout:
 ### 1.6 Columns (Our Side-by-Side)
 
 **Rich's Columns:**
+
 ```python
 from rich.columns import Columns
 
@@ -179,12 +194,14 @@ columns = Columns([panel1, panel2, panel3],
 ```
 
 **Current StyledConsole:**
+
 ```python
 # We implement this manually:
 layout = composer.side_by_side([frame1, frame2], spacing=2)
 ```
 
 **What We're Reimplementing:**
+
 - Multi-column layouts
 - Column spacing
 - Column alignment
@@ -193,6 +210,7 @@ layout = composer.side_by_side([frame1, frame2], spacing=2)
 ### 1.7 Table.grid() (Our Grid Layouts)
 
 **Rich's Table:**
+
 ```python
 from rich.table import Table
 
@@ -205,23 +223,26 @@ grid.add_row("cell3", "cell4")
 ```
 
 **Current StyledConsole:**
+
 ```python
 # We implement grid manually:
 layout = composer.grid([["cell1", "cell2"], ["cell3", "cell4"]])
 ```
 
 **What We're Reimplementing:**
+
 - Grid/table layouts without borders
 - Cell alignment and padding
 - **TABLE.GRID() DOES THIS!**
 
----
+______________________________________________________________________
 
 ## 2. What We've Added (Unique Value)
 
 ### 2.1 Gradient Support ✅ UNIQUE
 
 **StyledConsole exclusive:**
+
 ```python
 # Vertical gradients
 gradient_frame(content, start_color="red", end_color="blue")
@@ -238,6 +259,7 @@ rainbow_frame(content, target="border")
 ### 2.2 pyfiglet Integration ✅ MOSTLY UNIQUE
 
 **StyledConsole:**
+
 ```python
 banner = BannerRenderer().render("TEXT", font="slant")
 ```
@@ -249,6 +271,7 @@ banner = BannerRenderer().render("TEXT", font="slant")
 ### 2.3 Emoji Safety Tier System ✅ UNIQUE APPROACH
 
 **StyledConsole:**
+
 - Curated list of 100+ safe emojis (Tier 1)
 - Terminal detection for emoji support
 - Documented safe emoji usage
@@ -258,6 +281,7 @@ banner = BannerRenderer().render("TEXT", font="slant")
 ### 2.4 High-Level Convenience API ✅ VALUE ADD
 
 **StyledConsole:**
+
 ```python
 console.frame("content", title="Title", border="rounded")
 console.banner("TEXT", font="slant")
@@ -265,6 +289,7 @@ console.text("styled", color="red")
 ```
 
 **Rich equivalent:**
+
 ```python
 console.print(Panel("content", title="Title", box=box.ROUNDED))
 # No built-in banner method
@@ -273,7 +298,7 @@ console.print("[red]styled[/]")
 
 **Our value:** Simpler method names for common operations.
 
----
+______________________________________________________________________
 
 ## 3. Architecture Comparison
 
@@ -326,48 +351,50 @@ User → Console.frame()
 ```
 
 **Benefits:**
+
 - 70% less code to maintain
 - Automatic ANSI handling (no bugs like BUG-001)
 - Access to all Rich features (Layout, Live, etc.)
 - Focus on our unique value (gradients, emoji safety, convenience)
 
----
+______________________________________________________________________
 
 ## 4. Feature Gap Analysis
 
 ### What Rich Has That We Don't:
 
 1. **Live Rendering** - Update content in real-time
-2. **Progress Bars** - Built-in progress tracking
-3. **Markdown Rendering** - Render markdown in terminal
-4. **Syntax Highlighting** - Code highlighting (via Pygments)
-5. **Layout Class** - Complex split-pane layouts
-6. **Vertical Alignment** - Align.center(..., vertical="middle")
-7. **Subtitle Support** - Panel subtitles at bottom
-8. **More Box Styles** - 19 styles vs our 8
-9. **Constrain** - Max/min width enforcement
-10. **Measure** - Calculate renderable dimensions
-11. **Segment API** - Low-level control over rendering
-12. **Style Nesting** - Complex style inheritance
+1. **Progress Bars** - Built-in progress tracking
+1. **Markdown Rendering** - Render markdown in terminal
+1. **Syntax Highlighting** - Code highlighting (via Pygments)
+1. **Layout Class** - Complex split-pane layouts
+1. **Vertical Alignment** - Align.center(..., vertical="middle")
+1. **Subtitle Support** - Panel subtitles at bottom
+1. **More Box Styles** - 19 styles vs our 8
+1. **Constrain** - Max/min width enforcement
+1. **Measure** - Calculate renderable dimensions
+1. **Segment API** - Low-level control over rendering
+1. **Style Nesting** - Complex style inheritance
 
 ### What We Have That Rich Doesn't:
 
 1. **Gradients** ✅ - Vertical/diagonal/rainbow color gradients
-2. **pyfiglet Integration** ✅ - ASCII art banners with 120+ fonts
-3. **Emoji Safety Tiers** ✅ - Curated safe emoji list
-4. **High-Level Frame API** ✅ - `console.frame()` vs `Panel(...)`
-5. **CSS4 Color Names** ⚠️ - Rich has styles, but we document 148 names
-6. **Export to HTML** ⚠️ - Rich has this via `console.export_html()`
+1. **pyfiglet Integration** ✅ - ASCII art banners with 120+ fonts
+1. **Emoji Safety Tiers** ✅ - Curated safe emoji list
+1. **High-Level Frame API** ✅ - `console.frame()` vs `Panel(...)`
+1. **CSS4 Color Names** ⚠️ - Rich has styles, but we document 148 names
+1. **Export to HTML** ⚠️ - Rich has this via `console.export_html()`
 
 **Reality Check:** Only items 1-3 are truly unique!
 
----
+______________________________________________________________________
 
 ## 5. The ANSI Wrapping Bug - Root Cause Analysis
 
 ### Why We Had BUG-001:
 
 **Our approach:**
+
 ```python
 # We calculated padding as strings:
 def _align_line(line, width, align):
@@ -380,6 +407,7 @@ def _align_line(line, width, align):
 **Problem:** String concatenation with ANSI codes breaks width calculations.
 
 **Rich's approach:**
+
 ```python
 # Rich uses Segments (unit of styled text):
 class Segment(text: str, style: Style):
@@ -390,6 +418,7 @@ class Segment(text: str, style: Style):
 ```
 
 **Why Rich doesn't have this bug:**
+
 - Segments separate content from style
 - Rendering happens AFTER layout calculations
 - No string concatenation with ANSI codes
@@ -397,7 +426,7 @@ class Segment(text: str, style: Style):
 
 **Lesson:** We should never concatenate styled strings manually!
 
----
+______________________________________________________________________
 
 ## 6. Code Volume Comparison
 
@@ -436,13 +465,14 @@ text.align("center", width=80)  # vs 132 lines of our utils!
 
 **Estimated code reduction:** 70-80% less code to maintain!
 
----
+______________________________________________________________________
 
 ## 7. Recommended Architectural Changes for v0.2.0
 
 ### 7.1 Phase Out Manual Rendering
 
 **Remove/Replace:**
+
 - `FrameRenderer` → Use `rich.panel.Panel`
 - `LayoutComposer.stack()` → Use `rich.console.Group`
 - `LayoutComposer.side_by_side()` → Use `rich.columns.Columns`
@@ -451,6 +481,7 @@ text.align("center", width=80)  # vs 132 lines of our utils!
 - Manual alignment → Use `rich.align.Align`
 
 **Keep:**
+
 - `BannerRenderer` (pyfiglet integration - unique)
 - `effects.py` (gradients - unique)
 - `BorderStyle` definitions (map to Rich box styles)
@@ -487,6 +518,7 @@ class Console:
 ```
 
 **Benefits:**
+
 - Our API stays the same (backward compatible)
 - Rich does all the heavy lifting
 - We focus on gradients (unique value)
@@ -496,6 +528,7 @@ class Console:
 ### 7.3 What Stays, What Goes
 
 **KEEP (Unique Value):**
+
 ```
 effects.py                 # Gradients - our killer feature
 core/banner.py             # pyfiglet integration
@@ -505,6 +538,7 @@ console.py (facade)        # High-level convenience API
 ```
 
 **REPLACE WITH RICH:**
+
 ```
 core/frame.py          → rich.panel.Panel
 core/layout.py         → rich.console.Group + rich.columns.Columns
@@ -517,28 +551,32 @@ utils/text.py          → rich.text.Text (keep emoji width for now)
 ### 7.4 Migration Path
 
 **v0.1.x (Current):**
+
 - Document Rich API equivalents
 - Add deprecation warnings
 - Maintain backward compatibility
 
 **v0.2.0 (Architectural Rework):**
+
 - Rewrite internals to use Rich renderables
 - Keep public API (Console.frame, etc.)
 - Add Rich-exclusive features (Live, Layout)
 - Mark old renderers as legacy
 
 **v0.3.0 (Full Rich Integration):**
+
 - Remove legacy code
 - Pure Rich wrapper with gradient extensions
 - Focus on gradient/banner features
 
----
+______________________________________________________________________
 
 ## 8. Specific Implementation Examples
 
 ### 8.1 Frame Rendering (v0.2.0 Proposed)
 
 **Current (v0.1.0):**
+
 ```python
 # 406 lines in frame.py
 class FrameRenderer:
@@ -551,6 +589,7 @@ class FrameRenderer:
 ```
 
 **Proposed (v0.2.0):**
+
 ```python
 # ~50 lines
 from rich.panel import Panel
@@ -584,6 +623,7 @@ def create_frame(content, *, border="solid", border_color=None,
 ### 8.2 Layout Composition (v0.2.0 Proposed)
 
 **Current (v0.1.0):**
+
 ```python
 # 272 lines in layout.py
 class LayoutComposer:
@@ -600,6 +640,7 @@ class LayoutComposer:
 ```
 
 **Proposed (v0.2.0):**
+
 ```python
 # ~20 lines
 from rich.console import Group
@@ -623,6 +664,7 @@ def side_by_side(*renderables, spacing=2):
 ### 8.3 Gradient Application (Keep - Unique!)
 
 **Current & Future:**
+
 ```python
 # effects.py - KEEP THIS!
 def apply_vertical_gradient(content, start_color, end_color):
@@ -639,11 +681,12 @@ def apply_vertical_gradient(content, start_color, end_color):
 # This is our unique value - Rich doesn't have this!
 ```
 
----
+______________________________________________________________________
 
 ## 9. Performance Implications
 
 ### Current Approach (Manual String Building):
+
 ```
 frame.render() → build strings → measure widths → pad → add ANSI
 Time: ~0.5ms per frame (simple)
@@ -652,6 +695,7 @@ Memory: Strings + ANSI codes in memory
 ```
 
 ### Rich Approach (Renderable Protocol):
+
 ```
 Panel(...) → Segments → Console renders
 Time: ~0.3ms per frame (Rich is optimized!)
@@ -660,16 +704,18 @@ Memory: Segments (more efficient than strings)
 
 **Expected improvement:** 30-40% faster rendering
 
----
+______________________________________________________________________
 
 ## 10. Testing Strategy
 
 ### Current Test Coverage:
+
 - 655 tests (96.11% coverage)
 - Heavy focus on our manual rendering
 - Snapshot tests for visual output
 
 ### After v0.2.0 Rework:
+
 - Keep gradient tests (unique feature)
 - Keep banner tests (pyfiglet integration)
 - Keep console API tests (backward compat)
@@ -678,11 +724,12 @@ Memory: Segments (more efficient than strings)
 
 **Estimated test reduction:** 40-50% fewer tests (less code to test!)
 
----
+______________________________________________________________________
 
 ## 11. Breaking Changes Assessment
 
 ### Public API (Console methods):
+
 ```python
 console.frame(...)    # KEEP - same signature
 console.banner(...)   # KEEP - same signature
@@ -694,6 +741,7 @@ console.newline(...)  # KEEP - simple
 **Breaking:** NONE (public API stays the same!)
 
 ### Advanced API (Renderers):
+
 ```python
 FrameRenderer.render(...)      # DEPRECATED → use Panel
 LayoutComposer.stack(...)      # DEPRECATED → use Group
@@ -703,17 +751,17 @@ gradient_frame(...)            # KEEP (unique)
 
 **Breaking:** Only for advanced users directly using renderers!
 
----
+______________________________________________________________________
 
 ## 12. Documentation Impact
 
 ### New Documentation Needed:
 
 1. **Migration Guide** - How to move from v0.1 to v0.2
-2. **Rich Integration Guide** - How to use Rich features
-3. **Gradient Cookbook** - Our unique features
-4. **Banner Examples** - pyfiglet showcase
-5. **Architecture Docs** - Why we made this change
+1. **Rich Integration Guide** - How to use Rich features
+1. **Gradient Cookbook** - Our unique features
+1. **Banner Examples** - pyfiglet showcase
+1. **Architecture Docs** - Why we made this change
 
 ### Deprecation Notices:
 
@@ -730,55 +778,59 @@ class FrameRenderer:
     """
 ```
 
----
+______________________________________________________________________
 
 ## 13. Roadmap Recommendation
 
 ### Immediate (Now):
+
 1. Document Rich API equivalents
-2. Create this analysis document
-3. Discuss with stakeholders
+1. Create this analysis document
+1. Discuss with stakeholders
 
 ### v0.1.1 (Minor update):
+
 1. Add deprecation warnings for renderers
-2. Document migration path
-3. Keep all functionality
+1. Document migration path
+1. Keep all functionality
 
 ### v0.2.0 (Major rework - Target: 2-3 weeks):
+
 1. Rewrite Console to use Rich renderables
-2. Keep gradients and banners
-3. Remove manual rendering
-4. Update all examples
-5. Migration guide
+1. Keep gradients and banners
+1. Remove manual rendering
+1. Update all examples
+1. Migration guide
 
 ### v0.3.0 (Polish - Target: +1 month):
-1. Remove deprecated code
-2. Add Rich-exclusive features
-3. Performance optimization
-4. Complete documentation
 
----
+1. Remove deprecated code
+1. Add Rich-exclusive features
+1. Performance optimization
+1. Complete documentation
+
+______________________________________________________________________
 
 ## 14. Risk Analysis
 
 ### Risks of NOT Changing:
 
 1. **Maintenance Burden** - 800+ lines of code we need to maintain
-2. **Bug Surface** - More custom code = more bugs (like BUG-001)
-3. **Feature Lag** - Can't use Rich's new features
-4. **Performance** - Our manual rendering is slower
-5. **Complexity** - New contributors must learn our custom system
+1. **Bug Surface** - More custom code = more bugs (like BUG-001)
+1. **Feature Lag** - Can't use Rich's new features
+1. **Performance** - Our manual rendering is slower
+1. **Complexity** - New contributors must learn our custom system
 
 ### Risks of Changing:
 
 1. **Migration Effort** - 2-3 weeks of work
-2. **Breaking Changes** - Advanced users affected
-3. **Test Rewrite** - Need new test strategy
-4. **Documentation** - Complete rewrite needed
+1. **Breaking Changes** - Advanced users affected
+1. **Test Rewrite** - Need new test strategy
+1. **Documentation** - Complete rewrite needed
 
 **Conclusion:** Benefits far outweigh risks!
 
----
+______________________________________________________________________
 
 ## 15. Stakeholder Questions
 
@@ -789,10 +841,11 @@ class FrameRenderer:
 ### Q: What's our unique value if Rich does everything?
 
 **A:**
+
 1. **Gradients** - Rich doesn't have this
-2. **pyfiglet Integration** - Not a core Rich feature
-3. **High-level API** - `console.frame()` vs `Panel(...)`
-4. **Emoji Safety** - Curated safe emoji documentation
+1. **pyfiglet Integration** - Not a core Rich feature
+1. **High-level API** - `console.frame()` vs `Panel(...)`
+1. **Emoji Safety** - Curated safe emoji documentation
 
 ### Q: Can we keep backward compatibility?
 
@@ -810,25 +863,25 @@ class FrameRenderer:
 
 **A:** We'll keep tests for our unique features (gradients, banners). Remove tests for rendering Rich handles.
 
----
+______________________________________________________________________
 
 ## 16. Conclusion & Next Steps
 
 ### Key Findings:
 
 1. We're reimplementing 60-70% of Rich's functionality
-2. Our unique value is gradients + pyfiglet + convenience API
-3. Using Rich natively would reduce code by 75%
-4. We can maintain backward compatibility
-5. BUG-001 happened because we're doing rendering ourselves
+1. Our unique value is gradients + pyfiglet + convenience API
+1. Using Rich natively would reduce code by 75%
+1. We can maintain backward compatibility
+1. BUG-001 happened because we're doing rendering ourselves
 
 ### Recommendations:
 
 1. **APPROVE** architectural rework for v0.2.0
-2. **START** with deprecation warnings in v0.1.1
-3. **FOCUS** on gradient features (our differentiator)
-4. **LEVERAGE** Rich for everything else
-5. **MAINTAIN** public API (no breaking changes)
+1. **START** with deprecation warnings in v0.1.1
+1. **FOCUS** on gradient features (our differentiator)
+1. **LEVERAGE** Rich for everything else
+1. **MAINTAIN** public API (no breaking changes)
 
 ### Success Metrics for v0.2.0:
 
@@ -844,28 +897,29 @@ class FrameRenderer:
 
 **"We built a great library. Now let's make it excellent by standing on Rich's shoulders instead of reimplementing its wheels."**
 
----
+______________________________________________________________________
 
 ## Appendix A: Rich Feature Matrix
 
-| Feature | Rich Native | StyledConsole v0.1 | StyledConsole v0.2 (Proposed) |
-|---------|-------------|-------------------|-------------------------------|
-| Bordered frames | `Panel` ✅ | `FrameRenderer` ⚠️ | Use `Panel` ✅ |
-| Alignment | `Align` ✅ | Manual ⚠️ | Use `Align` ✅ |
-| Padding | `Padding` ✅ | Manual ⚠️ | Use `Padding` ✅ |
-| Vertical stacking | `Group` ✅ | `LayoutComposer` ⚠️ | Use `Group` ✅ |
-| Columns | `Columns` ✅ | `LayoutComposer` ⚠️ | Use `Columns` ✅ |
-| Grid layouts | `Table.grid()` ✅ | `LayoutComposer` ⚠️ | Use `Table.grid()` ✅ |
-| Text operations | `Text` ✅ | `utils/text.py` ⚠️ | Use `Text` ✅ |
-| **Gradients** | ❌ | `effects.py` ✅ | **Keep** ✅ |
-| **ASCII banners** | ❌ | `BannerRenderer` ✅ | **Keep** ✅ |
-| **Emoji safety** | Partial | Documented ✅ | **Keep** ✅ |
-| Live rendering | `Live` ✅ | ❌ | Available ✅ |
-| Progress bars | `Progress` ✅ | ❌ | Available ✅ |
-| Markdown | `Markdown` ✅ | ❌ | Available ✅ |
-| Syntax highlighting | `Syntax` ✅ | ❌ | Available ✅ |
+| Feature             | Rich Native       | StyledConsole v0.1  | StyledConsole v0.2 (Proposed) |
+| ------------------- | ----------------- | ------------------- | ----------------------------- |
+| Bordered frames     | `Panel` ✅        | `FrameRenderer` ⚠️  | Use `Panel` ✅                |
+| Alignment           | `Align` ✅        | Manual ⚠️           | Use `Align` ✅                |
+| Padding             | `Padding` ✅      | Manual ⚠️           | Use `Padding` ✅              |
+| Vertical stacking   | `Group` ✅        | `LayoutComposer` ⚠️ | Use `Group` ✅                |
+| Columns             | `Columns` ✅      | `LayoutComposer` ⚠️ | Use `Columns` ✅              |
+| Grid layouts        | `Table.grid()` ✅ | `LayoutComposer` ⚠️ | Use `Table.grid()` ✅         |
+| Text operations     | `Text` ✅         | `utils/text.py` ⚠️  | Use `Text` ✅                 |
+| **Gradients**       | ❌                | `effects.py` ✅     | **Keep** ✅                   |
+| **ASCII banners**   | ❌                | `BannerRenderer` ✅ | **Keep** ✅                   |
+| **Emoji safety**    | Partial           | Documented ✅       | **Keep** ✅                   |
+| Live rendering      | `Live` ✅         | ❌                  | Available ✅                  |
+| Progress bars       | `Progress` ✅     | ❌                  | Available ✅                  |
+| Markdown            | `Markdown` ✅     | ❌                  | Available ✅                  |
+| Syntax highlighting | `Syntax` ✅       | ❌                  | Available ✅                  |
 
 **Legend:**
+
 - ✅ Native/Available
 - ⚠️ Reimplemented (redundant)
 - ❌ Not available
@@ -874,7 +928,7 @@ class FrameRenderer:
 
 See GitHub issues #XXX for detailed code comparison examples.
 
----
+______________________________________________________________________
 
 **End of Analysis**
 **Author:** GitHub Copilot

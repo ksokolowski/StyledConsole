@@ -5,6 +5,7 @@
 ### What Works Now ✅
 
 **Content Gradients** - Fully supported!
+
 ```python
 frame_renderer.render(
     ["Line 1", "Line 2", "Line 3"],
@@ -16,6 +17,7 @@ frame_renderer.render(
 ```
 
 **Single Border Color** - Fully supported!
+
 ```python
 frame_renderer.render(
     ["Content"],
@@ -28,6 +30,7 @@ frame_renderer.render(
 ### What Doesn't Work Yet ❌
 
 **Border Gradients** - Not yet implemented
+
 ```python
 # This would be AMAZING but doesn't exist yet:
 frame_renderer.render(
@@ -42,16 +45,19 @@ frame_renderer.render(
 ## Why Border Gradients Are Tricky
 
 1. **Multiple Border Components**:
+
    - Top border (1 line)
    - Left/Right borders (N lines for N content lines)
    - Bottom border (1 line)
 
-2. **Gradient Direction Options**:
+1. **Gradient Direction Options**:
+
    - **Vertical**: Top→Bottom (most common)
    - **Horizontal**: Left→Right (per line)
    - **Diagonal**: Corner→Corner (complex)
 
-3. **Character-Level Coloring**:
+1. **Character-Level Coloring**:
+
    - Each border character needs individual coloring
    - Box-drawing characters must maintain visual continuity
    - Performance considerations with many ANSI codes
@@ -130,14 +136,15 @@ def _render_border_with_gradient(
 ### Edge Cases to Handle
 
 1. **Title in top border**: Should title inherit border gradient color at that position?
-2. **Single-line frames**: Both borders get same color (no gradient visible)
-3. **Very tall frames**: Smooth gradient or stepped?
-4. **Horizontal gradients**: Character-by-character coloring (expensive!)
-5. **Validation**: Both gradient params required together
+1. **Single-line frames**: Both borders get same color (no gradient visible)
+1. **Very tall frames**: Smooth gradient or stepped?
+1. **Horizontal gradients**: Character-by-character coloring (expensive!)
+1. **Validation**: Both gradient params required together
 
 ## Visual Impact
 
 ### Before (Single Color)
+
 ```
 ┌─── Title ───┐   <- All cyan
 │  Content    │   <- All cyan
@@ -145,6 +152,7 @@ def _render_border_with_gradient(
 ```
 
 ### After (Vertical Gradient)
+
 ```
 ┌─── Title ───┐   <- Red
 │  Content    │   <- Orange (interpolated)
@@ -152,6 +160,7 @@ def _render_border_with_gradient(
 ```
 
 ### Ultimate (Content + Border Gradients)
+
 ```
 ┌─── Title ───┐   <- Border: Red
 │  Line 1     │   <- Border: Orange, Content: Blue
@@ -180,6 +189,7 @@ def _render_border_with_gradient(
 ## Workarounds Until Implementation
 
 ### Option 1: Use High-Contrast Single Colors
+
 ```python
 # Make borders stand out with bright colors
 frame_renderer.render(
@@ -191,6 +201,7 @@ frame_renderer.render(
 ```
 
 ### Option 2: Multiple Nested Frames
+
 ```python
 # Create "fake" gradient by stacking frames
 outer = frame_renderer.render(
@@ -209,6 +220,7 @@ middle = frame_renderer.render(
 ```
 
 ### Option 3: ASCII Art Borders
+
 ```python
 # Use ASCII art to simulate gradient effect
 print("╔════ 🔥 FIRE EFFECT 🔥 ════╗")  # Yellow
@@ -222,14 +234,15 @@ print("╚═══════════════════════�
 Once border gradients are implemented, these become possible:
 
 1. **Animated gradients**: Rotate gradient colors over time
-2. **Pulsing borders**: Alternate between two gradients
-3. **Rainbow mode**: Automatic rainbow gradient
-4. **Theme presets**: Pre-configured gradient combinations
-5. **Gradient blending**: Smooth transitions between frames
+1. **Pulsing borders**: Alternate between two gradients
+1. **Rainbow mode**: Automatic rainbow gradient
+1. **Theme presets**: Pre-configured gradient combinations
+1. **Gradient blending**: Smooth transitions between frames
 
 ## User Feedback
 
 Based on user request (October 19, 2025):
+
 > "How about gradient applied not to frame content but gradient applied to frame border itself? :D"
 
 **Response**: Great idea! This would be an excellent Phase 3 feature. Current workaround is using high-contrast single border colors with content gradients, which still looks amazing! 🎨
@@ -239,15 +252,16 @@ Based on user request (October 19, 2025):
 **Recommendation**: Defer to Phase 3
 
 **Reasons**:
+
 1. Content gradients already work great ✅
-2. Single border colors provide good visual impact ✅
-3. Complex implementation (4 days effort)
-4. Need to finalize Phase 2 features first
-5. Could gather more user feedback on desired gradient directions
+1. Single border colors provide good visual impact ✅
+1. Complex implementation (4 days effort)
+1. Need to finalize Phase 2 features first
+1. Could gather more user feedback on desired gradient directions
 
 **Alternative**: Quick prototype with vertical-only gradients (2 days) for user testing
 
----
+______________________________________________________________________
 
 **Status**: 📝 Documented as future feature
 **Created**: October 19, 2025

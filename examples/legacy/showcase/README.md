@@ -17,6 +17,7 @@ Comprehensive CI/CD monitoring dashboards demonstrating:
   - Monitoring Dashboard (system metrics)
 
 **Features Demonstrated:**
+
 - `BannerRenderer` with gradient colors
 - `FrameRenderer` with content colors, border colors, and title colors
 - `LayoutComposer` with grid layouts (3x3, 2x2)
@@ -25,6 +26,7 @@ Comprehensive CI/CD monitoring dashboards demonstrating:
 - Mixed frame styles and colors
 
 **Run It:**
+
 ```bash
 uv run python examples/showcase/cicd_dashboard.py
 ```
@@ -59,6 +61,7 @@ uv run python examples/showcase/rainbow_fat_alignment.py
 ## Requirements
 
 All showcase examples require:
+
 - Python 3.10+
 - StyledConsole library installed
 - Terminal with 24-bit color support (most modern terminals)
@@ -66,6 +69,7 @@ All showcase examples require:
 ## Color Support
 
 The dashboards use 24-bit RGB ANSI color codes. If your terminal doesn't support these, the output will still be readable but without colors. Most modern terminals support this:
+
 - iTerm2 (macOS)
 - Terminal.app (macOS)
 - Windows Terminal
@@ -76,6 +80,7 @@ The dashboards use 24-bit RGB ANSI color codes. If your terminal doesn't support
 ## Creating Your Own Dashboards
 
 Use these examples as templates for creating:
+
 - Application status dashboards
 - System monitoring displays
 - Build/deployment reports

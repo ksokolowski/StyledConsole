@@ -57,10 +57,10 @@ lines = rainbow_frame(
 This `examples/prototype/` directory contains the original prototype code that was used to:
 
 1. **Experiment** with gradient algorithms
-2. **Test** diagonal gradient implementation
-3. **Validate** emoji handling and visual width calculations
-4. **Discover** variation selector issues
-5. **Prototype** rainbow color interpolation
+1. **Test** diagonal gradient implementation
+1. **Validate** emoji handling and visual width calculations
+1. **Discover** variation selector issues
+1. **Prototype** rainbow color interpolation
 
 ### Prototype Files
 
@@ -73,17 +73,18 @@ This `examples/prototype/` directory contains the original prototype code that w
 The integrated version has these improvements over the prototype:
 
 1. **Cleaner API** - Simplified function signatures
-2. **Better organization** - Separate module (effects.py)
-3. **More tests** - 36 comprehensive tests vs prototype's manual testing
-4. **Documentation** - Full docstrings and examples
-5. **Type hints** - Proper Literal types for parameters
-6. **Error handling** - NotImplementedError for unsupported features
+1. **Better organization** - Separate module (effects.py)
+1. **More tests** - 36 comprehensive tests vs prototype's manual testing
+1. **Documentation** - Full docstrings and examples
+1. **Type hints** - Proper Literal types for parameters
+1. **Error handling** - NotImplementedError for unsupported features
 
 ### Migration Guide
 
 If you were using the prototype, here's how to migrate:
 
 #### Before (Prototype):
+
 ```python
 from examples.prototype.rainbow_gradient_prototype import RainbowFrameRenderer
 
@@ -98,6 +99,7 @@ lines = renderer.render_diagonal_gradient(
 ```
 
 #### After (Integrated):
+
 ```python
 from styledconsole import diagonal_gradient_frame
 
@@ -112,6 +114,7 @@ lines = diagonal_gradient_frame(
 ### Deprecation
 
 **This prototype code is now deprecated** and kept only for:
+
 - Historical reference
 - Learning resource
 - Algorithm documentation
@@ -121,6 +124,7 @@ lines = diagonal_gradient_frame(
 ### Example
 
 See the official example:
+
 ```bash
 python examples/showcase/gradient_effects.py
 ```
@@ -128,11 +132,12 @@ python examples/showcase/gradient_effects.py
 ### Documentation
 
 Full documentation in:
+
 - `README.md` - Quick start and API overview
 - `examples/README.md` - Example descriptions
 - `src/styledconsole/effects.py` - Detailed docstrings
 
----
+______________________________________________________________________
 
 ## Performance Notes from Prototype
 
@@ -146,8 +151,8 @@ From testing during prototype phase:
 ## Known Limitations (from Prototype)
 
 1. **Horizontal gradients**: Not yet implemented (raises NotImplementedError)
-2. **Variation selector emojis**: Can cause alignment issues in diagonal gradients
-3. **Rainbow customization**: Fixed 7-color spectrum (not customizable yet)
+1. **Variation selector emojis**: Can cause alignment issues in diagonal gradients
+1. **Rainbow customization**: Fixed 7-color spectrum (not customizable yet)
 
 These limitations are documented and may be addressed in future versions.
 
@@ -157,6 +162,6 @@ Prototype developed and integrated by: Krzysztof Sokołowski
 Date: October 19, 2025
 Library: StyledConsole v0.2.0
 
----
+______________________________________________________________________
 
 **✨ Thank you for your interest in the prototype! Please use the integrated version in the main library. ✨**

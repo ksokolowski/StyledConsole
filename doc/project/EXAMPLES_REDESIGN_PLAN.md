@@ -4,23 +4,25 @@
 **Version:** v0.3.0
 **Status:** Planning Phase
 
----
+______________________________________________________________________
 
 ## 🎯 Vision
 
 Transform StyledConsole examples from scattered demonstrations into a **curated visual catalog** that:
-1. **Showcases real-world use cases** (not toy examples)
-2. **Demonstrates best practices** with visually appealing designs
-3. **Reveals patterns** that justify high-level convenience APIs
-4. **Inspires developers** with beautiful terminal UI possibilities
 
----
+1. **Showcases real-world use cases** (not toy examples)
+1. **Demonstrates best practices** with visually appealing designs
+1. **Reveals patterns** that justify high-level convenience APIs
+1. **Inspires developers** with beautiful terminal UI possibilities
+
+______________________________________________________________________
 
 ## 📊 Current State Analysis
 
 ### Existing Examples Audit
 
 #### `/examples/basic/` (10 files)
+
 - **01_simple_frame.py** - Basic frame rendering (too simple)
 - **02_emoji_support.py** - Emoji alignment demo (technical, not visual)
 - **03_alignments.py** - Left/center/right alignment (basic)
@@ -36,6 +38,7 @@ Transform StyledConsole examples from scattered demonstrations into a **curated 
 **Assessment:** Too many "hello world" examples. Need use-case driven approach.
 
 #### `/examples/showcase/` (7 files)
+
 - **banner_showcase.py** ✅ - Great visual demo of banners
 - **cicd_dashboard.py** ✅ - Excellent real-world use case (414 lines)
 - **digital_poetry.py** ✅ - Creative use case
@@ -47,20 +50,23 @@ Transform StyledConsole examples from scattered demonstrations into a **curated 
 **Assessment:** Best examples are here. These inspire! cicd_dashboard & gradient_effects are gold.
 
 #### `/examples/gallery/` (1 file)
+
 - **border_gallery.py** - All border styles showcase
 
 **Assessment:** Good reference, but overlaps with basic/04.
 
 #### `/examples/testing/` (11 files)
+
 - All technical validation/diagnostic scripts
 - Not user-facing examples
 
 **Assessment:** Keep in testing/, not part of example catalog.
 
 #### `/examples/prototype/` (2 markdown files)
+
 - Planning documents, not examples
 
----
+______________________________________________________________________
 
 ## 🎨 Proposed New Structure
 
@@ -106,7 +112,7 @@ examples/
 └── testing/                           # Keep as-is (not user-facing)
 ```
 
----
+______________________________________________________________________
 
 ## 🚀 High-Level API Opportunities
 
@@ -117,11 +123,13 @@ Based on `cicd_dashboard.py`, `banner_showcase.py`, and common use cases:
 #### 1. **Alerts & Notifications**
 
 **Pattern observed:** Repetitive success/error/warning messages with:
+
 - Specific emojis (✅ ❌ ⚠️)
 - Color conventions (green=success, red=error, yellow=warning)
 - Consistent styling
 
 **Proposed API:**
+
 ```python
 console.alert(
     "Deployment successful!",
@@ -135,11 +143,13 @@ console.alert(
 #### 2. **Status Panels**
 
 **Pattern observed:** Service health, build status panels with:
+
 - Title + status indicator
 - Color-coded content
 - Emojis for quick scanning
 
 **Proposed API:**
+
 ```python
 console.status_panel(
     title="Database Connection",
@@ -153,11 +163,13 @@ console.status_panel(
 #### 3. **Progress Dashboards**
 
 **Pattern observed:** CI/CD pipelines, build steps with:
+
 - Step name + status
 - Progress indicators
 - Time/duration display
 
 **Proposed API:**
+
 ```python
 console.progress_dashboard(
     title="🚀 Deployment Pipeline",
@@ -173,11 +185,13 @@ console.progress_dashboard(
 #### 4. **CLI Menus**
 
 **Pattern observed:** Selection menus with:
+
 - Numbered options
 - Emojis for visual grouping
 - Highlighted selection
 
 **Proposed API:**
+
 ```python
 console.menu(
     title="Main Menu",
@@ -195,11 +209,13 @@ console.menu(
 #### 5. **Data Tables**
 
 **Pattern observed:** Key-value pairs, metrics display:
+
 - Aligned columns
 - Color-coded values
 - Header styling
 
 **Proposed API:**
+
 ```python
 console.data_table(
     title="System Metrics",
@@ -214,17 +230,19 @@ console.data_table(
 )
 ```
 
----
+______________________________________________________________________
 
 ## 📋 Implementation Phases
 
 ### Phase 1: Archive & Audit ✅ (Immediate)
+
 - [ ] Create `examples/legacy/` structure
 - [ ] Move existing `basic/`, `showcase/`, `gallery/` → `legacy/`
 - [ ] Keep `testing/` as-is (developer tools)
 - [ ] Document in `legacy/README.md`: "Reference material, may have redundancy"
 
 ### Phase 2: Use Cases Catalog (Priority)
+
 - [ ] Create `examples/usecases/` with 8 use-case examples
 - [ ] Each example must be:
   - ✅ Visually appealing (no "Hello World")
@@ -233,15 +251,16 @@ console.data_table(
   - ✅ Well-commented with "Why" not just "How"
 - [ ] Examples to create:
   1. `alerts.py` - Success/error/warning messages
-  2. `notifications.py` - System notifications
-  3. `progress_dashboard.py` - Build/deploy progress
-  4. `status_panels.py` - Service monitoring
-  5. `cli_menus.py` - Interactive menus
-  6. `data_tables.py` - Metrics display
-  7. `logs_viewer.py` - Log formatting
-  8. `welcome_screens.py` - App launch screens
+  1. `notifications.py` - System notifications
+  1. `progress_dashboard.py` - Build/deploy progress
+  1. `status_panels.py` - Service monitoring
+  1. `cli_menus.py` - Interactive menus
+  1. `data_tables.py` - Metrics display
+  1. `logs_viewer.py` - Log formatting
+  1. `welcome_screens.py` - App launch screens
 
 ### Phase 3: Visual Gallery (Quick Wins)
+
 - [ ] Consolidate best visual showcases:
   - `borders_showcase.py` ← from legacy/gallery/border_gallery.py
   - `colors_showcase.py` ← from legacy/basic/10_color_system.py
@@ -250,6 +269,7 @@ console.data_table(
   - `emojis_showcase.py` ← NEW (Tier 1 emoji catalog)
 
 ### Phase 4: High-Level API Design
+
 - [ ] Create `doc/project/HIGH_LEVEL_API.md` specification
 - [ ] For each proposed API:
   - Function signature
@@ -260,6 +280,7 @@ console.data_table(
 - [ ] Review against use case examples (do they simplify?)
 
 ### Phase 5: High-Level API Implementation (Future)
+
 - [ ] Create `src/styledconsole/presets.py` (or similar)
 - [ ] Implement functions:
   - `alert()`
@@ -273,78 +294,86 @@ console.data_table(
   - "Using high-level API" (new convenience functions)
 
 ### Phase 6: Documentation & Polish
+
 - [ ] Update main `README.md` with link to examples catalog
 - [ ] Add screenshots to `examples/README.md`
 - [ ] Create visual index (maybe ASCII art grid?)
 - [ ] Update `run_all.py` to run only `usecases/` + `gallery/`
 
----
+______________________________________________________________________
 
 ## 🎯 Success Criteria
 
 ### Examples Quality
+
 - ✅ **No toy examples** - Every example solves a real problem
 - ✅ **Visually stunning** - Users say "I want that in my CLI!"
 - ✅ **Copy-pasteable** - Developers can adapt directly
 - ✅ **Well-documented** - Comments explain design decisions
 
 ### High-Level API Validation
+
 - ✅ **Reduces boilerplate** - Compare before/after for common tasks
 - ✅ **Intuitive naming** - Function names match intent
 - ✅ **Consistent conventions** - Colors, emojis, borders follow patterns
 - ✅ **Justified by use cases** - Every function has 3+ examples using it
 
 ### Catalog Organization
-- ✅ **Easy navigation** - Find example for use case in < 30 seconds
+
+- ✅ **Easy navigation** - Find example for use case in \< 30 seconds
 - ✅ **Clear separation** - Use cases vs visual gallery vs recipes
 - ✅ **Maintainable** - Adding new example is straightforward
 
----
+______________________________________________________________________
 
 ## 💡 Creative Extensions
 
 ### Potential Additional Use Cases
+
 1. **Configuration Wizard** - Step-by-step setup with frames
-2. **Error Reports** - Beautiful stack traces / error formatting
-3. **CLI Dashboard** - Live updating status (using Rich Live)
-4. **Git-style Output** - Commit messages, diffs with styling
-5. **Package Manager UI** - Install progress, dependency trees
-6. **Test Results** - Pytest-style test summary with colors
-7. **API Response Viewer** - JSON/XML formatted display
-8. **File Browser** - Directory tree with icons
+1. **Error Reports** - Beautiful stack traces / error formatting
+1. **CLI Dashboard** - Live updating status (using Rich Live)
+1. **Git-style Output** - Commit messages, diffs with styling
+1. **Package Manager UI** - Install progress, dependency trees
+1. **Test Results** - Pytest-style test summary with colors
+1. **API Response Viewer** - JSON/XML formatted display
+1. **File Browser** - Directory tree with icons
 
 ### Inspiration Sources
+
 - **Rich library examples** - See what resonates
 - **GitHub CLI** (`gh`) - Clean, emoji-rich output
 - **Modern CLIs** - Docker, npm, cargo output styles
 - **Terminal dashboards** - htop, btop++ aesthetics
 
----
+______________________________________________________________________
 
 ## 🚧 Migration Strategy
 
 ### For Users
+
 - ✅ **No breaking changes** - All examples stay runnable
 - ✅ **Legacy remains** - Old examples in `legacy/` with deprecation notice
 - ✅ **Smooth transition** - New catalog points to legacy for deprecated patterns
 
 ### For Contributors
+
 - ✅ **Clear guidelines** - Template for new examples
 - ✅ **Review checklist** - Quality bar for accepting examples
 - ✅ **Testing required** - All examples run in CI via `test_examples.py`
 
----
+______________________________________________________________________
 
 ## 📝 Next Steps
 
 1. **Get feedback** on this plan (validate vision alignment)
-2. **Execute Phase 1** - Archive existing examples to `legacy/`
-3. **Create 1-2 use case examples** - Validate approach (e.g., `alerts.py`)
-4. **Review & iterate** - Adjust plan based on learnings
-5. **Continue Phases 2-3** - Build out catalog
-6. **Design high-level API** - Once patterns are clear (Phase 4)
+1. **Execute Phase 1** - Archive existing examples to `legacy/`
+1. **Create 1-2 use case examples** - Validate approach (e.g., `alerts.py`)
+1. **Review & iterate** - Adjust plan based on learnings
+1. **Continue Phases 2-3** - Build out catalog
+1. **Design high-level API** - Once patterns are clear (Phase 4)
 
----
+______________________________________________________________________
 
 ## 📖 References
 
@@ -353,6 +382,6 @@ console.data_table(
 - **Rich library** - Inspiration for beautiful terminal output
 - **User feedback** - What do users try to build first?
 
----
+______________________________________________________________________
 
 **Bottom line:** Transform examples from "feature demos" to "solution templates". Users should leave inspired and equipped to build beautiful CLIs.

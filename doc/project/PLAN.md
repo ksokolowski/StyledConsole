@@ -6,14 +6,16 @@
 **License:** Apache License 2.0
 **Status:** v0.3.0 Rich-Native Migration Complete
 
----
+______________________________________________________________________
 
 ## Version History
 
 ### v0.3.0 (October 21, 2025) - Rich-Native Migration
+
 Major architectural improvement integrating Rich's native renderables for ANSI-safe rendering.
 
 **Key Changes:**
+
 - Console.frame() now uses Rich Panel internally (eliminates ANSI wrapping bugs)
 - Created box_mapping.py to map border styles to Rich box types
 - LayoutComposer updated to be Rich-aware (backward compatible)
@@ -21,6 +23,7 @@ Major architectural improvement integrating Rich's native renderables for ANSI-s
 - Legacy utilities (FrameRenderer, effects.py, BannerRenderer) preserved for backward compatibility
 
 **Benefits:**
+
 - ✅ ANSI-safe rendering (no more double-wrapping bugs)
 - ✅ Better alignment and padding handling
 - ✅ Cleaner, more maintainable code (43% reduction in example code)
@@ -28,14 +31,16 @@ Major architectural improvement integrating Rich's native renderables for ANSI-s
 - ✅ 100% backward compatible - existing code still works
 
 **Testing:**
+
 - 654 tests passing (95.96% coverage)
 - No regressions from v0.1.0
 - All examples verified
 
 ### v0.1.0 (October 17, 2025) - Initial Release
+
 Production-ready release with comprehensive testing and documentation.
 
----
+______________________________________________________________________
 
 ## Architecture Overview
 
@@ -102,25 +107,29 @@ rich_console.print(panel)  ← ANSI-safe rendering
 **Key Components:**
 
 1. **box_mapping.py** (NEW)
+
    - Maps StyledConsole border styles → Rich box types
    - Supports all 8 border styles: solid, rounded, double, heavy, thick, ascii, minimal, dots
    - `get_box_style(name: str) -> Box` function
 
-2. **Console.frame()** (REFACTORED)
+1. **Console.frame()** (REFACTORED)
+
    - Now uses Rich Panel internally instead of FrameRenderer
    - Eliminates ANSI wrapping bugs from manual rendering
    - Better alignment and padding handling
    - Backward compatible API (no breaking changes)
 
-3. **LayoutComposer** (UPDATED)
+1. **LayoutComposer** (UPDATED)
+
    - Imports Rich primitives (Group, Columns, Table, Align)
    - API unchanged for backward compatibility
    - Internal implementation Rich-aware
 
-4. **Legacy Utilities** (PRESERVED)
-   - **FrameRenderer**: Kept for backward compatibility (returns list[str])
+1. **Legacy Utilities** (PRESERVED)
+
+   - **FrameRenderer**: Kept for backward compatibility (returns list\[str\])
    - **effects.py**: Gradient/rainbow functions still available
-   - **BannerRenderer**: Unchanged (returns list[str])
+   - **BannerRenderer**: Unchanged (returns list\[str\])
    - **text utilities**: Still needed for exact width calculations
 
 **Migration Path:**
@@ -191,12 +200,12 @@ styledconsole/
 
 ### Core Dependencies
 
-| Package | Version | Purpose | Justification |
-|---------|---------|---------|---------------|
-| **rich** | ≥13.7 | ANSI rendering, emoji safety | Mature, well-tested, handles complex Unicode correctly |
-| **pyfiglet** | ≥1.0.2 | ASCII art banners | Standard for banner text generation |
-| **wcwidth** | ≥0.2.13 | Unicode width calculation | Reliable emoji width detection |
-| **ansi2html** | ≥1.8.0 | HTML export | Proven ANSI→HTML conversion |
+| Package       | Version | Purpose                      | Justification                                          |
+| ------------- | ------- | ---------------------------- | ------------------------------------------------------ |
+| **rich**      | ≥13.7   | ANSI rendering, emoji safety | Mature, well-tested, handles complex Unicode correctly |
+| **pyfiglet**  | ≥1.0.2  | ASCII art banners            | Standard for banner text generation                    |
+| **wcwidth**   | ≥0.2.13 | Unicode width calculation    | Reliable emoji width detection                         |
+| **ansi2html** | ≥1.8.0  | HTML export                  | Proven ANSI→HTML conversion                            |
 
 **Total Core Dependencies:** 4 packages ✅ (meets ≤5 constraint)
 
@@ -214,6 +223,7 @@ dev = [
 ```
 
 **Package Manager:** UV (Astral's fast Python package manager)
+
 - 10-100x faster than Poetry/pip
 - Standard PEP 621 pyproject.toml format
 - Built-in Python version management
@@ -442,10 +452,11 @@ __all__ = [
 **Supported Color Formats:**
 
 1. **Hex:** `#FF0000`, `#f00` (shorthand)
-2. **RGB tuples:** `rgb(255, 0, 0)`, `(255, 0, 0)`
-3. **CSS4 named colors:** 148 colors from W3C standard
+1. **RGB tuples:** `rgb(255, 0, 0)`, `(255, 0, 0)`
+1. **CSS4 named colors:** 148 colors from W3C standard
 
 **CSS4 Named Colors** (148 total, examples):
+
 ```python
 CSS4_COLORS = {
     # Basic
@@ -543,11 +554,12 @@ console.banner("OCEAN", gradient=("lightblue", "navy"))
 ```
 
 **Benefits:**
+
 - **Memorable:** "coral" is easier than "#ff7f50"
 - **Consistent:** Same color names across matplotlib, CSS, web
 - **Discoverable:** `get_color_names()` lists all options
 
----
+______________________________________________________________________
 
 ### 3. Frame Renderer
 
@@ -619,11 +631,11 @@ BORDERS = {
 
 StyledConsole uses a **tiered approach** to emoji/icon support:
 
-| Tier | Type | Examples | Codepoints | Width | MVP Status |
-|------|------|----------|------------|-------|------------|
-| **1** | Basic Icons | ✅ ❌ ⚠️ 🚀 ❤️ 🎉 | 1 | 2 | ✅ v0.1 |
-| **2** | Modified Emojis | 👍🏽 👨🏻 🏳️ | 2-3 | 2-4 | 🔜 v0.2 |
-| **3** | ZWJ Sequences | 👨‍👩‍👧‍👦 👨‍💻 🏳️‍🌈 | 4+ | 2-4 | 🔮 v0.3+ |
+| Tier  | Type            | Examples          | Codepoints | Width | MVP Status |
+| ----- | --------------- | ----------------- | ---------- | ----- | ---------- |
+| **1** | Basic Icons     | ✅ ❌ ⚠️ 🚀 ❤️ 🎉 | 1          | 2     | ✅ v0.1    |
+| **2** | Modified Emojis | 👍🏽 👨🏻 🏳️          | 2-3        | 2-4   | 🔜 v0.2    |
+| **3** | ZWJ Sequences   | 👨‍👩‍👧‍👦 👨‍💻 🏳️‍🌈          | 4+         | 2-4   | 🔮 v0.3+   |
 
 **Tier 1 (MVP v0.1):** Focus on single-codepoint basic icons that are universally supported and have predictable width=2 behavior. These cover 95% of test reporting use cases (status indicators, simple decorations).
 
@@ -902,6 +914,7 @@ HTML Fragment
 ### Optimization Strategies
 
 1. **Width Calculation Caching**
+
    ```python
    from functools import lru_cache
 
@@ -910,26 +923,29 @@ HTML Fragment
        """Cached width calculation."""
    ```
 
-2. **Lazy HTML Export**
+1. **Lazy HTML Export**
+
    - Only convert to HTML on explicit `export_html()` call
    - Avoid overhead during normal rendering
 
-3. **Border Reuse**
+1. **Border Reuse**
+
    - Pre-generate common border patterns
    - Cache border strings by width
 
-4. **Minimal Rich Overhead**
+1. **Minimal Rich Overhead**
+
    - Use Rich only for final rendering
    - Do layout calculations in pure Python
 
 ### Performance Targets
 
-| Operation | Target | Measurement |
-|-----------|--------|-------------|
-| Simple frame | <10ms | `time.perf_counter()` |
-| Banner render | <40ms | FIGlet + gradient |
-| Dashboard (5 frames) | <50ms | End-to-end |
-| HTML export (100 frames) | <200ms | Batch export |
+| Operation                | Target  | Measurement           |
+| ------------------------ | ------- | --------------------- |
+| Simple frame             | \<10ms  | `time.perf_counter()` |
+| Banner render            | \<40ms  | FIGlet + gradient     |
+| Dashboard (5 frames)     | \<50ms  | End-to-end            |
+| HTML export (100 frames) | \<200ms | Batch export          |
 
 ## Debug Logging
 
@@ -950,6 +966,7 @@ console.frame("Test")  # Logs: "Rendering frame with border=rounded, width=auto"
 ```
 
 **What Gets Logged (debug=True):**
+
 - Terminal capability detection results
 - Frame dimension calculations
 - Color parsing operations
@@ -957,29 +974,33 @@ console.frame("Test")  # Logs: "Rendering frame with border=rounded, width=auto"
 - HTML export operations
 
 **What Does NOT Get Logged:**
+
 - User content (privacy)
 - Normal rendering operations (performance)
 - ANSI output (user controls this)
 
 **Rationale:** This is a styling library, not an application. Users control output via their terminal. Debug logging is ONLY for troubleshooting library bugs, not for operational logging.
 
----
+______________________________________________________________________
 
 ## Error Handling Strategy
 
 ### Error Categories
 
 1. **User Input Errors**
+
    - Invalid color values → Clear error with valid examples
    - Unsupported border style → List available styles
    - Invalid font name → List available fonts
 
-2. **Terminal Capability Errors**
+1. **Terminal Capability Errors**
+
    - No ANSI support → Fallback to plain text with warning
    - Emoji unsupported → Replace with ASCII alternatives
    - Width too narrow → Warn and clip content
 
-3. **Export Errors**
+1. **Export Errors**
+
    - ansi2html failure → Return plain text fallback
    - Memory issues → Suggest streaming mode
 
@@ -1036,34 +1057,39 @@ except RenderError as e:
 ```
 
 **Error Philosophy:**
+
 - **Fail fast** for invalid user input (colors, styles, fonts)
 - **Graceful degradation** for terminal limitations (no exception)
 - **Clear messages** with actionable suggestions
 
----
+______________________________________________________________________
 
 ## Testing Strategy
 
 ### Test Levels
 
 1. **Unit Tests** (pytest)
+
    - Text utilities (emoji width, padding)
    - Color utilities (gradient interpolation)
    - Frame rendering (border generation)
    - Terminal detection (mocked environment)
 
-2. **Integration Tests**
+1. **Integration Tests**
+
    - Console API end-to-end
    - Preset functions
    - HTML export pipeline
 
-3. **Visual Snapshot Tests** (pytest-snapshot)
+1. **Visual Snapshot Tests** (pytest-snapshot)
+
    - Frame rendering output
    - Banner output
    - Dashboard layouts
    - Compare against baseline files
 
-4. **Cross-Platform Tests** (GitHub Actions matrix)
+1. **Cross-Platform Tests** (GitHub Actions matrix)
+
    - Linux (Ubuntu 22.04, 24.04)
    - macOS (latest)
    - Windows (Windows Server)
@@ -1109,14 +1135,15 @@ dev = [
 ### Release Process
 
 1. **Version Bump** (semantic versioning)
-2. **Run Full Test Suite** (all platforms)
-3. **Update CHANGELOG.md**
-4. **Build Wheel and Source Distribution** (`uv build`)
-5. **Publish to PyPI** (`uv publish`)
-6. **Tag Git Release**
-7. **Update Documentation**
+1. **Run Full Test Suite** (all platforms)
+1. **Update CHANGELOG.md**
+1. **Build Wheel and Source Distribution** (`uv build`)
+1. **Publish to PyPI** (`uv publish`)
+1. **Tag Git Release**
+1. **Update Documentation**
 
 **UV Commands:**
+
 ```bash
 # Build
 uv build
@@ -1178,7 +1205,7 @@ class RenderBackend(Protocol):
 - Deprecation warnings for 2 minor versions
 - Clear migration guides for 1.0
 
----
+______________________________________________________________________
 
 ## Validation Checklist
 

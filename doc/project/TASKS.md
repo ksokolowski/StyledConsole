@@ -5,23 +5,25 @@
 **Status:** 🚧 v0.4.0 Development (November 2025)
 **Last Updated:** November 2, 2025
 
----
+______________________________________________________________________
 
 ## 🎯 Current Focus: v0.4.0 Development Sprint
 
 **Status Summary:**
+
 - REFACTOR-001 (Dual Rendering): ✅ **COMPLETED** (Phases 1-4, November 1-2)
 - REFACTOR-002 (Color Normalization): ✅ **COMPLETED** (November 1)
 - Example Modernization: ✅ **COMPLETED** (November 2)
 - New Feature: `rainbow_cycling_frame()`: ✅ **COMPLETED** (November 2)
 
 **Current Metrics:**
+
 - **LOC**: 4,169 lines (23 modules) - down from 5,477 baseline
 - **Tests**: 663 passing @ 91.66% coverage
 - **Examples**: 23 passing (all use Console API)
 - **Deprecations**: Ready for v1.0.0 removal
 
----
+______________________________________________________________________
 
 ## ✅ Completed Work (November 1-2, 2025)
 
@@ -32,12 +34,14 @@
 **File**: [`doc/tasks/planned/REFACTOR_001_DUAL_RENDERING_PATHS.md`](../tasks/planned/REFACTOR_001_DUAL_RENDERING_PATHS.md)
 
 **Phases Completed:**
+
 1. ✅ Phase 1: Adapter pattern (frame_adapter.py created)
-2. ✅ Phase 2: Deprecation warnings added
-3. ✅ Phase 3: effects.py refactored to use Console
-4. ✅ Phase 4: Code cleanup (-578 LOC removed)
+1. ✅ Phase 2: Deprecation warnings added
+1. ✅ Phase 3: effects.py refactored to use Console
+1. ✅ Phase 4: Code cleanup (-578 LOC removed)
 
 **Critical Bug Fixed:**
+
 - Banner gradients in frames (ANSI code preservation in truncate_to_width + Rich Text.from_ansi())
 - Impact: Perfect rendering of colored banners inside frames
 
@@ -49,6 +53,7 @@
 **File**: [`doc/tasks/planned/REFACTOR_002_COLOR_NORMALIZATION.md`](../tasks/planned/REFACTOR_002_COLOR_NORMALIZATION.md)
 
 **Results:**
+
 - Created `normalize_color_for_rich()` with LRU cache
 - +13 tests, all passing
 - -20 LOC duplication in RenderingEngine
@@ -60,6 +65,7 @@
 **Goal:** Convert showcase examples to use Console API only (prepare for v1.0.0 deprecation removal)
 
 **Files Modernized:**
+
 - `examples/showcase/cicd_dashboard.py`: FrameRenderer → Console.frame() with StringIO
 - `examples/showcase/banner_showcase.py`: BannerRenderer loops → Console.banner() direct calls
 - `examples/showcase/gradient_effects.py`: FrameRenderer/BannerRenderer → rainbow_cycling_frame() + Console
@@ -67,6 +73,7 @@
 - `src/styledconsole/core/box_mapping.py`: Case-insensitive border names
 
 **Pattern Established:**
+
 ```python
 # For grid layouts without LayoutComposer:
 buffer = StringIO()
@@ -75,6 +82,7 @@ Console(file=buffer, detect_terminal=False).frame([...], ...)
 ```
 
 **Results:**
+
 - All 23 examples passing
 - Zero deprecation warnings in showcase/ examples
 - Legacy API clearly marked with `_old` suffix
@@ -85,6 +93,7 @@ Console(file=buffer, detect_terminal=False).frame([...], ...)
 **Priority:** User request (restore sophisticated rainbow effect from pre-refactor example)
 
 **Implementation:**
+
 - Added `rainbow_cycling_frame()` to `src/styledconsole/effects.py`
 - Each content line cycles through ROYGBIV colors (discrete, not gradient)
 - Borders use customizable vertical gradient (default: gold → purple)
@@ -92,6 +101,7 @@ Console(file=buffer, detect_terminal=False).frame([...], ...)
 - Added comparison example: `examples/testing/test_rainbow_cycling.py`
 
 **API:**
+
 ```python
 rainbow_cycling_frame(
     content,
@@ -103,10 +113,11 @@ rainbow_cycling_frame(
 ```
 
 **Difference from `rainbow_frame()`:**
+
 - `rainbow_frame()`: Smooth gradient across all lines
 - `rainbow_cycling_frame()`: Each line gets discrete rainbow color (Line 1: red, Line 2: orange, etc.)
 
----
+______________________________________________________________________
 
 ## 🔄 Pending Work
 
@@ -118,6 +129,7 @@ rainbow_cycling_frame(
 **File:** [`doc/tasks/planned/REFACTOR_003_GRADIENT_CONSOLIDATION.md`](../tasks/planned/REFACTOR_003_GRADIENT_CONSOLIDATION.md)
 
 **Rationale for Deferral:**
+
 - Current gradient code works well (all tests passing)
 - Just added `rainbow_cycling_frame()` - let it stabilize first
 - No user-facing bugs or performance issues
@@ -125,7 +137,7 @@ rainbow_cycling_frame(
 
 **Decision:** Focus v0.4.0 on deprecation cleanup and example modernization (completed). Save gradient consolidation for when we add horizontal/radial gradients (v0.5.0+).
 
----
+______________________________________________________________________
 
 ## 📋 Planned Features (v0.5.0+)
 
@@ -134,6 +146,7 @@ rainbow_cycling_frame(
 ### High Priority (v0.5.0)
 
 **Deprecation Removal (v1.0.0 prep)**
+
 - Remove `FrameRenderer` entirely (REFACTOR-001 Phase 5)
 - Remove `LayoutComposer` (users should use Rich Group/Columns)
 - Remove `BannerRenderer` (users should use Console.banner())
@@ -142,6 +155,7 @@ rainbow_cycling_frame(
 ### Medium Priority (v0.5.0+)
 
 **Preset Functions**
+
 - `status_frame()` - Test status display with color coding
 - `test_summary()` - Test statistics dashboard
 - `dashboard_*()` - Small/medium/large dashboard templates
@@ -149,73 +163,82 @@ rainbow_cycling_frame(
 - Value: Convenience for common use cases
 
 **HTML Export Enhancement**
+
 - Current: Basic HTML via ansi2html (works but limited)
 - Enhancement: CSS class-based styling, gradient support
 - Effort: 3-4 days
 - Value: Better web integration
 
----
+______________________________________________________________________
 
 ## � Current Metrics (November 2, 2025)
 
-| Metric | Value | Notes |
-|--------|-------|-------|
-| Source LOC | 4,169 | 23 Python modules |
-| Tests | 663 passing | 91.66% coverage |
-| Examples | 23 passing | All use Console API |
+| Metric       | Value            | Notes                                         |
+| ------------ | ---------------- | --------------------------------------------- |
+| Source LOC   | 4,169            | 23 Python modules                             |
+| Tests        | 663 passing      | 91.66% coverage                               |
+| Examples     | 23 passing       | All use Console API                           |
 | Deprecations | Ready for v1.0.0 | FrameRenderer, LayoutComposer, BannerRenderer |
-| Performance | Excellent | LRU cache on hot paths |
+| Performance  | Excellent        | LRU cache on hot paths                        |
 
 **Comparison to v0.3.0 baseline:**
+
 - LOC: 5,477 → 4,169 (-1,308 / -24%)
 - Modules: 21 → 23 (+2: frame_adapter, test files)
 - Tests: 654 → 663 (+9)
 - Coverage: 95.96% → 91.66% (new untested code added)
 
----
+______________________________________________________________________
 
 ## � Additional Resources
 
 **Active Documentation:**
+
 - [`doc/project/PLAN.md`](PLAN.md) - Architecture & design decisions
 - [`doc/project/SPECIFICATION.md`](SPECIFICATION.md) - User-facing features & API
 - [`doc/project/ROADMAP.md`](ROADMAP.md) - Release timeline
 
 **Refactoring Plans:**
+
 - [`doc/tasks/planned/REFACTOR_001_DUAL_RENDERING_PATHS.md`](../tasks/planned/REFACTOR_001_DUAL_RENDERING_PATHS.md) - ✅ Completed
 - [`doc/tasks/planned/REFACTOR_002_COLOR_NORMALIZATION.md`](../tasks/planned/REFACTOR_002_COLOR_NORMALIZATION.md) - ✅ Completed
 - [`doc/tasks/planned/REFACTOR_003_GRADIENT_CONSOLIDATION.md`](../tasks/planned/REFACTOR_003_GRADIENT_CONSOLIDATION.md) - ⏳ Deferred to v0.5.0
 
 **User Guides:**
+
 - [`doc/guides/EMOJI_GUIDELINES.md`](../guides/EMOJI_GUIDELINES.md) - Tier 1 emoji reference
 - [`doc/guides/COLOR_STANDARDIZATION.md`](../guides/COLOR_STANDARDIZATION.md) - CSS4 color system
 - [`doc/guides/BORDER_GRADIENTS.md`](../guides/BORDER_GRADIENTS.md) - Gradient effects guide
 
----
+______________________________________________________________________
 
 ## 🎯 Next Steps (v0.4.0 Release)
 
 1. **Commit Current Work** (November 2)
+
    - Example modernization changes
    - New `rainbow_cycling_frame()` feature
    - TASKS.md update (this file)
 
-2. **Coverage Improvement** (Optional)
+1. **Coverage Improvement** (Optional)
+
    - Add tests for `rainbow_cycling_frame()` (currently untested)
    - Target: Restore to ≥95% coverage
 
-3. **v0.4.0 Release** (November 2025)
+1. **v0.4.0 Release** (November 2025)
+
    - Update CHANGELOG.md with all changes
    - Tag release: `v0.4.0`
    - Update version in pyproject.toml
    - Publish to PyPI (if applicable)
 
-4. **v1.0.0 Planning** (December 2025)
+1. **v1.0.0 Planning** (December 2025)
+
    - REFACTOR-001 Phase 5: Remove FrameRenderer completely
    - Remove LayoutComposer and BannerRenderer
    - Final API stabilization
 
----
+______________________________________________________________________
 
 **Last Updated:** November 2, 2025
 **Status:** Active development (v0.4.0-dev)
