@@ -20,6 +20,19 @@ THICK_BOX = Box(
     "█▄██\n"  # bottom: blocks and lower half blocks (sits at baseline)
 )
 
+# Custom box style for ROUNDED_THICK - combines thick appearance with rounded corners
+# Uses curved corners (╭╮╰╯) with thick lines for an elegant bold look
+ROUNDED_THICK_BOX = Box(
+    "╭▀▀╮\n"  # top: rounded corners with upper half blocks
+    "█ ██\n"  # head: full blocks with space for content
+    "█▀▀█\n"  # head_row: blocks and upper half blocks
+    "█ ██\n"  # mid: full blocks with space
+    "█▀▀█\n"  # row: blocks and upper half blocks
+    "█▄▄█\n"  # foot_row: blocks and lower half blocks
+    "█ ██\n"  # foot: full blocks with space
+    "╰▄▄╯\n"  # bottom: rounded corners with lower half blocks
+)
+
 # Custom box style for DOTS - uses periods for all characters
 # Format: 8 lines, each with EXACTLY 4 characters (no spaces between them)
 # Line 1: top (top_left, top, top_divider, top_right)
@@ -48,6 +61,7 @@ BORDER_TO_BOX = {
     "double": box.DOUBLE,
     "heavy": box.HEAVY,
     "thick": THICK_BOX,  # Custom thick style with heavy box drawing
+    "rounded_thick": ROUNDED_THICK_BOX,  # Custom thick style with rounded corners
     "ascii": box.ASCII,
     "minimal": box.MINIMAL,
     "dots": DOTS_BOX,  # Custom dotted style with periods

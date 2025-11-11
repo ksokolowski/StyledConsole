@@ -318,6 +318,21 @@ THICK = BorderStyle(
     cross="█",
 )
 
+ROUNDED_THICK = BorderStyle(
+    name="rounded_thick",
+    top_left="╭",
+    top_right="╮",
+    bottom_left="╰",
+    bottom_right="╯",
+    horizontal="▀",
+    vertical="█",
+    left_joint="█",
+    right_joint="█",
+    top_joint="█",
+    bottom_joint="█",
+    cross="█",
+)
+
 ASCII = BorderStyle(
     name="ascii",
     top_left="+",
@@ -370,6 +385,7 @@ BORDERS: dict[str, BorderStyle] = {
     "rounded": ROUNDED,
     "heavy": HEAVY,
     "thick": THICK,
+    "rounded_thick": ROUNDED_THICK,
     "ascii": ASCII,
     "minimal": MINIMAL,
     "dots": DOTS,

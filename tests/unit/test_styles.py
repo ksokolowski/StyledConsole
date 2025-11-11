@@ -560,7 +560,7 @@ class TestBordersDictionary:
 
     def test_borders_count(self):
         """Test number of predefined border styles."""
-        assert len(BORDERS) == 8
+        assert len(BORDERS) == 9
 
 
 class TestGetBorderStyle:
@@ -604,12 +604,13 @@ class TestListBorderStyles:
     def test_list_border_styles_returns_all(self):
         """Test that list_border_styles returns all style names."""
         styles = list_border_styles()
-        assert len(styles) == 8
+        assert len(styles) == 9
         assert "solid" in styles
         assert "double" in styles
         assert "rounded" in styles
         assert "heavy" in styles
         assert "thick" in styles
+        assert "rounded_thick" in styles
         assert "ascii" in styles
         assert "minimal" in styles
         assert "dots" in styles
