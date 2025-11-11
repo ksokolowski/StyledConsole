@@ -29,7 +29,7 @@ def main():
 
     print()
     print("=" * 80)
-    print("🚨 ALERT MESSAGES - Real-World Use Cases")
+    print(f"{EMOJI.SIREN} ALERT MESSAGES - Real-World Use Cases")
     print("=" * 80)
     print()
 
@@ -237,7 +237,7 @@ def main():
             "Instances: 8 updated",
             "Health checks: All passing",
             "",
-            "🌐 https://app.example.com",
+            f"{EMOJI.GLOBE} https://app.example.com",
         ],
         title=f"{EMOJI.CHECK} Deployment Complete",
         border="double",
@@ -252,7 +252,7 @@ def main():
     # DESIGN GUIDELINES
     # ============================================================================
 
-    console.text("📐 DESIGN GUIDELINES", color="magenta", bold=True)
+    console.text(f"{EMOJI.TRIANGLE_RULER} DESIGN GUIDELINES", color="magenta", bold=True)
     print()
 
     console.frame(

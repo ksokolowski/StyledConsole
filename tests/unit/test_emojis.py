@@ -64,6 +64,20 @@ class TestEmojiConstants:
         assert EMOJI.CONFETTI == "🎊"
         assert EMOJI.TROPHY == "🏆"
 
+    def test_communication_emojis(self):
+        """Test communication-related emojis."""
+        assert EMOJI.GLOBE == "🌐"
+        assert EMOJI.GLOBE_MERIDIANS == "🌐"  # Alias
+        assert EMOJI.PHONE == "📱"
+        assert EMOJI.EMAIL == "📧"
+
+    def test_symbols_emojis(self):
+        """Test symbol emojis."""
+        assert EMOJI.SIREN == "🚨"
+        assert EMOJI.TRIANGLE_RULER == "📐"
+        assert EMOJI.LIGHTBULB == "💡"
+        assert EMOJI.BELL == "🔔"
+
     def test_helper_methods(self):
         """Test helper methods for common patterns."""
         assert EMOJI.success("Done") == "✅ Done"

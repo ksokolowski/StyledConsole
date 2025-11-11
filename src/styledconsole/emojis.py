@@ -182,6 +182,8 @@ class EmojiConstants:
     # Symbols
     LIGHTBULB: Final[str] = "💡"
     BELL: Final[str] = "🔔"
+    SIREN: Final[str] = "🚨"
+    TRIANGLE_RULER: Final[str] = "📐"
     LOCK: Final[str] = "🔒"
     UNLOCK: Final[str] = "🔓"
     KEY: Final[str] = "🔑"
@@ -240,6 +242,8 @@ class EmojiConstants:
     SPEAKER: Final[str] = "🔊"
     MEGAPHONE: Final[str] = "📣"
     LOUDSPEAKER: Final[str] = "📢"
+    GLOBE: Final[str] = "🌐"
+    GLOBE_MERIDIANS: Final[str] = "🌐"  # Alias
 
     # ============================================================================
     # Buildings & Places
