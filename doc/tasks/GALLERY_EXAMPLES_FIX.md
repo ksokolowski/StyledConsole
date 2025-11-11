@@ -77,11 +77,14 @@ content = """
 ┃   🔒 Protected Zone   ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━┛
 """
-console.text(content)  # ❌ Manual frame drawing
+console.text(content)  # ❌ Manual frame drawing with raw emoji
 
 # Should be (CORRECT):
+from styledconsole import EMOJI
+
+content = f"{EMOJI.LOCK} Protected Zone"  # ✅ Use EMOJI constant
 console.frame(
-    "🔒 Protected Zone",
+    content,
     border="double",
     border_color="yellow"
 )  # ✅ Uses library function
@@ -97,6 +100,19 @@ console.frame(
 - Breaks ANSI handling (wrapping bugs)
 - Violates v0.3.0 Rich-native rendering architecture
 - Bypasses emoji-safe width calculations from `utils/text.py`
+
+**CRITICAL when fixing:**
+When replacing manual frames, emojis MUST be referenced via EMOJI constants:
+
+```python
+# WRONG (double violation):
+content = "🔒 Protected Zone"  # ❌ Raw emoji in manual frame
+
+# CORRECT:
+from styledconsole import EMOJI
+content = f"{EMOJI.LOCK} Protected Zone"  # ✅ EMOJI constant
+console.frame(content, border="double")    # ✅ Library function
+```
 
 ### 3. Raw Emoji Usage (MUST USE CONSTANTS)
 
@@ -245,10 +261,13 @@ ______________________________________________________________________
    - Replace: `style="gradient", colors=["x", "y"]`
    - With: `start_color="x", end_color="y"`
 
-1. **Remove manual frames:**
+1. **Remove manual frames AND use EMOJI constants:**
 
-   - Lines 177-182: Replace with `console.frame("Protected Zone", border="double")`
+   - Lines 177-182: Replace manual box drawing with `console.frame()`
+   - **MUST** convert raw emojis to EMOJI constants when removing manual frames
+   - Example: `"🔒 Zone"` → `f"{EMOJI.LOCK} Zone"` → `console.frame(content, ...)`
    - Lines 299-310: Replace with proper frame or table layout
+   - **Pattern:** Manual frame removal = mandatory EMOJI constant conversion
 
 1. **Replace raw emojis (12 locations):**
 
