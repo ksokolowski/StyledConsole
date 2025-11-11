@@ -38,6 +38,9 @@ from styledconsole.effects import (
     rainbow_frame,
 )
 
+# Import emoji constants
+from styledconsole.emojis import EMOJI, E, EmojiConstants
+
 # Import type aliases
 from styledconsole.types import AlignType, ColorType, Renderer
 from styledconsole.utils.color import (
@@ -120,6 +123,10 @@ __all__ = [
     # Layout composition
     "Layout",
     "LayoutComposer",
+    # Emoji constants
+    "EMOJI",
+    "E",
+    "EmojiConstants",
     # Special effects
     "gradient_frame",
     "diagonal_gradient_frame",

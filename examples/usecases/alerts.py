@@ -18,7 +18,7 @@ Use cases:
 - User action confirmations
 """
 
-from styledconsole import Console
+from styledconsole import EMOJI, Console
 
 # Initialize console
 console = Console()
@@ -37,16 +37,17 @@ def main():
     # SUCCESS ALERTS - Green theme, checkmark emoji
     # ============================================================================
 
-    console.text("✅ SUCCESS ALERTS", color="lime", bold=True)
+    console.text(f"{EMOJI.CHECK} SUCCESS ALERTS", color="lime", bold=True)
     console.text(
-        "Use for: Completed operations, successful deployments, passed tests", color="gray"
+        "Use for: Completed operations, successful deployments, passed tests",
+        color="gray",
     )
     print()
 
     # Simple success
     console.frame(
         "Application deployed successfully to production!",
-        title="✅ Deployment Complete",
+        title=f"{EMOJI.CHECK} Deployment Complete",
         border="rounded",
         border_color="lime",
         content_color="lightgreen",
@@ -64,7 +65,7 @@ def main():
             "Artifacts: 12 files (4.2 MB)",
             "Environment: production",
         ],
-        title="✅ Build Success",
+        title=f"{EMOJI.CHECK} Build Success",
         border="double",
         border_color="green",
         content_color="white",
@@ -78,14 +79,17 @@ def main():
     # ERROR ALERTS - Red theme, X emoji
     # ============================================================================
 
-    console.text("❌ ERROR ALERTS", color="red", bold=True)
-    console.text("Use for: Failed operations, critical errors, deployment failures", color="gray")
+    console.text(f"{EMOJI.CROSS} ERROR ALERTS", color="red", bold=True)
+    console.text(
+        "Use for: Failed operations, critical errors, deployment failures",
+        color="gray",
+    )
     print()
 
     # Simple error
     console.frame(
         "Database connection failed!",
-        title="❌ Connection Error",
+        title=f"{EMOJI.CROSS} Connection Error",
         border="heavy",
         border_color="red",
         content_color="lightcoral",
@@ -103,7 +107,7 @@ def main():
             "File: /var/www/app/config.yml",
             "Action: Check deployment credentials",
         ],
-        title="❌ Deployment Failed",
+        title=f"{EMOJI.CROSS} Deployment Failed",
         border="double",
         border_color="darkred",
         content_color="white",
@@ -117,14 +121,14 @@ def main():
     # WARNING ALERTS - Yellow theme, warning emoji
     # ============================================================================
 
-    console.text("⚠️  WARNING ALERTS", color="yellow", bold=True)
+    console.text(f"{EMOJI.WARNING}  WARNING ALERTS", color="yellow", bold=True)
     console.text("Use for: Non-critical issues, deprecation notices, resource limits", color="gray")
     print()
 
     # Simple warning
     console.frame(
         "API rate limit approaching: 980/1000 requests",
-        title="⚠️  Rate Limit Warning",
+        title=f"{EMOJI.WARNING}  Rate Limit Warning",
         border="rounded",
         border_color="yellow",
         content_color="khaki",
@@ -142,7 +146,7 @@ def main():
             "Recommendation: Restart workers or scale up",
             "Auto-scaling: Enabled",
         ],
-        title="⚠️  Resource Warning",
+        title=f"{EMOJI.WARNING}  Resource Warning",
         border="heavy",
         border_color="orange",
         content_color="white",
@@ -156,7 +160,7 @@ def main():
     # INFO ALERTS - Blue theme, info emoji
     # ============================================================================
 
-    console.text("ℹ️  INFO ALERTS", color="dodgerblue", bold=True)
+    console.text(f"{EMOJI.INFO}  INFO ALERTS", color="dodgerblue", bold=True)
     console.text(
         "Use for: Status updates, informational messages, progress notifications", color="gray"
     )
@@ -165,7 +169,7 @@ def main():
     # Simple info
     console.frame(
         "Health check passed for all services",
-        title="ℹ️  System Status",
+        title=f"{EMOJI.INFO}  System Status",
         border="rounded",
         border_color="dodgerblue",
         content_color="lightblue",
@@ -183,7 +187,7 @@ def main():
             "Total size: 12.8 GB",
             "Next backup: Tomorrow 02:00 AM",
         ],
-        title="ℹ️  Backup Status",
+        title=f"{EMOJI.INFO}  Backup Status",
         border="double",
         border_color="steelblue",
         content_color="white",
@@ -197,13 +201,15 @@ def main():
     # REAL-WORLD EXAMPLE: Deployment Sequence
     # ============================================================================
 
-    console.text("🚀 REAL-WORLD SEQUENCE: Deployment Workflow", color="cyan", bold=True)
+    console.text(
+        f"{EMOJI.ROCKET} REAL-WORLD SEQUENCE: Deployment Workflow", color="cyan", bold=True
+    )
     print()
 
     # Starting
     console.frame(
         "Starting deployment to production...",
-        title="ℹ️  Deploy Started",
+        title=f"{EMOJI.INFO}  Deploy Started",
         border="rounded",
         border_color="dodgerblue",
         content_color="lightblue",
@@ -214,7 +220,7 @@ def main():
     # Warning during deployment
     console.frame(
         "Detected 3 outdated dependencies. Consider upgrading after deployment.",
-        title="⚠️  Dependencies Notice",
+        title=f"{EMOJI.WARNING}  Dependencies Notice",
         border="rounded",
         border_color="yellow",
         content_color="khaki",
@@ -233,7 +239,7 @@ def main():
             "",
             "🌐 https://app.example.com",
         ],
-        title="✅ Deployment Complete",
+        title=f"{EMOJI.CHECK} Deployment Complete",
         border="double",
         border_color="lime",
         content_color="white",
