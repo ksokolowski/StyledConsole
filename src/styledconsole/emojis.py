@@ -83,6 +83,7 @@ class EmojiConstants:
     BOOKMARK: Final[str] = "🔖"
     LABEL: Final[str] = "🏷"  # Note: No variation selector version
     CARD_INDEX: Final[str] = "📇"
+    CONSTRUCTION: Final[str] = "🚧"
 
     # Books & Reading
     BOOK: Final[str] = "📖"
@@ -105,12 +106,18 @@ class EmojiConstants:
     KEYBOARD: Final[str] = "⌨"  # Note: No variation selector version
     MOUSE: Final[str] = "🖱"  # Note: No variation selector version
     FLOPPY: Final[str] = "💾"
+    FLOPPY_DISK: Final[str] = "💾"  # Alias
     CD: Final[str] = "💿"
     DVD: Final[str] = "📀"
+    MICROPROCESSOR: Final[str] = "🖥"  # Using desktop as closest match
+    MEMORY: Final[str] = "💾"  # Using floppy as memory icon
+    SATELLITE_ANTENNA: Final[str] = "📡"
+    GLOBE_WITH_MERIDIANS: Final[str] = "🌐"
 
     # Tools & Science
     TEST_TUBE: Final[str] = "🧪"
     MICROSCOPE: Final[str] = "🔬"
+    TRIANGULAR_RULER: Final[str] = "📐"
     WRENCH: Final[str] = "🔧"
     HAMMER: Final[str] = "🔨"
     GEAR: Final[str] = "⚙️"
@@ -159,6 +166,7 @@ class EmojiConstants:
     TORNADO: Final[str] = "🌪"  # Note: No variation selector version
     MILKY_WAY: Final[str] = "🌌"
     GALAXY: Final[str] = "🌌"  # Alias
+    EARTH_GLOBE_EUROPE_AFRICA: Final[str] = "🌍"
 
     # Plants
     TREE: Final[str] = "🌲"
