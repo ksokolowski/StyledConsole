@@ -1,8 +1,42 @@
 # AI Coding Agent Instructions for StyledConsole
 
 **Project:** StyledConsole v0.3.0
-**Last Updated:** November 11, 2025
+**Last Updated:** November 12, 2025
 **Python:** ≥3.10 | **License:** Apache-2.0
+
+______________________________________________________________________
+
+## 🚨 Critical Working Principles (Learned November 12, 2025)
+
+### Tool Usage
+
+- **NEVER use sed/grep for code modifications** - Use `read_file()`, `replace_string_in_file()`, and `grep_search()` tools
+- **Trust existing work** - If user says something was done yesterday, verify with `read_file()` but don't over-validate
+- **Show full output** - Don't pipe terminal output with `| head` or `| tail` unless explicitly requested
+- **Use proper APIs** - When Rich functionality is needed, check if Console API already provides it; if not, document the gap
+
+### Console API Usage
+
+- **Use Console API exclusively in examples** - Never access `console._rich_console` or import Rich directly unless documenting API gaps
+- **Rich is infrastructure, not interface** - Console is the facade; Rich is the backend
+- **Document API limitations** - When you identify missing functionality (like nested frames), create entries in `doc/notes/CONSOLE_API_IMPROVEMENTS.md`
+
+### Example Development Pattern
+
+1. **Read file completely** - Understand full context before making changes
+1. **Fix systematically** - Banner API → Manual frames → Raw emojis → Test
+1. **Create meaningful examples** - Show real-world use cases (dashboards, reports), not abstract demonstrations
+1. **Test after every major change** - Run the example, verify output, check for errors
+1. **Commit when complete** - Don't leave half-finished work
+
+### Anti-Patterns to Avoid
+
+- ❌ Using `console._rich_console.print()` in examples
+- ❌ Importing Rich Panel/Text/Group directly in example files
+- ❌ Creating StringIO buffers manually (Rich handles this)
+- ❌ Removing code the user has already added
+- ❌ Making changes without reading current file state
+- ❌ Implementing complex workarounds instead of documenting API needs
 
 ______________________________________________________________________
 
@@ -196,6 +230,30 @@ print(visual_width(text))     # 9 (not 8)
 print(split_graphemes(text))  # ['🚀', ' ', 'R', 'o', 'c', 'k', 'e', 't']
 ```
 
+### Rich Integration Best Practices
+
+**When Rich features are needed beyond Console API:**
+
+1. **Check Console API first** - Most common needs already covered
+1. **Document the gap** - Add to `doc/notes/CONSOLE_API_IMPROVEMENTS.md`
+1. **Use Rich properly** - Never create StringIO buffers; use Rich's native rendering
+1. **Example: Nested frames require Rich Panel composition:**
+
+```python
+# DON'T: Manual string capture with StringIO
+from io import StringIO
+buffer = StringIO()
+temp_console = RichConsole(file=buffer)  # ❌ Overcomplicated
+
+# DO: Use Rich Panel directly when Console API doesn't support it yet
+from rich.panel import Panel
+from styledconsole.core.box_mapping import get_box_style
+
+inner = Panel("content", box=get_box_style("rounded"))
+outer = Panel(Panel.fit(inner, padding=(0, 2)), box=get_box_style("heavy"))
+console._rich_console.print(outer)  # Document this as API gap
+```
+
 ### Type Aliases (in `types.py`)
 
 - `AlignType`: Literal\["left", "center", "right"\]
@@ -366,6 +424,80 @@ ______________________________________________________________________
 1. Verify terminal detection in `utils/terminal.py`
 1. Add test case in `tests/unit/test_text.py`
 1. Validate with `doc/EMOJI_GUIDELINES.md` safe list
+
+______________________________________________________________________
+
+## 🎓 Working with Examples (November 12, 2025 Learnings)
+
+### Gallery Example Quality Standards
+
+When creating or fixing gallery examples (in `examples/gallery/`):
+
+1. **Console API Only** - Never import Rich directly in example files
+
+   - ❌ `from rich.panel import Panel`
+   - ✅ `from styledconsole import Console, EMOJI`
+
+1. **Real-World Use Cases** - Show practical applications, not abstract demos
+
+   - ❌ "Layer 1, Layer 2, Layer 3" abstract nesting
+   - ✅ System dashboard with CPU/Memory/Network panels
+
+1. **Document API Gaps** - When Console API is insufficient:
+
+   - Add entry to `doc/notes/CONSOLE_API_IMPROVEMENTS.md`
+   - Include use case, current workaround, proposed API
+   - Note the limitation in example with clear comment
+
+1. **Systematic Fixing Pattern**:
+
+   ```
+   Step 1: Fix banner() calls (style/colors → start_color/end_color)
+   Step 2: Remove manual frame drawing → console.frame()
+   Step 3: Convert raw emojis → EMOJI constants
+   Step 4: Test execution → verify output
+   Step 5: Commit when complete
+   ```
+
+1. **Banner API Signature** (CRITICAL):
+
+   ```python
+   # ❌ WRONG (v0.1.0 API - no longer supported)
+   console.banner("Title", style="gradient", colors=["red", "blue"])
+   console.banner("Title", style="rainbow")
+
+   # ✅ CORRECT (v0.3.0 API)
+   console.banner("Title", start_color="red", end_color="blue")
+   console.banner("Title", font="banner", start_color="cyan", end_color="purple")
+   ```
+
+1. **Text API Signature**:
+
+   ```python
+   # ❌ WRONG
+   console.text("Hello", style="bold", align="center")
+
+   # ✅ CORRECT
+   console.text("Hello", bold=True, color="cyan", italic=True)
+   ```
+
+### When to Document vs. Implement
+
+**Document the gap** (add to CONSOLE_API_IMPROVEMENTS.md) when:
+
+- Feature requires Rich Panel/Group composition
+- No Console API equivalent exists
+- Workaround is complex or non-obvious
+- Multiple examples would benefit from the feature
+
+**Don't implement workarounds** when:
+
+- It requires accessing `console._rich_console`
+- It needs manual StringIO buffer management
+- The "solution" is more complex than the problem
+- It hides a real API limitation
+
+Example: Today we identified that nested frames (frames within frames) need a proper API like `console.group()`. Instead of building complex StringIO workarounds, we documented it and showed meaningful independent frames.
 
 ______________________________________________________________________
 
