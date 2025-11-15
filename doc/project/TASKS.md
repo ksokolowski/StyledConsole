@@ -121,6 +121,41 @@ ______________________________________________________________________
 
 ## 🔄 Pending Work
 
+### API-CONSISTENCY: Color & Gradient API Unification (v0.3.x)
+
+**Priority:** HIGH (Next Sprint)
+**Impact:** Gallery examples modernization, API documentation, future-proof design
+**Status:** ⏳ **PLANNED**
+**File:** [`doc/tasks/planned/API_CONSISTENCY_V0.3.x.md`](../tasks/planned/API_CONSISTENCY_V0.3.x.md)
+**Related:** [`doc/notes/CONSOLE_API_IMPROVEMENTS.md`](../notes/CONSOLE_API_IMPROVEMENTS.md)
+
+**Goal:** Standardize color/gradient parameters across Console API and examples, document conventions clearly.
+
+**Phases:**
+
+1. ⏳ **Phase 1: Gallery Example Cleanup (1-2 days)**
+
+   - Fix `colors_showcase.py`, `gradients_showcase.py`, `emojis_showcase.py`, `banners_showcase.py`
+   - Remove legacy `style="gradient"`, `colors=[...]`, tuple-of-names in `border_color`
+   - Replace raw emojis with `EMOJI[...]` constants
+   - Ensure all examples execute without errors
+
+1. ⏳ **Phase 2: Documentation & Clarification (1-2 days)**
+
+   - Document color parameter naming conventions in user docs
+   - Add alignment/layout semantics section
+   - Document error handling principles
+   - Update emoji guide
+
+1. ⏳ **Phase 3: Optional API Extensions (v0.3.x, 2-3 days)** - Optional
+
+   - Extend `Console.frame()` to support gradients via `start_color`/`end_color`
+   - Add tests and examples
+
+**Decision:** Phase 1 & 2 are immediate priorities. Phase 3 is optional enhancement for v0.3.x.
+
+______________________________________________________________________
+
 ### REFACTOR-003: Gradient Logic Consolidation
 
 **Priority:** MEDIUM (Deferred to v0.5.0)
