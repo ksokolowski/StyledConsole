@@ -9,35 +9,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 🚀 Animated Gradients & Unified Engine
 
-This release introduces dynamic, animated gradients and a completely refactored gradient engine.
+This release introduces dynamic, animated gradients, a completely refactored gradient engine, and significant improvements to the emoji and example systems.
 
 ### Added
 
-#### Animated Gradients
+#### Animated Gradients & Engine
 
 - **Animation Class**: New `Animation` class for handling render loops, cursor management, and FPS control.
 - **OffsetPositionStrategy**: New strategy that allows gradients to be shifted dynamically, enabling cycling animations.
+- **Unified Gradient Engine**: Replaced hardcoded gradient functions with a modular Strategy pattern (`PositionStrategy`, `ColorSource`, `TargetFilter`).
+- **New Documentation**: Added `ANIMATED_GRADIENTS.md` guide and `GRADIENT_ENGINE.md` reference.
+
+#### Emojis & Assets
+
+- **Tier 1 Emojis**: Added 20+ new Tier 1 emoji constants (Nov 12).
+- **Emoji Constants**: Added `SIREN`, `TRIANGLE_RULER`, `GLOBE` and file/document emojis (Nov 11).
+- **Reference**: Added emoji constants reference documentation.
+
+#### Examples
+
+- **Use Cases**: Added 6 comprehensive use case examples (Nov 11).
 - **Demo**: New `examples/demo_animation.py` showcasing the animated rainbow effect.
-- **Guide**: New `doc/guides/ANIMATED_GRADIENTS.md` guide.
-
-#### Unified Gradient Engine
-
-- **Strategy Pattern**: Replaced hardcoded gradient functions with a modular Strategy pattern.
-  - `PositionStrategy`: Vertical, Diagonal, Horizontal, Offset.
-  - `ColorSource`: LinearGradient, RainbowSpectrum.
-  - `TargetFilter`: ContentOnly, BorderOnly, Both.
-- **Unified API**: New `apply_gradient` engine function in `src/styledconsole/effects/engine.py`.
-- **Reference**: New `doc/reference/GRADIENT_ENGINE.md` documentation.
 
 ### Changed
 
-- **Refactor**: `src/styledconsole/effects/__init__.py` now uses the unified engine, removing ~200 lines of duplicated code.
-- **Documentation**: Comprehensive update to project documentation, archiving old proposals and adding new guides.
+- **Breaking Change**: Removed deprecated `FrameRenderer` and `Frame` classes (Nov 02).
+- **Border Styles**: Improved `ROUNDED_THICK` border style with quadrant block characters (Nov 11).
+- **Refactor**: Reduced cyclomatic complexity across codebase (Nov 11).
+- **Documentation**: Comprehensive update to project documentation and policy.
 
 ### Fixed
 
-- **Animation Glitch**: Fixed off-by-one error in animation cursor clearing that caused "ghost" lines.
-- **Diagonal Alignment**: Fixed test failure related to centered frame alignment in diagonal gradients.
+- **Animation Glitch**: Fixed off-by-one error in animation cursor clearing.
+- **Diagonal Alignment**: Fixed test failure related to centered frame alignment.
+
+______________________________________________________________________
+
+## \[0.3.0\] - 2025-10-21
+
+### 🏗️ Rich-Native Migration
+
+A major architectural shift to use `rich` natively for rendering, improving stability and compatibility.
+
+### Changed
+
+- **Rich Integration**: Replaced custom `FrameRenderer` with native `rich.panel.Panel`.
+- **Layouts**: Updated `LayoutComposer` for full Rich compatibility.
+- **Text Alignment**: Fixed decorative box headers/footers and ANSI wrapping bugs using Rich's `Text.align()` API.
+
+### Fixed
+
+- **ANSI Wrapping**: Resolved critical ANSI wrapping bugs by leveraging Rich's layout engine.
+- **Alignment**: Fixed visual illusions in `THICK` style and empty string title handling.
 
 ______________________________________________________________________
 
