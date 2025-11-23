@@ -1219,3 +1219,33 @@ ______________________________________________________________________
 - [x] Open questions captured
 
 **Status:** ✅ Specification phase complete - Ready for Planning phase
+
+### Journey 23: Animated Loading Screen
+
+**As a** CLI tool developer
+**I want to** display an animated gradient while a long task runs
+**So that** users know the application is active and responsive
+
+**Example:**
+
+```python
+from styledconsole.animation import Animation
+from styledconsole.effects.strategies import OffsetPositionStrategy
+
+def frame_generator():
+    offset = 0.0
+    while True:
+        # Create frame with offset gradient
+        # (Simplified for example)
+        yield render_frame_with_offset(offset)
+        offset += 0.05
+
+Animation.run(frame_generator(), fps=20)
+```
+
+**Success Criteria:**
+
+- Smooth animation (20+ FPS)
+- Cycling gradient colors
+- No cursor flickering
+- Clean exit on interruption

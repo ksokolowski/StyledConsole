@@ -39,6 +39,8 @@ class EmojiConstants:
     CROSS: Final[str] = "❌"
     WARNING: Final[str] = "⚠️"
     INFO: Final[str] = "ℹ️"
+    QUESTION: Final[str] = "❓"
+    REFRESH: Final[str] = "🔄"
 
     # Colored Circles
     RED_CIRCLE: Final[str] = "🔴"
@@ -157,6 +159,7 @@ class EmojiConstants:
     MOON: Final[str] = "🌙"
     STAR_SIMPLE: Final[str] = "⭐"  # Alias
     DROPLET: Final[str] = "💧"
+    WATER: Final[str] = "💧"  # Alias
     WATER_WAVE: Final[str] = "🌊"
     OCEAN: Final[str] = "🌊"  # Alias
     FIRE: Final[str] = "🔥"
@@ -180,6 +183,7 @@ class EmojiConstants:
     BLOSSOM: Final[str] = "🌸"
     CHERRY_BLOSSOM: Final[str] = "🌸"  # Alias
     LEAVES: Final[str] = "🍃"
+    LEAF: Final[str] = "🍃"  # Alias
     MAPLE_LEAF: Final[str] = "🍁"
 
     # ============================================================================

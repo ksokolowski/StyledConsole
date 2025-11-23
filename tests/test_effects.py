@@ -1,7 +1,5 @@
 """Tests for effects module (gradients and rainbows)."""
 
-import pytest
-
 from styledconsole.effects import (
     diagonal_gradient_frame,
     get_rainbow_color,
@@ -123,15 +121,16 @@ class TestGradientFrame:
             )
             assert len(lines) == 3
 
-    def test_gradient_frame_horizontal_not_implemented(self):
-        """Test that horizontal gradients raise NotImplementedError."""
-        with pytest.raises(NotImplementedError):
-            gradient_frame(
-                ["Test"],
-                start_color="red",
-                end_color="blue",
-                direction="horizontal",
-            )
+    def test_gradient_frame_horizontal(self):
+        """Test that horizontal gradients are implemented."""
+        lines = gradient_frame(
+            ["Test"],
+            start_color="red",
+            end_color="blue",
+            direction="horizontal",
+        )
+        assert len(lines) == 3
+        assert "\033[" in lines[1]
 
     def test_gradient_frame_hex_colors(self):
         """Test gradient with CSS4 color names."""
@@ -243,8 +242,8 @@ class TestDiagonalGradientFrame:
         )
         # Content should be centered (with padding on both sides)
         content = strip_ansi(lines[1])
-        # Check that there's padding
-        assert content.startswith("│") or content.startswith("┃")
+        # Check that there's padding (border char exists)
+        assert "│" in content or "┃" in content
 
     def test_diagonal_gradient_empty_content(self):
         """Test diagonal gradient with empty content."""

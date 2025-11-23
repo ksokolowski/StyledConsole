@@ -105,7 +105,7 @@ class BannerRenderer:
         Returns:
             Figlet instance for the font
         """
-        return pyfiglet.Figlet(font=font)
+        return pyfiglet.Figlet(font=font, width=1000)
 
     def render(
         self,

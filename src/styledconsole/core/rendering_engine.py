@@ -16,6 +16,7 @@ from rich.text import Text as RichText
 
 from styledconsole.core.banner import Banner, BannerRenderer
 from styledconsole.core.box_mapping import get_box_style
+from styledconsole.core.gradient_utils import apply_vertical_border_gradient
 from styledconsole.utils.color import normalize_color_for_rich
 from styledconsole.utils.text import adjust_emoji_spacing_in_text
 
@@ -77,7 +78,7 @@ class RenderingEngine:
                 self._logger.debug("BannerRenderer initialized (lazy)")
         return self.__banner_renderer
 
-    def print_frame(
+    def render_frame_to_string(
         self,
         content: str | list[str],
         *,
@@ -91,35 +92,39 @@ class RenderingEngine:
         title_color: str | None = None,
         start_color: str | None = None,
         end_color: str | None = None,
-    ) -> None:
-        """Render and print a frame using Rich Panel.
-
-        v0.3.0: Uses Rich Panel instead of custom FrameRenderer.
-        Automatically converts CSS4/Rich color names to hex for Rich compatibility.
+        border_gradient_start: str | None = None,
+        border_gradient_end: str | None = None,
+        border_gradient_direction: str = "vertical",
+    ) -> str:
+        """Render a frame to a string with all effects applied.
 
         Args:
-            content: Frame content (string or list of lines).
-            title: Optional frame title.
-            border: Border style name. Defaults to "rounded".
-            width: Fixed width or None for auto. Defaults to None.
-            padding: Padding around content. Defaults to 1.
-            align: Content alignment ("left", "center", "right"). Defaults to "left".
-            content_color: Content text color (CSS4/Rich name or hex). Defaults to None.
-            border_color: Border color (CSS4/Rich name or hex). Defaults to None.
-            title_color: Title text color (CSS4/Rich name or hex). Defaults to None.
-            start_color: Gradient start color (CSS4/Rich name or hex). Defaults to None.
-            end_color: Gradient end color (CSS4/Rich name or hex). Defaults to None.
-        """
-        if self._debug:
-            self._logger.debug(
-                f"Rendering frame: title='{title}', border='{border}', "
-                f"width={width}, padding={padding}"
-            )
+            content: Frame content.
+            title: Optional title.
+            border: Border style.
+            width: Frame width.
+            padding: Content padding.
+            align: Content alignment.
+            content_color: Content color.
+            border_color: Border color.
+            title_color: Title color.
+            start_color: Content gradient start.
+            end_color: Content gradient end.
+            border_gradient_start: Border gradient start.
+            border_gradient_end: Border gradient end.
+            border_gradient_direction: Border gradient direction.
 
-        # Normalize colors (kept separate for testability and lower cyclomatic complexity)
+        Returns:
+            Rendered frame as a string containing ANSI escape codes.
+        """
+        # Normalize colors
         content_color, border_color, title_color, start_color, end_color = self._normalize_colors(
             content_color, border_color, title_color, start_color, end_color
         )
+
+        # Normalize border gradient colors
+        border_gradient_start = normalize_color_for_rich(border_gradient_start)
+        border_gradient_end = normalize_color_for_rich(border_gradient_end)
 
         # Normalize content to string
         if isinstance(content, list):
@@ -127,7 +132,7 @@ class RenderingEngine:
         else:
             content_str = str(content)
 
-        # Default: adjust emoji spacing in content (VS16 assumption on by default)
+        # Default: adjust emoji spacing in content
         if content_str:
             content_str = adjust_emoji_spacing_in_text(content_str)
 
@@ -143,7 +148,6 @@ class RenderingEngine:
             content_renderable = Align.center(content_renderable)
         elif align == "right":
             content_renderable = Align.right(content_renderable)
-        # else: left alignment (default, no Align wrapper needed)
 
         # Get Rich box style
         box_style = get_box_style(border)
@@ -151,23 +155,20 @@ class RenderingEngine:
         # Build Panel kwargs
         panel_kwargs = {
             "box": box_style,
-            "padding": (0, padding),  # Rich padding is (vertical, horizontal)
-            "expand": False,  # Don't auto-expand by default
+            "padding": (0, padding),
+            "expand": False,
         }
 
         # Add width if provided
         if width:
             panel_kwargs["width"] = width
-            # Always expand to fill the specified width for proper title centering
             panel_kwargs["expand"] = True
 
         # Add title if provided
         if title:
-            # Adjust emoji spacing in title before styling
             adj_title = adjust_emoji_spacing_in_text(str(title))
             panel_kwargs["title"] = adj_title
-            panel_kwargs["title_align"] = "center"  # Titles always centered for balanced borders
-            # Title color: use title_color if set, else border_color, else default
+            panel_kwargs["title_align"] = "center"
             if title_color:
                 panel_kwargs["title"] = f"[{title_color}]{adj_title}[/]"
             elif border_color:
@@ -177,10 +178,100 @@ class RenderingEngine:
         if border_color:
             panel_kwargs["border_style"] = border_color
 
-        # Create Panel with aligned content
+        # Create Panel
         panel = Panel(content_renderable, **panel_kwargs)
 
-        self._rich_console.print(panel, highlight=False, soft_wrap=False)
+        # Render to string using a temporary console to ensure ANSI codes are generated
+        # independent of the main console's state (e.g. if main console is writing to a file)
+        import io
+
+        from rich.console import Console as RichConsole
+
+        capture_file = io.StringIO()
+        # Use a temporary console with forced terminal and truecolor to get full ANSI output
+        temp_console = RichConsole(
+            file=capture_file,
+            force_terminal=True,
+            color_system="truecolor",
+            width=width or self._rich_console.width,
+        )
+
+        temp_console.print(panel, highlight=False, soft_wrap=False)
+        output = capture_file.getvalue()
+
+        # Apply border gradient if needed
+        if border_gradient_start and border_gradient_end:
+            lines = output.splitlines()
+            if border_gradient_direction == "vertical":
+                colored_lines = apply_vertical_border_gradient(
+                    lines, border_gradient_start, border_gradient_end, border, title
+                )
+                return "\n".join(colored_lines)
+            else:
+                return output
+
+        return output
+
+    def print_frame(
+        self,
+        content: str | list[str],
+        *,
+        title: str | None = None,
+        border: str = "rounded",
+        width: int | None = None,
+        padding: int = 1,
+        align: str = "left",
+        content_color: str | None = None,
+        border_color: str | None = None,
+        title_color: str | None = None,
+        start_color: str | None = None,
+        end_color: str | None = None,
+        border_gradient_start: str | None = None,
+        border_gradient_end: str | None = None,
+        border_gradient_direction: str = "vertical",
+    ) -> None:
+        """Render and print a frame using Rich Panel.
+
+        See render_frame_to_string for argument details.
+        """
+        if self._debug:
+            self._logger.debug(
+                f"Rendering frame: title='{title}', border='{border}', "
+                f"width={width}, padding={padding}"
+            )
+
+        output = self.render_frame_to_string(
+            content,
+            title=title,
+            border=border,
+            width=width,
+            padding=padding,
+            align=align,
+            content_color=content_color,
+            border_color=border_color,
+            title_color=title_color,
+            start_color=start_color,
+            end_color=end_color,
+            border_gradient_start=border_gradient_start,
+            border_gradient_end=border_gradient_end,
+            border_gradient_direction=border_gradient_direction,
+        )
+
+        # Print the output, handling alignment of the frame itself
+        lines = output.splitlines()
+        for line in lines:
+            # Convert to Text to preserve ANSI and handle alignment
+            if "\x1b" in line:
+                text_obj = RichText.from_ansi(line, no_wrap=True)
+            else:
+                text_obj = RichText(line, no_wrap=True)
+
+            if align == "center":
+                self._rich_console.print(Align.center(text_obj), highlight=False, soft_wrap=True)
+            elif align == "right":
+                self._rich_console.print(Align.right(text_obj), highlight=False, soft_wrap=True)
+            else:
+                self._rich_console.print(text_obj, highlight=False, soft_wrap=True)
 
         if self._debug:
             self._logger.debug("Frame rendered using Rich Panel")
@@ -226,13 +317,16 @@ class RenderingEngine:
         - Solid color → wrap entire content in Rich markup
 
         Returns:
-            Renderable object (string with markup or Rich Text instance).
+            Renderable object (Text instance with no_wrap=True to prevent wrapping).
         """
+        from rich.text import Text
+
         # If ANSI already present (e.g., prior gradient/banner), wrap via Text.from_ansi
         if "\x1b" in content_str:
-            from rich.text import Text
-
-            return Text.from_ansi(content_str)
+            text_obj = Text.from_ansi(content_str)
+            text_obj.no_wrap = True
+            text_obj.overflow = "ignore"
+            return text_obj
 
         # Gradient application
         if start_color and end_color:
@@ -245,16 +339,26 @@ class RenderingEngine:
                     ratio = i / (len(lines) - 1) if len(lines) > 1 else 0
                     color = interpolate_color(start_color, end_color, ratio)
                     styled_lines.append(f"[{color}]{line}[/]")
-                return "\n".join(styled_lines)
+                # Create Text with markup then set no_wrap
+                text_obj = Text.from_markup("\n".join(styled_lines))
+                text_obj.no_wrap = True
+                text_obj.overflow = "ignore"
+                return text_obj
             else:
-                return f"[{start_color}]{content_str}[/]"
+                text_obj = Text.from_markup(f"[{start_color}]{content_str}[/]")
+                text_obj.no_wrap = True
+                text_obj.overflow = "ignore"
+                return text_obj
 
         # Solid color
         if content_color:
-            return f"[{content_color}]{content_str}[/]"
+            text_obj = Text.from_markup(f"[{content_color}]{content_str}[/]")
+            text_obj.no_wrap = True
+            text_obj.overflow = "ignore"
+            return text_obj
 
-        # No styling needed
-        return content_str
+        # No styling needed - wrap in Text to control wrapping behavior
+        return Text(content_str, no_wrap=True, overflow="ignore")
 
     def print_banner(
         self,
@@ -298,8 +402,21 @@ class RenderingEngine:
         )
 
         lines = self._banner_renderer.render_banner(banner_obj)
-        for line in lines:
-            self._rich_console.print(line, highlight=False, soft_wrap=False)
+
+        # Convert to Rich Text to preserve ANSI and handle alignment as a block
+        content_str = "\n".join(lines)
+        if "\x1b" in content_str:
+            content = RichText.from_ansi(content_str, no_wrap=True)
+        else:
+            content = RichText(content_str, no_wrap=True)
+
+        # Apply alignment
+        if align == "center":
+            self._rich_console.print(Align.center(content), highlight=False, soft_wrap=True)
+        elif align == "right":
+            self._rich_console.print(Align.right(content), highlight=False, soft_wrap=True)
+        else:
+            self._rich_console.print(content, highlight=False, soft_wrap=True)
 
         # Log completion
         if self._debug:

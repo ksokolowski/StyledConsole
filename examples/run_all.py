@@ -16,9 +16,11 @@ def get_all_examples():
     examples_dir = Path(__file__).parent
 
     categories = {
-        "Basic Examples": sorted(examples_dir.glob("basic/*.py")),
-        "Showcase Examples": sorted(examples_dir.glob("showcase/*.py")),
+        "Use Cases": sorted(examples_dir.glob("usecases/*.py")),
         "Gallery Examples": sorted(examples_dir.glob("gallery/*.py")),
+        "Testing Scripts": sorted(examples_dir.glob("testing/*.py")),
+        "Legacy Basic": sorted(examples_dir.glob("legacy/basic/*.py")),
+        "Legacy Showcase": sorted(examples_dir.glob("legacy/showcase/*.py")),
     }
 
     # Filter out old/deprecated examples

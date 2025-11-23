@@ -197,7 +197,9 @@ This project is **production-ready** with comprehensive testing and documentatio
 - `doc/project/PLAN.md` - Architecture overview with v0.3.0 changes
 - `doc/guides/EMOJI_GUIDELINES.md` - Emoji support and safe usage guide
 - `doc/guides/COLOR_STANDARDIZATION.md` - CSS4 color system
+- `doc/guides/COLOR_STANDARDIZATION.md` - CSS4 color system
 - `doc/guides/BORDER_GRADIENTS.md` - Gradient implementation
+- `docs/PRESETS.md` - **Presets Guide** (Status, Summary, Dashboard)
 
 **API Reference:**
 All public APIs include comprehensive docstrings with type hints.

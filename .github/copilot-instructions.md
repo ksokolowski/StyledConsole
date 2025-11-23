@@ -1,12 +1,12 @@
 # AI Coding Agent Instructions for StyledConsole
 
 **Project:** StyledConsole v0.3.0
-**Last Updated:** November 12, 2025
+**Last Updated:** November 18, 2025
 **Python:** ≥3.10 | **License:** Apache-2.0
 
 ______________________________________________________________________
 
-## 🚨 Critical Working Principles (Learned November 12, 2025)
+## 🚨 Critical Working Principles (Learned November 18, 2025)
 
 ### Tool Usage
 
@@ -20,6 +20,7 @@ ______________________________________________________________________
 - **Use Console API exclusively in examples** - Never access `console._rich_console` or import Rich directly unless documenting API gaps
 - **Rich is infrastructure, not interface** - Console is the facade; Rich is the backend
 - **Document API limitations** - When you identify missing functionality (like nested frames), create entries in `doc/notes/CONSOLE_API_IMPROVEMENTS.md`
+- **Explicit Gradient Arguments** - `Console.frame()` uses `border_gradient_start` and `border_gradient_end`. **NEVER** pass a tuple to `border_color`.
 
 ### Example Development Pattern
 
@@ -37,6 +38,7 @@ ______________________________________________________________________
 - ❌ Removing code the user has already added
 - ❌ Making changes without reading current file state
 - ❌ Implementing complex workarounds instead of documenting API needs
+- ❌ Passing tuples to `border_color` (e.g., `border_color=("red", "blue")`) - **CRASHES API**
 
 ______________________________________________________________________
 
@@ -46,6 +48,7 @@ ______________________________________________________________________
 - Core files to know:
   - `src/styledconsole/console.py` – public API (`frame`, `banner`, `text`, `rule`, `newline`, `export_html`).
   - `src/styledconsole/core/rendering_engine.py` – orchestrates Rich-native rendering.
+  - `src/styledconsole/core/gradient_utils.py` – **NEW** centralized gradient logic (linear, diagonal, rainbow).
   - `src/styledconsole/core/box_mapping.py` – border name → Rich `box` mapping.
   - `src/styledconsole/utils/text.py` – emoji-safe width: `visual_width`, `pad_to_width`, `truncate_to_width` (mandatory for alignment).
   - `src/styledconsole/utils/color.py` – `parse_color`, `interpolate_color` (CSS4 names, hex, RGB).
@@ -60,7 +63,7 @@ ______________________________________________________________________
 - Workflows (uv-first):
   - Env: `uv sync --group dev` (creates .venv and installs dev deps from `pyproject.toml`; fallback: `pip install -e ".[dev]"`).
   - Tests + coverage: `uv run pytest` (HTML in `htmlcov/` via pyproject addopts). Targeted: `uv run pytest tests/unit/test_frame.py -v`; update snapshots: `--snapshot-update`.
-  - Examples: `uv run python examples/run_all.py`; visual: `uv run python examples/run_all_visual.py`; quick sanity: `uv run python examples/basic/01_simple_frame.py`.
+  - Examples: `uv run python examples/run_all.py`; visual: `uv run python examples/run_all_visual.py`; quick sanity: `uv run python examples/legacy/basic/01_simple_frame.py`.
   - Lint/format: `uv run ruff check src/ tests/` and `uv run ruff format src/ tests/`.
   - Metrics gate (pre-commit): `scripts/complexity_check.py` via radon blocks commits if CC grade worse than C or MI \< 40; override paths with `COMPLEXITY_PATHS`.
   - Pre-commit (uv): install hooks with `uvx pre-commit install` and set `PRE_COMMIT_USE_UV=1` so hook envs are created via uv; run all hooks: `uvx pre-commit run --all-files`.
@@ -112,6 +115,7 @@ ______________________________________________________________________
    - `RenderingEngine`: Uses Rich Panel for frames (ANSI-safe, no wrapping bugs)
    - `BannerRenderer`: ASCII art via pyfiglet + gradient integration (still custom)
    - `box_mapping.py`: Maps border styles (solid, rounded, etc.) to Rich box types
+   - `gradient_utils.py`: **NEW** Shared gradient logic for frames and banners
    - **Key change:** `Console.frame()` now uses `Panel` internally, not custom line-by-line rendering
 
 1. **Terminal & Export**
@@ -271,7 +275,11 @@ ______________________________________________________________________
 - **Unit Tests:** `tests/unit/` – isolated component testing
 - **Integration Tests:** `tests/integration/` – cross-component workflows
 - **Snapshots:** `tests/snapshots/` – pytest snapshot testing for visual regression
-- **Examples:** `examples/basic/` (10+ examples) → `examples/showcase/` (advanced features)
+- **Examples:**
+  - `examples/usecases/` – Real-world scenarios (dashboards, alerts)
+  - `examples/gallery/` – Visual showcases (borders, colors)
+  - `examples/recipes/` – Common patterns
+  - `examples/legacy/` – Old basic/showcase examples (deprecated)
 
 ### Running Tests
 
@@ -313,7 +321,7 @@ ______________________________________________________________________
 
    - Edit relevant `core/*.py` file
    - Add/update snapshot tests in `tests/`
-   - Update example in `examples/basic/` or `examples/showcase/`
+   - Update example in `examples/usecases/` or `examples/gallery/`
    - Ensure Console facade method exists (or add to `console.py`)
 
 1. **If adding color/emoji features:**
@@ -337,7 +345,7 @@ python -m venv venv && source venv/bin/activate
 pip install -e ".[dev]"  # From pyproject.toml
 
 # Quick validation:
-python examples/basic/01_simple_frame.py
+python examples/legacy/basic/01_simple_frame.py
 ```
 
 ### Before Committing
@@ -355,6 +363,7 @@ ______________________________________________________________________
 | -------------------------------------------- | ------------------------------------------------ |
 | `src/styledconsole/console.py`               | Main facade—API entry point                      |
 | `src/styledconsole/core/rendering_engine.py` | v0.3.0 Rich-native rendering coordinator         |
+| `src/styledconsole/core/gradient_utils.py`   | **NEW** Centralized gradient logic               |
 | `src/styledconsole/core/box_mapping.py`      | Border style → Rich Box mapping (v0.3.0)         |
 | `src/styledconsole/core/frame.py`            | Frame rendering logic (legacy, still works)      |
 | `src/styledconsole/core/banner.py`           | Banner rendering (pyfiglet)                      |
@@ -409,14 +418,14 @@ ______________________________________________________________________
 1. Edit `core/styles.py`: Add frozen dataclass with Unicode chars
 1. Register in `BORDERS` dict
 1. Add snapshot test in `tests/unit/test_frame.py`
-1. Add example in `examples/gallery/border_gallery.py`
+1. Add example in `examples/gallery/borders_showcase.py`
 
 ### Support new color input format
 
 1. Update `parse_color()` in `utils/color.py`
 1. Add ColorType to types.py if needed
 1. Test with gradients in `effects.py`
-1. Add example in `examples/`
+1. Add example in `examples/gallery/colors_showcase.py`
 
 ### Fix emoji rendering bug
 
@@ -427,7 +436,7 @@ ______________________________________________________________________
 
 ______________________________________________________________________
 
-## 🎓 Working with Examples (November 12, 2025 Learnings)
+## 🎓 Working with Examples (November 18, 2025 Learnings)
 
 ### Gallery Example Quality Standards
 
@@ -471,6 +480,16 @@ When creating or fixing gallery examples (in `examples/gallery/`):
    console.banner("Title", font="banner", start_color="cyan", end_color="purple")
    ```
 
+1. **Frame API Signature** (CRITICAL):
+
+   ```python
+   # ❌ WRONG (Causes crash)
+   console.frame("...", border_color=("red", "blue"))
+
+   # ✅ CORRECT (v0.3.0 API)
+   console.frame("...", border_gradient_start="red", border_gradient_end="blue")
+   ```
+
 1. **Text API Signature**:
 
    ```python
@@ -503,4 +522,4 @@ ______________________________________________________________________
 
 ## 📞 Questions?
 
-Refer to existing examples (`examples/basic/01-09`) for common patterns. The 654 passing tests are the ultimate reference for expected behavior.
+Refer to existing examples (`examples/usecases/`) for common patterns. The 654 passing tests are the ultimate reference for expected behavior.

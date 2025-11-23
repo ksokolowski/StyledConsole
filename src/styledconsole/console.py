@@ -126,6 +126,52 @@ class Console:
         """
         return self._terminal.profile
 
+    def render_frame(
+        self,
+        content: str | list[str],
+        *,
+        title: str | None = None,
+        border: str = "solid",
+        width: int | None = None,
+        padding: int = 1,
+        align: AlignType = "left",
+        content_color: str | None = None,
+        border_color: str | None = None,
+        title_color: str | None = None,
+        start_color: str | None = None,
+        end_color: str | None = None,
+        border_gradient_start: str | None = None,
+        border_gradient_end: str | None = None,
+        border_gradient_direction: str = "vertical",
+    ) -> str:
+        """Render a framed content box to a string.
+
+        Similar to frame(), but returns the rendered string instead of printing it.
+        Useful for nested frames or capturing output.
+
+        Args:
+            See frame() for argument details.
+
+        Returns:
+            Rendered frame as a string containing ANSI escape codes.
+        """
+        return self._renderer.render_frame_to_string(
+            content,
+            title=title,
+            border=border,
+            width=width,
+            padding=padding,
+            align=align,
+            content_color=content_color,
+            border_color=border_color,
+            title_color=title_color,
+            start_color=start_color,
+            end_color=end_color,
+            border_gradient_start=border_gradient_start,
+            border_gradient_end=border_gradient_end,
+            border_gradient_direction=border_gradient_direction,
+        )
+
     def frame(
         self,
         content: str | list[str],
@@ -140,6 +186,9 @@ class Console:
         title_color: str | None = None,
         start_color: str | None = None,
         end_color: str | None = None,
+        border_gradient_start: str | None = None,
+        border_gradient_end: str | None = None,
+        border_gradient_direction: str = "vertical",
     ) -> None:
         """Render and print a framed content box.
 
@@ -167,6 +216,12 @@ class Console:
                 content_color when set. Defaults to None.
             end_color: Ending color for per-line gradient effect. Required when
                 start_color is set. Defaults to None.
+            border_gradient_start: Starting color for border gradient.
+                Defaults to None.
+            border_gradient_end: Ending color for border gradient.
+                Defaults to None.
+            border_gradient_direction: Direction for border gradient.
+                Currently only "vertical" is supported. Defaults to "vertical".
 
         Example:
             >>> console = Console()
@@ -187,6 +242,13 @@ class Console:
             ...     start_color="red",
             ...     end_color="blue"
             ... )
+
+            >>> # With border gradient
+            >>> console.frame(
+            ...     "Gradient Border",
+            ...     border_gradient_start="cyan",
+            ...     border_gradient_end="magenta"
+            ... )
         """
         self._renderer.print_frame(
             content,
@@ -200,6 +262,9 @@ class Console:
             title_color=title_color,
             start_color=start_color,
             end_color=end_color,
+            border_gradient_start=border_gradient_start,
+            border_gradient_end=border_gradient_end,
+            border_gradient_direction=border_gradient_direction,
         )
 
     def banner(

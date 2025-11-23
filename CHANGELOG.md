@@ -5,11 +5,39 @@ All notable changes to StyledConsole will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## \[0.4.0\] - 2025-11-23
+
+### 🚀 Animated Gradients & Unified Engine
+
+This release introduces dynamic, animated gradients and a completely refactored gradient engine.
 
 ### Added
 
-- Nothing yet - this is the current development version
+#### Animated Gradients
+
+- **Animation Class**: New `Animation` class for handling render loops, cursor management, and FPS control.
+- **OffsetPositionStrategy**: New strategy that allows gradients to be shifted dynamically, enabling cycling animations.
+- **Demo**: New `examples/demo_animation.py` showcasing the animated rainbow effect.
+- **Guide**: New `doc/guides/ANIMATED_GRADIENTS.md` guide.
+
+#### Unified Gradient Engine
+
+- **Strategy Pattern**: Replaced hardcoded gradient functions with a modular Strategy pattern.
+  - `PositionStrategy`: Vertical, Diagonal, Horizontal, Offset.
+  - `ColorSource`: LinearGradient, RainbowSpectrum.
+  - `TargetFilter`: ContentOnly, BorderOnly, Both.
+- **Unified API**: New `apply_gradient` engine function in `src/styledconsole/effects/engine.py`.
+- **Reference**: New `doc/reference/GRADIENT_ENGINE.md` documentation.
+
+### Changed
+
+- **Refactor**: `src/styledconsole/effects/__init__.py` now uses the unified engine, removing ~200 lines of duplicated code.
+- **Documentation**: Comprehensive update to project documentation, archiving old proposals and adding new guides.
+
+### Fixed
+
+- **Animation Glitch**: Fixed off-by-one error in animation cursor clearing that caused "ghost" lines.
+- **Diagonal Alignment**: Fixed test failure related to centered frame alignment in diagonal gradients.
 
 ______________________________________________________________________
 
@@ -170,4 +198,3 @@ ______________________________________________________________________
 ______________________________________________________________________
 
 [0.1.0]: https://github.com/yourusername/styledconsole/releases/tag/v0.1.0
-[unreleased]: https://github.com/yourusername/styledconsole/compare/v0.1.0...HEAD

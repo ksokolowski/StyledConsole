@@ -1,7 +1,7 @@
 # StyledConsole Roadmap
 
-**Current Version:** v0.1.0 (Production Ready)
-**Last Updated:** October 19, 2025
+**Current Version:** v0.4.0 (Production Ready)
+**Last Updated:** November 2025
 
 ______________________________________________________________________
 
@@ -93,27 +93,30 @@ ______________________________________________________________________
 
 ______________________________________________________________________
 
+### v0.4.0 - Animated Gradients (Released: November 2025) ✅
+
+**Status:** Production Ready
+**Features:**
+
+- ✅ **Unified Gradient Engine** (Strategy Pattern)
+- ✅ **Animated Gradients** (Cycling colors, offset strategies)
+- ✅ **Animation Class** (Render loop management)
+
+______________________________________________________________________
+
 ### v0.3.0 - Interactive Elements (Q2 2026)
 
 **Target:** May 2026
 **Effort:** 12-16 days (~2-3 weeks)
-**Theme:** Progress and animation support
+**Theme:** Progress and interactive widgets
 
 **Planned Features:**
-
-1. **Animation Support** (T-024) - Experimental
-
-   - Simple spinner animations
-   - Predefined spinners: DOTS, MOON, ARROW, BOUNCE, PULSE
-   - Frame-based iteration
-   - Terminal cursor management
 
 1. **Progress Bar Wrapper** (T-025)
 
    - Convenience wrapper for Rich's Progress
    - Themed progress bars
    - Console integration
-   - Don't reinvent the wheel - use Rich
 
 **Goals:**
 

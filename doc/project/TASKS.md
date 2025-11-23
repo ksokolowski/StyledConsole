@@ -158,19 +158,27 @@ ______________________________________________________________________
 
 ### REFACTOR-003: Gradient Logic Consolidation
 
-**Priority:** MEDIUM (Deferred to v0.5.0)
-**Impact:** -~200 LOC (estimated), Strategy pattern architecture
-**Status:** ⏳ **DEFERRED** - Not critical for v0.4.0
-**File:** [`doc/tasks/planned/REFACTOR_003_GRADIENT_CONSOLIDATION.md`](../tasks/planned/REFACTOR_003_GRADIENT_CONSOLIDATION.md)
+**Priority:** HIGH
+**Status:** ✅ **COMPLETED** (November 2025)
+**File:** [`doc/tasks/completed/REFACTOR_003_GRADIENT_CONSOLIDATION.md`](../tasks/completed/REFACTOR_003_GRADIENT_CONSOLIDATION.md)
 
-**Rationale for Deferral:**
+**Results:**
 
-- Current gradient code works well (all tests passing)
-- Just added `rainbow_cycling_frame()` - let it stabilize first
-- No user-facing bugs or performance issues
-- Can consolidate in v0.5.0 when adding new gradient types
+- Implemented Strategy Pattern (`strategies.py`, `engine.py`)
+- Unified 4 duplicate functions into `apply_gradient` engine
+- Added `OffsetPositionStrategy` for animations
+- 100% test coverage for new strategies
 
-**Decision:** Focus v0.4.0 on deprecation cleanup and example modernization (completed). Save gradient consolidation for when we add horizontal/radial gradients (v0.5.0+).
+### New Feature: Animated Gradients
+
+**Status:** ✅ **COMPLETED** (November 2025)
+**Priority:** User Request
+
+**Implementation:**
+
+- Created `Animation` class for render loops
+- Created `demo_animation.py` showcase
+- Documented in [`doc/guides/ANIMATED_GRADIENTS.md`](../guides/ANIMATED_GRADIENTS.md)
 
 ______________________________________________________________________
 
