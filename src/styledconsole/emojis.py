@@ -49,6 +49,8 @@ class EmojiConstants:
     BLUE_CIRCLE: Final[str] = "🔵"
     PURPLE_CIRCLE: Final[str] = "🟣"
     ORANGE_CIRCLE: Final[str] = "🟠"
+    WHITE_CIRCLE: Final[str] = "⚪"
+    BLACK_CIRCLE: Final[str] = "⚫"
 
     # Stars & Sparkles
     STAR: Final[str] = "⭐"
@@ -131,6 +133,7 @@ class EmojiConstants:
     TARGET: Final[str] = "🎯"
     ART: Final[str] = "🎨"
     PALETTE: Final[str] = "🎨"  # Alias
+    PAINTBRUSH: Final[str] = "🖌️"
     PARTY: Final[str] = "🎉"
     CONFETTI: Final[str] = "🎊"
     GIFT: Final[str] = "🎁"
@@ -156,6 +159,7 @@ class EmojiConstants:
     # ============================================================================
     RAINBOW: Final[str] = "🌈"
     SUN: Final[str] = "☀️"
+    SUNRISE: Final[str] = "🌅"
     MOON: Final[str] = "🌙"
     STAR_SIMPLE: Final[str] = "⭐"  # Alias
     DROPLET: Final[str] = "💧"
@@ -202,6 +206,7 @@ class EmojiConstants:
     TANGERINE: Final[str] = "🍊"  # Alias
     GRAPES: Final[str] = "🍇"
     WATERMELON: Final[str] = "🍉"
+    CHESTNUT: Final[str] = "🌰"
 
     # ============================================================================
     # People & Gestures (Simple Only)
@@ -269,6 +274,7 @@ class EmojiConstants:
     PURPLE_HEART: Final[str] = "💜"
     BROKEN_HEART: Final[str] = "💔"
     SPARKLING_HEART: Final[str] = "💖"
+    GROWING_HEART: Final[str] = "💗"
 
     # ============================================================================
     # Currency & Money
@@ -317,6 +323,7 @@ class EmojiConstants:
     BANK: Final[str] = "🏦"
     HOTEL: Final[str] = "🏨"
     CASTLE: Final[str] = "🏰"
+    DESERT: Final[str] = "🏜️"
     CLASSICAL_BUILDING: Final[str] = "🏛"  # Note: No variation selector version
     STADIUM: Final[str] = "🏟"  # Note: No variation selector version
 

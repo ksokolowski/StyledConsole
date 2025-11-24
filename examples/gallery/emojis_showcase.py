@@ -486,7 +486,7 @@ def demo_emoji_catalog():
         emoji_list = "\n".join([f"{emoji} {name}" for emoji, name in category["emojis"]])
         console.frame(
             emoji_list,
-            title=f"📚 {category['name']}",
+            title=f"{EMOJI.BOOKS} {category['name']}",
             border="rounded",
             border_color="cyan",
             content_color="white",
@@ -514,7 +514,7 @@ def demo_creative_showcase():
         f"  {EMOJI.STAR}{EMOJI.SPARKLES}{EMOJI.SPARKLES}{EMOJI.SPARKLES}{EMOJI.STAR}\n\n"
         "Achievement pyramid!\n"
         "Emojis as ASCII art.",
-        title="🎨 Emoji Art",
+        title=f"{EMOJI.ART} Emoji Art",
         border="double",
         border_gradient_start="yellow",
         border_gradient_end="orange",
@@ -531,7 +531,7 @@ def demo_creative_showcase():
         f"{EMOJI.CHECK}{EMOJI.CHECK}{EMOJI.GEAR}{EMOJI.HOURGLASS}{EMOJI.HOURGLASS}\n\n"
         "70% Complete\n\n"
         "Emojis as progress indicators!",
-        title="📊 Visual Progress",
+        title=f"{EMOJI.CHART_BAR} Visual Progress",
         border="rounded",
         border_gradient_start="lime",
         border_gradient_end="green",
@@ -552,7 +552,7 @@ def demo_creative_showcase():
         f"     {EMOJI.ARROW_DOWN}\n"
         f"{EMOJI.TROPHY} Success!    (Week 5)\n\n"
         "Emojis tell stories over time.",
-        title="📅 Timeline",
+        title=f"{EMOJI.CALENDAR} Timeline",
         border="solid",
         border_color="cyan",
         content_color="white",
@@ -564,7 +564,7 @@ def demo_creative_showcase():
 
 def main():
     """Run the complete emoji showcase."""
-    console.rule("✨ EMOJI SHOWCASE GALLERY", color="magenta")
+    console.rule(f"{EMOJI.SPARKLES} EMOJI SHOWCASE GALLERY", color="magenta")
     console.newline()
 
     console.text(
@@ -591,7 +591,7 @@ def main():
     demo_creative_showcase()
 
     # Finale
-    console.rule("✨", color="magenta")
+    console.rule(f"{EMOJI.SPARKLES}", color="magenta")
     console.newline()
     console.frame(
         f"{EMOJI.TROPHY} EMOJI MASTERY ACHIEVED\n\n"
