@@ -5,6 +5,76 @@ All notable changes to StyledConsole will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2025-11-30
+
+### ✨ Frame Groups & Context Manager
+
+This release introduces two complementary APIs for creating grouped frame layouts:
+the dictionary-based `frame_group()` and the Pythonic `console.group()` context manager.
+
+### Added
+
+#### Frame Groups (Dictionary API)
+
+- **`frame_group()` method**: Create organized multi-frame layouts with a single call
+- **`render_frame_group()` method**: Render frame groups to string for nesting
+- **Style inheritance**: Inner frames can inherit outer border style (`inherit_style=True`)
+- **Gap control**: Configurable spacing between inner frames (`gap` parameter)
+- **27 unit tests** in `tests/unit/test_frame_group.py`
+
+```python
+console.frame_group(
+    [
+        {"content": "Status: Online", "title": "System"},
+        {"content": "CPU: 45%", "title": "Resources"},
+    ],
+    title="Dashboard",
+    border="double",
+)
+```
+
+#### Context Manager API
+
+- **`console.group()` context manager**: More Pythonic approach for complex layouts
+- **`FrameGroupContext` class**: New `core/group.py` module with context manager implementation
+- **Arbitrary nesting**: Nested groups create hierarchical frame structures
+- **Width alignment**: `align_widths=True` makes all inner frames the same width
+- **Thread-safe**: Uses `contextvars` for safe concurrent usage
+- **24 unit tests** in `tests/unit/test_group_context.py`
+
+```python
+with console.group(title="Dashboard", border="heavy"):
+    console.frame("Status: OK", title="System")
+    console.frame("Memory: 4GB", title="Resources")
+
+    with console.group(title="Services", align_widths=True):
+        console.frame("Database: Online", border_color="green")
+        console.frame("Cache: Active", border_color="green")
+```
+
+### Changed
+
+- **`status_summary()` refactored**: Now uses `console.group(align_widths=True)` instead of manual two-pass width calculation (~50 lines removed)
+- **Updated `nested_frames.py` demo**: Showcases both APIs with context manager as recommended approach
+- **Updated `status_panels.py` example**: Added context manager section for service status displays
+- **Updated `USER_GUIDE.md`**: Added comprehensive documentation for both APIs
+
+### Fixed
+
+- **`align_widths` with Rich markup**: Now correctly handles `[bold]`, `[color]` tags in width calculation
+- **`align_widths` with `None` width**: Fixed check to handle frames with `width=None` parameter
+
+### Metrics
+
+| Metric        | Value       |
+| ------------- | ----------- |
+| Lines of Code | ~5,000      |
+| Tests         | 702 passing |
+| Coverage      | 83%+        |
+| Examples      | 27          |
+
+______________________________________________________________________
+
 ## [0.6.0] - 2025-11-30
 
 ### 🛠️ Code Refactoring
