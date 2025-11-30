@@ -8,6 +8,7 @@ import logging
 import sys
 
 from rich.console import Console as RichConsole
+from rich.terminal_theme import TerminalTheme
 
 from styledconsole.utils.text import strip_ansi
 
@@ -83,7 +84,15 @@ class ExportManager:
                 "to use export methods."
             )
 
-    def export_html(self, *, inline_styles: bool = True) -> str:
+    def export_html(
+        self,
+        *,
+        theme: "TerminalTheme | None" = None,
+        clear_screen: bool = False,
+        inline_styles: bool = True,
+        page_title: str = "StyledConsole Export",
+        theme_css: str | None = None,
+    ) -> str:
         """Export recorded console output as HTML.
 
         Converts all recorded ANSI-styled output to HTML with proper formatting,
@@ -91,31 +100,84 @@ class ExportManager:
         external stylesheet references.
 
         Args:
+            theme: TerminalTheme object to use for export. Defaults to None (current theme).
+            clear_screen: If True, clears the recording buffer after export. Defaults to False.
             inline_styles: If True (default), includes CSS styles inline in the HTML.
                 If False, generates HTML that expects external Rich CSS stylesheet.
+            page_title: Title for the HTML page. Defaults to "StyledConsole Export".
+            theme_css: Custom CSS to inject into the <style> block. Defaults to None.
 
         Returns:
             Complete HTML document as a string, ready to save or display.
 
         Raises:
             RuntimeError: If recording mode was not enabled during initialization.
-
-        Example:
-            >>> manager = ExportManager(rich_console, debug=False)
-            >>> html = manager.export_html(inline_styles=True)
-            >>> with open("output.html", "w") as f:
-            ...     f.write(html)
-
-            >>> # External stylesheet
-            >>> html = manager.export_html(inline_styles=False)
-            >>> # Requires rich.css file in same directory
         """
         self._validate_recording_enabled()
 
         if self._debug and self._logger:
-            self._logger.debug(f"Exporting HTML (inline_styles={inline_styles})")
+            self._logger.debug(
+                f"Exporting HTML (inline_styles={inline_styles}, title='{page_title}')"
+            )
 
-        html = self._console.export_html(inline_styles=inline_styles)
+        html = self._console.export_html(
+            theme=theme,
+            clear=clear_screen,
+            inline_styles=inline_styles,
+        )
+
+        # Inject page title and custom CSS if provided
+        if page_title != "StyledConsole Export":
+            if "<title>Rich</title>" in html:
+                html = html.replace("<title>Rich</title>", f"<title>{page_title}</title>")
+            elif "<head>" in html:
+                # If no title tag exists but head does, insert it
+                html = html.replace("<head>", f"<head>\n<title>{page_title}</title>")
+
+        # CSS to force VS16 emojis to width 1ch (mimicking terminal behavior)
+        vs16_css = """
+    /* VS16 Emoji Alignment Fix */
+    .rich-emoji-vs16 {
+        display: inline-block;
+        width: 1ch;
+        overflow: visible;
+        white-space: nowrap;
+        vertical-align: text-bottom;
+        text-align: left;
+    }
+        """
+
+        # Combine VS16 CSS with custom CSS
+        combined_css = vs16_css
+        if theme_css:
+            combined_css += "\n" + theme_css
+
+        # Inject combined CSS before the closing </style> tag
+        if "</style>" in html:
+            html = html.replace("</style>", f"{combined_css}\n</style>")
+        elif "<head>" in html:
+            # If no style tag exists (e.g. inline_styles=False), insert one
+            html = html.replace("</head>", f"<style>\n{combined_css}\n</style>\n</head>")
+
+        # Post-process HTML to wrap VS16 sequences
+        # We look for any character followed by \uFE0F (VS16)
+        # Note: Rich exports raw UTF-8. Be careful not to break HTML tags.
+        # Rich might wrap text in spans like <span ...>X</span>.
+        # If we have "⚠️" it might be "⚠\ufe0f".
+        # Let's try a regex replacement on the HTML string.
+        # We match any non-tag character followed by VS16.
+
+        import re
+
+        # Match a character that is NOT > (end of tag) followed by VS16
+        # This is a heuristic but should work for Rich's output format
+        # We capture the base char (group 1) and the VS16 (group 2)
+        # Regex: ([^>])(\uFE0F)
+        # IMPORTANT: We use a negative lookahead (?!\u200d) to ensure we don't break
+        # ZWJ sequences (like 🏳️‍🌈) where the VS16 is followed by a joiner.
+        html = re.sub(
+            r"([^>])(\ufe0f)(?!\u200d)", r'<span class="rich-emoji-vs16">\1\2</span>', html
+        )
 
         if self._debug and self._logger:
             self._logger.debug(f"HTML exported: {len(html)} characters")

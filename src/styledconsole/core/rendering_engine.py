@@ -14,9 +14,9 @@ from rich.console import Console as RichConsole
 from rich.panel import Panel
 from rich.text import Text as RichText
 
-from styledconsole.core.banner import Banner, BannerRenderer
+from styledconsole.core.banner import Banner
 from styledconsole.core.box_mapping import get_box_style
-from styledconsole.core.gradient_utils import apply_vertical_border_gradient
+from styledconsole.core.gradient_utils import apply_vertical_border_gradient, colorize
 from styledconsole.utils.color import normalize_color_for_rich
 from styledconsole.utils.text import adjust_emoji_spacing_in_text
 
@@ -24,8 +24,8 @@ from styledconsole.utils.text import adjust_emoji_spacing_in_text
 class RenderingEngine:
     """Coordinates rendering operations for StyledConsole.
 
-    Manages specialized renderers (FrameRenderer, BannerRenderer) using lazy
-    initialization and delegates text/rule/newline operations to Rich Console.
+    Manages specialized renderers using lazy initialization and delegates
+    text/rule/newline operations to Rich Console.
 
     Attributes:
         _rich_console: Rich Console instance for low-level rendering.
@@ -44,9 +44,6 @@ class RenderingEngine:
         self._debug = debug
         self._logger = self._setup_logging()
 
-        # Lazy-initialized banner renderer (banners still use custom pyfiglet integration)
-        self.__banner_renderer: BannerRenderer | None = None
-
         if self._debug:
             self._logger.debug("RenderingEngine initialized (v0.3.0 - Rich native)")
 
@@ -64,19 +61,6 @@ class RenderingEngine:
             logger.addHandler(handler)
         logger.setLevel(logging.DEBUG if self._debug else logging.WARNING)
         return logger
-
-    @property
-    def _banner_renderer(self) -> BannerRenderer:
-        """Get the banner renderer, initializing it lazily if needed.
-
-        Returns:
-            BannerRenderer instance.
-        """
-        if self.__banner_renderer is None:
-            self.__banner_renderer = BannerRenderer()
-            if self._debug:
-                self._logger.debug("BannerRenderer initialized (lazy)")
-        return self.__banner_renderer
 
     def render_frame_to_string(
         self,
@@ -117,14 +101,268 @@ class RenderingEngine:
         Returns:
             Rendered frame as a string containing ANSI escape codes.
         """
+        # Use custom renderer to ensure correct emoji width calculation
+        output = self._render_custom_frame(
+            content,
+            title=title,
+            border=border,
+            width=width,
+            padding=padding,
+            align=align,
+            content_color=content_color,
+            border_color=border_color,
+            title_color=title_color,
+            start_color=start_color,
+            end_color=end_color,
+        )
+
+        # Apply border gradient if needed
+        if border_gradient_start and border_gradient_end:
+            # Normalize border gradient colors
+            border_gradient_start_norm = normalize_color_for_rich(border_gradient_start)
+            border_gradient_end_norm = normalize_color_for_rich(border_gradient_end)
+
+            lines = output.splitlines()
+            if border_gradient_direction == "vertical":
+                colored_lines = apply_vertical_border_gradient(
+                    lines, border_gradient_start_norm, border_gradient_end_norm, border, title
+                )
+                return "\n".join(colored_lines)
+            else:
+                return output
+
+        return output
+
+    def _render_custom_frame(
+        self,
+        content: str | list[str],
+        *,
+        title: str | None = None,
+        border: str = "rounded",
+        width: int | None = None,
+        padding: int = 1,
+        align: str = "left",
+        content_color: str | None = None,
+        border_color: str | None = None,
+        title_color: str | None = None,
+        start_color: str | None = None,
+        end_color: str | None = None,
+    ) -> str:
+        """Render frame manually to bypass Rich's incorrect VS16 width calculation."""
+        from styledconsole.utils.text import (
+            adjust_emoji_spacing_in_text,
+            normalize_content,
+            render_markup_to_ansi,
+            visual_width,
+        )
+
         # Normalize colors
         content_color, border_color, title_color, start_color, end_color = self._normalize_colors(
             content_color, border_color, title_color, start_color, end_color
         )
 
-        # Normalize border gradient colors
-        border_gradient_start = normalize_color_for_rich(border_gradient_start)
-        border_gradient_end = normalize_color_for_rich(border_gradient_end)
+        # Prepare content lines
+        lines = normalize_content(content)
+        lines = [adjust_emoji_spacing_in_text(line) for line in lines]
+        lines = [render_markup_to_ansi(line) for line in lines]
+        content_widths = [visual_width(line) for line in lines]
+        max_content_width = max(content_widths) if content_widths else 0
+
+        # Prepare title
+        adj_title, title_width = self._prepare_title(title)
+
+        # Calculate dimensions
+        frame_width, inner_width, content_area_width = self._calculate_frame_dimensions(
+            width, padding, max_content_width, title_width, title
+        )
+
+        # Get box style and build frame
+        box_style = get_box_style(border)
+
+        # Build borders
+        top_line = self._build_top_border(
+            box_style, inner_width, adj_title, title_width, title_color, border_color
+        )
+        bottom_line = self._build_bottom_border(box_style, inner_width, border_color)
+
+        # Build content lines
+        rendered_lines = [top_line]
+        rendered_lines.extend(
+            self._build_content_lines(
+                lines,
+                box_style,
+                content_area_width,
+                padding,
+                align,
+                start_color,
+                end_color,
+                content_color,
+                border_color,
+                width,
+            )
+        )
+        rendered_lines.append(bottom_line)
+
+        return "\n".join(rendered_lines)
+
+    def _prepare_title(self, title: str | None) -> tuple[str | None, int]:
+        """Prepare title with emoji spacing and markup conversion."""
+        from styledconsole.utils.text import (
+            adjust_emoji_spacing_in_text,
+            render_markup_to_ansi,
+            visual_width,
+        )
+
+        if not title:
+            return None, 0
+
+        adj_title = adjust_emoji_spacing_in_text(title)
+        adj_title = render_markup_to_ansi(adj_title)
+        return adj_title, visual_width(adj_title)
+
+    def _calculate_frame_dimensions(
+        self,
+        width: int | None,
+        padding: int,
+        max_content_width: int,
+        title_width: int,
+        title: str | None,
+    ) -> tuple[int, int, int]:
+        """Calculate frame, inner, and content area widths."""
+        if width:
+            frame_width = width
+            inner_width = frame_width - 2
+            content_area_width = max(inner_width - (padding * 2), 0)
+        else:
+            content_area_width = max_content_width
+            min_inner_for_title = title_width + 4 if title else 0
+            inner_width = max(content_area_width + (padding * 2), min_inner_for_title)
+            content_area_width = inner_width - (padding * 2)
+            frame_width = inner_width + 2
+        return frame_width, inner_width, content_area_width
+
+    def _build_top_border(
+        self,
+        box_style,
+        inner_width: int,
+        adj_title: str | None,
+        title_width: int,
+        title_color: str | None,
+        border_color: str | None,
+    ) -> str:
+        """Build the top border line with optional title."""
+        top_bar = box_style.top * inner_width
+
+        if adj_title and title_width <= inner_width - 2:
+            left_pad = (inner_width - title_width - 2) // 2
+            right_pad = inner_width - title_width - 2 - left_pad
+
+            styled_title = adj_title
+            if title_color:
+                styled_title = colorize(styled_title, title_color)
+            elif border_color:
+                styled_title = colorize(styled_title, border_color)
+
+            top_bar = (
+                box_style.top * left_pad + " " + styled_title + " " + box_style.top * right_pad
+            )
+
+        top_line = f"{box_style.top_left}{top_bar}{box_style.top_right}"
+        if border_color:
+            top_line = colorize(top_line, border_color)
+        return top_line
+
+    def _build_bottom_border(self, box_style, inner_width: int, border_color: str | None) -> str:
+        """Build the bottom border line."""
+        bottom_line = (
+            f"{box_style.bottom_left}{box_style.bottom * inner_width}{box_style.bottom_right}"
+        )
+        if border_color:
+            bottom_line = colorize(bottom_line, border_color)
+        return bottom_line
+
+    def _build_content_lines(
+        self,
+        lines: list[str],
+        box_style,
+        content_area_width: int,
+        padding: int,
+        align: str,
+        start_color: str | None,
+        end_color: str | None,
+        content_color: str | None,
+        border_color: str | None,
+        width: int | None,
+    ) -> list[str]:
+        """Build all content lines with borders and colors."""
+        from styledconsole.utils.text import pad_to_width, truncate_to_width, visual_width
+
+        rendered = []
+        for i, line in enumerate(lines):
+            # Truncate if needed
+            if width and visual_width(line) > content_area_width:
+                line = truncate_to_width(line, content_area_width)
+
+            # Pad and add padding spaces
+            padded_line = pad_to_width(line, content_area_width, align=align)
+            full_line = (" " * padding) + padded_line + (" " * padding)
+
+            # Apply gradient or color
+            full_line = self._apply_content_color(
+                full_line, i, len(lines), start_color, end_color, content_color
+            )
+
+            # Add borders
+            left_border = box_style.mid_left
+            right_border = box_style.mid_right
+            if border_color:
+                left_border = colorize(left_border, border_color)
+                right_border = colorize(right_border, border_color)
+
+            rendered.append(f"{left_border}{full_line}{right_border}")
+
+        return rendered
+
+    def _apply_content_color(
+        self,
+        line: str,
+        index: int,
+        total: int,
+        start_color: str | None,
+        end_color: str | None,
+        content_color: str | None,
+    ) -> str:
+        """Apply gradient or solid color to content line."""
+        if start_color and end_color:
+            from styledconsole.utils.color import interpolate_color
+
+            ratio = index / (total - 1) if total > 1 else 0
+            color = interpolate_color(start_color, end_color, ratio)
+            return colorize(line, color)
+        elif content_color:
+            return colorize(line, content_color)
+        return line
+
+    def _render_frame_legacy(
+        self,
+        content: str | list[str],
+        *,
+        title: str | None = None,
+        border: str = "rounded",
+        width: int | None = None,
+        padding: int = 1,
+        align: str = "left",
+        content_color: str | None = None,
+        border_color: str | None = None,
+        title_color: str | None = None,
+        start_color: str | None = None,
+        end_color: str | None = None,
+    ) -> str:
+        """Legacy Rich Panel rendering (kept for reference or fallback)."""
+        # Normalize colors
+        content_color, border_color, title_color, start_color, end_color = self._normalize_colors(
+            content_color, border_color, title_color, start_color, end_color
+        )
 
         # Normalize content to string
         if isinstance(content, list):
@@ -199,17 +437,6 @@ class RenderingEngine:
         temp_console.print(panel, highlight=False, soft_wrap=False)
         output = capture_file.getvalue()
 
-        # Apply border gradient if needed
-        if border_gradient_start and border_gradient_end:
-            lines = output.splitlines()
-            if border_gradient_direction == "vertical":
-                colored_lines = apply_vertical_border_gradient(
-                    lines, border_gradient_start, border_gradient_end, border, title
-                )
-                return "\n".join(colored_lines)
-            else:
-                return output
-
         return output
 
     def print_frame(
@@ -258,20 +485,19 @@ class RenderingEngine:
         )
 
         # Print the output, handling alignment of the frame itself
-        lines = output.splitlines()
-        for line in lines:
-            # Convert to Text to preserve ANSI and handle alignment
-            if "\x1b" in line:
-                text_obj = RichText.from_ansi(line, no_wrap=True)
-            else:
-                text_obj = RichText(line, no_wrap=True)
+        # We align the entire block to avoid per-line centering issues with emojis
+        if "\x1b" in output:
+            text_obj = RichText.from_ansi(output, no_wrap=True)
+        else:
+            text_obj = RichText.from_markup(output)
+            text_obj.no_wrap = True
 
-            if align == "center":
-                self._rich_console.print(Align.center(text_obj), highlight=False, soft_wrap=True)
-            elif align == "right":
-                self._rich_console.print(Align.right(text_obj), highlight=False, soft_wrap=True)
-            else:
-                self._rich_console.print(text_obj, highlight=False, soft_wrap=True)
+        if align == "center":
+            self._rich_console.print(Align.center(text_obj), highlight=False, soft_wrap=True)
+        elif align == "right":
+            self._rich_console.print(Align.right(text_obj), highlight=False, soft_wrap=True)
+        else:
+            self._rich_console.print(text_obj, highlight=False, soft_wrap=True)
 
         if self._debug:
             self._logger.debug("Frame rendered using Rich Panel")
@@ -360,6 +586,92 @@ class RenderingEngine:
         # No styling needed - wrap in Text to control wrapping behavior
         return Text(content_str, no_wrap=True, overflow="ignore")
 
+    def _get_figlet(self, font: str):
+        """Get cached Figlet instance for a font.
+
+        Args:
+            font: Font name
+
+        Returns:
+            Figlet instance for the font
+        """
+        # Simple caching to avoid repeated font loading
+        if not hasattr(self, "_figlet_cache"):
+            self._figlet_cache = {}
+
+        if font not in self._figlet_cache:
+            import pyfiglet
+
+            self._figlet_cache[font] = pyfiglet.Figlet(font=font, width=1000)
+
+        return self._figlet_cache[font]
+
+    def _render_banner_lines(self, banner: Banner) -> list[str]:
+        """Render a Banner configuration object to lines.
+
+        Args:
+            banner: Banner configuration object
+
+        Returns:
+            List of rendered lines ready for printing
+        """
+        from styledconsole.utils.color import apply_line_gradient
+        from styledconsole.utils.text import strip_ansi, visual_width
+
+        # Check if text contains emoji (visual_width > len indicates emoji)
+        text_clean = strip_ansi(banner.text)
+        has_emoji = visual_width(text_clean) > len(text_clean)
+
+        if has_emoji:
+            # Fallback to plain text for emoji
+            ascii_lines = [banner.text]
+        else:
+            # Generate ASCII art using cached Figlet instance
+            try:
+                figlet = self._get_figlet(banner.font)
+                ascii_art = figlet.renderText(banner.text)
+                # Split into lines and remove trailing empty lines
+                ascii_lines = ascii_art.rstrip("\n").split("\n")
+            except Exception as e:
+                # Fallback on font error
+                if self._debug:
+                    self._logger.warning(f"Font error: {e}")
+                ascii_lines = [banner.text]
+
+        # Apply gradient coloring if specified
+        if banner.start_color and banner.end_color:
+            ascii_lines = apply_line_gradient(ascii_lines, banner.start_color, banner.end_color)
+
+        # If no border, return ASCII art lines directly
+        if banner.border is None:
+            return ascii_lines
+
+        # Wrap in frame border using self.render_frame_to_string
+        # (no need for temp console - use the existing method)
+
+        # Handle border style object
+        border_style = banner.border
+        if hasattr(border_style, "name"):
+            border_name = border_style.name
+        else:
+            border_name = str(border_style) if border_style else "solid"
+
+        # If width is None (auto), force left alignment to prevent expansion
+        # The banner alignment on screen is handled by print_banner
+        align = banner.align if banner.width else "left"
+
+        frame_str = self.render_frame_to_string(
+            content=ascii_lines,
+            border=border_name,
+            width=banner.width,
+            align=align,
+            padding=banner.padding,
+            # We don't pass colors here as they are applied to content lines already
+            # or handled by frame parameters if we wanted border colors
+        )
+
+        return frame_str.splitlines()
+
     def print_banner(
         self,
         text: str,
@@ -401,7 +713,7 @@ class RenderingEngine:
             padding=padding,
         )
 
-        lines = self._banner_renderer.render_banner(banner_obj)
+        lines = self._render_banner_lines(banner_obj)
 
         # Convert to Rich Text to preserve ANSI and handle alignment as a block
         content_str = "\n".join(lines)

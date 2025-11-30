@@ -12,8 +12,7 @@ Example:
 """
 
 from styledconsole.console import Console
-from styledconsole.core.banner import Banner, BannerRenderer
-from styledconsole.core.layout import Layout, LayoutComposer
+from styledconsole.core.banner import Banner
 from styledconsole.core.styles import (
     ASCII,
     BORDERS,
@@ -83,7 +82,7 @@ from styledconsole.utils.wrap import (
     wrap_text,
 )
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 __author__ = "Krzysztof Sokołowski"
 __license__ = "Apache-2.0"
 
@@ -119,10 +118,6 @@ __all__ = [
     "Console",
     # Banner rendering
     "Banner",
-    "BannerRenderer",
-    # Layout composition
-    "Layout",
-    "LayoutComposer",
     # Emoji constants
     "EMOJI",
     "E",

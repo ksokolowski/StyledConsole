@@ -206,7 +206,8 @@ class Console:
                 Defaults to None.
             padding: Horizontal padding (spaces) on each side of content. Defaults to 1.
             align: Content alignment within frame. One of: "left", "center", "right".
-                Defaults to "left".
+                Defaults to "left". Note: This aligns the content *inside* the frame box,
+                not the frame itself.
             content_color: Color for frame content. Accepts hex codes (#ff0000),
                 RGB tuples (255, 0, 0), or CSS4 color names ("red"). Defaults to None.
             border_color: Color for frame border characters. Defaults to None.
@@ -300,7 +301,8 @@ class Console:
             width: Banner width in characters. If None, auto-calculated.
                 Defaults to None.
             align: Banner alignment. One of: "left", "center", "right".
-                Defaults to "center".
+                Defaults to "center". Note: This aligns the ASCII art relative to the
+                screen or specified width.
             padding: Horizontal padding when border is used. Defaults to 1.
 
         Example:
@@ -352,6 +354,9 @@ class Console:
             underline: Apply underline formatting. Defaults to False.
             dim: Apply dim/faint formatting. Defaults to False.
             end: String appended after text. Defaults to "\\n" (newline).
+
+        Note:
+            To align text (e.g. center it), wrap it in a frame or use a layout component.
 
         Example:
             >>> console = Console()

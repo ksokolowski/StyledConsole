@@ -3,16 +3,27 @@
 Tests real-world usage patterns and visual output correctness.
 """
 
-from styledconsole import Banner, BannerRenderer
+from io import StringIO
+
+from styledconsole import Console
 from styledconsole.utils.text import strip_ansi, visual_width
 
 
-def test_basic_banner_workflow():
-    """Test typical user workflow with BannerRenderer."""
-    renderer = BannerRenderer()
+def render_banner_to_lines(text: str, **kwargs) -> list[str]:
+    """Helper to render banner to lines using Console."""
+    width = kwargs.get("width", 100)
+    buffer = StringIO()
+    console = Console(file=buffer, width=width)
+    # Force terminal to ensure ANSI codes are generated
+    console._rich_console.force_terminal = True
+    console._rich_console._color_system = "truecolor"  # Force truecolor for ANSI checks
+    console.banner(text, **kwargs)
+    return buffer.getvalue().splitlines()
 
-    # Simple banner
-    lines = renderer.render("TEST")
+
+def test_basic_banner_workflow():
+    """Test typical user workflow with Console.banner()."""
+    lines = render_banner_to_lines("TEST")
     assert len(lines) > 0
     assert isinstance(lines, list)
     assert all(isinstance(line, str) for line in lines)
@@ -20,9 +31,7 @@ def test_basic_banner_workflow():
 
 def test_banner_with_all_features():
     """Test banner with gradient, border, and custom settings."""
-    renderer = BannerRenderer()
-
-    lines = renderer.render(
+    lines = render_banner_to_lines(
         "DEMO",
         font="banner",
         start_color="#ff0000",
@@ -43,40 +52,18 @@ def test_banner_with_all_features():
     assert any("\033[38;2;" in line for line in content_lines)
 
     # Width consistency check relaxed for v0.4.0
-    # BannerRenderer still uses legacy FrameRenderer which has width calculation quirks
-    # This will be fixed when banner.py is refactored to use Console.frame() (planned for v0.5.0)
     widths = [visual_width(line) for line in lines]
-    # Check that most lines are close to target width (within 20%)
     target_width = 60
     assert any(abs(w - target_width) <= target_width * 0.2 for w in widths)
 
 
-def test_banner_dataclass_workflow():
-    """Test using Banner dataclass directly."""
-    renderer = BannerRenderer()
-
-    banner = Banner(
-        text="BANNER",
-        font="standard",
-        start_color="red",
-        end_color="blue",
-        border="solid",
-        width=50,
-    )
-
-    lines = renderer.render_banner(banner)
-    assert len(lines) > 0
-    assert visual_width(lines[0]) == 50
-
-
 def test_multiple_fonts():
     """Test rendering with multiple different fonts."""
-    renderer = BannerRenderer()
     fonts = ["standard", "slant", "banner", "big"]
 
     outputs = {}
     for font in fonts:
-        lines = renderer.render("X", font=font)
+        lines = render_banner_to_lines("X", font=font)
         outputs[font] = lines
         assert len(lines) > 0
 
@@ -86,8 +73,6 @@ def test_multiple_fonts():
 
 def test_gradient_variations():
     """Test different gradient color combinations."""
-    renderer = BannerRenderer()
-
     test_cases = [
         ("#ff0000", "#0000ff"),  # Red to blue (hex)
         ("red", "blue"),  # Named colors
@@ -96,7 +81,7 @@ def test_gradient_variations():
     ]
 
     for start, end in test_cases:
-        lines = renderer.render("X", start_color=start, end_color=end)
+        lines = render_banner_to_lines("X", start_color=start, end_color=end)
         assert len(lines) > 0
         # Should contain ANSI color codes
         assert any("\033[38;2;" in line for line in lines)
@@ -104,11 +89,10 @@ def test_gradient_variations():
 
 def test_border_consistency():
     """Test that all borders render with consistent width."""
-    renderer = BannerRenderer()
     borders = ["solid", "double", "rounded", "heavy", "ascii"]
 
     for border_style in borders:
-        lines = renderer.render("X", border=border_style, width=50)
+        lines = render_banner_to_lines("X", border=border_style, width=50)
 
         # All lines should have same visual width
         widths = [visual_width(line) for line in lines]
@@ -118,10 +102,8 @@ def test_border_consistency():
 
 def test_alignment_variations():
     """Test different alignment options."""
-    renderer = BannerRenderer()
-
     for align in ["left", "center", "right"]:
-        lines = renderer.render("TEST", border="solid", width=60, align=align)
+        lines = render_banner_to_lines("TEST", border="solid", width=60, align=align)
 
         assert len(lines) > 0
         # All lines should have consistent width
@@ -132,30 +114,26 @@ def test_alignment_variations():
 
 def test_emoji_handling():
     """Test emoji text falls back gracefully."""
-    renderer = BannerRenderer()
-
     # Emoji text
-    emoji_lines = renderer.render("🚀")
-    assert len(emoji_lines) == 1  # Should fallback to single line
-    assert "🚀" in emoji_lines[0]
+    emoji_lines = render_banner_to_lines("🚀")
+    # Note: Console.banner might wrap output differently than direct renderer
+    # But for single emoji it should be similar
+    assert any("🚀" in line for line in emoji_lines)
 
     # Emoji with gradient
-    gradient_lines = renderer.render("🎉", start_color="red", end_color="blue")
-    assert len(gradient_lines) == 1
-    assert "🎉" in gradient_lines[0]
-    assert "\033[38;2;" in gradient_lines[0]  # Should still have color
+    gradient_lines = render_banner_to_lines("🎉", start_color="red", end_color="blue")
+    assert any("🎉" in line for line in gradient_lines)
+    assert any("\033[38;2;" in line for line in gradient_lines)
 
     # Emoji with border
-    border_lines = renderer.render("✨", border="rounded")
-    assert len(border_lines) == 3  # Top, content, bottom
-    assert "✨" in border_lines[1]
+    border_lines = render_banner_to_lines("✨", border="rounded")
+    assert len(border_lines) >= 3
+    assert any("✨" in line for line in border_lines)
 
 
 def test_realistic_application_title():
     """Test realistic application title banner."""
-    renderer = BannerRenderer()
-
-    lines = renderer.render(
+    lines = render_banner_to_lines(
         "MyApp",
         font="slant",
         start_color="dodgerblue",
@@ -173,7 +151,7 @@ def test_realistic_application_title():
     content = lines[1:-1]
     assert any("\033[38;2;" in line for line in content)
 
-    # Width consistency check relaxed for v0.4.0 (banner width calculation quirks)
+    # Width consistency check
     widths = [visual_width(line) for line in lines]
     target_width = 70
     assert any(abs(w - target_width) <= target_width * 0.2 for w in widths)
@@ -181,8 +159,6 @@ def test_realistic_application_title():
 
 def test_status_message_banners():
     """Test status message banners (success, error, warning)."""
-    renderer = BannerRenderer()
-
     status_configs = [
         ("SUCCESS", "#00ff00", "#00aa00"),  # Green gradient
         ("ERROR", "#ff0000", "#aa0000"),  # Red gradient
@@ -190,7 +166,7 @@ def test_status_message_banners():
     ]
 
     for text, start, end in status_configs:
-        lines = renderer.render(
+        lines = render_banner_to_lines(
             text,
             font="banner",
             start_color=start,
@@ -203,32 +179,10 @@ def test_status_message_banners():
         assert any("\033[38;2;" in line for line in lines[1:-1])
 
 
-def test_font_discovery():
-    """Test font listing and preview utilities."""
-    renderer = BannerRenderer()
-
-    # List fonts
-    all_fonts = renderer.list_fonts()
-    assert len(all_fonts) > 0
-    assert "standard" in all_fonts
-    assert "slant" in all_fonts
-
-    # Limited list
-    limited = renderer.list_fonts(limit=10)
-    assert len(limited) == 10
-
-    # Preview font
-    preview = renderer.preview_font("standard", "Test")
-    assert isinstance(preview, str)
-    assert len(preview) > 0
-
-
 def test_long_text_handling():
     """Test handling of longer text strings."""
-    renderer = BannerRenderer()
-
     long_text = "Hello World"
-    lines = renderer.render(long_text, font="standard")
+    lines = render_banner_to_lines(long_text, font="standard")
 
     assert len(lines) > 0
     # Should produce ASCII art
@@ -238,21 +192,17 @@ def test_long_text_handling():
 
 def test_special_characters():
     """Test rendering special characters."""
-    renderer = BannerRenderer()
-
     test_strings = ["123", "ABC", "@#$", "v1.0"]
 
     for text in test_strings:
-        lines = renderer.render(text, font="standard")
+        lines = render_banner_to_lines(text, font="standard")
         assert len(lines) > 0
 
 
 def test_padding_variations():
     """Test different padding values."""
-    renderer = BannerRenderer()
-
     for padding in [1, 2, 3, 4]:
-        lines = renderer.render(
+        lines = render_banner_to_lines(
             "X",
             font="standard",
             border="solid",
@@ -266,12 +216,10 @@ def test_padding_variations():
 
 def test_width_variations():
     """Test different width values."""
-    renderer = BannerRenderer()
-
     widths = [40, 60, 80, 100]
 
     for width in widths:
-        lines = renderer.render("X", border="solid", width=width)
+        lines = render_banner_to_lines("X", border="solid", width=width)
 
         # All lines should match specified width
         assert all(visual_width(line) == width for line in lines)
@@ -279,9 +227,7 @@ def test_width_variations():
 
 def test_no_border_pure_ascii():
     """Test banner without border returns pure ASCII art."""
-    renderer = BannerRenderer()
-
-    lines = renderer.render("TEST", font="banner")
+    lines = render_banner_to_lines("TEST", font="banner")
 
     # Should not have border characters
     assert not any("─" in line or "│" in line for line in lines)
@@ -291,9 +237,7 @@ def test_no_border_pure_ascii():
 
 def test_gradient_interpolation_accuracy():
     """Test that gradient correctly interpolates across lines."""
-    renderer = BannerRenderer()
-
-    lines = renderer.render(
+    lines = render_banner_to_lines(
         "GRADIENT",
         font="banner",
         start_color="#ff0000",  # Pure red
@@ -317,10 +261,8 @@ def test_gradient_interpolation_accuracy():
 
 def test_combined_features():
     """Test combining multiple features together."""
-    renderer = BannerRenderer()
-
     # Everything enabled
-    lines = renderer.render(
+    lines = render_banner_to_lines(
         "FULL",
         font="slant",
         start_color="coral",

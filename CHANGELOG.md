@@ -5,7 +5,47 @@ All notable changes to StyledConsole will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## \[0.4.0\] - 2025-11-23
+## [0.5.0] - 2025-11-30
+
+### 📚 Documentation & Project Structure
+
+This release focuses on documentation consolidation, project cleanup, and improved developer experience.
+
+### Changed
+
+#### Documentation Consolidation
+
+- **4 Master Documents**: Consolidated 27+ scattered docs into clean structure:
+  - `docs/USER_GUIDE.md` - Complete user documentation with Presets section
+  - `docs/DEVELOPER_GUIDE.md` - Architecture and contribution guide
+  - `docs/PROJECT_STATUS.md` - Current status and metrics
+  - `docs/DOCUMENTATION_POLICY.md` - Standards and rules
+- **Folder Rename**: Renamed `doc/` to `docs/` for consistency
+
+#### Examples Reorganization
+
+- **4 Categories**: Reorganized 27 examples into logical folders:
+  - `gallery/` - Visual showcases (colors, borders, emojis, gradients)
+  - `usecases/` - Real-world scenarios (alerts, progress, reports)
+  - `demos/` - Feature demonstrations (animation, nested frames)
+  - `validation/` - Testing and validation scripts
+- **Unified Runner**: Single `run_examples.py` with `--all` and `--auto` flags
+- **Standardized Naming**: Removed prefixes (`demo_`, `test_`, `_showcase`)
+
+#### Gallery Improvements
+
+- **Emoji Standardization**: All gallery examples now use `EMOJI` constants
+- **Console API Only**: Examples use public API, not internal Rich access
+
+### Removed
+
+- **Root Cleanup**: Deleted 24 exploratory test files from project root
+- **Empty Folders**: Removed unused `recipes/` folder
+- **Redundant Runners**: Removed duplicate `test_examples.py`
+
+______________________________________________________________________
+
+## [0.4.0] - 2025-11-23
 
 ### 🚀 Animated Gradients & Unified Engine
 
@@ -45,7 +85,7 @@ This release introduces dynamic, animated gradients, a completely refactored gra
 
 ______________________________________________________________________
 
-## \[0.3.0\] - 2025-10-21
+## [0.3.0] - 2025-10-21
 
 ### 🏗️ Rich-Native Migration
 

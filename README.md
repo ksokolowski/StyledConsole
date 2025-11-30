@@ -2,13 +2,13 @@
 
 [![Python >=3.10](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-0.3.0-brightgreen.svg)](https://github.com/yourusername/styledconsole/releases/tag/v0.3.0)
-[![Tests](https://img.shields.io/badge/tests-654%20passing-success.svg)](https://github.com/yourusername/styledconsole)
-[![Coverage](https://img.shields.io/badge/coverage-95.96%25-brightgreen.svg)](https://github.com/yourusername/styledconsole)
+[![Version](https://img.shields.io/badge/version-0.5.0-brightgreen.svg)](https://github.com/yourusername/styledconsole/releases/tag/v0.5.0)
+[![Tests](https://img.shields.io/badge/tests-700%2B%20passing-success.svg)](https://github.com/yourusername/styledconsole)
+[![Coverage](https://img.shields.io/badge/coverage-95%25%2B-brightgreen.svg)](https://github.com/yourusername/styledconsole)
 
 A modern Python library for elegant terminal output with rich formatting, colors, emoji support, and export capabilities.
 
-**✨ v0.3.0 Released!** Rich-native integration for ANSI-safe rendering with 654 tests passing and 95.96% coverage.
+**✨ v0.5.0 Released!** Documentation consolidated, examples reorganized, with 700+ tests passing and 95%+ coverage.
 
 ## ✨ Features
 
@@ -60,6 +60,14 @@ console.frame([
     "Line 2",
     "Line 3"
 ], title="Multi-line", border="double")
+
+# Frame with gradient border (v0.3.0)
+console.frame(
+    "Gradient Border",
+    border="rounded",
+    border_gradient_start="blue",
+    border_gradient_end="purple"
+)
 ```
 
 ### Gradient Effects
@@ -147,39 +155,30 @@ text = console.export_text()  # Get plain text
 
 ## 🛠️ Development Status
 
-**v0.3.0 Released!** 🎉
+**v0.5.0 Released!** 🎉
 
 This project is **production-ready** with comprehensive testing and documentation.
 
-**v0.3.0 Rich-Native Migration:**
+**v0.5.0 Documentation & Structure:**
 
-- ✅ Console.frame() uses Rich Panel internally (ANSI-safe)
-- ✅ box_mapping.py for border style → Rich box mapping
-- ✅ LayoutComposer Rich-aware (backward compatible)
-- ✅ All examples refactored (43% code reduction)
-- ⚠️ FrameRenderer deprecated (use Console.frame() for new code)
-- ✅ 100% backward compatible - v0.1.0 code still works
+- ✅ 4 master docs: USER_GUIDE, DEVELOPER_GUIDE, PROJECT_STATUS, DOCUMENTATION_POLICY
+- ✅ 27 examples in 4 categories: gallery, usecases, demos, validation
+- ✅ Unified example runner with `--all` and `--auto` flags
+- ✅ Gallery examples standardized with EMOJI constants
+- ✅ Project root cleaned (24 files removed)
 
-**v0.4.0 Coming Soon:**
+**Previous Releases:**
 
-- 🚧 Deprecation warnings for FrameRenderer (removed in v1.0.0)
-- 🚧 Gradient consolidation with Strategy pattern
-- 🚧 Color normalization utilities
-
-**Previous Milestones:**
-
-- ✅ Core Setup & Utilities (M1) - Complete
-- ✅ Rendering Engine (M2) - Complete
-- ✅ Console API & Effects (M3) - Complete
-- ✅ Export & Terminal Detection (M4) - Complete
-- ✅ Testing & Documentation (M5) - Complete
+- v0.4.0: Animated gradients, unified gradient engine, preset functions
+- v0.3.0: Rich-native rendering, ANSI-safe frames, 100% backward compatible
+- v0.1.0: Foundation - frames, banners, layouts, CSS4 colors, HTML export
 
 **Quality Metrics:**
 
-- 654 tests passing (100%)
-- 95.96% test coverage
+- 700+ tests passing (100%)
+- 95%+ test coverage
 - Zero known bugs
-- All examples working
+- 27 examples working
 - Full type hints with Literal types
 
 ## 📚 Documentation
@@ -188,18 +187,14 @@ This project is **production-ready** with comprehensive testing and documentatio
 
 - `README.md` - This file with quick start and examples
 - `CHANGELOG.md` - Version history and release notes
-- `doc/migration/v0.1_to_v0.3.md` - **Migration guide** for v0.3.0 (v0.1.0 code still works!)
-- `examples/` - 20+ working examples demonstrating all features
-- `RELEASE_ANNOUNCEMENT.md` - Release details
+- `docs/USER_GUIDE.md` - Complete user guide with API reference
+- `examples/` - 27 working examples demonstrating all features
 
 **Developer Documentation:**
 
-- `doc/project/PLAN.md` - Architecture overview with v0.3.0 changes
-- `doc/guides/EMOJI_GUIDELINES.md` - Emoji support and safe usage guide
-- `doc/guides/COLOR_STANDARDIZATION.md` - CSS4 color system
-- `doc/guides/COLOR_STANDARDIZATION.md` - CSS4 color system
-- `doc/guides/BORDER_GRADIENTS.md` - Gradient implementation
-- `docs/PRESETS.md` - **Presets Guide** (Status, Summary, Dashboard)
+- `docs/DEVELOPER_GUIDE.md` - Architecture, module structure, contributing
+- `docs/PROJECT_STATUS.md` - Roadmap, active tasks, changelog
+- `docs/DOCUMENTATION_POLICY.md` - Documentation standards
 
 **API Reference:**
 All public APIs include comprehensive docstrings with type hints.
@@ -230,7 +225,7 @@ StyledConsole follows [Semantic Versioning 2.0.0](https://semver.org/):
   - Alternatives will be documented in deprecation messages
   - Deprecated features removed only in major version bumps
 
-**Current Version**: 0.3.0 (Production Ready - 100% backward compatible with v0.1.0)
+**Current Version**: 0.5.0 (Production Ready - 100% backward compatible with v0.1.0)
 
 ## 🤝 Contributing
 

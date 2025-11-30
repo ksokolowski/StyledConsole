@@ -1,8 +1,12 @@
 """Unit tests for Banner and BannerRenderer."""
 
-import pytest
+from io import StringIO
 
-from styledconsole import Banner, BannerRenderer
+import pytest
+from rich.console import Console as RichConsole
+
+from styledconsole import Banner
+from styledconsole.core.rendering_engine import RenderingEngine
 from styledconsole.core.styles import DOUBLE, SOLID
 from styledconsole.utils.text import strip_ansi, visual_width
 
@@ -55,19 +59,19 @@ class TestBanner:
             banner.text = "Changed"  # type: ignore
 
 
-class TestBannerRenderer:
-    """Test BannerRenderer class."""
+class TestRenderingEngineBanner:
+    """Test banner rendering via RenderingEngine."""
 
-    def test_renderer_initialization(self):
-        """Test BannerRenderer initializes correctly."""
-        renderer = BannerRenderer()
-        assert renderer is not None
-        assert len(renderer.list_fonts()) > 0
+    def setup_method(self):
+        """Setup rendering engine with captured output."""
+        self.buffer = StringIO()
+        self.console = RichConsole(file=self.buffer, width=100)
+        self.engine = RenderingEngine(self.console)
 
-    def test_render_simple_text(self):
-        """Test rendering simple text without options."""
-        renderer = BannerRenderer()
-        lines = renderer.render("Hi")
+    def test_render_banner_lines(self):
+        """Test rendering banner to lines."""
+        banner = Banner(text="Hi")
+        lines = self.engine._render_banner_lines(banner)
 
         assert isinstance(lines, list)
         assert len(lines) > 0
@@ -75,30 +79,33 @@ class TestBannerRenderer:
 
     def test_render_with_font(self):
         """Test rendering with different fonts."""
-        renderer = BannerRenderer()
-
         # Standard font
-        lines_standard = renderer.render("A", font="standard")
+        banner_standard = Banner(text="A", font="standard")
+        lines_standard = self.engine._render_banner_lines(banner_standard)
         assert len(lines_standard) > 0
 
         # Slant font
-        lines_slant = renderer.render("A", font="slant")
+        banner_slant = Banner(text="A", font="slant")
+        lines_slant = self.engine._render_banner_lines(banner_slant)
         assert len(lines_slant) > 0
 
         # Different fonts should produce different output
         assert lines_standard != lines_slant
 
     def test_render_with_invalid_font(self):
-        """Test rendering with invalid font raises error."""
-        renderer = BannerRenderer()
+        """Test rendering with invalid font falls back gracefully."""
+        # Note: RenderingEngine now catches the error and falls back to plain text
+        banner = Banner(text="Test", font="nonexistent")
+        lines = self.engine._render_banner_lines(banner)
 
-        with pytest.raises(ValueError, match="Font 'nonexistent' not found"):
-            renderer.render("Test", font="nonexistent")
+        # Should fallback to plain text
+        assert len(lines) == 1
+        assert "Test" in lines[0]
 
     def test_render_with_gradient(self):
         """Test rendering with gradient coloring."""
-        renderer = BannerRenderer()
-        lines = renderer.render("Hi", start_color="#ff0000", end_color="#0000ff")
+        banner = Banner(text="Hi", start_color="#ff0000", end_color="#0000ff")
+        lines = self.engine._render_banner_lines(banner)
 
         assert len(lines) > 0
         # Should contain ANSI color codes
@@ -108,8 +115,8 @@ class TestBannerRenderer:
 
     def test_render_with_border(self):
         """Test rendering with border."""
-        renderer = BannerRenderer()
-        lines = renderer.render("Hi", border="solid")
+        banner = Banner(text="Hi", border="solid")
+        lines = self.engine._render_banner_lines(banner)
 
         assert len(lines) >= 3  # At least top, content, bottom
         # First and last lines should be borders
@@ -118,13 +125,13 @@ class TestBannerRenderer:
 
     def test_render_with_border_and_gradient(self):
         """Test rendering with both border and gradient."""
-        renderer = BannerRenderer()
-        lines = renderer.render(
-            "Hi",
+        banner = Banner(
+            text="Hi",
             start_color="#00ff00",
             end_color="#0000ff",
             border="double",
         )
+        lines = self.engine._render_banner_lines(banner)
 
         assert len(lines) >= 3
         # Should have border characters
@@ -135,8 +142,8 @@ class TestBannerRenderer:
 
     def test_render_with_emoji_fallback(self):
         """Test that emoji text falls back to plain rendering."""
-        renderer = BannerRenderer()
-        lines = renderer.render("🚀")
+        banner = Banner(text="🚀")
+        lines = self.engine._render_banner_lines(banner)
 
         # Should fallback to plain text (single line)
         assert len(lines) == 1
@@ -144,27 +151,18 @@ class TestBannerRenderer:
 
     def test_render_emoji_with_gradient(self):
         """Test emoji with gradient applies color to plain text."""
-        renderer = BannerRenderer()
-        lines = renderer.render("🎉", start_color="#ff0000", end_color="#00ff00")
+        banner = Banner(text="🎉", start_color="#ff0000", end_color="#00ff00")
+        lines = self.engine._render_banner_lines(banner)
 
         assert len(lines) == 1
         assert "🎉" in lines[0]
         # Should still have color codes
         assert "\033[38;2;" in lines[0]
 
-    def test_render_banner_method(self):
-        """Test render_banner with Banner object."""
-        renderer = BannerRenderer()
-        banner = Banner(text="Test", font="standard", border="solid")
-
-        lines = renderer.render_banner(banner)
-        assert len(lines) >= 3
-        assert isinstance(lines, list)
-
     def test_render_with_width(self):
         """Test rendering with specified width."""
-        renderer = BannerRenderer()
-        lines = renderer.render("Hi", border="solid", width=60)
+        banner = Banner(text="Hi", border="solid", width=60)
+        lines = self.engine._render_banner_lines(banner)
 
         # All lines should have same visual width (60)
         for line in lines:
@@ -173,19 +171,19 @@ class TestBannerRenderer:
 
     def test_render_with_alignment(self):
         """Test rendering with different alignments."""
-        renderer = BannerRenderer()
-
         # Test with border to make alignment visible
         for align in ["left", "center", "right"]:
-            lines = renderer.render("X", border="solid", width=40, align=align)
+            banner = Banner(text="X", border="solid", width=40, align=align)
+            lines = self.engine._render_banner_lines(banner)
             assert len(lines) >= 3
 
     def test_render_with_padding(self):
         """Test rendering with custom padding."""
-        renderer = BannerRenderer()
+        banner1 = Banner(text="X", border="solid", width=40, padding=1)
+        lines_padding1 = self.engine._render_banner_lines(banner1)
 
-        lines_padding1 = renderer.render("X", border="solid", width=40, padding=1)
-        lines_padding3 = renderer.render("X", border="solid", width=40, padding=3)
+        banner3 = Banner(text="X", border="solid", width=40, padding=3)
+        lines_padding3 = self.engine._render_banner_lines(banner3)
 
         # With same width but different padding, ASCII art inside should differ
         # More padding means ASCII content gets less space
@@ -195,65 +193,27 @@ class TestBannerRenderer:
         assert visual_width(lines_padding1[0]) == 40
         assert visual_width(lines_padding3[0]) == 40
 
-    def test_list_fonts(self):
-        """Test listing available fonts."""
-        renderer = BannerRenderer()
-
-        # Get all fonts
-        all_fonts = renderer.list_fonts()
-        assert len(all_fonts) > 0
-        assert "standard" in all_fonts
-        assert all(isinstance(font, str) for font in all_fonts)
-
-        # Get limited fonts
-        limited = renderer.list_fonts(limit=5)
-        assert len(limited) == 5
-
-    def test_preview_font(self):
-        """Test font preview."""
-        renderer = BannerRenderer()
-
-        # Valid font
-        preview = renderer.preview_font("standard", "Hi")
-        assert isinstance(preview, str)
-        assert len(preview) > 0
-
-        # Custom text - ASCII art contains the characters in some form
-        preview2 = renderer.preview_font("standard", "ABC")
-        # The characters are present but as ASCII art patterns, not literal
-        assert len(preview2) > 10  # ASCII art is multi-line and wide
-        assert preview2.count("\n") >= 3  # Multiple lines of ASCII art
-
-    def test_preview_font_invalid(self):
-        """Test preview with invalid font."""
-        renderer = BannerRenderer()
-
-        with pytest.raises(ValueError, match="Font 'invalid' not found"):
-            renderer.preview_font("invalid")
-
     def test_gradient_single_line(self):
         """Test gradient with single line (edge case)."""
-        renderer = BannerRenderer()
-
         # Emoji fallback creates single line
-        lines = renderer.render("X", start_color="#ff0000", end_color="#0000ff")
+        banner = Banner(text="X", start_color="#ff0000", end_color="#0000ff")
+        lines = self.engine._render_banner_lines(banner)
 
         # Should handle single line gradient
         assert len(lines) >= 1
 
     def test_render_multiline_ascii(self):
         """Test that ASCII art produces multiple lines."""
-        renderer = BannerRenderer()
-        lines = renderer.render("ABC", font="banner")
+        banner = Banner(text="ABC", font="banner")
+        lines = self.engine._render_banner_lines(banner)
 
         # Banner font should produce multiple lines
         assert len(lines) > 1
 
     def test_gradient_colors_interpolate(self):
         """Test that gradient actually interpolates colors."""
-        renderer = BannerRenderer()
-
-        lines = renderer.render("TEST", font="banner", start_color="#ff0000", end_color="#0000ff")
+        banner = Banner(text="TEST", font="banner", start_color="#ff0000", end_color="#0000ff")
+        lines = self.engine._render_banner_lines(banner)
 
         # Extract RGB values from ANSI codes
         rgb_values = []
@@ -270,26 +230,23 @@ class TestBannerRenderer:
 
     def test_render_with_named_colors(self):
         """Test gradient with named colors."""
-        renderer = BannerRenderer()
-
-        lines = renderer.render("Hi", start_color="red", end_color="blue", font="standard")
+        banner = Banner(text="Hi", start_color="red", end_color="blue", font="standard")
+        lines = self.engine._render_banner_lines(banner)
 
         assert len(lines) > 0
         assert any("\033[38;2;" in line for line in lines)
 
     def test_border_style_object(self):
         """Test rendering with BorderStyle object instead of string."""
-        renderer = BannerRenderer()
-
-        lines = renderer.render("X", border=DOUBLE)
+        banner = Banner(text="X", border=DOUBLE)
+        lines = self.engine._render_banner_lines(banner)
         assert len(lines) >= 3
         assert "═" in lines[0]
 
     def test_no_border_returns_ascii_only(self):
         """Test that no border returns ASCII art without frame."""
-        renderer = BannerRenderer()
-
-        lines = renderer.render("X", font="standard")
+        banner = Banner(text="X", font="standard")
+        lines = self.engine._render_banner_lines(banner)
 
         # Should not have border characters
         assert not any("─" in line or "│" in line for line in lines)
@@ -298,17 +255,14 @@ class TestBannerRenderer:
 
     def test_empty_text(self):
         """Test rendering empty text."""
-        renderer = BannerRenderer()
-
-        lines = renderer.render("")
+        banner = Banner(text="")
+        lines = self.engine._render_banner_lines(banner)
         assert isinstance(lines, list)
-        # pyfiglet may still produce some output for empty string
 
     def test_long_text(self):
         """Test rendering longer text."""
-        renderer = BannerRenderer()
-
-        lines = renderer.render("Hello World", font="standard")
+        banner = Banner(text="Hello World", font="standard")
+        lines = self.engine._render_banner_lines(banner)
         assert len(lines) > 0
         # ASCII art should be wider for longer text
         max_width = max(visual_width(strip_ansi(line)) for line in lines)
@@ -316,12 +270,12 @@ class TestBannerRenderer:
 
     def test_special_characters(self):
         """Test rendering text with special characters."""
-        renderer = BannerRenderer()
-
         # Numbers
-        lines = renderer.render("123", font="standard")
-        assert len(lines) > 0
+        banner1 = Banner(text="123", font="standard")
+        lines1 = self.engine._render_banner_lines(banner1)
+        assert len(lines1) > 0
 
         # Symbols (that aren't emoji)
-        lines = renderer.render("@#$", font="standard")
-        assert len(lines) > 0
+        banner2 = Banner(text="@#$", font="standard")
+        lines2 = self.engine._render_banner_lines(banner2)
+        assert len(lines2) > 0

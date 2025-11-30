@@ -4,6 +4,7 @@ import logging
 
 import pytest
 from rich.console import Console as RichConsole
+from rich.terminal_theme import MONOKAI
 
 from styledconsole.core.export_manager import ExportManager
 
@@ -245,3 +246,55 @@ class TestExportManagerIntegration:
         text = manager.export_text()
         # Text might be empty if Rich consumed the buffer, that's OK
         assert isinstance(text, str)
+
+
+class TestExportManagerEnhancedHTML:
+    """Tests for enhanced HTML export functionality."""
+
+    def test_export_html_custom_title(self):
+        """Test HTML export with custom page title."""
+        console = RichConsole(record=True, width=80)
+        console.print("Content")
+        manager = ExportManager(console, debug=False)
+
+        html = manager.export_html(page_title="My Dashboard")
+
+        assert "<title>My Dashboard</title>" in html
+        assert "<title>Rich</title>" not in html
+
+    def test_export_html_custom_css(self):
+        """Test HTML export with custom CSS injection."""
+        console = RichConsole(record=True, width=80)
+        console.print("Content")
+        manager = ExportManager(console, debug=False)
+
+        custom_css = ".custom-class { font-weight: bold; }"
+        html = manager.export_html(theme_css=custom_css)
+
+        assert custom_css in html
+        assert f"{custom_css}\n</style>" in html
+
+    def test_export_html_clear_screen(self):
+        """Test HTML export with clear_screen=True."""
+        console = RichConsole(record=True, width=80)
+        console.print("Content")
+        manager = ExportManager(console, debug=False)
+
+        # Export and clear
+        html = manager.export_html(clear_screen=True)
+        assert "Content" in html
+
+        # Verify buffer is cleared
+        text = console.export_text()
+        assert text.strip() == ""
+
+    def test_export_html_with_theme(self):
+        """Test HTML export with specific theme."""
+        console = RichConsole(record=True, width=80)
+        console.print("Content")
+        manager = ExportManager(console, debug=False)
+
+        # We can't easily verify the theme applied without inspecting styles deeply,
+        # but we can verify it doesn't crash.
+        html = manager.export_html(theme=MONOKAI)
+        assert "Content" in html

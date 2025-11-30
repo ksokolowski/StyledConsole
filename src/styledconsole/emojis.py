@@ -19,7 +19,7 @@ All emojis in this module are guaranteed to:
 - Work in all StyledConsole features (frames, gradients, banners)
 - Be supported across major terminals
 
-See: doc/guides/EMOJI_GUIDELINES.md for full emoji support details
+See: doc/guides/EMOJI_SUPPORT.md for full emoji support details
 """
 
 from typing import Final

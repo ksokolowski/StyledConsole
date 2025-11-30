@@ -38,37 +38,6 @@ class TestRenderingEngineInit:
         assert engine._logger.name == "styledconsole.core.rendering_engine"
 
 
-class TestRenderingEngineLazyInit:
-    """Tests for lazy initialization of renderers (v0.3.0: Only banner renderer now)."""
-
-    def test_banner_renderer_lazy_init(self):
-        """Test that banner renderer is initialized lazily."""
-        rich_console = RichConsole()
-        engine = RenderingEngine(rich_console)
-
-        # Initially None
-        assert engine._RenderingEngine__banner_renderer is None
-
-        # Access triggers initialization
-        renderer = engine._banner_renderer
-        assert renderer is not None
-        assert engine._RenderingEngine__banner_renderer is renderer
-
-        # Second access returns same instance
-        renderer2 = engine._banner_renderer
-        assert renderer2 is renderer
-
-    def test_lazy_init_with_debug_logging(self):
-        """Test that lazy initialization logs debug message."""
-        rich_console = RichConsole()
-        engine = RenderingEngine(rich_console, debug=True)
-
-        with patch.object(engine._logger, "debug") as mock_debug:
-            # Access banner renderer
-            _ = engine._banner_renderer
-            mock_debug.assert_called_with("BannerRenderer initialized (lazy)")
-
-
 class TestRenderingEngineFrame:
     """Tests for frame rendering."""
 
@@ -154,7 +123,8 @@ class TestRenderingEngineBanner:
         engine = RenderingEngine(rich_console, debug=True)
 
         with patch.object(engine._logger, "debug") as mock_debug:
-            with patch.object(engine._banner_renderer, "render_banner", return_value=["line"]):
+            # We mock _render_banner_lines to avoid actual rendering logic
+            with patch.object(engine, "_render_banner_lines", return_value=["line"]):
                 engine.print_banner("Test", font="standard", start_color="blue", end_color="cyan")
 
                 # Check debug calls
@@ -381,21 +351,6 @@ class TestRenderingEngineIntegration:
         assert "This is line 1" in output
         assert "Additional details" in output
 
-    def test_all_renderers_initialized(self):
-        """Test that all renderers get initialized through usage (v0.3.0: banner only)."""
-        rich_console = RichConsole()
-        engine = RenderingEngine(rich_console)
-
-        # Initially not initialized
-        assert engine._RenderingEngine__banner_renderer is None
-
-        # Use banner
-        with patch.object(engine._banner_renderer, "render_banner", return_value=["test"]):
-            engine.print_banner("Test")
-
-        # Banner renderer initialized
-        assert engine._RenderingEngine__banner_renderer is not None
-
     def test_debug_mode_comprehensive(self):
         """Test that debug mode logs all operations (v0.3.0: no frame_renderer)."""
         rich_console = RichConsole()
@@ -409,7 +364,7 @@ class TestRenderingEngineIntegration:
         with patch.object(engine._logger, "debug", side_effect=capture_debug):
             engine.print_frame("Frame test")
 
-            with patch.object(engine._banner_renderer, "render_banner", return_value=["line"]):
+            with patch.object(engine, "_render_banner_lines", return_value=["line"]):
                 engine.print_banner("Banner test")
 
             engine.print_text("Text test")
