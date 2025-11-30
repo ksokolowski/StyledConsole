@@ -8,8 +8,10 @@ Phase 4.4: Refactored to use specialized manager classes (TerminalManager,
 ExportManager, RenderingEngine) following the Facade pattern.
 """
 
+from __future__ import annotations
+
 import sys
-from typing import Any, TextIO
+from typing import TYPE_CHECKING, Any, TextIO
 
 from rich.console import Console as RichConsole
 
@@ -18,6 +20,9 @@ from styledconsole.core.rendering_engine import RenderingEngine
 from styledconsole.core.terminal_manager import TerminalManager
 from styledconsole.types import AlignType, FrameGroupItem, LayoutType
 from styledconsole.utils.terminal import TerminalProfile
+
+if TYPE_CHECKING:
+    from styledconsole.core.group import FrameGroupContext
 
 
 class Console:
@@ -251,6 +256,31 @@ class Console:
             ...     border_gradient_end="magenta"
             ... )
         """
+        # Check if we're inside a group context
+        from styledconsole.core.group import get_active_group
+
+        active_group = get_active_group()
+        if active_group is not None:
+            # Capture the frame instead of printing
+            active_group.capture_frame(
+                content,
+                title=title,
+                border=border,
+                width=width,
+                padding=padding,
+                align=align,
+                content_color=content_color,
+                border_color=border_color,
+                title_color=title_color,
+                start_color=start_color,
+                end_color=end_color,
+                border_gradient_start=border_gradient_start,
+                border_gradient_end=border_gradient_end,
+                border_gradient_direction=border_gradient_direction,
+            )
+            return
+
+        # Normal print behavior
         self._renderer.print_frame(
             content,
             title=title,
@@ -440,6 +470,107 @@ class Console:
             gap=gap,
             inherit_style=inherit_style,
         )
+
+    def group(
+        self,
+        *,
+        title: str | None = None,
+        border: str = "rounded",
+        border_color: str | None = None,
+        title_color: str | None = None,
+        border_gradient_start: str | None = None,
+        border_gradient_end: str | None = None,
+        padding: int = 1,
+        width: int | None = None,
+        align: AlignType = "left",
+        gap: int = 1,
+        inherit_style: bool = False,
+        align_widths: bool = False,
+    ) -> FrameGroupContext:
+        """Create a context manager for grouping frames.
+
+        When used as a context manager, captures all frame() calls made within
+        the context and renders them together when the context exits. This
+        provides a more Pythonic way to create nested frame layouts.
+
+        Args:
+            title: Optional title for the outer container frame.
+            border: Border style for outer frame. Defaults to "rounded".
+            border_color: Color for outer frame border.
+            title_color: Color for outer frame title.
+            border_gradient_start: Starting color for outer border gradient.
+            border_gradient_end: Ending color for outer border gradient.
+            padding: Padding inside outer frame. Defaults to 1.
+            width: Fixed width for outer frame. None for auto.
+            align: Content alignment. Defaults to "left".
+            gap: Lines between captured frames. Defaults to 1.
+            inherit_style: If True, inner frames inherit outer border style.
+            align_widths: If True, align all inner frame widths uniformly.
+
+        Returns:
+            A context manager that captures frame() calls.
+
+        Example:
+            >>> console = Console()
+            >>> # Basic usage
+            >>> with console.group(title="Dashboard", border="double") as group:
+            ...     console.frame("Section A", title="A")
+            ...     console.frame("Section B", title="B")
+
+            >>> # Nested groups
+            >>> with console.group(title="Outer") as outer:
+            ...     console.frame("Top")
+            ...     with console.group(title="Inner") as inner:
+            ...         console.frame("Nested A")
+            ...         console.frame("Nested B")
+
+            >>> # Aligned widths for status-style layouts
+            >>> with console.group(align_widths=True) as group:
+            ...     console.frame("Short", title="A")
+            ...     console.frame("Much longer content here", title="B")
+        """
+        from styledconsole.core.group import FrameGroupContext
+
+        return FrameGroupContext(
+            console=self,
+            title=title,
+            border=border,
+            border_color=border_color,
+            title_color=title_color,
+            border_gradient_start=border_gradient_start,
+            border_gradient_end=border_gradient_end,
+            padding=padding,
+            width=width,
+            align=align,
+            gap=gap,
+            inherit_style=inherit_style,
+            align_widths=align_widths,
+        )
+
+    def _print_ansi_output(self, output: str, align: str = "left") -> None:
+        """Print ANSI output with proper alignment handling.
+
+        Internal method used by FrameGroupContext to print rendered output.
+
+        Args:
+            output: String containing ANSI escape codes.
+            align: Alignment for the output ("left", "center", "right").
+        """
+        from rich.align import Align
+        from rich.text import Text as RichText
+
+        if "\x1b" in output:
+            text_obj = RichText.from_ansi(output, no_wrap=True)
+        else:
+            text_obj = RichText.from_markup(output)
+            text_obj.no_wrap = True
+
+        if align == "center":
+            self._rich_console.print(Align.center(text_obj), highlight=False, soft_wrap=True)
+        elif align == "right":
+            self._rich_console.print(Align.right(text_obj), highlight=False, soft_wrap=True)
+        else:
+            self._rich_console.print(text_obj, highlight=False, soft_wrap=True)
 
     def banner(
         self,

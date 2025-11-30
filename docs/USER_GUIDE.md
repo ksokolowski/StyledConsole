@@ -246,6 +246,74 @@ console.frame(inner, title="Outer")
 | `gap`                   | int  | 1            | Lines between inner frames |
 | `inherit_style`         | bool | False        | Inner frames inherit style |
 
+### Context Manager (console.group)
+
+> **New in v0.7.0**
+
+For more complex or dynamic layouts, use the `console.group()` context manager:
+
+```python
+from styledconsole import Console, EMOJI
+
+console = Console()
+
+with console.group(title="Dashboard", border="double", border_color="cyan"):
+    console.frame("System status: Online", title="Status")
+    console.frame("CPU: 45%\nMemory: 2.1GB", title="Resources")
+    console.frame("Last backup: 2h ago", title="Backup")
+```
+
+#### Nested Groups
+
+Groups can be nested for complex hierarchies:
+
+```python
+with console.group(title="Project Overview", border="heavy"):
+    console.frame("Main application ready", title="App Status")
+
+    with console.group(title="Services", border="rounded"):
+        console.frame("Database connected", title="DB")
+        console.frame("Cache active", title="Redis")
+
+    console.frame("All tests passing", title="CI/CD")
+```
+
+#### Width Alignment
+
+Use `align_widths=True` to make all inner frames the same width:
+
+```python
+with console.group(title="System Report", align_widths=True):
+    console.frame("All systems operational", title="Success", border_color="green")
+    console.frame("High memory usage detected", title="Warning", border_color="yellow")
+    console.frame("Connection failed", title="Error", border_color="red")
+```
+
+#### Context Manager Parameters
+
+| Parameter               | Type | Default     | Description                  |
+| ----------------------- | ---- | ----------- | ---------------------------- |
+| `title`                 | str  | None        | Outer frame title            |
+| `border`                | str  | `"rounded"` | Outer border style           |
+| `width`                 | int  | None (auto) | Outer frame width            |
+| `padding`               | int  | 1           | Outer frame padding          |
+| `border_color`          | str  | None        | Outer border color           |
+| `title_color`           | str  | None        | Outer title color            |
+| `border_gradient_start` | str  | None        | Outer gradient start         |
+| `border_gradient_end`   | str  | None        | Outer gradient end           |
+| `gap`                   | int  | 1           | Lines between inner frames   |
+| `inherit_style`         | bool | False       | Inner frames inherit style   |
+| `align_widths`          | bool | False       | Make inner frames same width |
+
+#### When to Use Which API
+
+| Scenario                      | Recommended API        |
+| ----------------------------- | ---------------------- |
+| Dynamic content, nesting      | `console.group()`      |
+| Simple, data-driven layouts   | `frame_group()`        |
+| Complex gradient compositions | `render_frame()`       |
+| Embedding in outer frames     | `render_frame_group()` |
+
 ### Future Plans
 
 - **Horizontal layout**: Side-by-side frames
