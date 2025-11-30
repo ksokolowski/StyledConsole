@@ -402,7 +402,7 @@ def get_border_style(name: str) -> BorderStyle:
         BorderStyle object
 
     Raises:
-        KeyError: If the border style name is not found
+        ValueError: If the border style name is not found
 
     Example:
         >>> style = get_border_style("solid")
@@ -415,7 +415,7 @@ def get_border_style(name: str) -> BorderStyle:
     name_lower = name.lower()
     if name_lower not in BORDERS:
         available = ", ".join(sorted(BORDERS.keys()))
-        raise KeyError(f"Unknown border style: {name!r}. Available styles: {available}")
+        raise ValueError(f"Unknown border style: {name!r}. Available styles: {available}")
     return BORDERS[name_lower]
 
 

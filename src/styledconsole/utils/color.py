@@ -130,6 +130,7 @@ def parse_color(value: str) -> RGBColor:
     """Parse color string in any supported format to RGB tuple.
 
     Cached with LRU cache (512 entries) for performance in loops.
+    Input is normalized (lowercase, stripped) before caching for better hit ratio.
 
     Supported formats:
     - Hex: "#FF0000", "#f00", "FF0000"
@@ -161,20 +162,22 @@ def parse_color(value: str) -> RGBColor:
         >>> parse_color("dodger_blue1")  # Rich numbered variant
         (30, 144, 255)
     """
-    value = value.strip()
-    value_lower = value.lower()
+    # Normalize for caching: strip whitespace and lowercase
+    # This ensures "RED", "red", " red " all hit the same cache entry
+    value_normalized = value.strip().lower()
 
     # Try named colors first (most common)
-    named_result = _try_named_color(value_lower)
+    named_result = _try_named_color(value_normalized)
     if named_result:
         return named_result
 
-    # Try hex format
-    if HEX_PATTERN.match(value):
-        return hex_to_rgb(value)
+    # Try hex format (use original stripped value to preserve case for regex)
+    value_stripped = value.strip()
+    if HEX_PATTERN.match(value_stripped):
+        return hex_to_rgb(value_stripped)
 
     # Try rgb/tuple formats
-    pattern_result = _try_rgb_pattern(value)
+    pattern_result = _try_rgb_pattern(value_stripped)
     if pattern_result:
         return pattern_result
 

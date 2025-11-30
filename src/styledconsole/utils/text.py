@@ -7,6 +7,7 @@ MVP (v0.1) focuses on Tier 1 emoji support (single-codepoint basic icons).
 import re
 
 import wcwidth
+from rich.errors import MarkupError
 from rich.text import Text as RichText
 
 from styledconsole.types import AlignType
@@ -106,8 +107,8 @@ def visual_width(text: str, markup: bool = False) -> int:
             # Parse markup to get plain text for width calculation
             # We use Rich to strip tags and handle entities
             clean_text = RichText.from_markup(clean_text).plain
-        except Exception:
-            # Fallback if markup parsing fails
+        except MarkupError:
+            # Invalid markup syntax - fall through with original text
             pass
 
     # Split into graphemes to handle complex sequences correctly
@@ -388,8 +389,8 @@ def truncate_to_width(text: str, width: int, suffix: str = "...", markup: bool =
             # Truncate using Rich (crop to make room for suffix)
             rt.truncate(target_width, overflow="crop", pad=False)
             return rt.markup + suffix
-        except Exception:
-            # Fallback to standard truncation if parsing fails
+        except MarkupError:
+            # Invalid markup syntax - fall through to standard truncation
             pass
 
     suffix_width = visual_width(suffix, markup=markup)
@@ -2014,7 +2015,8 @@ def adjust_emoji_spacing_in_text(
         if emo in SAFE_EMOJIS:
             try:
                 return max(0, min(2, get_emoji_spacing_adjustment(emo)))
-            except Exception:
+            except ValueError:
+                # Invalid emoji - use default spacing
                 return 0
         return 1 if VARIATION_SELECTOR_16 in emo else 0
 

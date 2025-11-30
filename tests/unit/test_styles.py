@@ -582,15 +582,15 @@ class TestGetBorderStyle:
         assert style is ROUNDED
 
     def test_get_border_style_invalid(self):
-        """Test getting invalid border style raises KeyError."""
-        with pytest.raises(KeyError) as exc_info:
+        """Test getting invalid border style raises ValueError."""
+        with pytest.raises(ValueError) as exc_info:
             get_border_style("invalid")
         assert "Unknown border style: 'invalid'" in str(exc_info.value)
         assert "Available styles:" in str(exc_info.value)
 
     def test_get_border_style_error_message_lists_styles(self):
         """Test that error message lists available styles."""
-        with pytest.raises(KeyError) as exc_info:
+        with pytest.raises(ValueError) as exc_info:
             get_border_style("nonexistent")
         error_msg = str(exc_info.value)
         assert "solid" in error_msg

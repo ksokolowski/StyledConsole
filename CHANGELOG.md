@@ -5,6 +5,31 @@ All notable changes to StyledConsole will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.1] - 2025-11-30
+
+### 🔧 Code Quality Improvements
+
+This patch release addresses issues identified during comprehensive code review.
+
+### Fixed
+
+- **Duplicate `__all__` entries**: Removed duplicate `prepare_frame_content` and `auto_size_content` entries from `__init__.py`
+- **Consistent exception types**: `get_border_style()` now raises `ValueError` instead of `KeyError` for unknown border styles, matching `box_mapping.get_box_style()` for consistency
+- **Specific exception handling**: Replaced bare `except Exception` with specific `MarkupError` catches in `text.py` markup parsing to avoid hiding real bugs
+
+### Changed
+
+- **Dashboard refactored to use Console API**: `dashboard()` preset now uses `Console.frame()` and `Console.render_frame()` instead of directly importing Rich's `Panel`. This maintains architectural consistency with the facade pattern where Console is the public API and Rich is the backend infrastructure.
+- **Improved color cache efficiency**: `parse_color()` now normalizes input (lowercase, strip whitespace) before caching, so `"RED"`, `"red"`, and `" red "` all hit the same cache entry
+- **Pre-compiled regex pattern**: VS16 emoji HTML wrapping regex in `export_manager.py` moved to module level for better performance
+- **Added missing type hints**: Added return type hints to private methods in `rendering_engine.py` (`_build_content_renderable`, `_get_figlet`) and parameter/return types in `gradient_utils.py` (`get_border_chars`, `apply_diagonal_gradient`, `apply_diagonal_rainbow`, `_colorize_line_with_ansi`)
+
+### Removed
+
+- **Legacy code cleanup**: Removed unused `_render_frame_legacy()` method from `RenderingEngine` (~100 lines). This legacy Rich Panel fallback was kept for reference but never called.
+
+______________________________________________________________________
+
 ## [0.5.0] - 2025-11-30
 
 ### 📚 Documentation & Project Structure

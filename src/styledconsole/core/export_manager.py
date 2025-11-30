@@ -5,12 +5,18 @@ supporting both HTML and plain text formats.
 """
 
 import logging
+import re
 import sys
 
 from rich.console import Console as RichConsole
 from rich.terminal_theme import TerminalTheme
 
 from styledconsole.utils.text import strip_ansi
+
+# Pre-compiled regex for VS16 emoji wrapping in HTML export
+# Matches a character that is NOT > (end of tag) followed by VS16 (U+FE0F)
+# Uses negative lookahead to avoid breaking ZWJ sequences (like 🏳️‍🌈)
+_VS16_HTML_PATTERN = re.compile(r"([^>])(\ufe0f)(?!\u200d)")
 
 
 class ExportManager:
@@ -164,20 +170,8 @@ class ExportManager:
         # Note: Rich exports raw UTF-8. Be careful not to break HTML tags.
         # Rich might wrap text in spans like <span ...>X</span>.
         # If we have "⚠️" it might be "⚠\ufe0f".
-        # Let's try a regex replacement on the HTML string.
-        # We match any non-tag character followed by VS16.
-
-        import re
-
-        # Match a character that is NOT > (end of tag) followed by VS16
-        # This is a heuristic but should work for Rich's output format
-        # We capture the base char (group 1) and the VS16 (group 2)
-        # Regex: ([^>])(\uFE0F)
-        # IMPORTANT: We use a negative lookahead (?!\u200d) to ensure we don't break
-        # ZWJ sequences (like 🏳️‍🌈) where the VS16 is followed by a joiner.
-        html = re.sub(
-            r"([^>])(\ufe0f)(?!\u200d)", r'<span class="rich-emoji-vs16">\1\2</span>', html
-        )
+        # We use the pre-compiled _VS16_HTML_PATTERN for performance.
+        html = _VS16_HTML_PATTERN.sub(r'<span class="rich-emoji-vs16">\1\2</span>', html)
 
         if self._debug and self._logger:
             self._logger.debug(f"HTML exported: {len(html)} characters")

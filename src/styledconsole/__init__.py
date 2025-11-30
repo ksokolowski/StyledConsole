@@ -82,7 +82,7 @@ from styledconsole.utils.wrap import (
     wrap_text,
 )
 
-__version__ = "0.5.0"
+__version__ = "0.5.1"
 __author__ = "Krzysztof Sokołowski"
 __license__ = "Apache-2.0"
 
@@ -141,8 +141,6 @@ __all__ = [
     "wrap_text",
     "wrap_multiline",
     "truncate_lines",
-    "prepare_frame_content",
-    "auto_size_content",
     "prepare_frame_content",
     "auto_size_content",
     # Type aliases

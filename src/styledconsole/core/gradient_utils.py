@@ -7,8 +7,9 @@ extracted from effects.py to allow reuse in RenderingEngine.
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 
-from styledconsole.core.styles import get_border_style
+from styledconsole.core.styles import BorderStyle, get_border_style
 from styledconsole.utils.color import interpolate_color, parse_color
 from styledconsole.utils.text import strip_ansi, visual_width
 
@@ -157,14 +158,19 @@ def apply_vertical_content_gradient(
     return colored_lines
 
 
-def _colorize_line_with_ansi(line: str, color: str, should_color_func) -> str:
+def _colorize_line_with_ansi(
+    line: str, color: str, should_color_func: Callable[[str, int, int], bool]
+) -> str:
     """Colorize a line while preserving ANSI codes, based on a predicate function.
 
     Args:
         line: The text line to colorize (may contain ANSI codes)
         color: The color to apply
-        should_color_func: Function(char, visible_index, total_visible_length) -> bool
-                           Returns True if the character should be colored.
+        should_color_func: Predicate function(char, visible_index, total_visible_length)
+                           that returns True if the character should be colored.
+
+    Returns:
+        Colorized line with ANSI codes preserved
     """
     # Split into segments (text vs ansi)
     segments = []
@@ -275,8 +281,15 @@ def calculate_diagonal_position(
     return (row_progress + col_progress) / 2.0
 
 
-def get_border_chars(style):
-    """Extract all border characters from a style for efficient lookup."""
+def get_border_chars(style: BorderStyle) -> set[str]:
+    """Extract all border characters from a style for efficient lookup.
+
+    Args:
+        style: BorderStyle instance to extract characters from
+
+    Returns:
+        Set of all border characters used by the style
+    """
     chars = {
         style.top_left,
         style.top_right,
@@ -391,7 +404,7 @@ def apply_diagonal_gradient(
     lines: list[str],
     start_color: str,
     end_color: str,
-    style,
+    style: BorderStyle,
     title: str | None,
     apply_to_border: bool,
     apply_to_content: bool,
@@ -497,7 +510,7 @@ def apply_vertical_rainbow(
 
 def apply_diagonal_rainbow(
     lines: list[str],
-    style,
+    style: BorderStyle,
     title: str | None,
     apply_to_border: bool,
     apply_to_content: bool,
