@@ -5,6 +5,32 @@ All notable changes to StyledConsole will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2025-11-30
+
+### 🛠️ Code Refactoring
+
+This release focuses on improving code maintainability through refactoring of `text.py`.
+
+### Changed
+
+#### text.py Refactoring
+
+- **Extracted `emoji_data.py`**: Moved `SAFE_EMOJIS` dictionary (~1200 lines) to dedicated `utils/emoji_data.py` module. Reduces `text.py` from 2048 to 815 lines (60% reduction).
+- **Refactored `visual_width()`**: Extracted helper functions `_grapheme_width_legacy()` and `_grapheme_width_standard()`. Cyclomatic complexity reduced from 16 (grade C) to 8 (grade B).
+- **Refactored `split_graphemes()`**: Extracted helper functions `_parse_ansi_sequence()` and `_should_extend_grapheme()`. Cyclomatic complexity reduced from 16 (grade C) to 10 (grade B).
+- **Improved maintainability**: Average cyclomatic complexity improved from 5.72 to 4.78. Maintainability index improved from 34.13 to 37.47.
+
+### Added
+
+- **New module `utils/emoji_data.py`**: Contains `SAFE_EMOJIS`, `TIER1_EMOJI_RANGES`, and `VARIATION_SELECTOR_16` constants with MI score of 100.
+
+### Backward Compatibility
+
+- All existing imports continue to work unchanged
+- `SAFE_EMOJIS` remains accessible from both `styledconsole` and `styledconsole.utils.text`
+
+______________________________________________________________________
+
 ## [0.5.1] - 2025-11-30
 
 ### 🔧 Code Quality Improvements
