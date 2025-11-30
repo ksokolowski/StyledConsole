@@ -409,5 +409,57 @@ USE IN:
     width=75,
 )
 
+# ============================================================================
+# CONTEXT MANAGER APPROACH (v0.7.0)
+# ============================================================================
+
+console.rule(f"{EMOJI.SPARKLES} CONTEXT MANAGER APPROACH", style="magenta")
+console.newline()
+
+console.text("Using console.group() for organized status displays:", bold=True)
+console.newline()
+
+# Grouped services with aligned widths
+with console.group(
+    title=f"{EMOJI.CHART_BAR} Service Status Overview",
+    border="rounded",
+    border_color="cyan",
+    align_widths=True,
+):
+    console.frame(
+        f"{EMOJI.GREEN_CIRCLE} Running | Uptime: 23d 14h 32m",
+        title=f"{EMOJI.CHECK} Web Server",
+        border_color="green",
+    )
+    console.frame(
+        f"{EMOJI.YELLOW_CIRCLE} Degraded | Response: 2.8s",
+        title=f"{EMOJI.WARNING} API Server",
+        border_color="yellow",
+    )
+    console.frame(
+        f"{EMOJI.GREEN_CIRCLE} Running | Connections: 42/100",
+        title=f"{EMOJI.CHECK} Database",
+        border_color="green",
+    )
+
+console.newline()
+
+# Nested groups for hierarchical status
+console.text("Nested groups for complex hierarchies:", bold=True)
+console.newline()
+
+with console.group(title=f"{EMOJI.GLOBE} Production Environment", border="heavy"):
+    console.frame(f"{EMOJI.GREEN_CIRCLE} All endpoints responding", title="Load Balancer")
+
+    with console.group(title="Backend Services", border="rounded", border_color="cyan"):
+        console.frame(f"{EMOJI.CHECK} 8/8 replicas healthy", border_color="green")
+        console.frame(f"{EMOJI.CHECK} Queue depth: 0", border_color="green")
+
+    with console.group(title="Data Layer", border="rounded", border_color="blue"):
+        console.frame(f"{EMOJI.CHECK} Primary: online", border_color="green")
+        console.frame(f"{EMOJI.CHECK} Replica: synced", border_color="green")
+
+console.newline()
+
 console.rule()
 console.text(f"{EMOJI.SPARKLES} Status panels provide at-a-glance system health visibility!")

@@ -179,30 +179,50 @@ class FrameGroupContext:
         self._output_to_parent_or_print(output)
 
     def _align_frame_widths(self) -> None:
-        """Calculate and apply uniform width to all captured frames."""
+        """Calculate and apply uniform width to all captured frames.
+
+        Calculates the maximum width needed across all frames, considering
+        both content width and title width, then applies that width uniformly.
+        """
         from styledconsole.utils.text import visual_width
 
-        # Calculate max content width across all frames
+        # Calculate max width needed across all frames
         max_width = 0
         for frame in self._captured_frames:
+            # Calculate content width
             content = frame.content
             if isinstance(content, str):
                 lines = content.split("\n")
             else:
                 lines = content
 
+            content_width = 0
             for line in lines:
-                w = visual_width(line)
-                if w > max_width:
-                    max_width = w
+                # Use markup=True to handle Rich markup tags in content
+                w = visual_width(line, markup=True)
+                if w > content_width:
+                    content_width = w
 
-        # Add padding for border (2 chars) and internal padding (2 * padding)
-        # Default padding is 1, so: 2 (borders) + 2 (padding) = 4
-        frame_width = max_width + 4
+            # Calculate title width if present
+            title = frame.kwargs.get("title", "")
+            title_width = visual_width(title, markup=True) if title else 0
+
+            # Frame needs to fit both content and title
+            # Title appears in border, so it needs ~4 extra chars for decoration
+            effective_title_width = title_width + 4 if title else 0
+            # Content needs padding (default 1 on each side = 2)
+            effective_content_width = content_width + 2
+
+            frame_inner_width = max(effective_content_width, effective_title_width)
+            if frame_inner_width > max_width:
+                max_width = frame_inner_width
+
+        # Add border characters (2 for left+right)
+        frame_width = max_width + 2
 
         # Apply width to all frames that don't have explicit width
         for frame in self._captured_frames:
-            if "width" not in frame.kwargs:
+            if frame.kwargs.get("width") is None:
                 frame.kwargs["width"] = frame_width
 
     def _output_to_parent_or_print(self, output: str) -> None:
