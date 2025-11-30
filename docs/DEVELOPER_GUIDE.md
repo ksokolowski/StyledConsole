@@ -1,6 +1,6 @@
 # StyledConsole Developer Guide
 
-**Version:** 0.5.0
+**Version:** 0.6.0
 **Last Updated:** November 30, 2025
 **Audience:** Contributors and advanced users
 
@@ -22,48 +22,160 @@ ______________________________________________________________________
 
 ### System Layers
 
-```text
-┌─────────────────────────────────────────────────────────┐
-│                  User Application                       │
-└────────────────────┬────────────────────────────────────┘
-                     │
-        ┌────────────┴────────────┐
-        │   Console API           │  ← Public facade
-        │   (console.py)          │
-        └────────────┬────────────┘
-                     │
-        ┌────────────┴────────────┐
-        │   Rendering Engine      │  ← Orchestrates rendering
-        │   (rendering_engine.py) │
-        └────────────┬────────────┘
-                     │
-        ┌────────────┴────────────┐
-        │   Rich Backend          │  ← ANSI rendering
-        │   (Panel, Text, Group)  │
-        └────────────┬────────────┘
-                     │
-        ┌────────────┴────────────┐
-        │   Terminal/HTML Export  │  ← Output targets
-        └─────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph User["User Application"]
+        APP[Application Code]
+    end
+
+    subgraph Facade["Public API Layer"]
+        CONSOLE[Console<br/>console.py]
+    end
+
+    subgraph Managers["Manager Layer"]
+        RE[RenderingEngine]
+        EM[ExportManager]
+        TM[TerminalManager]
+    end
+
+    subgraph Core["Core Layer"]
+        BM[box_mapping]
+        GU[gradient_utils]
+        ST[styles]
+        BN[banner]
+    end
+
+    subgraph Effects["Effects Layer"]
+        ENG[engine.py]
+        STR[strategies.py]
+    end
+
+    subgraph Utils["Utilities Layer"]
+        TXT[text.py]
+        CLR[color.py]
+        WRP[wrap.py]
+        TRM[terminal.py]
+    end
+
+    subgraph Backend["Rich Backend"]
+        RICH[Rich Console<br/>Panel, Text, Group]
+    end
+
+    APP --> CONSOLE
+    CONSOLE --> RE
+    CONSOLE --> EM
+    CONSOLE --> TM
+    RE --> BM
+    RE --> GU
+    RE --> ST
+    RE --> BN
+    RE --> ENG
+    ENG --> STR
+    RE --> TXT
+    RE --> CLR
+    RE --> WRP
+    TM --> TRM
+    RE --> RICH
+    EM --> RICH
+
+    style CONSOLE fill:#4CAF50,color:#fff
+    style RICH fill:#673AB7,color:#fff
 ```
 
-### Data Flow
+### Data Flow: Frame Rendering
 
-```text
-Console.frame(content, title, border)
-  ↓
-RenderingEngine.print_frame()
-  ↓
-box_mapping.get_box_style(border)  → Rich Box
-  ↓
-Rich Panel(content, box=box)
-  ↓
-rich_console.print()  → Terminal
-  ↓
-ExportManager.export_html()  → HTML (if recording)
+```mermaid
+sequenceDiagram
+    participant App as Application
+    participant Con as Console
+    participant RE as RenderingEngine
+    participant BM as box_mapping
+    participant Rich as Rich Console
+
+    App->>Con: frame(content, title, border)
+    Con->>RE: print_frame(...)
+    RE->>BM: get_box_style(border)
+    BM-->>RE: Rich Box object
+    RE->>Rich: Panel(content, box=box)
+    Rich->>Rich: render to ANSI
+    Rich-->>App: Terminal output
+```
+
+### Data Flow: Gradient Application
+
+```mermaid
+sequenceDiagram
+    participant RE as RenderingEngine
+    participant GE as Gradient Engine
+    participant PS as PositionStrategy
+    participant CS as ColorSource
+
+    RE->>GE: apply_gradient(lines, strategy, colors)
+    loop For each character
+        GE->>PS: calculate(row, col)
+        PS-->>GE: position (0.0-1.0)
+        GE->>CS: get_color(position)
+        CS-->>GE: hex color
+        GE->>GE: wrap char with ANSI
+    end
+    GE-->>RE: colorized lines
 ```
 
 ### Design Patterns
+
+```mermaid
+classDiagram
+    class Console {
+        <<Facade>>
+        +frame()
+        +banner()
+        +text()
+        +export_html()
+    }
+
+    class RenderingEngine {
+        <<Coordinator>>
+        +print_frame()
+        +print_banner()
+    }
+
+    class PositionStrategy {
+        <<Strategy>>
+        +calculate() float
+    }
+
+    class VerticalPosition {
+        +calculate()
+    }
+
+    class HorizontalPosition {
+        +calculate()
+    }
+
+    class DiagonalPosition {
+        +calculate()
+    }
+
+    class ColorSource {
+        <<Strategy>>
+        +get_color() str
+    }
+
+    class LinearGradient {
+        +get_color()
+    }
+
+    class RainbowSpectrum {
+        +get_color()
+    }
+
+    Console --> RenderingEngine
+    PositionStrategy <|-- VerticalPosition
+    PositionStrategy <|-- HorizontalPosition
+    PositionStrategy <|-- DiagonalPosition
+    ColorSource <|-- LinearGradient
+    ColorSource <|-- RainbowSpectrum
+```
 
 | Pattern      | Usage                                     |
 | ------------ | ----------------------------------------- |
@@ -74,6 +186,71 @@ ExportManager.export_html()  → HTML (if recording)
 ______________________________________________________________________
 
 ## Module Structure
+
+### Package Dependency Graph
+
+```mermaid
+flowchart LR
+    subgraph styledconsole
+        INIT[__init__.py]
+        CON[console.py]
+        EMO[emojis.py]
+        TYP[types.py]
+        ANI[animation.py]
+    end
+
+    subgraph core
+        RE[rendering_engine]
+        EM[export_manager]
+        TM[terminal_manager]
+        BM[box_mapping]
+        GU[gradient_utils]
+        ST[styles]
+        BN[banner]
+    end
+
+    subgraph effects
+        ENG[engine]
+        STR[strategies]
+    end
+
+    subgraph utils
+        TXT[text]
+        CLR[color]
+        WRP[wrap]
+        TRM[terminal]
+        VAL[validation]
+        ED[emoji_data]
+        CD[color_data]
+    end
+
+    subgraph presets
+        STA[status]
+        SUM[summary]
+        DSH[dashboard]
+    end
+
+    CON --> RE
+    CON --> EM
+    CON --> TM
+    RE --> BM
+    RE --> GU
+    RE --> ST
+    RE --> BN
+    RE --> ENG
+    ENG --> STR
+    TXT --> ED
+    CLR --> CD
+    STA --> CON
+    SUM --> CON
+    DSH --> CON
+
+    style CON fill:#4CAF50,color:#fff
+    style RE fill:#2196F3,color:#fff
+    style ENG fill:#FF9800,color:#fff
+```
+
+### Directory Structure
 
 ```text
 src/styledconsole/
@@ -103,7 +280,9 @@ src/styledconsole/
 │
 └── utils/                        # Utilities
     ├── text.py                   # Emoji-safe width calculation
+    ├── emoji_data.py             # SAFE_EMOJIS dictionary
     ├── color.py                  # Color parsing & gradients
+    ├── color_data.py             # CSS4 color definitions
     ├── terminal.py               # Terminal capabilities
     ├── validation.py             # Input validation
     └── wrap.py                   # Text wrapping
@@ -116,6 +295,47 @@ ______________________________________________________________________
 ### Console (Facade)
 
 The main entry point. Delegates to specialized managers.
+
+```mermaid
+classDiagram
+    class Console {
+        -RichConsole _rich_console
+        -TerminalManager _terminal_manager
+        -RenderingEngine _rendering_engine
+        -ExportManager _export_manager
+        +frame(content, title, border, ...)
+        +banner(text, font, colors, ...)
+        +text(text, color, bold, ...)
+        +rule(title, color)
+        +newline()
+        +clear()
+        +export_html() str
+        +export_text() str
+    }
+
+    class RenderingEngine {
+        -RichConsole _console
+        +print_frame(...)
+        +print_banner(...)
+        +print_text(...)
+        +print_rule(...)
+    }
+
+    class ExportManager {
+        -RichConsole _console
+        +export_html() str
+        +export_text() str
+    }
+
+    class TerminalManager {
+        +profile TerminalProfile
+        +detect_capabilities()
+    }
+
+    Console --> RenderingEngine
+    Console --> ExportManager
+    Console --> TerminalManager
+```
 
 ```python
 class Console:
@@ -153,6 +373,37 @@ class RenderingEngine:
 
 Located in `effects/engine.py` and `effects/strategies.py`.
 
+```mermaid
+flowchart LR
+    subgraph Input
+        LINES[Text Lines]
+        BORDER[Border Chars]
+    end
+
+    subgraph Strategies
+        PS[Position Strategy]
+        CS[Color Source]
+        TF[Target Filter]
+    end
+
+    subgraph Engine
+        AG[apply_gradient]
+    end
+
+    subgraph Output
+        COLORED[Colorized Lines<br/>with ANSI codes]
+    end
+
+    LINES --> AG
+    BORDER --> AG
+    PS --> AG
+    CS --> AG
+    TF --> AG
+    AG --> COLORED
+
+    style AG fill:#FF9800,color:#fff
+```
+
 ```python
 def apply_gradient(
     lines: list[str],
@@ -186,6 +437,38 @@ def apply_gradient(
 
 Located in `utils/text.py`. Critical for emoji support.
 
+```mermaid
+flowchart TB
+    subgraph text.py
+        VW[visual_width]
+        SG[split_graphemes]
+        PTW[pad_to_width]
+        TTW[truncate_to_width]
+    end
+
+    subgraph Helpers
+        GWL[_grapheme_width_legacy]
+        GWS[_grapheme_width_standard]
+        PAS[_parse_ansi_sequence]
+        SEG[_should_extend_grapheme]
+    end
+
+    subgraph emoji_data.py
+        SE[SAFE_EMOJIS<br/>1048 entries]
+        VS16[VARIATION_SELECTOR_16]
+    end
+
+    VW --> SG
+    VW --> GWL
+    VW --> GWS
+    SG --> PAS
+    SG --> SEG
+    GWL --> VS16
+    GWS --> VS16
+
+    style SE fill:#E91E63,color:#fff
+```
+
 ```python
 # Visual width (emoji-aware)
 visual_width("✅")  # Returns 2
@@ -202,6 +485,41 @@ validate_emoji("👨‍💻")  # {"safe": False, "reason": "ZWJ sequence"}
 
 Located in `utils/color.py`.
 
+```mermaid
+flowchart LR
+    subgraph Input
+        NAME[Color Name<br/>dodgerblue]
+        HEX[Hex Code<br/>#1E90FF]
+        RGB[RGB Tuple<br/>30, 144, 255]
+    end
+
+    subgraph color.py
+        PC[parse_color]
+        IC[interpolate_color]
+        HTR[hex_to_rgb]
+        RTH[rgb_to_hex]
+    end
+
+    subgraph color_data.py
+        CSS4[CSS4_COLORS<br/>148 colors]
+    end
+
+    subgraph Output
+        TUPLE["(R, G, B)"]
+    end
+
+    NAME --> PC
+    HEX --> PC
+    RGB --> PC
+    PC --> CSS4
+    PC --> HTR
+    PC --> TUPLE
+    IC --> PC
+    IC --> RTH
+
+    style CSS4 fill:#9C27B0,color:#fff
+```
+
 ```python
 # Parse any color format
 parse_color("dodgerblue")      # (30, 144, 255)
@@ -217,6 +535,37 @@ ______________________________________________________________________
 ## Extending the Library
 
 ### Adding a Position Strategy
+
+```mermaid
+classDiagram
+    class PositionStrategy {
+        <<interface>>
+        +calculate(row, col, total_rows, total_cols) float
+    }
+
+    class VerticalPosition {
+        +calculate() float
+    }
+
+    class HorizontalPosition {
+        +calculate() float
+    }
+
+    class DiagonalPosition {
+        +calculate() float
+    }
+
+    class RadialPosition {
+        +calculate() float
+    }
+
+    PositionStrategy <|.. VerticalPosition
+    PositionStrategy <|.. HorizontalPosition
+    PositionStrategy <|.. DiagonalPosition
+    PositionStrategy <|.. RadialPosition
+
+    note for RadialPosition "Custom strategy example"
+```
 
 ```python
 # In effects/strategies.py
@@ -240,6 +589,30 @@ class FirePalette:
 ```
 
 ### Adding a Border Style
+
+```mermaid
+flowchart LR
+    subgraph "styles.py"
+        BS[BorderStyle]
+        BORDERS[BORDERS dict]
+    end
+
+    subgraph "box_mapping.py"
+        GBS[get_box_style]
+        MAP[Style Mapping]
+    end
+
+    subgraph "Rich"
+        RBOX[Rich Box<br/>ROUNDED, DOUBLE, etc.]
+    end
+
+    BS --> BORDERS
+    BORDERS --> GBS
+    GBS --> MAP
+    MAP --> RBOX
+
+    style RBOX fill:#673AB7,color:#fff
+```
 
 ```python
 # In core/styles.py
