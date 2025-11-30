@@ -1,6 +1,6 @@
 # StyledConsole Project Status
 
-**Version:** 0.5.0
+**Version:** 0.6.0
 **Status:** Production Ready
 **Last Updated:** November 30, 2025
 
@@ -10,6 +10,7 @@ ______________________________________________________________________
 
 1. [Current Version](#current-version)
 1. [Roadmap](#roadmap)
+1. [v0.7.0 Implementation Plan](#v070-implementation-plan)
 1. [Active Tasks](#active-tasks)
 1. [Known Issues](#known-issues)
 1. [Changelog](#changelog)
@@ -18,24 +19,23 @@ ______________________________________________________________________
 
 ## Current Version
 
-### v0.5.0 (November 2025)
+### v0.6.0 (November 2025)
 
 **Status:** ✅ Production Ready
 
 | Metric        | Value        |
 | ------------- | ------------ |
-| Lines of Code | ~4,200       |
+| Lines of Code | ~4,500       |
 | Tests         | 700+ passing |
 | Coverage      | 95%+         |
 | Examples      | 27           |
 
 **Key Features:**
 
-- ✅ Documentation consolidated (4 master docs)
-- ✅ Examples reorganized (4 categories: gallery, usecases, demos, validation)
-- ✅ Gallery examples standardized with EMOJI constants
-- ✅ Unified example runner with `--all` and `--auto` flags
-- ✅ Project root cleaned (24 exploratory files removed)
+- ✅ text.py refactored (2048→815 lines, CC 16→8)
+- ✅ emoji_data.py extracted (1048 safe emojis)
+- ✅ Mermaid diagrams added to DEVELOPER_GUIDE.md
+- ✅ Enhanced diagram styling (Material Design colors)
 
 ______________________________________________________________________
 
@@ -49,20 +49,300 @@ ______________________________________________________________________
 | v0.3.0  | Nov 2025 | Rich-Native rendering     |
 | v0.4.0  | Nov 2025 | Animated Gradients        |
 | v0.5.0  | Nov 2025 | Documentation & Structure |
+| v0.6.0  | Nov 2025 | text.py Refactoring       |
 
 ### Planned
 
-| Version | Target  | Theme      |
-| ------- | ------- | ---------- |
-| v1.0.0  | Q4 2026 | API freeze |
+| Version | Target  | Theme                             |
+| ------- | ------- | --------------------------------- |
+| v0.7.0  | Q1 2026 | UX Enhancements & Polish          |
+| v1.0.0  | Q2 2026 | API freeze & Production Hardening |
 
-### v1.0.0 Goals
+______________________________________________________________________
 
-- API freeze (backward compatible forever)
-- Complete documentation
-- Performance optimization
-- Battle-tested in production
-- Comprehensive example gallery
+## v0.7.0 Implementation Plan
+
+**Theme:** UX Enhancements & Polish
+**Target:** Q1 2026
+**Estimated Effort:** 10-15 days
+
+### Feature 1: Nested Frames / Frame Grouping
+
+**Priority:** HIGH
+**Effort:** 2-3 days
+**Impact:** Enables dashboard-like layouts without presets
+
+**Problem:**
+Users cannot create visually nested frames without accessing `console._rich_console` directly.
+
+**Proposed API:**
+
+```python
+# Option A: Context manager (recommended)
+with console.group(title="System Dashboard", border="heavy", border_color="blue"):
+    console.frame(cpu_content, title="CPU Status", border="rounded")
+    console.frame(memory_content, title="Memory Status", border="rounded")
+
+# Option B: Explicit nesting
+group = console.create_group(title="Dashboard", border="heavy")
+group.add_frame(content1, title="Panel 1")
+group.add_frame(content2, title="Panel 2")
+console.print(group)
+```
+
+**Implementation Steps:**
+
+1. Create `FrameGroup` class in `core/frame_group.py`
+1. Implement context manager protocol (`__enter__`, `__exit__`)
+1. Buffer frames during context, render as Rich Group on exit
+1. Add `console.group()` method to Console class
+1. Unit tests for nesting, spacing, alignment
+1. Integration tests with real-world dashboard patterns
+1. Update USER_GUIDE.md with examples
+
+**Acceptance Criteria:**
+
+- [ ] Context manager captures nested frames
+- [ ] Frames render as single visual unit
+- [ ] Supports title, border, padding on outer group
+- [ ] Works with gradient borders
+- [ ] 95%+ test coverage
+
+______________________________________________________________________
+
+### Feature 2: Theme System
+
+**Priority:** MEDIUM
+**Effort:** 2-3 days
+**Impact:** Consistent styling, professional appearance
+
+**Problem:**
+No predefined color schemes; users manually specify colors for each element.
+
+**Proposed API:**
+
+```python
+from styledconsole import Console, THEMES
+
+# Using predefined theme
+console = Console(theme=THEMES.MONOKAI)
+console.frame("Content", status="success")  # Uses theme's success color
+
+# Custom theme
+from styledconsole import Theme
+my_theme = Theme(
+    primary="dodgerblue",
+    success="lime",
+    warning="gold",
+    error="crimson",
+    border="silver",
+)
+console = Console(theme=my_theme)
+```
+
+**Predefined Themes:**
+
+| Theme     | Primary | Success | Warning | Error   | Border  |
+| --------- | ------- | ------- | ------- | ------- | ------- |
+| DARK      | cyan    | lime    | gold    | red     | white   |
+| LIGHT     | blue    | green   | orange  | crimson | gray    |
+| SOLARIZED | #268bd2 | #859900 | #b58900 | #dc322f | #839496 |
+| MONOKAI   | #66d9ef | #a6e22e | #e6db74 | #f92672 | #f8f8f2 |
+| NORD      | #88c0d0 | #a3be8c | #ebcb8b | #bf616a | #eceff4 |
+
+**Implementation Steps:**
+
+1. Create `Theme` dataclass in `core/theme.py`
+1. Define `THEMES` namespace with predefined themes
+1. Add `theme` parameter to Console `__init__`
+1. Modify RenderingEngine to use theme colors as defaults
+1. Add `status` parameter to frame() for semantic coloring
+1. Unit tests for all predefined themes
+1. Example: `examples/gallery/themes_showcase.py`
+
+**Acceptance Criteria:**
+
+- [ ] 5 predefined themes available
+- [ ] Custom themes via Theme dataclass
+- [ ] Theme applies to frames, banners, text
+- [ ] Backward compatible (no theme = current behavior)
+- [ ] Theme preview utility function
+
+______________________________________________________________________
+
+### Feature 3: Icon Provider (ASCII Fallback)
+
+**Priority:** MEDIUM
+**Effort:** 1-2 days
+**Impact:** Graceful degradation for limited terminals
+
+**Problem:**
+Emojis don't render correctly in all terminals (CI/CD, SSH, Windows cmd).
+
+**Proposed API:**
+
+```python
+from styledconsole import icons, Console
+
+# Auto-detects terminal capability
+console = Console()
+console.text(f"{icons.success} Tests passed")  # ✅ or [OK]
+console.text(f"{icons.error} Build failed")    # ❌ or [FAIL]
+
+# Force ASCII mode
+from styledconsole import set_icon_mode
+set_icon_mode("ascii")  # All icons become ASCII
+```
+
+**Icon Mapping:**
+
+| Name     | Unicode | ASCII  |
+| -------- | ------- | ------ |
+| success  | ✅      | [OK]   |
+| error    | ❌      | [FAIL] |
+| warning  | ⚠️      | [WARN] |
+| info     | ℹ️      | [INFO] |
+| debug    | 🔍      | [DBG]  |
+| critical | 🔥      | [CRIT] |
+| rocket   | 🚀      | [>>]   |
+| check    | ✓       | [x]    |
+
+**Implementation Steps:**
+
+1. Create `IconProvider` class in `utils/icons.py`
+1. Implement auto-detection based on terminal profile
+1. Add global `icons` instance with attribute access
+1. Add `set_icon_mode(mode)` function
+1. Unit tests for both modes
+1. Integration with Console (optional `icon_mode` param)
+
+**Acceptance Criteria:**
+
+- [ ] Auto-detects terminal capability
+- [ ] Manual override via `set_icon_mode()`
+- [ ] 8+ common icons defined
+- [ ] Works in CI/CD environments
+- [ ] No breaking changes to existing code
+
+______________________________________________________________________
+
+### Feature 4: Runtime Policy System
+
+**Priority:** MEDIUM
+**Effort:** 2-3 days
+**Impact:** Enterprise-friendly, NO_COLOR compliance
+
+**Problem:**
+No central control over rendering decisions based on environment.
+
+**Proposed API:**
+
+```python
+from styledconsole import Console, RenderPolicy
+
+# Auto-detect from environment
+policy = RenderPolicy.from_env()
+console = Console(policy=policy)
+
+# Manual policy
+policy = RenderPolicy(
+    unicode=True,   # Use Unicode box drawing
+    color=False,    # Disable ANSI colors (respects NO_COLOR)
+    emoji=False,    # Disable emojis
+)
+console = Console(policy=policy)
+```
+
+**Environment Detection:**
+
+| Variable    | Effect                         |
+| ----------- | ------------------------------ |
+| NO_COLOR    | `color=False`                  |
+| TERM=dumb   | `unicode=False`, `emoji=False` |
+| CI=true     | `emoji=False` (conservative)   |
+| FORCE_COLOR | `color=True` (override)        |
+
+**Implementation Steps:**
+
+1. Create `RenderPolicy` dataclass in `core/policy.py`
+1. Implement `from_env()` classmethod with detection logic
+1. Add `policy` parameter to Console `__init__`
+1. Modify RenderingEngine to respect policy
+1. Support NO_COLOR standard (https://no-color.org/)
+1. Unit tests with mocked environment
+1. Documentation for CI/CD integration
+
+**Acceptance Criteria:**
+
+- [ ] Auto-detects NO_COLOR environment variable
+- [ ] Detects TERM=dumb for ASCII mode
+- [ ] Detects CI environments conservatively
+- [ ] Manual override possible
+- [ ] Policy affects all rendering operations
+
+______________________________________________________________________
+
+### Feature 5: Progress Bar Wrapper
+
+**Priority:** LOW
+**Effort:** 1-2 days
+**Impact:** Convenience for long-running operations
+
+**Problem:**
+Users must use Rich's Progress directly, losing StyledConsole theming.
+
+**Proposed API:**
+
+```python
+from styledconsole import Console
+
+console = Console()
+
+# Simple progress
+with console.progress() as progress:
+    task = progress.add_task("Processing...", total=100)
+    for i in range(100):
+        # do work
+        progress.update(task, advance=1)
+
+# Styled progress with theme colors
+with console.progress(description="Downloading", style="primary") as progress:
+    task = progress.add_task("file.zip", total=1000)
+    # ...
+```
+
+**Implementation Steps:**
+
+1. Create `StyledProgress` wrapper in `core/progress.py`
+1. Inherit from or wrap `rich.progress.Progress`
+1. Apply theme colors to progress bar
+1. Add `console.progress()` context manager
+1. Unit tests for progress lifecycle
+1. Example in `examples/demos/`
+
+**Acceptance Criteria:**
+
+- [ ] Context manager for progress tracking
+- [ ] Uses theme colors when available
+- [ ] Compatible with Rich Progress API
+- [ ] Clean output in recording mode (HTML export)
+
+______________________________________________________________________
+
+### Implementation Timeline
+
+```
+Week 1-2: Feature 1 (Nested Frames) + Feature 2 (Themes)
+Week 3:   Feature 3 (Icons) + Feature 4 (Policy)
+Week 4:   Feature 5 (Progress) + Testing + Documentation
+```
+
+### Dependencies
+
+```
+Feature 4 (Policy) → Feature 3 (Icons)  # Policy controls icon mode
+Feature 2 (Theme) → Feature 5 (Progress) # Progress uses theme colors
+```
 
 ______________________________________________________________________
 
