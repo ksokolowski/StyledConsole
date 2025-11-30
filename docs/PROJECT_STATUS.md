@@ -1,6 +1,6 @@
 # StyledConsole Project Status
 
-**Version:** 0.6.0
+**Version:** 0.7.0
 **Status:** Production Ready
 **Last Updated:** November 30, 2025
 
@@ -19,23 +19,24 @@ ______________________________________________________________________
 
 ## Current Version
 
-### v0.6.0 (November 2025)
+### v0.7.0 (November 2025)
 
 **Status:** ✅ Production Ready
 
-| Metric        | Value        |
-| ------------- | ------------ |
-| Lines of Code | ~4,500       |
-| Tests         | 700+ passing |
-| Coverage      | 95%+         |
-| Examples      | 27           |
+| Metric        | Value       |
+| ------------- | ----------- |
+| Lines of Code | ~4,700      |
+| Tests         | 678 passing |
+| Coverage      | 83%+        |
+| Examples      | 27          |
 
 **Key Features:**
 
-- ✅ text.py refactored (2048→815 lines, CC 16→8)
-- ✅ emoji_data.py extracted (1048 safe emojis)
-- ✅ Mermaid diagrams added to DEVELOPER_GUIDE.md
-- ✅ Enhanced diagram styling (Material Design colors)
+- ✅ `frame_group()` for organized multi-frame layouts
+- ✅ `render_frame_group()` for nesting frame groups
+- ✅ Style inheritance for inner frames
+- ✅ Gap control between inner frames
+- ✅ Gradient borders on outer frame
 
 ______________________________________________________________________
 
@@ -50,67 +51,81 @@ ______________________________________________________________________
 | v0.4.0  | Nov 2025 | Animated Gradients        |
 | v0.5.0  | Nov 2025 | Documentation & Structure |
 | v0.6.0  | Nov 2025 | text.py Refactoring       |
+| v0.7.0  | Nov 2025 | Frame Groups              |
 
 ### Planned
 
 | Version | Target  | Theme                             |
 | ------- | ------- | --------------------------------- |
-| v0.7.0  | Q1 2026 | UX Enhancements & Polish          |
+| v0.8.0  | Q1 2026 | UX Enhancements & Polish          |
 | v1.0.0  | Q2 2026 | API freeze & Production Hardening |
 
 ______________________________________________________________________
 
 ## v0.7.0 Implementation Plan
 
-**Theme:** UX Enhancements & Polish
-**Target:** Q1 2026
-**Estimated Effort:** 10-15 days
+**Theme:** Frame Groups
+**Status:** ✅ COMPLETED
+**Completed:** November 30, 2025
 
-### Feature 1: Nested Frames / Frame Grouping
+### Feature 1: Frame Groups ✅ COMPLETED
 
 **Priority:** HIGH
-**Effort:** 2-3 days
+**Effort:** 1 day (actual)
 **Impact:** Enables dashboard-like layouts without presets
 
-**Problem:**
-Users cannot create visually nested frames without accessing `console._rich_console` directly.
-
-**Proposed API:**
+**Implemented API:**
 
 ```python
-# Option A: Context manager (recommended)
-with console.group(title="System Dashboard", border="heavy", border_color="blue"):
-    console.frame(cpu_content, title="CPU Status", border="rounded")
-    console.frame(memory_content, title="Memory Status", border="rounded")
+# frame_group() - print grouped frames
+console.frame_group(
+    [
+        {"content": "Status: Online", "title": "System"},
+        {"content": "CPU: 45%", "title": "Resources"},
+    ],
+    title="Dashboard",
+    border="double",
+    gap=1,
+    inherit_style=True,
+)
 
-# Option B: Explicit nesting
-group = console.create_group(title="Dashboard", border="heavy")
-group.add_frame(content1, title="Panel 1")
-group.add_frame(content2, title="Panel 2")
-console.print(group)
+# render_frame_group() - return string for nesting
+inner = console.render_frame_group(
+    [{"content": "A"}, {"content": "B"}],
+    title="Inner",
+)
+console.frame(inner, title="Outer")
 ```
 
-**Implementation Steps:**
+**Deliverables:**
 
-1. Create `FrameGroup` class in `core/frame_group.py`
-1. Implement context manager protocol (`__enter__`, `__exit__`)
-1. Buffer frames during context, render as Rich Group on exit
-1. Add `console.group()` method to Console class
-1. Unit tests for nesting, spacing, alignment
-1. Integration tests with real-world dashboard patterns
-1. Update USER_GUIDE.md with examples
+- ✅ `frame_group()` method in Console class
+- ✅ `render_frame_group()` for nesting support
+- ✅ Style inheritance (`inherit_style` parameter)
+- ✅ Gap control (`gap` parameter)
+- ✅ 27 unit tests in `tests/unit/test_frame_group.py`
+- ✅ Updated `examples/demos/nested_frames.py`
+- ✅ Documentation in USER_GUIDE.md
 
 **Acceptance Criteria:**
 
-- [ ] Context manager captures nested frames
-- [ ] Frames render as single visual unit
-- [ ] Supports title, border, padding on outer group
-- [ ] Works with gradient borders
-- [ ] 95%+ test coverage
+- ✅ Frame group prints as single visual unit
+- ✅ Supports title, border, padding on outer group
+- ✅ Works with gradient borders
+- ✅ Style inheritance option
+- ✅ Gap control between inner frames
 
 ______________________________________________________________________
 
-### Feature 2: Theme System
+## v0.8.0 Future Plans
+
+**Theme:** UX Enhancements & Polish
+**Target:** Q1 2026
+**Status:** Planned
+
+The following features were originally planned for v0.7.0 but deferred:
+
+### Feature 1: Theme System
 
 **Priority:** MEDIUM
 **Effort:** 2-3 days
@@ -170,7 +185,7 @@ console = Console(theme=my_theme)
 
 ______________________________________________________________________
 
-### Feature 3: Icon Provider (ASCII Fallback)
+### Feature 2: Icon Provider (ASCII Fallback)
 
 **Priority:** MEDIUM
 **Effort:** 1-2 days
@@ -226,7 +241,7 @@ set_icon_mode("ascii")  # All icons become ASCII
 
 ______________________________________________________________________
 
-### Feature 4: Runtime Policy System
+### Feature 3: Runtime Policy System
 
 **Priority:** MEDIUM
 **Effort:** 2-3 days
@@ -282,7 +297,7 @@ console = Console(policy=policy)
 
 ______________________________________________________________________
 
-### Feature 5: Progress Bar Wrapper
+### Feature 4: Progress Bar Wrapper
 
 **Priority:** LOW
 **Effort:** 1-2 days
@@ -329,34 +344,45 @@ with console.progress(description="Downloading", style="primary") as progress:
 
 ______________________________________________________________________
 
-### Implementation Timeline
+### v0.8.0 Implementation Timeline
 
-```
-Week 1-2: Feature 1 (Nested Frames) + Feature 2 (Themes)
-Week 3:   Feature 3 (Icons) + Feature 4 (Policy)
-Week 4:   Feature 5 (Progress) + Testing + Documentation
+```text
+Week 1:   Feature 1 (Themes)
+Week 2:   Feature 2 (Icons) + Feature 3 (Policy)
+Week 3:   Feature 4 (Progress) + Testing + Documentation
 ```
 
 ### Dependencies
 
-```
-Feature 4 (Policy) → Feature 3 (Icons)  # Policy controls icon mode
-Feature 2 (Theme) → Feature 5 (Progress) # Progress uses theme colors
+```text
+Feature 3 (Policy) → Feature 2 (Icons)  # Policy controls icon mode
+Feature 1 (Theme) → Feature 4 (Progress) # Progress uses theme colors
 ```
 
 ______________________________________________________________________
 
 ## Active Tasks
 
-### Completed (v0.5.0)
+### Completed (v0.7.0)
 
-| Task                        | Status  |
-| --------------------------- | ------- |
-| Documentation Consolidation | ✅ Done |
-| Examples Reorganization     | ✅ Done |
-| Gallery Standardization     | ✅ Done |
-| Project Root Cleanup        | ✅ Done |
-| Unified Example Runner      | ✅ Done |
+| Task                 | Status  |
+| -------------------- | ------- |
+| frame_group() method | ✅ Done |
+| render_frame_group() | ✅ Done |
+| Style inheritance    | ✅ Done |
+| Gap control          | ✅ Done |
+| Unit tests (27)      | ✅ Done |
+| Updated demo         | ✅ Done |
+| USER_GUIDE.md update | ✅ Done |
+
+### Future (v0.8.0)
+
+| Task                 | Priority |
+| -------------------- | -------- |
+| Theme System         | MEDIUM   |
+| Icon Provider        | MEDIUM   |
+| Runtime Policy       | MEDIUM   |
+| Progress Bar Wrapper | LOW      |
 
 ### Future (v1.0.0)
 

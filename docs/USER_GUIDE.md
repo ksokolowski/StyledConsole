@@ -1,6 +1,6 @@
 # StyledConsole User Guide
 
-**Version:** 0.5.0
+**Version:** 0.7.0
 **Last Updated:** November 30, 2025
 
 ______________________________________________________________________
@@ -9,6 +9,7 @@ ______________________________________________________________________
 
 1. [Quick Start](#quick-start)
 1. [Frames & Borders](#frames--borders)
+1. [Frame Groups](#frame-groups)
 1. [Banners](#banners)
 1. [Colors & Gradients](#colors--gradients)
 1. [Emojis](#emojis)
@@ -124,6 +125,132 @@ Line 2 with longer content
 - Short messages: `width=40`
 - Medium content: `width=60`
 - Wide dashboards: `width=80`
+
+______________________________________________________________________
+
+## Frame Groups
+
+> **New in v0.7.0**
+
+Frame groups allow you to combine multiple frames into organized layouts, perfect for dashboards, status panels, and multi-section displays.
+
+### Basic Frame Group
+
+```python
+from styledconsole import Console
+
+console = Console()
+
+console.frame_group(
+    [
+        {"content": "Status: Online", "title": "System"},
+        {"content": "CPU: 45%\nMemory: 2.1GB", "title": "Resources"},
+        {"content": "Last backup: 2h ago", "title": "Backup"},
+    ],
+    title="Dashboard",
+    border="double",
+)
+```
+
+### Item Options
+
+Each item in the list is a dictionary with these options:
+
+| Key             | Required | Description                 |
+| --------------- | -------- | --------------------------- |
+| `content`       | ✅       | Frame content (str or list) |
+| `title`         | ❌       | Individual frame title      |
+| `border`        | ❌       | Border style for this frame |
+| `border_color`  | ❌       | Border color                |
+| `content_color` | ❌       | Content text color          |
+| `title_color`   | ❌       | Title color                 |
+
+### Styling Options
+
+```python
+# Individual frame styling
+console.frame_group(
+    [
+        {"content": "All systems OK", "title": "Success", "border_color": "green"},
+        {"content": "High usage", "title": "Warning", "border_color": "yellow"},
+        {"content": "Connection failed", "title": "Error", "border_color": "red"},
+    ],
+    title="System Report",
+    border="heavy",
+)
+
+# Outer frame gradient
+console.frame_group(
+    [{"content": "A"}, {"content": "B"}],
+    border_gradient_start="cyan",
+    border_gradient_end="magenta",
+)
+```
+
+### Style Inheritance
+
+Use `inherit_style=True` to have inner frames inherit the outer border style:
+
+```python
+console.frame_group(
+    [
+        {"content": "Section A"},
+        {"content": "Section B"},
+    ],
+    border="heavy",
+    inherit_style=True,  # Inner frames also use "heavy" border
+)
+```
+
+### Gap Control
+
+Control spacing between inner frames with `gap`:
+
+```python
+console.frame_group(
+    [{"content": "Top"}, {"content": "Bottom"}],
+    gap=0,  # No gap between frames (default: 1)
+)
+```
+
+### Render to String (for Nesting)
+
+Use `render_frame_group()` to get a string for nesting:
+
+```python
+# Render inner group to string
+inner = console.render_frame_group(
+    [{"content": "Sub-A"}, {"content": "Sub-B"}],
+    title="Inner",
+)
+
+# Embed in outer frame
+console.frame(inner, title="Outer")
+```
+
+### Frame Group Parameters
+
+| Parameter               | Type | Default      | Description                |
+| ----------------------- | ---- | ------------ | -------------------------- |
+| `items`                 | list | *required*   | List of frame item dicts   |
+| `title`                 | str  | None         | Outer frame title          |
+| `border`                | str  | `"rounded"`  | Outer border style         |
+| `width`                 | int  | None (auto)  | Outer frame width          |
+| `padding`               | int  | 1            | Outer frame padding        |
+| `align`                 | str  | `"left"`     | Content alignment          |
+| `border_color`          | str  | None         | Outer border color         |
+| `title_color`           | str  | None         | Outer title color          |
+| `border_gradient_start` | str  | None         | Outer gradient start       |
+| `border_gradient_end`   | str  | None         | Outer gradient end         |
+| `layout`                | str  | `"vertical"` | Layout mode                |
+| `gap`                   | int  | 1            | Lines between inner frames |
+| `inherit_style`         | bool | False        | Inner frames inherit style |
+
+### Future Plans
+
+- **Horizontal layout**: Side-by-side frames
+- **Grid layout**: Matrix arrangement
+- **Composite pattern**: `frame()` returning renderables for arbitrary nesting
 
 ______________________________________________________________________
 

@@ -16,7 +16,7 @@ from rich.console import Console as RichConsole
 from styledconsole.core.export_manager import ExportManager
 from styledconsole.core.rendering_engine import RenderingEngine
 from styledconsole.core.terminal_manager import TerminalManager
-from styledconsole.types import AlignType
+from styledconsole.types import AlignType, FrameGroupItem, LayoutType
 from styledconsole.utils.terminal import TerminalProfile
 
 
@@ -266,6 +266,179 @@ class Console:
             border_gradient_start=border_gradient_start,
             border_gradient_end=border_gradient_end,
             border_gradient_direction=border_gradient_direction,
+        )
+
+    def render_frame_group(
+        self,
+        items: list[FrameGroupItem],
+        *,
+        title: str | None = None,
+        border: str = "rounded",
+        width: int | None = None,
+        padding: int = 1,
+        align: AlignType = "left",
+        border_color: str | None = None,
+        title_color: str | None = None,
+        border_gradient_start: str | None = None,
+        border_gradient_end: str | None = None,
+        layout: LayoutType = "vertical",
+        gap: int = 1,
+        inherit_style: bool = False,
+    ) -> str:
+        """Render a group of frames to a string.
+
+        Creates multiple frames arranged within an outer container frame.
+        Useful for dashboards, multi-section displays, and organized layouts.
+
+        Note:
+            This is a v0.7.0 feature. Currently only "vertical" layout is supported.
+            Future versions may add "horizontal" and "grid" layouts.
+
+        Args:
+            items: List of frame item dictionaries. Each dict must have 'content'
+                key and may optionally include: title, border, border_color,
+                content_color, title_color.
+            title: Optional title for the outer container frame.
+            border: Border style for outer frame. One of: "solid", "rounded",
+                "double", "heavy", "thick", "ascii", "minimal", "dashed".
+                Defaults to "rounded".
+            width: Fixed width for outer frame. If None, auto-calculated.
+                Defaults to None.
+            padding: Padding (spaces) inside outer frame. Defaults to 1.
+            align: Content alignment within outer frame. Defaults to "left".
+            border_color: Color for outer frame border. Accepts CSS4 names,
+                hex codes, or RGB tuples.
+            title_color: Color for outer frame title.
+            border_gradient_start: Starting color for outer border gradient.
+            border_gradient_end: Ending color for outer border gradient.
+            layout: Layout mode for inner frames. Currently only "vertical"
+                (stack top-to-bottom) is supported. Defaults to "vertical".
+            gap: Number of blank lines between inner frames. Defaults to 1.
+            inherit_style: If True, inner frames inherit outer border style
+                when not explicitly specified. Defaults to False.
+
+        Returns:
+            Rendered frame group as a string containing ANSI escape codes.
+            Can be used for nesting within other frames.
+
+        Example:
+            >>> console = Console()
+            >>> # Render to string for nesting
+            >>> group = console.render_frame_group(
+            ...     [{"content": "Section A"}, {"content": "Section B"}],
+            ...     title="Inner Group",
+            ... )
+            >>> console.frame(group, title="Outer Frame")
+        """
+        return self._renderer.render_frame_group_to_string(
+            items,
+            title=title,
+            border=border,
+            width=width,
+            padding=padding,
+            align=align,
+            border_color=border_color,
+            title_color=title_color,
+            border_gradient_start=border_gradient_start,
+            border_gradient_end=border_gradient_end,
+            layout=layout,
+            gap=gap,
+            inherit_style=inherit_style,
+        )
+
+    def frame_group(
+        self,
+        items: list[FrameGroupItem],
+        *,
+        title: str | None = None,
+        border: str = "rounded",
+        width: int | None = None,
+        padding: int = 1,
+        align: AlignType = "left",
+        border_color: str | None = None,
+        title_color: str | None = None,
+        border_gradient_start: str | None = None,
+        border_gradient_end: str | None = None,
+        layout: LayoutType = "vertical",
+        gap: int = 1,
+        inherit_style: bool = False,
+    ) -> None:
+        """Render and print a group of frames.
+
+        Creates multiple frames arranged within an outer container frame.
+        Perfect for dashboards, status panels, multi-section displays, and
+        organized information layouts.
+
+        Note:
+            This is a v0.7.0 feature. Currently only "vertical" layout is supported.
+            Future versions may add "horizontal" and "grid" layouts.
+
+        Args:
+            items: List of frame item dictionaries. Each dict must have 'content'
+                key and may optionally include: title, border, border_color,
+                content_color, title_color.
+            title: Optional title for the outer container frame.
+            border: Border style for outer frame. One of: "solid", "rounded",
+                "double", "heavy", "thick", "ascii", "minimal", "dashed".
+                Defaults to "rounded".
+            width: Fixed width for outer frame. If None, auto-calculated.
+                Defaults to None.
+            padding: Padding (spaces) inside outer frame. Defaults to 1.
+            align: Content alignment within outer frame. Defaults to "left".
+            border_color: Color for outer frame border. Accepts CSS4 names,
+                hex codes, or RGB tuples.
+            title_color: Color for outer frame title.
+            border_gradient_start: Starting color for outer border gradient.
+            border_gradient_end: Ending color for outer border gradient.
+            layout: Layout mode for inner frames. Currently only "vertical"
+                (stack top-to-bottom) is supported. Defaults to "vertical".
+            gap: Number of blank lines between inner frames. Defaults to 1.
+            inherit_style: If True, inner frames inherit outer border style
+                when not explicitly specified. Defaults to False.
+
+        Example:
+            >>> console = Console()
+            >>> # Simple frame group
+            >>> console.frame_group(
+            ...     [
+            ...         {"content": "Status: OK", "title": "System"},
+            ...         {"content": "Memory: 4GB", "title": "Resources"},
+            ...     ],
+            ...     title="Dashboard",
+            ...     border="double",
+            ... )
+
+            >>> # With styling
+            >>> console.frame_group(
+            ...     [
+            ...         {"content": "Error!", "border_color": "red"},
+            ...         {"content": "Warning", "border_color": "yellow"},
+            ...     ],
+            ...     border_gradient_start="red",
+            ...     border_gradient_end="yellow",
+            ... )
+
+            >>> # Inherit outer style
+            >>> console.frame_group(
+            ...     [{"content": "A"}, {"content": "B"}],
+            ...     border="heavy",
+            ...     inherit_style=True,  # Inner frames also use "heavy"
+            ... )
+        """
+        self._renderer.print_frame_group(
+            items,
+            title=title,
+            border=border,
+            width=width,
+            padding=padding,
+            align=align,
+            border_color=border_color,
+            title_color=title_color,
+            border_gradient_start=border_gradient_start,
+            border_gradient_end=border_gradient_end,
+            layout=layout,
+            gap=gap,
+            inherit_style=inherit_style,
         )
 
     def banner(

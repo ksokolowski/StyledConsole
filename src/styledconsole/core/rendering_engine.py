@@ -728,3 +728,151 @@ class RenderingEngine:
 
         for _ in range(count):
             self._rich_console.print()
+
+    # ----------------------------- Frame Group Methods -----------------------------
+
+    def render_frame_group_to_string(
+        self,
+        items: list[dict],
+        *,
+        title: str | None = None,
+        border: str = "rounded",
+        width: int | None = None,
+        padding: int = 1,
+        align: str = "left",
+        border_color: str | None = None,
+        title_color: str | None = None,
+        border_gradient_start: str | None = None,
+        border_gradient_end: str | None = None,
+        layout: str = "vertical",
+        gap: int = 1,
+        inherit_style: bool = False,
+    ) -> str:
+        """Render a group of frames to a string.
+
+        Creates multiple frames arranged within an outer container frame.
+        Currently supports vertical layout (frames stacked top to bottom).
+
+        Args:
+            items: List of frame item dictionaries. Each dict must have 'content'
+                key and may have: title, border, border_color, content_color, title_color.
+            title: Optional title for the outer container frame.
+            border: Border style for outer frame. Defaults to "rounded".
+            width: Fixed width for outer frame. None for auto. Defaults to None.
+            padding: Padding inside outer frame. Defaults to 1.
+            align: Content alignment within outer frame. Defaults to "left".
+            border_color: Color for outer frame border.
+            title_color: Color for outer frame title.
+            border_gradient_start: Gradient start for outer border.
+            border_gradient_end: Gradient end for outer border.
+            layout: Layout mode. Currently only "vertical" supported.
+            gap: Number of blank lines between inner frames. Defaults to 1.
+            inherit_style: If True, inner frames inherit outer border style
+                when not explicitly specified. Defaults to False.
+
+        Returns:
+            Rendered frame group as a string with ANSI codes.
+        """
+        if self._debug:
+            self._logger.debug(
+                f"Rendering frame_group: {len(items)} items, layout={layout}, gap={gap}"
+            )
+
+        # Build inner frames content
+        inner_content_lines: list[str] = []
+
+        for i, item in enumerate(items):
+            content = item.get("content", "")
+            item_title = item.get("title")
+            item_border = item.get("border", border if inherit_style else "rounded")
+            item_border_color = item.get("border_color")
+            item_content_color = item.get("content_color")
+            item_title_color = item.get("title_color")
+
+            # Render inner frame to string
+            inner_frame = self.render_frame_to_string(
+                content,
+                title=item_title,
+                border=item_border,
+                border_color=item_border_color,
+                title_color=item_title_color,
+                content_color=item_content_color,
+            )
+
+            # Add to content
+            inner_content_lines.append(inner_frame)
+
+            # Add gap between items (not after last)
+            if i < len(items) - 1 and gap > 0:
+                inner_content_lines.extend([""] * gap)
+
+        # Join all inner content
+        combined_content = "\n".join(inner_content_lines) if inner_content_lines else ""
+
+        # Wrap in outer frame
+        return self.render_frame_to_string(
+            combined_content,
+            title=title,
+            border=border,
+            width=width,
+            padding=padding,
+            align=align,
+            border_color=border_color,
+            title_color=title_color,
+            border_gradient_start=border_gradient_start,
+            border_gradient_end=border_gradient_end,
+        )
+
+    def print_frame_group(
+        self,
+        items: list[dict],
+        *,
+        title: str | None = None,
+        border: str = "rounded",
+        width: int | None = None,
+        padding: int = 1,
+        align: str = "left",
+        border_color: str | None = None,
+        title_color: str | None = None,
+        border_gradient_start: str | None = None,
+        border_gradient_end: str | None = None,
+        layout: str = "vertical",
+        gap: int = 1,
+        inherit_style: bool = False,
+    ) -> None:
+        """Render and print a group of frames.
+
+        See render_frame_group_to_string for argument details.
+        """
+        output = self.render_frame_group_to_string(
+            items,
+            title=title,
+            border=border,
+            width=width,
+            padding=padding,
+            align=align,
+            border_color=border_color,
+            title_color=title_color,
+            border_gradient_start=border_gradient_start,
+            border_gradient_end=border_gradient_end,
+            layout=layout,
+            gap=gap,
+            inherit_style=inherit_style,
+        )
+
+        # Print with proper ANSI handling
+        if "\x1b" in output:
+            text_obj = RichText.from_ansi(output, no_wrap=True)
+        else:
+            text_obj = RichText.from_markup(output)
+            text_obj.no_wrap = True
+
+        if align == "center":
+            self._rich_console.print(Align.center(text_obj), highlight=False, soft_wrap=True)
+        elif align == "right":
+            self._rich_console.print(Align.right(text_obj), highlight=False, soft_wrap=True)
+        else:
+            self._rich_console.print(text_obj, highlight=False, soft_wrap=True)
+
+        if self._debug:
+            self._logger.debug(f"Frame group rendered: {len(items)} frames")
