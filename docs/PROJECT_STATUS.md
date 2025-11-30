@@ -344,19 +344,101 @@ with console.progress(description="Downloading", style="primary") as progress:
 
 ______________________________________________________________________
 
+### Feature 5: Context Manager for Nested Frames
+
+**Priority:** MEDIUM
+**Effort:** 2-3 days
+**Impact:** More Pythonic API for complex layouts
+
+**Problem:**
+`frame_group()` uses dictionaries which can be verbose. A context manager
+approach would be more Pythonic and allow arbitrary nesting.
+
+**Proposed API:**
+
+```python
+from styledconsole import Console
+
+console = Console()
+
+# Context manager groups multiple frames
+with console.group(title="Dashboard", border="heavy") as group:
+    console.frame("Status: OK", title="System")
+    console.frame("Memory: 4GB", title="Resources")
+    # Frames are captured and rendered when exiting context
+
+# Nested groups
+with console.group(title="Outer") as outer:
+    console.frame("Top section")
+    with console.group(title="Inner") as inner:
+        console.frame("Nested A")
+        console.frame("Nested B")
+    console.frame("Bottom section")
+```
+
+**How it Works:**
+
+1. `console.group()` returns a context manager
+1. Inside the context, calls to `frame()` are captured instead of printed
+1. On `__exit__`, captured frames are rendered together as a group
+1. Supports arbitrary nesting depth
+
+**Implementation Notes:**
+
+- Uses a stack to track active groups
+- Each group captures `render_frame()` output instead of printing
+- On exit, assembles captured content and calls parent group or prints
+- Thread-safe via `contextvars` for concurrent usage
+
+**Comparison with frame_group():**
+
+| Aspect      | frame_group()      | console.group()          |
+| ----------- | ------------------ | ------------------------ |
+| Syntax      | Dictionary-based   | Context manager          |
+| Nesting     | Manual via render  | Automatic via nesting    |
+| Readability | Compact            | More verbose but clearer |
+| Use case    | Simple dashboards  | Complex hierarchies      |
+| Flexibility | Fixed at call time | Dynamic during context   |
+
+Both APIs will coexist - `frame_group()` for simple cases, `console.group()`
+for complex nesting scenarios.
+
+**Implementation Steps:**
+
+1. Create `FrameGroup` context manager class in `core/group.py`
+1. Add frame capture stack to Console class
+1. Modify `frame()` to check for active group context
+1. Implement `render_frame()` capture mode
+1. Handle nested groups via stack
+1. Unit tests for all nesting scenarios
+1. Example: `examples/demos/group_context.py`
+
+**Acceptance Criteria:**
+
+- [ ] Context manager syntax works as documented
+- [ ] Supports arbitrary nesting depth
+- [ ] Captured frames rendered on context exit
+- [ ] Thread-safe with contextvars
+- [ ] Backward compatible (no group = direct print)
+- [ ] Integrates with existing frame_group() API
+
+______________________________________________________________________
+
 ### v0.8.0 Implementation Timeline
 
 ```text
 Week 1:   Feature 1 (Themes)
 Week 2:   Feature 2 (Icons) + Feature 3 (Policy)
-Week 3:   Feature 4 (Progress) + Testing + Documentation
+Week 3:   Feature 4 (Progress) + Feature 5 (Group Context Manager)
+Week 4:   Testing + Documentation + Release
 ```
 
 ### Dependencies
 
 ```text
-Feature 3 (Policy) → Feature 2 (Icons)  # Policy controls icon mode
+Feature 3 (Policy) → Feature 2 (Icons)   # Policy controls icon mode
 Feature 1 (Theme) → Feature 4 (Progress) # Progress uses theme colors
+Feature 5 (Group) builds on v0.7.0 frame_group() foundation
 ```
 
 ______________________________________________________________________
@@ -377,12 +459,13 @@ ______________________________________________________________________
 
 ### Future (v0.8.0)
 
-| Task                 | Priority |
-| -------------------- | -------- |
-| Theme System         | MEDIUM   |
-| Icon Provider        | MEDIUM   |
-| Runtime Policy       | MEDIUM   |
-| Progress Bar Wrapper | LOW      |
+| Task                  | Priority |
+| --------------------- | -------- |
+| Theme System          | MEDIUM   |
+| Icon Provider         | MEDIUM   |
+| Runtime Policy        | MEDIUM   |
+| Progress Bar Wrapper  | LOW      |
+| Group Context Manager | MEDIUM   |
 
 ### Future (v1.0.0)
 
