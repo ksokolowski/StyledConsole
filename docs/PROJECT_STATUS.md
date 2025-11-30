@@ -1,7 +1,7 @@
 # StyledConsole Project Status
 
-**Version:** 0.7.0
-**Status:** Production Ready
+**Version:** 0.8.0
+**Status:** Release Ready
 **Last Updated:** November 30, 2025
 
 ______________________________________________________________________
@@ -10,6 +10,7 @@ ______________________________________________________________________
 
 1. [Current Version](#current-version)
 1. [Roadmap](#roadmap)
+1. [v0.8.0 Implementation Plan](#v080-implementation-plan)
 1. [v0.7.0 Implementation Plan](#v070-implementation-plan)
 1. [Active Tasks](#active-tasks)
 1. [Known Issues](#known-issues)
@@ -19,26 +20,27 @@ ______________________________________________________________________
 
 ## Current Version
 
-### v0.7.0 (November 2025)
+### v0.8.0 (November 2025)
 
-**Status:** ✅ Production Ready
+**Status:** ✅ Release Ready
 
 | Metric        | Value       |
 | ------------- | ----------- |
-| Lines of Code | ~5,000      |
-| Tests         | 702 passing |
-| Coverage      | 83%+        |
-| Examples      | 27          |
+| Lines of Code | ~5,500      |
+| Tests         | 754 passing |
+| Coverage      | 84%+        |
+| Examples      | 29          |
 
 **Key Features:**
 
-- ✅ `frame_group()` for organized multi-frame layouts
-- ✅ `console.group()` context manager for Pythonic nesting
-- ✅ `render_frame_group()` for nesting frame groups
-- ✅ Style inheritance for inner frames
-- ✅ Gap control between inner frames
-- ✅ Width alignment (`align_widths=True`)
-- ✅ Gradient borders on outer frame
+- ✅ Theme System with 10 predefined themes (6 solid + 4 gradient)
+- ✅ Gradient themes with auto-applied border, banner, and text gradients
+- ✅ Custom themes via `Theme` dataclass with `GradientSpec`
+- ✅ `Console(theme=...)` parameter
+- ✅ Semantic color resolution (`color="success"`)
+- ✅ `console.progress()` context manager
+- ✅ `StyledProgress` wrapper with theme integration
+- ✅ Presets updated with semantic colors for theme compatibility
 
 ______________________________________________________________________
 
@@ -54,13 +56,240 @@ ______________________________________________________________________
 | v0.5.0  | Nov 2025 | Documentation & Structure |
 | v0.6.0  | Nov 2025 | text.py Refactoring       |
 | v0.7.0  | Nov 2025 | Frame Groups              |
+| v0.8.0  | Nov 2025 | Theme System & Gradients  |
+
+### In Progress
+
+| Version | Target  | Theme                  |
+| ------- | ------- | ---------------------- |
+| v0.9.0  | Q1 2026 | Icon Provider & Policy |
 
 ### Planned
 
 | Version | Target  | Theme                             |
 | ------- | ------- | --------------------------------- |
-| v0.8.0  | Q1 2026 | UX Enhancements & Polish          |
+| v0.9.0  | Q1 2026 | Icon Provider & Runtime Policy    |
 | v1.0.0  | Q2 2026 | API freeze & Production Hardening |
+
+______________________________________________________________________
+
+## v0.8.0 Implementation Plan
+
+**Theme:** Theme System, Gradients & Progress Bars
+**Status:** ✅ COMPLETED
+**Completed:** November 30, 2025
+
+### Feature 1: Theme System ✅ COMPLETED
+
+**Priority:** MEDIUM
+**Effort:** 1 day (actual)
+**Impact:** Consistent styling, professional appearance
+
+**Implemented API:**
+
+```python
+from styledconsole import Console, Theme, THEMES, GradientSpec
+
+# Using predefined theme by name
+console = Console(theme="dark")  # or "light", "solarized", etc.
+
+# Using predefined theme constant
+console = Console(theme=THEMES.MONOKAI)
+
+# Custom theme
+my_theme = Theme(
+    primary="hotpink",
+    success="lime",
+    warning="gold",
+    error="crimson",
+    info="deepskyblue",
+    border="orchid",
+    muted="gray",
+    secondary="coral",
+)
+console = Console(theme=my_theme)
+
+# Semantic color resolution
+console.text("Success!", color="success")  # Uses theme.success color
+```
+
+**Predefined Solid Themes (6):**
+
+| Theme     | Primary   | Success      | Warning       | Error     | Border     |
+| --------- | --------- | ------------ | ------------- | --------- | ---------- |
+| DARK      | cyan      | lime         | gold          | red       | white      |
+| LIGHT     | blue      | green        | orange        | crimson   | darkgray   |
+| SOLARIZED | steelblue | olivedrab    | darkgoldenrod | indianred | slategray  |
+| MONOKAI   | skyblue   | yellowgreen  | khaki         | deeppink  | whitesmoke |
+| NORD      | lightblue | darkseagreen | burlywood     | indianred | lavender   |
+| DRACULA   | cyan      | springgreen  | khaki         | tomato    | whitesmoke |
+
+**Deliverables:**
+
+- ✅ `Theme` frozen dataclass in `core/theme.py`
+- ✅ `THEMES` namespace with 6 solid themes
+- ✅ `Console(theme=...)` parameter (string or Theme)
+- ✅ `console.theme` property
+- ✅ Semantic color resolution in `console.text()`
+- ✅ 34 unit tests in `tests/unit/test_theme.py`
+- ✅ Example: `examples/gallery/themes_showcase.py`
+
+______________________________________________________________________
+
+### Feature 2: Gradient Themes ✅ COMPLETED
+
+**Priority:** MEDIUM
+**Effort:** 0.5 day (actual)
+**Impact:** Eye-catching visuals, rainbow effects
+
+**Implemented API:**
+
+```python
+from styledconsole import Console, Theme, GradientSpec, THEMES
+
+# Using predefined gradient theme
+console = Console(theme="rainbow")  # or "ocean", "sunset", "neon"
+console.banner("HELLO")  # Auto-applies banner gradient
+console.frame(["Line 1", "Line 2"])  # Auto-applies border + text gradients
+
+# Custom gradient theme
+fire_theme = Theme(
+    name="fire",
+    primary="orangered",
+    border_gradient=GradientSpec("darkred", "gold"),
+    banner_gradient=GradientSpec("crimson", "yellow"),
+    text_gradient=GradientSpec("orangered", "gold"),
+)
+console = Console(theme=fire_theme)
+
+# Query gradient themes
+solid = THEMES.solid_themes()      # 6 themes without gradients
+gradient = THEMES.gradient_themes() # 4 themes with gradients
+```
+
+**Predefined Gradient Themes (4):**
+
+| Theme   | Border Gradient | Banner Gradient | Text Gradient          |
+| ------- | --------------- | --------------- | ---------------------- |
+| RAINBOW | red → magenta   | red → violet    | red → violet           |
+| OCEAN   | darkblue → cyan | navy → aqua     | steelblue → aquamarine |
+| SUNSET  | crimson → gold  | darkred → gold  | orangered → gold       |
+| NEON    | magenta → cyan  | magenta → lime  | hotpink → cyan         |
+
+**Auto-Applied Gradients:**
+
+- `border_gradient`: Applied to frame borders when no explicit gradient
+- `banner_gradient`: Applied to banner text when no explicit gradient
+- `text_gradient`: Applied to frame content (per-line interpolation)
+
+**Deliverables:**
+
+- ✅ `GradientSpec` frozen dataclass
+- ✅ 4 gradient themes (RAINBOW, OCEAN, SUNSET, NEON)
+- ✅ `Theme.has_gradients()` method
+- ✅ `THEMES.solid_themes()` and `THEMES.gradient_themes()` methods
+- ✅ Auto-application in `console.frame()`, `console.banner()`, `console.render_frame()`
+- ✅ 10 additional unit tests for gradients
+
+______________________________________________________________________
+
+### Feature 3: Preset Theme Integration ✅ COMPLETED
+
+**Priority:** MEDIUM
+**Effort:** 0.5 day (actual)
+**Impact:** Presets work seamlessly with themes
+
+**Changes:**
+
+- Updated `status.py` preset to use semantic colors (`success`, `error`, `warning`, `info`)
+- Updated `summary.py` preset to use semantic colors
+- Updated `dashboard.py` preset to use semantic colors (`primary`, `secondary`)
+- Fixed `console.render_frame()` to resolve theme colors
+
+**Usage:**
+
+```python
+from styledconsole import Console
+from styledconsole.presets.status import status_frame, status_summary
+
+# Presets now use themed console colors
+themed_console = Console(theme="dracula")
+status_frame("test_example", "PASS", console=themed_console)
+
+# Gradient themes work with presets too
+rainbow_console = Console(theme="rainbow")
+status_summary(results, console=rainbow_console)
+```
+
+______________________________________________________________________
+
+### Feature 4: Progress Bar Wrapper ✅ COMPLETED
+
+**Priority:** LOW → MEDIUM (elevated)
+**Effort:** 1 day (actual)
+**Impact:** Convenience for long-running operations
+
+**Implemented API:**
+
+```python
+from styledconsole import Console
+
+console = Console()
+
+# Simple progress
+with console.progress() as progress:
+    task = progress.add_task("Processing...", total=100)
+    for i in range(100):
+        # do work
+        progress.update(task, advance=1)
+
+# Multiple tasks
+with console.progress() as progress:
+    task1 = progress.add_task("Download", total=100)
+    task2 = progress.add_task("Process", total=50)
+    # ...
+
+# Indeterminate progress (spinner)
+with console.progress() as progress:
+    task = progress.add_task("Connecting...", total=None)
+    # ...
+
+# Theme-aware progress
+console = Console(theme="monokai")
+with console.progress() as progress:
+    # Uses theme colors for styling
+    ...
+```
+
+**Deliverables:**
+
+- ✅ `StyledProgress` class in `core/progress.py`
+- ✅ `console.progress()` context manager
+- ✅ Theme color integration
+- ✅ Support for multiple tasks, indeterminate progress
+- ✅ `transient` option for disappearing progress
+- ✅ 18 unit tests in `tests/unit/test_progress.py`
+- ✅ Example: `examples/demos/progress_demo.py`
+
+______________________________________________________________________
+
+### Feature 3: Icon Provider (ASCII Fallback) - PLANNED
+
+**Priority:** MEDIUM
+**Effort:** 1-2 days (estimated)
+**Status:** Not started
+
+See v0.9.0 planning section.
+
+______________________________________________________________________
+
+### Feature 4: Runtime Policy System - PLANNED
+
+**Priority:** MEDIUM
+**Effort:** 2-3 days (estimated)
+**Status:** Not started
+
+See v0.9.0 planning section.
 
 ______________________________________________________________________
 
@@ -173,75 +402,15 @@ with console.group(title="Report", align_widths=True):
 
 ______________________________________________________________________
 
-## v0.8.0 Future Plans
+## v0.9.0 Future Plans
 
-**Theme:** UX Enhancements & Polish
+**Theme:** Environment Adaptation
 **Target:** Q1 2026
 **Status:** Planned
 
-The following features were originally planned for v0.7.0 but deferred:
+The following features are planned for v0.9.0:
 
-### Feature 1: Theme System
-
-**Priority:** MEDIUM
-**Effort:** 2-3 days
-**Impact:** Consistent styling, professional appearance
-
-**Problem:**
-No predefined color schemes; users manually specify colors for each element.
-
-**Proposed API:**
-
-```python
-from styledconsole import Console, THEMES
-
-# Using predefined theme
-console = Console(theme=THEMES.MONOKAI)
-console.frame("Content", status="success")  # Uses theme's success color
-
-# Custom theme
-from styledconsole import Theme
-my_theme = Theme(
-    primary="dodgerblue",
-    success="lime",
-    warning="gold",
-    error="crimson",
-    border="silver",
-)
-console = Console(theme=my_theme)
-```
-
-**Predefined Themes:**
-
-| Theme     | Primary | Success | Warning | Error   | Border  |
-| --------- | ------- | ------- | ------- | ------- | ------- |
-| DARK      | cyan    | lime    | gold    | red     | white   |
-| LIGHT     | blue    | green   | orange  | crimson | gray    |
-| SOLARIZED | #268bd2 | #859900 | #b58900 | #dc322f | #839496 |
-| MONOKAI   | #66d9ef | #a6e22e | #e6db74 | #f92672 | #f8f8f2 |
-| NORD      | #88c0d0 | #a3be8c | #ebcb8b | #bf616a | #eceff4 |
-
-**Implementation Steps:**
-
-1. Create `Theme` dataclass in `core/theme.py`
-1. Define `THEMES` namespace with predefined themes
-1. Add `theme` parameter to Console `__init__`
-1. Modify RenderingEngine to use theme colors as defaults
-1. Add `status` parameter to frame() for semantic coloring
-1. Unit tests for all predefined themes
-1. Example: `examples/gallery/themes_showcase.py`
-
-**Acceptance Criteria:**
-
-- [ ] 5 predefined themes available
-- [ ] Custom themes via Theme dataclass
-- [ ] Theme applies to frames, banners, text
-- [ ] Backward compatible (no theme = current behavior)
-- [ ] Theme preview utility function
-
-______________________________________________________________________
-
-### Feature 2: Icon Provider (ASCII Fallback)
+### Feature 1: Icon Provider (ASCII Fallback)r (ASCII Fallback)
 
 **Priority:** MEDIUM
 **Effort:** 1-2 days
@@ -339,7 +508,7 @@ console = Console(policy=policy)
 1. Implement `from_env()` classmethod with detection logic
 1. Add `policy` parameter to Console `__init__`
 1. Modify RenderingEngine to respect policy
-1. Support NO_COLOR standard (https://no-color.org/)
+1. Support NO_COLOR standard (<https://no-color.org/>)
 1. Unit tests with mocked environment
 1. Documentation for CI/CD integration
 
@@ -353,54 +522,7 @@ console = Console(policy=policy)
 
 ______________________________________________________________________
 
-### Feature 4: Progress Bar Wrapper
-
-**Priority:** LOW
-**Effort:** 1-2 days
-**Impact:** Convenience for long-running operations
-
-**Problem:**
-Users must use Rich's Progress directly, losing StyledConsole theming.
-
-**Proposed API:**
-
-```python
-from styledconsole import Console
-
-console = Console()
-
-# Simple progress
-with console.progress() as progress:
-    task = progress.add_task("Processing...", total=100)
-    for i in range(100):
-        # do work
-        progress.update(task, advance=1)
-
-# Styled progress with theme colors
-with console.progress(description="Downloading", style="primary") as progress:
-    task = progress.add_task("file.zip", total=1000)
-    # ...
-```
-
-**Implementation Steps:**
-
-1. Create `StyledProgress` wrapper in `core/progress.py`
-1. Inherit from or wrap `rich.progress.Progress`
-1. Apply theme colors to progress bar
-1. Add `console.progress()` context manager
-1. Unit tests for progress lifecycle
-1. Example in `examples/demos/`
-
-**Acceptance Criteria:**
-
-- [ ] Context manager for progress tracking
-- [ ] Uses theme colors when available
-- [ ] Compatible with Rich Progress API
-- [ ] Clean output in recording mode (HTML export)
-
-______________________________________________________________________
-
-### v0.8.0 Implementation Timeline
+### v0.9.0 Implementation Timeline
 
 ```text
 Week 1:   Feature 1 (Themes)
@@ -420,29 +542,33 @@ ______________________________________________________________________
 
 ## Active Tasks
 
-### Completed (v0.7.0)
+### Completed (v0.8.0)
 
-| Task                    | Status  |
-| ----------------------- | ------- |
-| frame_group() method    | ✅ Done |
-| render_frame_group()    | ✅ Done |
-| console.group() context | ✅ Done |
-| FrameGroupContext class | ✅ Done |
-| Style inheritance       | ✅ Done |
-| Gap control             | ✅ Done |
-| Width alignment         | ✅ Done |
-| Unit tests (51 new)     | ✅ Done |
-| Updated demo            | ✅ Done |
-| USER_GUIDE.md update    | ✅ Done |
+| Task                   | Status  |
+| ---------------------- | ------- |
+| Theme dataclass        | ✅ Done |
+| GradientSpec dataclass | ✅ Done |
+| THEMES namespace       | ✅ Done |
+| 6 solid themes         | ✅ Done |
+| 4 gradient themes      | ✅ Done |
+| Console theme param    | ✅ Done |
+| Semantic color resolve | ✅ Done |
+| Border gradient auto   | ✅ Done |
+| Banner gradient auto   | ✅ Done |
+| Text gradient auto     | ✅ Done |
+| Preset theme support   | ✅ Done |
+| StyledProgress class   | ✅ Done |
+| console.progress()     | ✅ Done |
+| Unit tests (44 new)    | ✅ Done |
+| themes_showcase.py     | ✅ Done |
+| progress_demo.py       | ✅ Done |
 
-### Future (v0.8.0)
+### Future (v0.9.0)
 
-| Task                 | Priority |
-| -------------------- | -------- |
-| Theme System         | MEDIUM   |
-| Icon Provider        | MEDIUM   |
-| Runtime Policy       | MEDIUM   |
-| Progress Bar Wrapper | LOW      |
+| Task           | Priority |
+| -------------- | -------- |
+| Icon Provider  | MEDIUM   |
+| Runtime Policy | MEDIUM   |
 
 ### Future (v1.0.0)
 
@@ -476,6 +602,49 @@ Based on lessons learned, we explicitly avoid:
 ______________________________________________________________________
 
 ## Changelog
+
+### Version 0.8.0 (November 2025)
+
+**Added:**
+
+- `Theme` frozen dataclass with 11 semantic colors + 3 gradient specs
+- `GradientSpec` frozen dataclass for gradient definitions
+- 10 predefined themes: 6 solid + 4 gradient (RAINBOW, OCEAN, SUNSET, NEON)
+- `THEMES` namespace with `all()`, `solid_themes()`, `gradient_themes()`, `get()` methods
+- `Console(theme=...)` parameter accepting theme name or Theme instance
+- Auto-application of border, banner, and text gradients from theme
+- `StyledProgress` wrapper class for `rich.progress.Progress`
+- `console.progress()` context manager
+
+**Changed:**
+
+- Presets now use semantic color names (`success`, `error`, `warning`, `info`)
+- `console.frame()` auto-applies theme gradients when available
+- `console.banner()` auto-applies theme banner gradient
+- `render_frame()` now resolves theme colors like `frame()`
+
+**Fixed:**
+
+- CSS4 color names now work with Rich (via `normalize_color_for_rich()`)
+
+______________________________________________________________________
+
+### Version 0.7.0 (November 2025)
+
+**Added:**
+
+- `console.frame_group()` for grouped frames with outer container
+- `console.render_frame_group()` for nested frame groups
+- Full frame nesting support (unlimited depth)
+- `gap` parameter for vertical spacing between frames
+- `inherit_style` parameter to cascade styles to children
+
+**Changed:**
+
+- Frame rendering now preserves Rich markup in content
+- All preset functions updated to use frame nesting API
+
+______________________________________________________________________
 
 ### Version 0.5.0 (November 2025)
 

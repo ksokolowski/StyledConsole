@@ -5,6 +5,103 @@ All notable changes to StyledConsole will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2025-11-30
+
+### 🎨 Theme System & Gradient Themes
+
+This release introduces a comprehensive theme system with semantic colors, gradient support,
+and auto-application of gradients to frames, banners, and text content.
+
+### Added
+
+#### Theme System
+
+- **`Theme` frozen dataclass**: 11 semantic colors + 3 optional gradient specs
+- **`GradientSpec` frozen dataclass**: Defines gradient start, end, and direction
+- **`THEMES` namespace**: Access predefined themes with helper methods
+  - `THEMES.all()` - Returns all 10 themes
+  - `THEMES.solid_themes()` - Returns 6 non-gradient themes
+  - `THEMES.gradient_themes()` - Returns 4 gradient themes
+  - `THEMES.get(name)` - Get theme by name
+- **`Console(theme=...)` parameter**: Apply theme by name or Theme instance
+- **Semantic color resolution**: Use `"success"`, `"error"`, `"warning"`, `"info"` in color args
+
+```python
+from styledconsole import Console, THEMES, Theme, GradientSpec
+
+# Predefined theme
+console = Console(theme="dark")
+console.text("Success!", color="success")  # Uses theme.success
+
+# Gradient theme with auto-applied effects
+console = Console(theme="rainbow")
+console.frame(["Line 1", "Line 2"])  # Auto rainbow border + text gradient
+```
+
+#### Predefined Themes
+
+| Theme     | Type     | Description                    |
+| --------- | -------- | ------------------------------ |
+| DARK      | Solid    | Dark terminal friendly         |
+| LIGHT     | Solid    | Light background friendly      |
+| SOLARIZED | Solid    | Solarized color palette        |
+| MONOKAI   | Solid    | Monokai editor theme           |
+| NORD      | Solid    | Nord color scheme              |
+| DRACULA   | Solid    | Dracula color scheme           |
+| RAINBOW   | Gradient | Red → violet gradients         |
+| OCEAN     | Gradient | Deep blue → cyan gradients     |
+| SUNSET    | Gradient | Crimson → gold gradients       |
+| NEON      | Gradient | Magenta → cyan cyberpunk vibes |
+
+#### Auto-Applied Gradients
+
+Gradient themes automatically apply their gradients:
+
+- **`border_gradient`**: Applied to frame borders when no explicit gradient
+- **`banner_gradient`**: Applied to banner text when no explicit gradient
+- **`text_gradient`**: Applied to frame content (per-line color interpolation)
+
+```python
+console = Console(theme="sunset")
+console.banner("HELLO")  # Auto crimson → gold gradient
+console.frame(["Fire", "Effect"])  # Auto border + text gradients
+```
+
+#### Progress Bar Wrapper
+
+- **`StyledProgress` class**: Wrapper around `rich.progress.Progress`
+- **`console.progress()` context manager**: Theme-aware progress bars
+
+```python
+with console.progress() as progress:
+    task = progress.add_task("Processing", total=100)
+    for i in range(100):
+        progress.update(task, advance=1)
+```
+
+### Changed
+
+- **Presets use semantic colors**: `status.py`, `summary.py`, `dashboard.py` now use `"success"`, `"error"`, `"warning"` instead of hardcoded colors
+- **`render_frame()` resolves theme**: Now applies same theme color resolution as `frame()`
+- **34 new unit tests** in `tests/unit/test_theme.py`
+- **18 new unit tests** in `tests/unit/test_progress.py`
+
+### Fixed
+
+- **CSS4 colors with Rich**: Added `normalize_color_for_rich()` to convert CSS4 names to hex codes
+- **Gradient theme auto-application**: Border, banner, and text gradients now apply correctly from theme
+
+### Metrics
+
+| Metric        | Value       |
+| ------------- | ----------- |
+| Lines of Code | ~5,500      |
+| Tests         | 754 passing |
+| Coverage      | 84%+        |
+| Examples      | 27          |
+
+______________________________________________________________________
+
 ## [0.7.0] - 2025-11-30
 
 ### ✨ Frame Groups & Context Manager

@@ -24,9 +24,9 @@ def test_summary_all_pass(mock_console):
     args, kwargs = mock_console.frame.call_args
 
     assert kwargs["title"] == " PASSED "
-    assert kwargs["border_color"] == "green"
+    assert kwargs["border_color"] == "success"  # Semantic color name
     assert "Total:   [bold]2[/]" in kwargs["content"]
-    assert "Passed:  [green]2[/]" in kwargs["content"]
+    assert "Passed:  2" in kwargs["content"]  # No longer uses Rich markup
     assert "Duration: 0.30s" in kwargs["content"]
 
 
@@ -45,15 +45,15 @@ def test_summary_mixed_results(mock_console):
     summary_call = mock_console.frame.call_args_list[0]
     _, summary_kwargs = summary_call
     assert summary_kwargs["title"] == " FAILED "
-    assert summary_kwargs["border_color"] == "red"
-    assert "Failed:  [red]1[/]" in summary_kwargs["content"]
+    assert summary_kwargs["border_color"] == "error"  # Semantic color name
+    assert "Failed:  1" in summary_kwargs["content"]  # No longer uses Rich markup
 
     # Check failure details frame
     fail_call = mock_console.frame.call_args_list[1]
     _, fail_kwargs = fail_call
-    assert fail_kwargs["border_color"] == "red"
+    assert fail_kwargs["border_color"] == "error"  # Semantic color name
     assert "❌ [bold]Test 2[/]" in fail_kwargs["content"][0]
-    assert "[red]Error details[/]" in fail_kwargs["content"][2]
+    assert "Error details" in fail_kwargs["content"][2]  # No longer uses Rich markup
 
 
 def test_summary_empty(mock_console):
@@ -63,7 +63,7 @@ def test_summary_empty(mock_console):
     _, kwargs = mock_console.frame.call_args
 
     assert kwargs["title"] == " NO TESTS "
-    assert kwargs["border_color"] == "yellow"
+    assert kwargs["border_color"] == "warning"  # Semantic color name
     assert "Total:   [bold]0[/]" in kwargs["content"]
 
 

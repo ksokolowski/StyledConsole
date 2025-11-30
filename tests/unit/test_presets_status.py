@@ -18,8 +18,8 @@ def test_status_frame_pass(mock_console):
     args, kwargs = mock_console.frame.call_args
 
     assert kwargs["title"] == " PASS "
-    assert kwargs["border_color"] == "green"
-    assert kwargs["title_color"] == "green"
+    assert kwargs["border_color"] == "success"  # Semantic color name
+    assert kwargs["title_color"] == "success"  # Semantic color name
     assert "✅  [bold]Test Case 1[/]" in kwargs["content"][0]
 
 
@@ -30,8 +30,8 @@ def test_status_frame_fail(mock_console):
     args, kwargs = mock_console.frame.call_args
 
     assert kwargs["title"] == " FAIL "
-    assert kwargs["border_color"] == "red"
-    assert kwargs["title_color"] == "red"
+    assert kwargs["border_color"] == "error"  # Semantic color name
+    assert kwargs["title_color"] == "error"  # Semantic color name
     assert "❌  [bold]Test Case 2[/]" in kwargs["content"][0]
     assert "AssertionError: 1 != 2" in kwargs["content"]
 
@@ -43,8 +43,8 @@ def test_status_frame_skip(mock_console):
     args, kwargs = mock_console.frame.call_args
 
     assert kwargs["title"] == " SKIP "
-    assert kwargs["border_color"] == "yellow"
-    assert kwargs["title_color"] == "yellow"
+    assert kwargs["border_color"] == "warning"  # Semantic color name
+    assert kwargs["title_color"] == "warning"  # Semantic color name
     # Uses ⚠️ (VS16 emoji) - auto-spacing adjustment handles terminal rendering
     assert "⚠️  [bold]Test Case 3[/]" in kwargs["content"][0]
 
@@ -56,8 +56,8 @@ def test_status_frame_error(mock_console):
     args, kwargs = mock_console.frame.call_args
 
     assert kwargs["title"] == " ERROR "
-    assert kwargs["border_color"] == "crimson"
-    assert kwargs["title_color"] == "crimson"
+    assert kwargs["border_color"] == "error"  # Semantic color name (same as FAIL)
+    assert kwargs["title_color"] == "error"  # Semantic color name
     assert "💥  [bold]Test Case 4[/]" in kwargs["content"][0]
 
 
@@ -111,4 +111,4 @@ def test_status_frame_kwargs_override(mock_console):
     assert kwargs["padding"] == 2
     assert kwargs["width"] == 100
     # Defaults that weren't overridden should remain
-    assert kwargs["border_color"] == "green"
+    assert kwargs["border_color"] == "success"  # Semantic color name

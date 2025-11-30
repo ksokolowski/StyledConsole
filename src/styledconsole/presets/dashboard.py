@@ -17,7 +17,8 @@ class DashboardWidget(TypedDict):
     Attributes:
         title: The title of the widget.
         content: The content to display (string or list of strings).
-        border_color: Optional border color for the widget (default: blue).
+        border_color: Optional border color for the widget (default: secondary).
+            Supports semantic names (primary, success, error, etc.) for theme support.
         width: Optional fixed width for the widget.
         ratio: Optional flex ratio (default: 1).
     """
@@ -34,7 +35,7 @@ def dashboard(
     widgets: list[DashboardWidget],
     columns: int = 2,
     *,
-    header_color: str = "blue",
+    header_color: str = "primary",
     console: Console | None = None,
 ) -> None:
     """
@@ -83,7 +84,7 @@ def dashboard(
     # Render each widget using Console API and collect for grid
     row_widgets: list[str | Text] = []
     for widget in widgets:
-        widget_border_color = widget.get("border_color", "blue")
+        widget_border_color = widget.get("border_color", "secondary")
         widget_content = widget["content"]
 
         # Normalize content to string or list

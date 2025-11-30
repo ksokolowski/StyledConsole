@@ -13,13 +13,14 @@ if TYPE_CHECKING:
 # Configuration for status themes
 # Using emojis from SAFE_EMOJIS for consistent width handling
 # VS16 emojis (⚠️, ℹ️) are now supported via automatic spacing adjustment
+# Colors use semantic names that themes can resolve (success, error, warning, info)
 STATUS_THEME = {
-    "PASS": {"color": "green", "emoji": "✅"},
-    "FAIL": {"color": "red", "emoji": "❌"},
-    "SKIP": {"color": "yellow", "emoji": "⚠️"},  # VS16 warning sign - auto-adjusted
-    "ERROR": {"color": "crimson", "emoji": "💥"},
+    "PASS": {"color": "success", "emoji": "✅"},
+    "FAIL": {"color": "error", "emoji": "❌"},
+    "SKIP": {"color": "warning", "emoji": "⚠️"},  # VS16 warning sign - auto-adjusted
+    "ERROR": {"color": "error", "emoji": "💥"},
 }
-DEFAULT_STATUS = {"color": "blue", "emoji": "ℹ️"}  # VS16 info sign - auto-adjusted
+DEFAULT_STATUS = {"color": "info", "emoji": "ℹ️"}  # VS16 info sign - auto-adjusted
 
 
 class StatusEntry(TypedDict):

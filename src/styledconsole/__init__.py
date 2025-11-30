@@ -13,6 +13,7 @@ Example:
 
 from styledconsole.console import Console
 from styledconsole.core.banner import Banner
+from styledconsole.core.progress import StyledProgress
 from styledconsole.core.styles import (
     ASCII,
     BORDERS,
@@ -28,6 +29,7 @@ from styledconsole.core.styles import (
     get_border_style,
     list_border_styles,
 )
+from styledconsole.core.theme import DEFAULT_THEME, THEMES, GradientSpec, Theme
 
 # Import effects
 from styledconsole.effects import (
@@ -82,7 +84,7 @@ from styledconsole.utils.wrap import (
     wrap_text,
 )
 
-__version__ = "0.6.0"
+__version__ = "0.8.0"
 __author__ = "Krzysztof Sokołowski"
 __license__ = "Apache-2.0"
 
@@ -118,6 +120,13 @@ __all__ = [
     "Console",
     # Banner rendering
     "Banner",
+    # Theme system
+    "Theme",
+    "THEMES",
+    "DEFAULT_THEME",
+    "GradientSpec",
+    # Progress tracking
+    "StyledProgress",
     # Emoji constants
     "EMOJI",
     "E",

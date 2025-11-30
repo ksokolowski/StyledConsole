@@ -16,8 +16,10 @@ from typing import TYPE_CHECKING, Any, TextIO
 from rich.console import Console as RichConsole
 
 from styledconsole.core.export_manager import ExportManager
+from styledconsole.core.progress import StyledProgress
 from styledconsole.core.rendering_engine import RenderingEngine
 from styledconsole.core.terminal_manager import TerminalManager
+from styledconsole.core.theme import DEFAULT_THEME, THEMES, Theme
 from styledconsole.types import AlignType, FrameGroupItem, LayoutType
 from styledconsole.utils.terminal import TerminalProfile
 
@@ -64,6 +66,7 @@ class Console:
         width: int | None = None,
         file: TextIO | None = None,
         debug: bool = False,
+        theme: Theme | str | None = None,
     ):
         """Initialize Console with optional terminal detection and recording.
 
@@ -77,6 +80,9 @@ class Console:
             file: Output stream for console output. Defaults to sys.stdout.
             debug: Enable debug logging for library internals. Useful for
                 troubleshooting rendering issues. Defaults to False.
+            theme: Color theme for consistent styling. Can be a Theme instance,
+                a theme name string ("dark", "monokai", etc.), or None for default.
+                Defaults to None.
 
         Example:
             >>> # Basic usage
@@ -92,11 +98,23 @@ class Console:
             >>> buffer = io.StringIO()
             >>> console = Console(width=100, file=buffer)
 
+            >>> # With theme
+            >>> from styledconsole import THEMES
+            >>> console = Console(theme=THEMES.MONOKAI)
+
             >>> # Debug mode
             >>> console = Console(debug=True)
         """
         # Initialize terminal manager (handles detection and color system)
         self._terminal = TerminalManager(detect=detect_terminal, debug=debug)
+
+        # Resolve theme
+        if isinstance(theme, str):
+            self._theme = THEMES.get(theme) or DEFAULT_THEME
+        elif isinstance(theme, Theme):
+            self._theme = theme
+        else:
+            self._theme = DEFAULT_THEME
 
         # Initialize Rich console with terminal settings
         self._rich_console = RichConsole(
@@ -115,6 +133,15 @@ class Console:
 
         # Store debug flag for backward compatibility
         self._debug = debug
+
+    @property
+    def theme(self) -> Theme:
+        """Get the current theme.
+
+        Returns:
+            The active Theme instance.
+        """
+        return self._theme
 
     @property
     def terminal_profile(self) -> TerminalProfile | None:
@@ -160,6 +187,43 @@ class Console:
         Returns:
             Rendered frame as a string containing ANSI escape codes.
         """
+        # Resolve semantic colors through theme and normalize for Rich
+        from styledconsole.utils.color import normalize_color_for_rich
+
+        resolved_content_color = normalize_color_for_rich(self._theme.resolve_color(content_color))
+        resolved_border_color = normalize_color_for_rich(self._theme.resolve_color(border_color))
+        resolved_title_color = normalize_color_for_rich(self._theme.resolve_color(title_color))
+
+        # Apply theme text gradient if no explicit content gradient provided
+        effective_start_color = start_color
+        effective_end_color = end_color
+        if start_color is None and self._theme.text_gradient is not None:
+            effective_start_color = self._theme.text_gradient.start
+            effective_end_color = self._theme.text_gradient.end
+
+        resolved_start_color = normalize_color_for_rich(
+            self._theme.resolve_color(effective_start_color)
+        )
+        resolved_end_color = normalize_color_for_rich(
+            self._theme.resolve_color(effective_end_color)
+        )
+
+        # Apply theme border gradient if no explicit gradient provided
+        effective_border_gradient_start = border_gradient_start
+        effective_border_gradient_end = border_gradient_end
+        effective_direction = border_gradient_direction
+        if border_gradient_start is None and self._theme.border_gradient is not None:
+            effective_border_gradient_start = self._theme.border_gradient.start
+            effective_border_gradient_end = self._theme.border_gradient.end
+            effective_direction = self._theme.border_gradient.direction
+
+        resolved_border_gradient_start = normalize_color_for_rich(
+            self._theme.resolve_color(effective_border_gradient_start)
+        )
+        resolved_border_gradient_end = normalize_color_for_rich(
+            self._theme.resolve_color(effective_border_gradient_end)
+        )
+
         return self._renderer.render_frame_to_string(
             content,
             title=title,
@@ -167,14 +231,14 @@ class Console:
             width=width,
             padding=padding,
             align=align,
-            content_color=content_color,
-            border_color=border_color,
-            title_color=title_color,
-            start_color=start_color,
-            end_color=end_color,
-            border_gradient_start=border_gradient_start,
-            border_gradient_end=border_gradient_end,
-            border_gradient_direction=border_gradient_direction,
+            content_color=resolved_content_color,
+            border_color=resolved_border_color,
+            title_color=resolved_title_color,
+            start_color=resolved_start_color,
+            end_color=resolved_end_color,
+            border_gradient_start=resolved_border_gradient_start,
+            border_gradient_end=resolved_border_gradient_end,
+            border_gradient_direction=effective_direction,
         )
 
     def frame(
@@ -242,6 +306,11 @@ class Console:
             ...     border_color="cyan"
             ... )
 
+            >>> # With semantic theme colors
+            >>> console = Console(theme="dark")
+            >>> console.frame("OK!", border_color="success")  # Uses theme.success
+            >>> console.frame("Oops", border_color="error")   # Uses theme.error
+
             >>> # With gradient
             >>> console.frame(
             ...     "Test",
@@ -255,7 +324,47 @@ class Console:
             ...     border_gradient_start="cyan",
             ...     border_gradient_end="magenta"
             ... )
+
+            >>> # With gradient theme (auto-applies gradients)
+            >>> console = Console(theme="rainbow")
+            >>> console.frame("Colorful!")  # Uses theme's border_gradient
         """
+        # Resolve semantic colors from theme, then normalize for Rich
+        from styledconsole.utils.color import normalize_color_for_rich
+
+        resolved_content_color = normalize_color_for_rich(self._theme.resolve_color(content_color))
+        resolved_border_color = normalize_color_for_rich(self._theme.resolve_color(border_color))
+        resolved_title_color = normalize_color_for_rich(self._theme.resolve_color(title_color))
+
+        # Apply theme text gradient if no explicit content gradient provided
+        effective_start_color = start_color
+        effective_end_color = end_color
+        if start_color is None and self._theme.text_gradient is not None:
+            effective_start_color = self._theme.text_gradient.start
+            effective_end_color = self._theme.text_gradient.end
+
+        resolved_start_color = normalize_color_for_rich(
+            self._theme.resolve_color(effective_start_color)
+        )
+        resolved_end_color = normalize_color_for_rich(
+            self._theme.resolve_color(effective_end_color)
+        )
+
+        # Apply theme border gradient if no explicit gradient provided
+        effective_border_gradient_start = border_gradient_start
+        effective_border_gradient_end = border_gradient_end
+        if border_gradient_start is None and self._theme.border_gradient is not None:
+            effective_border_gradient_start = self._theme.border_gradient.start
+            effective_border_gradient_end = self._theme.border_gradient.end
+            border_gradient_direction = self._theme.border_gradient.direction
+
+        resolved_border_gradient_start = normalize_color_for_rich(
+            self._theme.resolve_color(effective_border_gradient_start)
+        )
+        resolved_border_gradient_end = normalize_color_for_rich(
+            self._theme.resolve_color(effective_border_gradient_end)
+        )
+
         # Check if we're inside a group context
         from styledconsole.core.group import get_active_group
 
@@ -269,13 +378,13 @@ class Console:
                 width=width,
                 padding=padding,
                 align=align,
-                content_color=content_color,
-                border_color=border_color,
-                title_color=title_color,
-                start_color=start_color,
-                end_color=end_color,
-                border_gradient_start=border_gradient_start,
-                border_gradient_end=border_gradient_end,
+                content_color=resolved_content_color,
+                border_color=resolved_border_color,
+                title_color=resolved_title_color,
+                start_color=resolved_start_color,
+                end_color=resolved_end_color,
+                border_gradient_start=resolved_border_gradient_start,
+                border_gradient_end=resolved_border_gradient_end,
                 border_gradient_direction=border_gradient_direction,
             )
             return
@@ -288,13 +397,13 @@ class Console:
             width=width,
             padding=padding,
             align=align,
-            content_color=content_color,
-            border_color=border_color,
-            title_color=title_color,
-            start_color=start_color,
-            end_color=end_color,
-            border_gradient_start=border_gradient_start,
-            border_gradient_end=border_gradient_end,
+            content_color=resolved_content_color,
+            border_color=resolved_border_color,
+            title_color=resolved_title_color,
+            start_color=resolved_start_color,
+            end_color=resolved_end_color,
+            border_gradient_start=resolved_border_gradient_start,
+            border_gradient_end=resolved_border_gradient_end,
             border_gradient_direction=border_gradient_direction,
         )
 
@@ -621,12 +730,33 @@ class Console:
             ...     end_color="blue",
             ...     border="double"
             ... )
+
+            >>> # With semantic theme colors
+            >>> console = Console(theme="dark")
+            >>> console.banner("OK", start_color="success", end_color="info")
+
+            >>> # With gradient theme (auto-applies gradients)
+            >>> console = Console(theme="rainbow")
+            >>> console.banner("HELLO")  # Uses theme's banner_gradient
         """
+        # Resolve semantic colors from theme, then normalize for Rich
+        from styledconsole.utils.color import normalize_color_for_rich
+
+        # Apply theme banner gradient if no explicit gradient provided
+        effective_start = start_color
+        effective_end = end_color
+        if start_color is None and self._theme.banner_gradient is not None:
+            effective_start = self._theme.banner_gradient.start
+            effective_end = self._theme.banner_gradient.end
+
+        resolved_start_color = normalize_color_for_rich(self._theme.resolve_color(effective_start))
+        resolved_end_color = normalize_color_for_rich(self._theme.resolve_color(effective_end))
+
         self._renderer.print_banner(
             text,
             font=font,
-            start_color=start_color,
-            end_color=end_color,
+            start_color=resolved_start_color,
+            end_color=resolved_end_color,
             border=border,
             width=width,
             align=align,
@@ -651,8 +781,9 @@ class Console:
 
         Args:
             text: Text content to print.
-            color: Text color. Accepts Rich color names ("red", "blue", "green",
-                "bright_yellow", etc.) or hex codes. Defaults to None (terminal default).
+            color: Text color. Accepts CSS4 color names ("red", "dodgerblue"),
+                or semantic theme colors ("success", "warning", "error", "info",
+                "primary", "secondary"). Defaults to None (terminal default).
             bold: Apply bold formatting. Defaults to False.
             italic: Apply italic formatting. Defaults to False.
             underline: Apply underline formatting. Defaults to False.
@@ -668,11 +799,21 @@ class Console:
             >>> console.text("Warning", color="yellow", italic=True)
             >>> console.text("Error: File not found", color="red", bold=True)
 
+            >>> # Using semantic theme colors
+            >>> console = Console(theme="dark")
+            >>> console.text("OK", color="success")  # Uses theme.success color
+            >>> console.text("Oops", color="error")  # Uses theme.error color
+
             >>> # No newline
             >>> console.text("Loading", end="")
             >>> console.text("... done!", color="green")
         """
-        # Note: RenderingEngine.print_text doesn't support dim, so we need to handle it here
+        # Resolve semantic color from theme, then normalize for Rich
+        from styledconsole.utils.color import normalize_color_for_rich
+
+        resolved_color = self._theme.resolve_color(color) if color else None
+        normalized_color = normalize_color_for_rich(resolved_color)
+
         # Build style string
         styles = []
         if bold:
@@ -683,8 +824,8 @@ class Console:
             styles.append("underline")
         if dim:
             styles.append("dim")
-        if color:
-            styles.append(color)
+        if normalized_color:
+            styles.append(normalized_color)
 
         # Use Rich console directly for dim support
         if styles:
@@ -696,7 +837,7 @@ class Console:
         else:
             self._renderer.print_text(
                 text,
-                color=color,
+                color=normalized_color,
                 bold=bold,
                 italic=italic,
                 underline=underline,
@@ -719,8 +860,8 @@ class Console:
         Args:
             title: Optional title text displayed in the center of the rule.
                 Defaults to None (plain line).
-            color: Rule color. Accepts Rich color names or hex codes.
-                Defaults to "white".
+            color: Rule color. Accepts CSS4 color names or semantic theme
+                colors ("primary", "success", etc.). Defaults to "white".
             style: Rule line style. Currently only "solid" is supported
                 (Rich limitation). Defaults to "solid".
             align: Title alignment within rule. One of: "left", "center", "right".
@@ -731,8 +872,17 @@ class Console:
             >>> console.rule()  # Plain line
             >>> console.rule("Section 1", color="blue")
             >>> console.rule("Configuration", color="cyan", align="left")
+
+            >>> # With semantic theme color
+            >>> console = Console(theme="dark")
+            >>> console.rule("Status", color="primary")
         """
-        self._renderer.print_rule(title=title, color=color, style=style, align=align)
+        # Resolve semantic color from theme, then normalize for Rich
+        from styledconsole.utils.color import normalize_color_for_rich
+
+        resolved_color = normalize_color_for_rich(self._theme.resolve_color(color)) or "white"
+
+        self._renderer.print_rule(title=title, color=resolved_color, style=style, align=align)
 
     def newline(self, count: int = 1) -> None:
         """Print one or more blank lines.
@@ -836,3 +986,68 @@ class Console:
             >>> console.print(table)
         """
         self._rich_console.print(*args, **kwargs)
+
+    def progress(
+        self,
+        *,
+        transient: bool = False,
+        auto_refresh: bool = True,
+        expand: bool = False,
+    ) -> StyledProgress:
+        """Create a styled progress bar context manager.
+
+        Returns a StyledProgress instance that integrates with the console's
+        theme for consistent styling. Use as a context manager to track
+        progress of long-running operations.
+
+        Args:
+            transient: If True, progress bar disappears after completion.
+                Useful for temporary progress indicators. Defaults to False.
+            auto_refresh: If True, automatically refresh the display.
+                Defaults to True.
+            expand: If True, progress bar expands to full width.
+                Defaults to False.
+
+        Returns:
+            StyledProgress context manager for tracking progress.
+
+        Example:
+            >>> console = Console()
+            >>> with console.progress() as progress:
+            ...     task = progress.add_task("Processing...", total=100)
+            ...     for i in range(100):
+            ...         # do work
+            ...         progress.update(task, advance=1)
+
+            >>> # With transient progress (disappears when done)
+            >>> with console.progress(transient=True) as progress:
+            ...     task = progress.add_task("Downloading...", total=1000)
+            ...     # ...
+        """
+        return StyledProgress(
+            theme=self._theme,
+            console=self._rich_console,
+            transient=transient,
+            auto_refresh=auto_refresh,
+            expand=expand,
+        )
+
+    def resolve_color(self, color: str | None) -> str | None:
+        """Resolve a semantic color name using the current theme.
+
+        If the color is a semantic name (like 'success', 'error', 'primary'),
+        returns the theme's color for that semantic. Otherwise returns the
+        color unchanged.
+
+        Args:
+            color: A semantic color name or literal color value.
+
+        Returns:
+            The resolved color value.
+
+        Example:
+            >>> console = Console(theme=THEMES.DARK)
+            >>> console.resolve_color("success")  # Returns "lime"
+            >>> console.resolve_color("red")      # Returns "red" (unchanged)
+        """
+        return self._theme.resolve_color(color)

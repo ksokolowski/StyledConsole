@@ -18,41 +18,46 @@ class TestResult(TypedDict):
 def _calculate_status(
     passed: int, failed: int, skipped: int, errors: int, total: int
 ) -> tuple[str, str, str]:
-    """Determine overall status, color, and emoji."""
+    """Determine overall status, color, and emoji.
+
+    Uses semantic color names that themes can resolve.
+    """
     if failed > 0 or errors > 0:
-        return "FAILED", "red", "❌"
+        return "FAILED", "error", "❌"
     elif passed == total and total > 0:
-        return "PASSED", "green", "✅"
+        return "PASSED", "success", "✅"
     elif total == 0:
-        return "NO TESTS", "yellow", "⚠️"
+        return "NO TESTS", "warning", "⚠️"
     else:
-        return "MIXED", "yellow", "⚠️"
+        return "MIXED", "warning", "⚠️"
 
 
 def _list_failures(console: Console, results: list[TestResult]) -> None:
-    """List failed tests."""
+    """List failed tests.
+
+    Uses semantic color 'error' which themes can resolve.
+    """
     failures = [r for r in results if r["status"].upper() in ("FAIL", "ERROR")]
     if not failures:
         return
 
     console.newline()
-    console.rule("[bold red]Failures & Errors[/]", style="red")
+    console.rule("[bold]Failures & Errors[/]", style="error")
     console.newline()
 
     for fail in failures:
         status = fail["status"].upper()
         icon = "❌" if status == "FAIL" else "💥"
-        color = "red" if status == "FAIL" else "crimson"
 
         content = [f"{icon} [bold]{fail['name']}[/]"]
         if "message" in fail:
             content.append("")
-            content.append(f"[{color}]{fail['message']}[/]")
+            content.append(fail["message"])
 
         console.frame(
             content=content,
             border="minimal",
-            border_color=color,
+            border_color="error",
             padding=0,
         )
 
@@ -82,16 +87,18 @@ def test_summary(
 
     overall_status, color, emoji = _calculate_status(passed, failed, skipped, errors, total)
 
-    # Header
+    # Header - uses semantic colors that themes can resolve
+    # Note: Rich markup colors inside content need hex codes for Rich compatibility
+    # The border_color uses semantic names resolved by console.frame()
     console.frame(
         content=[
             f"[bold]{emoji}  Test Execution Summary[/]",
             "",
             f"Total:   [bold]{total}[/]",
-            f"Passed:  [green]{passed}[/]",
-            f"Failed:  [red]{failed}[/]",
-            f"Skipped: [yellow]{skipped}[/]",
-            f"Errors:  [crimson]{errors}[/]",
+            f"Passed:  {passed}",
+            f"Failed:  {failed}",
+            f"Skipped: {skipped}",
+            f"Errors:  {errors}",
             "",
             f"Duration: {total_duration:.2f}s" if total_duration is not None else "",
         ],
