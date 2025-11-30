@@ -409,7 +409,7 @@ def normalize_content(content: str | list[str]) -> list[str]:
     """Normalize content to list of lines.
 
     Args:
-        content: String or list of strings
+        content: String or list of strings (items may contain newlines)
 
     Returns:
         List of lines (empty content becomes [""])
@@ -419,6 +419,8 @@ def normalize_content(content: str | list[str]) -> list[str]:
         ['Line 1', 'Line 2']
         >>> normalize_content(["Line 1", "Line 2"])
         ['Line 1', 'Line 2']
+        >>> normalize_content(["Header", "Line 1\\nLine 2"])
+        ['Header', 'Line 1', 'Line 2']
         >>> normalize_content("")
         ['']
         >>> normalize_content([])
@@ -427,7 +429,16 @@ def normalize_content(content: str | list[str]) -> list[str]:
     if isinstance(content, str):
         return content.splitlines() if content else [""]
     else:
-        return content if content else [""]
+        if not content:
+            return [""]
+        # Flatten list items that contain newlines
+        result = []
+        for item in content:
+            if "\n" in item:
+                result.extend(item.splitlines())
+            else:
+                result.append(item)
+        return result
 
 
 # Safe emoji list - tested and verified for reliable width calculation and rendering

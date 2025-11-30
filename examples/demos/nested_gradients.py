@@ -37,13 +37,16 @@ def main():
 
     # 3. Depth Layer
     # Meaning: Complexity and understanding
-    depth_text = "Four gradient layers, each with meaning:\nFire → Growth → Depth → Soul\n\n"
-    depth_content = depth_text + soul_frame
     depth_frame = console.render_frame(
-        depth_content,
+        [
+            "Four gradient layers, each with meaning:",
+            "Fire → Growth → Depth → Soul",
+            "",
+            soul_frame,
+        ],
         border="rounded",
         align="center",
-        width=60,
+        width=58,
         padding=1,
         border_gradient_start="#4169E1",  # Royal Blue
         border_gradient_end="#000080",  # Navy
@@ -52,13 +55,16 @@ def main():
 
     # 2. Growth Layer
     # Meaning: Expansion and development
-    growth_text = "Native Implementation\nRendering Engine v0.4.0\n\n"
-    growth_content = growth_text + depth_frame
     growth_frame = console.render_frame(
-        growth_content,
+        [
+            "Native Implementation",
+            "Rendering Engine v0.5.0",
+            "",
+            depth_frame,
+        ],
         border="thick",
         align="center",
-        width=70,
+        width=66,
         padding=1,
         border_gradient_start="#90EE90",  # Light Green
         border_gradient_end="#006400",  # Dark Green
@@ -67,16 +73,17 @@ def main():
 
     # 1. Fire Layer (Outermost)
     # Meaning: Passion and energy
-    fire_text = "🌈 NESTED GRADIENT ARCHITECTURE\n\n"
-    fire_content = fire_text + growth_frame
-
     # Render and print the final result
     console.frame(
-        fire_content,
+        [
+            "🌈 NESTED GRADIENT ARCHITECTURE",
+            "",
+            growth_frame,
+        ],
         title="🏛️  Gradient Architecture",
         border="heavy",
         align="center",
-        width=80,
+        width=76,
         padding=2,
         border_gradient_start="#FF4500",  # Orange Red
         border_gradient_end="#8B0000",  # Dark Red

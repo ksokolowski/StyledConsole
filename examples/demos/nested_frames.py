@@ -14,7 +14,7 @@ def demo_nested_frames():
         content_color="magenta",
         border_color="magenta",
         align="center",
-        width=30,
+        width=26,
     )
 
     # 2. Create the next layer (Depth)
@@ -24,7 +24,7 @@ def demo_nested_frames():
         border_gradient_start="cyan",
         border_gradient_end="blue",
         align="center",
-        width=40,
+        width=34,
     )
 
     # 3. Create the next layer (Growth)
@@ -34,7 +34,7 @@ def demo_nested_frames():
         border_gradient_start="yellow",
         border_gradient_end="green",
         align="center",
-        width=50,
+        width=44,
     )
 
     # 4. Create the outer layer (Fire)
@@ -44,7 +44,7 @@ def demo_nested_frames():
         border_gradient_start="red",
         border_gradient_end="orange1",
         align="center",
-        width=60,
+        width=54,
     )
 
     # 5. Final assembly
