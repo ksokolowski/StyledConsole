@@ -59,9 +59,13 @@ class TestIcon:
         assert icon.as_emoji() == "✅"
 
     def test_icon_as_ascii_with_color(self):
-        """Test as_ascii() returns colored ASCII when color is set."""
-        icon = Icon(name="TEST", emoji="✅", ascii="[OK]", color="green")
-        assert icon.as_ascii() == "[green][OK][/]"
+        """Test as_ascii() returns colored ASCII with ANSI codes when color is set."""
+        icon = Icon(name="TEST", emoji="✅", ascii="(OK)", color="green")
+        result = icon.as_ascii()
+        # Should contain ANSI escape codes
+        assert "\033[38;2;" in result
+        assert "(OK)" in result
+        assert "\033[0m" in result  # Reset code
 
     def test_icon_as_ascii_without_color(self):
         """Test as_ascii() returns plain ASCII when no color."""
@@ -82,8 +86,11 @@ class TestIcon:
     def test_icon_str_ascii_mode(self):
         """Test __str__ in ascii mode."""
         set_icon_mode("ascii")
-        icon = Icon(name="TEST", emoji="✅", ascii="[OK]", color="green")
-        assert str(icon) == "[green][OK][/]"
+        icon = Icon(name="TEST", emoji="✅", ascii="(OK)", color="green")
+        result = str(icon)
+        # Should contain ANSI escape codes
+        assert "\033[38;2;" in result
+        assert "(OK)" in result
 
     def test_icon_immutable(self):
         """Test Icon is immutable (frozen dataclass)."""
@@ -235,7 +242,10 @@ class TestIconModeControl:
         assert str(icon) == "✅"
 
         set_icon_mode("ascii")
-        assert str(icon) == "[green][OK][/]"
+        result = str(icon)
+        # ASCII mode should produce ANSI-colored output
+        assert "(OK)" in result
+        assert "\033[" in result  # ANSI escape sequence
 
 
 class TestEmojiConversion:
@@ -244,18 +254,22 @@ class TestEmojiConversion:
     def test_convert_single_emoji(self):
         """Test converting single emoji."""
         result = convert_emoji_to_ascii("✅")
-        assert result == "[green][OK][/]"
+        # Should contain ANSI codes and (OK)
+        assert "\033[38;2;" in result
+        assert "(OK)" in result
 
     def test_convert_emoji_in_text(self):
         """Test converting emoji within text."""
         result = convert_emoji_to_ascii("Status: ✅ Done")
-        assert result == "Status: [green][OK][/] Done"
+        assert "Status: " in result
+        assert "(OK)" in result
+        assert " Done" in result
 
     def test_convert_multiple_emojis(self):
         """Test converting multiple emojis."""
         result = convert_emoji_to_ascii("✅ Pass ❌ Fail")
-        assert "[green][OK][/]" in result
-        assert "[red][FAIL][/]" in result
+        assert "(OK)" in result
+        assert "(FAIL)" in result
 
     def test_convert_emoji_without_color(self):
         """Test converting emoji that has no color."""
@@ -299,10 +313,10 @@ class TestIconDataIntegrity:
 
     def test_ascii_representations_readable(self):
         """Test ASCII representations are recognizable."""
-        # Status should be bracketed text
-        assert icons.CHECK.ascii == "[OK]"
-        assert icons.CROSS.ascii == "[FAIL]"
-        assert icons.WARNING.ascii == "[WARN]"
+        # Status should be parentheses text (to avoid Rich markup conflicts)
+        assert icons.CHECK.ascii == "(OK)"
+        assert icons.CROSS.ascii == "(FAIL)"
+        assert icons.WARNING.ascii == "(WARN)"
 
         # Arrows should be simple
         assert icons.ARROW_RIGHT.ascii == "->"
@@ -335,7 +349,8 @@ class TestIconProviderIntegration:
 
         set_icon_mode("ascii")
         result = f"{icons.CHECK} Tests passed"
-        assert result == "[green][OK][/] Tests passed"
+        assert "(OK)" in result
+        assert "Tests passed" in result
 
     def test_icon_concatenation(self):
         """Test icons can be concatenated."""
@@ -347,6 +362,6 @@ class TestIconProviderIntegration:
         """Test multiple icons in formatted string."""
         set_icon_mode("ascii")
         result = f"Pass: {icons.CHECK} | Fail: {icons.CROSS} | Warn: {icons.WARNING}"
-        assert "[green][OK][/]" in result
-        assert "[red][FAIL][/]" in result
-        assert "[yellow][WARN][/]" in result
+        assert "(OK)" in result
+        assert "(FAIL)" in result
+        assert "(WARN)" in result

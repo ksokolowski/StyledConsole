@@ -114,14 +114,19 @@ class Icon:
         return self.emoji
 
     def as_ascii(self) -> str:
-        """Return colored ASCII representation with Rich markup.
+        """Return colored ASCII representation with ANSI escape codes.
+
+        Uses ANSI escape codes directly for coloring, which works universally
+        in both Rich-rendered contexts and plain terminal output.
 
         Returns:
-            ASCII string wrapped in Rich color tags if color is defined,
+            ASCII string with ANSI color codes if color is defined,
             otherwise plain ASCII string.
         """
         if self.color:
-            return f"[{self.color}]{self.ascii}[/]"
+            from styledconsole.utils.color import color_to_ansi
+
+            return color_to_ansi(self.ascii, self.color)
         return self.ascii
 
     def as_plain_ascii(self) -> str:
@@ -341,7 +346,7 @@ def convert_emoji_to_ascii(text: str) -> str:
     """Convert all emojis in text to their colored ASCII equivalents.
 
     This function scans text for known emojis and replaces them with
-    their ASCII + color markup equivalents. Useful for processing
+    their ASCII + ANSI color code equivalents. Useful for processing
     strings that may contain emojis.
 
     Args:
@@ -351,14 +356,16 @@ def convert_emoji_to_ascii(text: str) -> str:
         Text with emojis replaced by colored ASCII
 
     Example:
-        >>> convert_emoji_to_ascii("Status: ✅ Done")
-        'Status: [green][OK][/] Done'
+        >>> result = convert_emoji_to_ascii("Status: ✅ Done")
+        >>> # Returns: 'Status: \\033[38;2;0;255;0m[OK]\\033[0m Done'
     """
+    from styledconsole.utils.color import color_to_ansi
+
     result = text
     for emoji, mapping in EMOJI_TO_ICON.items():
         if emoji in result:
             if mapping.color:
-                replacement = f"[{mapping.color}]{mapping.ascii}[/]"
+                replacement = color_to_ansi(mapping.ascii, mapping.color)
             else:
                 replacement = mapping.ascii
             result = result.replace(emoji, replacement)

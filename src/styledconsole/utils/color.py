@@ -417,6 +417,10 @@ def colorize_text(text: str, color: str) -> str:
     return f"\033[38;2;{r};{g};{b}m{text}\033[0m"
 
 
+# Alias for clarity
+color_to_ansi = colorize_text
+
+
 __all__ = [
     "hex_to_rgb",
     "rgb_to_hex",
@@ -427,6 +431,7 @@ __all__ = [
     "normalize_color_for_rich",
     "apply_line_gradient",
     "colorize_text",
+    "color_to_ansi",
     "get_color_names",
     "CSS4_COLORS",
     "RGBColor",
