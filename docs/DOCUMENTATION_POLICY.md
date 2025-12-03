@@ -181,6 +181,44 @@ from styledconsole import Console
 | Emphasis      | **bold**    |
 | Terms         | *italic*    |
 
+### ASCII Art / Box-Drawing Visualizations
+
+When documenting preset output or frame visualizations:
+
+**Rules:**
+
+1. **Verify character-by-character** - Every line in a box must have identical width
+1. **Count emoji width correctly** - Emojis like ⏱️, ⚠️, ⭐ may display as 1 or 2 columns
+1. **Test in monospace** - Render in a fixed-width font before committing
+1. **Align borders precisely** - Top border (`╭─...─╮`) must match bottom (`╰─...─╯`) exactly
+
+**❌ Bad (misaligned):**
+
+```text
+╭────────────────────────────────────╮
+│ ⏱️  Duration: 2.45s                    │
+╰────────────────────────────────────╯
+```
+
+**✅ Good (aligned):**
+
+```text
+╭────────────────────────────────────╮
+│ ⏱️  Duration: 2.45s                │
+╰────────────────────────────────────╯
+```
+
+**Why this matters:** This library is specifically about terminal rendering and visual
+width calculation. Misaligned ASCII art in documentation undermines the project's
+credibility and creates confusion about expected output.
+
+**Verification tip:** Use `visual_width()` from the library itself to verify line lengths:
+
+```python
+from styledconsole.utils.text import visual_width
+assert visual_width("│ ⏱️  Duration: 2.45s                │") == 38
+```
+
 ______________________________________________________________________
 
 ## Anti-Patterns
