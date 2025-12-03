@@ -1,8 +1,8 @@
 # StyledConsole Project Status
 
 **Version:** 0.9.0
-**Status:** In Development
-**Last Updated:** December 4, 2025
+**Status:** Released
+**Last Updated:** December 3, 2025
 
 ______________________________________________________________________
 
@@ -10,11 +10,11 @@ ______________________________________________________________________
 
 | Metric        | Value       |
 | ------------- | ----------- |
-| Current       | v0.9.0-dev  |
-| Lines of Code | ~6,200      |
+| Current       | v0.9.0      |
+| Lines of Code | ~6,500      |
 | Tests         | 797 passing |
 | Coverage      | 85%+        |
-| Examples      | 30          |
+| Examples      | 31          |
 
 ______________________________________________________________________
 
@@ -22,34 +22,33 @@ ______________________________________________________________________
 
 ### Released
 
-| Version | Date     | Theme                     |
-| ------- | -------- | ------------------------- |
-| v0.1.0  | Oct 2025 | Foundation                |
-| v0.3.0  | Nov 2025 | Rich-Native rendering     |
-| v0.4.0  | Nov 2025 | Animated Gradients        |
-| v0.5.0  | Nov 2025 | Documentation & Structure |
-| v0.6.0  | Nov 2025 | text.py Refactoring       |
-| v0.7.0  | Nov 2025 | Frame Groups              |
-| v0.8.0  | Nov 2025 | Theme System & Gradients  |
+| Version | Date     | Theme                         |
+| ------- | -------- | ----------------------------- |
+| v0.1.0  | Oct 2025 | Foundation                    |
+| v0.3.0  | Nov 2025 | Rich-Native rendering         |
+| v0.4.0  | Nov 2025 | Animated Gradients            |
+| v0.5.0  | Nov 2025 | Documentation & Structure     |
+| v0.6.0  | Nov 2025 | text.py Refactoring           |
+| v0.7.0  | Nov 2025 | Frame Groups                  |
+| v0.8.0  | Nov 2025 | Theme System & Gradients      |
+| v0.9.0  | Dec 2025 | Icon Provider (Colored ASCII) |
 
 ### Planned
 
-| Version | Target  | Theme                                     | Status      |
-| ------- | ------- | ----------------------------------------- | ----------- |
-| v0.9.0  | Q1 2026 | Icon Provider & Runtime Policy            | IN PROGRESS |
-| v0.10.0 | Q1 2026 | Test Automation Presets - Core            | PLANNED     |
-| v0.11.0 | Q1 2026 | Test Automation Presets - Assertions      | PLANNED     |
-| v0.12.0 | Q2 2026 | Test Automation Presets - Data & API      | PLANNED     |
-| v0.13.0 | Q2 2026 | Test Automation Presets - CI/CD           | PLANNED     |
-| v0.14.0 | Q2 2026 | Test Automation Presets - Robot Framework | PLANNED     |
-| v1.0.0  | Q3 2026 | API freeze & Production Hardening         | PLANNED     |
+| Version | Target | Theme | Status |
+| v0.10.0 | Q1 2026 | Test Automation Presets - Core | PLANNED |
+| v0.11.0 | Q1 2026 | Test Automation Presets - Assertions | PLANNED |
+| v0.12.0 | Q2 2026 | Test Automation Presets - Data & API | PLANNED |
+| v0.13.0 | Q2 2026 | Test Automation Presets - CI/CD | PLANNED |
+| v0.14.0 | Q2 2026 | Test Automation Presets - Robot Framework | PLANNED |
+| v1.0.0 | Q3 2026 | API freeze & Production Hardening | PLANNED |
 
 ______________________________________________________________________
 
 ## v0.9.0: Icon Provider & Runtime Policy
 
-**Target:** Q1 2026
-**Status:** IN PROGRESS
+**Released:** December 3, 2025
+**Status:** RELEASED
 
 ### Feature 1: Icon Provider (Colored ASCII Fallback) ✅ IMPLEMENTED
 

@@ -5,6 +5,85 @@ All notable changes to StyledConsole will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0] - 2025-12-03
+
+### 🎨 Icon Provider (Colored ASCII Fallback)
+
+This release introduces a comprehensive Icon Provider system that maps Unicode emojis
+to colored ASCII equivalents for terminals without emoji support.
+
+### Added
+
+#### Icon Provider System
+
+- **`Icon` frozen dataclass**: Holds emoji, ASCII, and color information
+- **`IconProvider` singleton class**: Attribute-based icon access with 224 icons
+- **`icons` module-level singleton**: Easy access via `icons.CHECK`, `icons.ROCKET`, etc.
+- **Mode control functions**:
+  - `set_icon_mode("emoji" | "ascii" | "auto")` - Control rendering mode
+  - `get_icon_mode()` - Get current mode
+  - `reset_icon_mode()` - Reset to auto-detection
+- **`convert_emoji_to_ascii(text)` function**: Bulk emoji-to-ASCII conversion
+
+```python
+from styledconsole import icons, set_icon_mode
+
+# Attribute access
+print(icons.CHECK)   # ✅ (emoji mode) or (OK) in green (ascii mode)
+print(icons.ROCKET)  # 🚀 (emoji mode) or >>> in cyan (ascii mode)
+
+# Mode control
+set_icon_mode("ascii")  # Force colored ASCII everywhere
+set_icon_mode("emoji")  # Force emoji everywhere
+set_icon_mode("auto")   # Auto-detect (default)
+```
+
+#### Icon Categories (224 total)
+
+| Category  | Count | Examples                          |
+| --------- | ----- | --------------------------------- |
+| STATUS    | 14    | CHECK, CROSS, WARNING, INFO       |
+| STARS     | 4     | STAR, SPARKLES, DIZZY             |
+| DOCUMENT  | 22    | FILE, FOLDER, CLIPBOARD, MEMO     |
+| BOOK      | 10    | BOOK, BOOKS, NOTEBOOK             |
+| TECH      | 13    | COMPUTER, KEYBOARD, GLOBE         |
+| TOOLS     | 7     | WRENCH, HAMMER, GEAR              |
+| ACTIVITY  | 13    | TARGET, TROPHY, PARTY, GIFT       |
+| TRANSPORT | 6     | ROCKET, AIRPLANE, CAR             |
+| WEATHER   | 17    | SUN, MOON, FIRE, SNOWFLAKE        |
+| PLANT     | 12    | TREE, SEEDLING, BLOSSOM           |
+| FOOD      | 14    | PIZZA, COFFEE, BEER, CAKE         |
+| PEOPLE    | 9     | THUMBS_UP, WAVE, CLAP             |
+| ARROW     | 12    | ARROW_RIGHT, HEAVY_RIGHT          |
+| SYMBOL    | 13    | LIGHTBULB, LOCK, KEY, CROWN       |
+| MATH      | 5     | PLUS, MINUS, MULTIPLY             |
+| HEART     | 9     | HEART, ORANGE_HEART, BROKEN_HEART |
+| MONEY     | 7     | DOLLAR, MONEY_BAG, GEM            |
+| TIME      | 6     | CLOCK, ALARM, HOURGLASS           |
+| COMM      | 10    | PHONE, EMAIL, SPEAKER             |
+| BUILDING  | 12    | HOME, OFFICE, HOSPITAL            |
+| FLAG      | 3     | FLAG_CHECKERED, WHITE_FLAG        |
+| ANIMAL    | 6     | BUTTERFLY, BUG, BEE               |
+
+#### Color Support
+
+- All icons use human-readable CSS4 color names (e.g., `darkorange`, `saddlebrown`)
+- ANSI escape codes for colored ASCII output (avoids Rich markup conflicts)
+- Parentheses-style ASCII: `(OK)`, `(FAIL)`, `(WARN)` (not square brackets)
+
+#### New Files
+
+| File                                   | Purpose                            |
+| -------------------------------------- | ---------------------------------- |
+| `src/styledconsole/utils/icon_data.py` | 224 emoji→ASCII+color mappings     |
+| `src/styledconsole/icons.py`           | Icon, IconProvider, mode switching |
+| `tests/unit/test_icons.py`             | 43 unit tests                      |
+| `examples/demos/icon_provider_demo.py` | Interactive demonstration          |
+
+### Changed
+
+- Updated `__init__.py` to export icons module components
+
 ## [0.8.0] - 2025-11-30
 
 ### 🎨 Theme System & Gradient Themes
