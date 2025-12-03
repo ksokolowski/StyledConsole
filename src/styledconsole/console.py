@@ -20,6 +20,7 @@ from styledconsole.core.progress import StyledProgress
 from styledconsole.core.rendering_engine import RenderingEngine
 from styledconsole.core.terminal_manager import TerminalManager
 from styledconsole.core.theme import DEFAULT_THEME, THEMES, Theme
+from styledconsole.policy import RenderPolicy, get_default_policy
 from styledconsole.types import AlignType, FrameGroupItem, LayoutType
 from styledconsole.utils.terminal import TerminalProfile
 
@@ -67,6 +68,7 @@ class Console:
         file: TextIO | None = None,
         debug: bool = False,
         theme: Theme | str | None = None,
+        policy: RenderPolicy | None = None,
     ):
         """Initialize Console with optional terminal detection and recording.
 
@@ -83,6 +85,9 @@ class Console:
             theme: Color theme for consistent styling. Can be a Theme instance,
                 a theme name string ("dark", "monokai", etc.), or None for default.
                 Defaults to None.
+            policy: Rendering policy for environment-aware output. Controls unicode,
+                color, and emoji rendering. If None, auto-detects from environment
+                (respects NO_COLOR, CI, TERM=dumb, etc.). Defaults to None.
 
         Example:
             >>> # Basic usage
@@ -104,7 +109,17 @@ class Console:
 
             >>> # Debug mode
             >>> console = Console(debug=True)
+
+            >>> # With explicit policy
+            >>> from styledconsole import RenderPolicy
+            >>> console = Console(policy=RenderPolicy.ci_friendly())
         """
+        # Resolve policy (auto-detect from environment if not provided)
+        self._policy = policy if policy is not None else get_default_policy()
+
+        # Apply policy to global icon system
+        self._policy.apply_to_icons()
+
         # Initialize terminal manager (handles detection and color system)
         self._terminal = TerminalManager(detect=detect_terminal, debug=debug)
 
@@ -116,13 +131,21 @@ class Console:
         else:
             self._theme = DEFAULT_THEME
 
+        # Determine color system based on policy
+        color_system = self._terminal.get_color_system() if self._policy.color else None
+
+        # Determine if we should force terminal mode
+        # Force terminal if: (1) terminal supports ANSI, OR (2) policy explicitly enables color
+        # This ensures colors work in non-TTY environments when policy.color=True
+        force_terminal = self._terminal.should_force_terminal() or self._policy.color
+
         # Initialize Rich console with terminal settings
         self._rich_console = RichConsole(
             record=record,
             width=width,
             file=file or sys.stdout,
-            force_terminal=self._terminal.should_force_terminal(),
-            color_system=self._terminal.get_color_system(),
+            force_terminal=force_terminal,
+            color_system=color_system,
         )
 
         # Initialize rendering engine (handles frame, banner, text, rule, newline)
@@ -142,6 +165,21 @@ class Console:
             The active Theme instance.
         """
         return self._theme
+
+    @property
+    def policy(self) -> RenderPolicy:
+        """Get the current rendering policy.
+
+        Returns:
+            The active RenderPolicy instance.
+
+        Example:
+            >>> console = Console()
+            >>> if console.policy.emoji:
+            ...     print("Emoji enabled")
+            >>> print(f"Icon mode: {console.policy.icon_mode}")
+        """
+        return self._policy
 
     @property
     def terminal_profile(self) -> TerminalProfile | None:

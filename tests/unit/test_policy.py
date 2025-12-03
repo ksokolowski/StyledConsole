@@ -344,3 +344,77 @@ class TestRenderPolicyIntegration:
             assert get_icon_mode() == "emoji"
         finally:
             reset_icon_mode()
+
+
+class TestConsolePolicyIntegration:
+    """Integration tests for Console with policy."""
+
+    def setup_method(self) -> None:
+        """Reset state before each test."""
+        reset_default_policy()
+        from styledconsole.icons import reset_icon_mode
+
+        reset_icon_mode()
+
+    def teardown_method(self) -> None:
+        """Clean up after each test."""
+        reset_default_policy()
+        from styledconsole.icons import reset_icon_mode
+
+        reset_icon_mode()
+
+    def test_console_auto_detects_policy(self) -> None:
+        """Console auto-detects policy from environment."""
+        from styledconsole import Console
+
+        with patch("sys.stdout.isatty", return_value=True):
+            console = Console()
+            assert console.policy is not None
+            assert isinstance(console.policy, RenderPolicy)
+
+    def test_console_accepts_explicit_policy(self) -> None:
+        """Console accepts explicit policy parameter."""
+        from styledconsole import Console
+
+        custom = RenderPolicy.minimal()
+        console = Console(policy=custom)
+        assert console.policy is custom
+        assert console.policy.unicode is False
+        assert console.policy.color is False
+
+    def test_console_applies_policy_to_icons(self) -> None:
+        """Console applies policy to global icon system."""
+        from styledconsole import Console
+        from styledconsole.icons import get_icon_mode
+
+        policy = RenderPolicy.ci_friendly()
+        _ = Console(policy=policy)
+        assert get_icon_mode() == "ascii"
+
+    def test_console_respects_no_color_policy(self) -> None:
+        """Console with no-color policy disables color system."""
+        from styledconsole import Console
+
+        policy = RenderPolicy.no_color()
+        console = Console(policy=policy)
+        # Rich console should have no color system
+        assert console._rich_console.color_system is None
+
+    def test_console_with_full_policy_has_colors(self) -> None:
+        """Console with full policy enables color system."""
+        from styledconsole import Console
+
+        policy = RenderPolicy.full()
+        console = Console(policy=policy)
+        # Rich console should have a color system
+        assert console._rich_console.color_system is not None
+
+    def test_multiple_consoles_share_default_policy(self) -> None:
+        """Multiple consoles without explicit policy share the default."""
+        from styledconsole import Console
+
+        with patch("sys.stdout.isatty", return_value=True):
+            console1 = Console()
+            console2 = Console()
+            # Both should use the same cached default policy
+            assert console1.policy == console2.policy
