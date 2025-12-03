@@ -42,6 +42,18 @@ from styledconsole.effects import (
 # Import emoji constants
 from styledconsole.emojis import EMOJI, E, EmojiConstants
 
+# Import icon system (v0.9.0+)
+from styledconsole.icons import (
+    Icon,
+    IconMode,
+    IconProvider,
+    convert_emoji_to_ascii,
+    get_icon_mode,
+    icons,
+    reset_icon_mode,
+    set_icon_mode,
+)
+
 # Import type aliases
 from styledconsole.types import AlignType, ColorType, Renderer
 from styledconsole.utils.color import (
@@ -131,6 +143,15 @@ __all__ = [
     "EMOJI",
     "E",
     "EmojiConstants",
+    # Icon system (terminal-adaptive)
+    "icons",
+    "Icon",
+    "IconProvider",
+    "IconMode",
+    "set_icon_mode",
+    "get_icon_mode",
+    "reset_icon_mode",
+    "convert_emoji_to_ascii",
     # Special effects
     "gradient_frame",
     "diagonal_gradient_frame",
