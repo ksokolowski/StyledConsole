@@ -226,9 +226,14 @@ def test_animated_dashboard():
                 val = values[i]
                 bar_len = val // 10
                 bar = "█" * bar_len + "░" * (10 - bar_len)
-                # Use text indicators that work everywhere
-                status = "OK" if val < 70 else "WARN" if val < 90 else "CRIT"
-                content.append(f"  {name}: [{bar}] {val:3d}% [{status}]")
+                # Use policy-aware colored circle icons
+                if val < 70:
+                    status_icon = icons.GREEN_CIRCLE
+                elif val < 90:
+                    status_icon = icons.YELLOW_CIRCLE
+                else:
+                    status_icon = icons.RED_CIRCLE
+                content.append(f"  {name}: [{bar}] {val:3d}% {status_icon}")
 
             content.append("")
             content.append(f"  {icons.CLOCK} Update {i + 1}/8")
