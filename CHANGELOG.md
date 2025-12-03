@@ -7,10 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.9.0] - 2025-12-03
 
-### 🎨 Icon Provider (Colored ASCII Fallback)
+### 🎨 Icon Provider & Runtime Policy
 
 This release introduces a comprehensive Icon Provider system that maps Unicode emojis
-to colored ASCII equivalents for terminals without emoji support.
+to colored ASCII equivalents for terminals without emoji support, plus a Runtime Policy
+system for environment-aware rendering control.
 
 ### Added
 
@@ -37,6 +38,43 @@ set_icon_mode("ascii")  # Force colored ASCII everywhere
 set_icon_mode("emoji")  # Force emoji everywhere
 set_icon_mode("auto")   # Auto-detect (default)
 ```
+
+#### Runtime Policy System
+
+- **`RenderPolicy` frozen dataclass**: Controls unicode, color, emoji rendering
+- **Environment auto-detection**: Respects NO_COLOR, FORCE_COLOR, TERM, CI vars
+- **Factory methods for common scenarios**:
+  - `RenderPolicy.full()` - All features enabled
+  - `RenderPolicy.minimal()` - ASCII only, no colors
+  - `RenderPolicy.ci_friendly()` - Colors but no emoji
+  - `RenderPolicy.no_color()` - Respects NO_COLOR standard
+- **`with_override()` method**: Create modified policies immutably
+- **Icon integration**: `policy.apply_to_icons()` syncs icon mode
+
+```python
+from styledconsole import RenderPolicy, get_default_policy
+
+# Auto-detect from environment
+policy = RenderPolicy.from_env()
+
+# Factory methods
+policy = RenderPolicy.ci_friendly()
+
+# Override specific settings
+custom = policy.with_override(emoji=False)
+
+# Apply to icon system
+policy.apply_to_icons()
+```
+
+**Environment Variables Detected:**
+
+| Variable      | Effect                             |
+| ------------- | ---------------------------------- |
+| `NO_COLOR`    | Disables color output              |
+| `FORCE_COLOR` | Forces color even without TTY      |
+| `TERM=dumb`   | Disables unicode, color, emoji     |
+| `CI`          | Conservative mode (disables emoji) |
 
 #### Icon Categories (224 total)
 
@@ -77,12 +115,15 @@ set_icon_mode("auto")   # Auto-detect (default)
 | -------------------------------------- | ---------------------------------- |
 | `src/styledconsole/utils/icon_data.py` | 224 emoji→ASCII+color mappings     |
 | `src/styledconsole/icons.py`           | Icon, IconProvider, mode switching |
-| `tests/unit/test_icons.py`             | 43 unit tests                      |
-| `examples/demos/icon_provider_demo.py` | Interactive demonstration          |
+| `src/styledconsole/policy.py`          | RenderPolicy class, factories      |
+| `tests/unit/test_icons.py`             | 43 icon unit tests                 |
+| `tests/unit/test_policy.py`            | 35 policy unit tests               |
+| `examples/demos/icon_provider_demo.py` | Icon system demonstration          |
+| `examples/demos/render_policy_demo.py` | Policy system demonstration        |
 
 ### Changed
 
-- Updated `__init__.py` to export icons module components
+- Updated `__init__.py` to export icons and policy module components
 
 ## [0.8.0] - 2025-11-30
 

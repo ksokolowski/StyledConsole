@@ -198,9 +198,9 @@ ascii_text = convert_emoji_to_ascii(text)  # "(OK) Test passed (FAIL) Test faile
 
 </details>
 
-### Feature 2: Runtime Policy System (PENDING)
+### Feature 2: Runtime Policy System ✅ IMPLEMENTED
 
-**Status:** Not yet implemented
+**Status:** Implemented
 
 **Problem:** No central control over rendering decisions based on environment.
 
@@ -230,6 +230,40 @@ console = Console(policy=policy)
 | TERM=dumb   | `unicode=False`, `emoji=False` |
 | CI=true     | `emoji=False` (conservative)   |
 | FORCE_COLOR | `color=True` (override)        |
+
+**Files Created:**
+
+| File                                   | Purpose                       |
+| -------------------------------------- | ----------------------------- |
+| `src/styledconsole/policy.py`          | RenderPolicy class, factories |
+| `tests/unit/test_policy.py`            | 35 unit tests (all passing)   |
+| `examples/demos/render_policy_demo.py` | Interactive demonstration     |
+
+**API (Implemented):**
+
+```python
+from styledconsole import RenderPolicy, get_default_policy
+
+# Auto-detect from environment
+policy = RenderPolicy.from_env()
+
+# Factory methods
+policy = RenderPolicy.full()         # All features enabled
+policy = RenderPolicy.minimal()      # ASCII only
+policy = RenderPolicy.ci_friendly()  # Colors but no emoji
+policy = RenderPolicy.no_color()     # Respects NO_COLOR
+
+# Override specific settings
+custom = policy.with_override(emoji=False, color=True)
+
+# Apply to icons
+policy.apply_to_icons()
+
+# Global default management
+from styledconsole import set_default_policy, reset_default_policy
+set_default_policy(RenderPolicy.ci_friendly())
+reset_default_policy()  # Re-detect from environment
+```
 
 ______________________________________________________________________
 

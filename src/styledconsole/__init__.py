@@ -54,6 +54,14 @@ from styledconsole.icons import (
     set_icon_mode,
 )
 
+# Import policy system (v0.9.0+)
+from styledconsole.policy import (
+    RenderPolicy,
+    get_default_policy,
+    reset_default_policy,
+    set_default_policy,
+)
+
 # Import type aliases
 from styledconsole.types import AlignType, ColorType, Renderer
 from styledconsole.utils.color import (
@@ -96,7 +104,7 @@ from styledconsole.utils.wrap import (
     wrap_text,
 )
 
-__version__ = "0.8.0"
+__version__ = "0.9.0"
 __author__ = "Krzysztof Sokołowski"
 __license__ = "Apache-2.0"
 
@@ -152,6 +160,11 @@ __all__ = [
     "get_icon_mode",
     "reset_icon_mode",
     "convert_emoji_to_ascii",
+    # Policy system (environment-aware rendering)
+    "RenderPolicy",
+    "get_default_policy",
+    "set_default_policy",
+    "reset_default_policy",
     # Special effects
     "gradient_frame",
     "diagonal_gradient_frame",
