@@ -130,27 +130,34 @@ def test_progress_with_explicit_policy():
 
 
 def test_multiline_animation():
-    """Test multi-line animation (more complex cursor control)."""
-    print("TEST 5: Multi-line Animation (Progressive)")
+    """Test multi-line animation using Console.render_frame()."""
+    print("TEST 5: Animated Frame Content")
     print("-" * 40)
-    print("This uses cursor-up escape codes to redraw multiple lines...")
-    print("On limited terminals, you'll see each frame printed separately")
-    print("instead of being redrawn in place.")
+    print("This animates content inside a properly rendered frame.")
+    print("On limited terminals, you'll see each frame printed separately.")
     print()
 
-    def multiline_frames():
-        for i in range(10):
-            filled = "■" * (i + 1)
-            empty = "□" * (9 - i)
-            bar = filled + empty
-            frame = "┌─────────────────┐\n"
-            frame += f"│ Step {i + 1:2}/10       │\n"
-            frame += f"│ [{bar}] │\n"
-            frame += "└─────────────────┘\n"
-            yield frame
+    console = Console()
 
-    Animation.run(multiline_frames(), fps=2, duration=6)
-    print("Multi-line animation complete.\n")
+    def animated_frames():
+        for i in range(10):
+            filled = "█" * (i + 1)
+            empty = "░" * (9 - i)
+            content = [
+                f"Step {i + 1:2}/10",
+                f"[{filled}{empty}]",
+            ]
+            # Use the library's render_frame for proper alignment
+            frame = console.render_frame(
+                content,
+                title="Progress",
+                border="rounded",
+                width=20,
+            )
+            yield frame + "\n"
+
+    Animation.run(animated_frames(), fps=2, duration=6)
+    print("Animated frame complete.\n")
 
 
 def test_frame_rendering():
