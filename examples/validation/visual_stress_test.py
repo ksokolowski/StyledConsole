@@ -31,7 +31,7 @@ import os
 import sys
 import time
 
-from styledconsole import EMOJI, Console, icons
+from styledconsole import Console, icons
 from styledconsole.animation import Animation
 
 
@@ -54,8 +54,8 @@ def show_environment():
         f"force_ascii_icons: {policy.force_ascii_icons}",
     ]
 
-    console.frame(env_info, title=f"{EMOJI.GEAR} Environment", border="rounded")
-    console.frame(policy_info, title=f"{EMOJI.CLIPBOARD} Policy", border="rounded")
+    console.frame(env_info, title=f"{icons.GEAR} Environment", border="rounded")
+    console.frame(policy_info, title=f"{icons.INFO} Policy", border="rounded")
     console.newline()
 
 
@@ -86,40 +86,40 @@ def test_emoji_rich_frames():
 
     console = Console()
 
-    # Status frame with emojis
+    # Status frame with policy-aware icons
     status_content = [
-        f"{EMOJI.CHECK} All tests passed",
-        f"{EMOJI.ROCKET} Deployment ready",
-        f"{EMOJI.STAR} Performance: Excellent",
-        f"{EMOJI.FIRE} 0 critical issues",
+        f"{icons.CHECK} All tests passed",
+        f"{icons.ROCKET} Deployment ready",
+        f"{icons.STAR} Performance: Excellent",
+        f"{icons.FIRE} 0 critical issues",
     ]
     console.frame(
         status_content,
-        title=f"{EMOJI.SPARKLES} Status Report {EMOJI.SPARKLES}",
+        title=f"{icons.SPARKLES} Status Report {icons.SPARKLES}",
         border="rounded",
         border_color="green",
     )
 
     # Warning frame
     warning_content = [
-        f"{EMOJI.WARNING} 3 deprecation warnings",
-        f"{EMOJI.HOURGLASS} Build time: 45s",
+        f"{icons.WARNING} 3 deprecation warnings",
+        f"{icons.CLOCK} Build time: 45s",
     ]
     console.frame(
         warning_content,
-        title=f"{EMOJI.WARNING} Warnings",
+        title=f"{icons.WARNING} Warnings",
         border="rounded",
         border_color="yellow",
     )
 
     # Error frame
     error_content = [
-        f"{EMOJI.CROSS} Connection timeout",
-        f"{EMOJI.BUG} Stack trace available",
+        f"{icons.CROSS} Connection timeout",
+        f"{icons.BUG} Stack trace available",
     ]
     console.frame(
         error_content,
-        title=f"{EMOJI.CROSS} Errors",
+        title=f"{icons.CROSS} Errors",
         border="rounded",
         border_color="red",
     )
@@ -219,22 +219,23 @@ def test_animated_dashboard():
 
         for i in range(8):
             content = [
-                f"{EMOJI.CHART_BAR} System Monitor",
+                f"{icons.CHART_BAR} System Monitor",
                 "",
             ]
             for name, *values in metrics:
                 val = values[i]
                 bar_len = val // 10
                 bar = "█" * bar_len + "░" * (10 - bar_len)
-                color_indicator = "🟢" if val < 70 else "🟡" if val < 90 else "🔴"
-                content.append(f"  {name}: [{bar}] {val:3d}% {color_indicator}")
+                # Use text indicators that work everywhere
+                status = "OK" if val < 70 else "WARN" if val < 90 else "CRIT"
+                content.append(f"  {name}: [{bar}] {val:3d}% [{status}]")
 
             content.append("")
-            content.append(f"  {EMOJI.CLOCK} Update {i + 1}/8")
+            content.append(f"  {icons.CLOCK} Update {i + 1}/8")
 
             frame = console.render_frame(
                 content,
-                title=f"{EMOJI.COMPUTER} Dashboard",
+                title=f"{icons.COMPUTER} Dashboard",
                 border="rounded",
                 border_color="cyan",
                 width=45,
@@ -255,7 +256,7 @@ def test_progress_bars():
 
     print("Single task progress:")
     with console.progress() as progress:
-        task = progress.add_task(f"{EMOJI.PACKAGE} Installing...", total=100)
+        task = progress.add_task(f"{icons.PACKAGE} Installing...", total=100)
         for _ in range(100):
             time.sleep(0.02)
             progress.update(task, advance=1)
@@ -263,9 +264,9 @@ def test_progress_bars():
     print()
     print("Multiple concurrent tasks:")
     with console.progress() as progress:
-        task1 = progress.add_task(f"{EMOJI.ARROW_DOWN} Downloading", total=100)
-        task2 = progress.add_task(f"{EMOJI.GEAR} Processing", total=100)
-        task3 = progress.add_task(f"{EMOJI.CHECK} Verifying", total=100)
+        task1 = progress.add_task(f"{icons.ARROW_DOWN} Downloading", total=100)
+        task2 = progress.add_task(f"{icons.GEAR} Processing", total=100)
+        task3 = progress.add_task(f"{icons.CHECK} Verifying", total=100)
 
         for i in range(100):
             time.sleep(0.03)
@@ -293,7 +294,7 @@ def test_nested_frames():
             {"content": ["Cache: Active", "Hit rate: 87%"], "title": "Redis"},
             {"content": ["Pool: 45/100", "Queries: 1.2k/s"], "title": "Database"},
         ],
-        title=f"{EMOJI.CLOUD} Infrastructure Status",
+        title=f"{icons.CLOUD} Infrastructure Status",
         border="double",
         border_color="blue",
         gap=0,
@@ -338,7 +339,7 @@ def test_mixed_content():
         end_color="blue",
     )
 
-    console.rule(f"{EMOJI.CLIPBOARD} Summary", color="cyan")
+    console.rule(f"{icons.INFO} Summary", color="cyan")
 
     summary = [
         f"{icons.CHECK} 142 tests passed",
@@ -348,7 +349,7 @@ def test_mixed_content():
     ]
     console.frame(summary, title="Test Results", border="rounded", border_color="green")
 
-    console.rule(f"{EMOJI.CHART_BAR} Metrics", color="yellow")
+    console.rule(f"{icons.CHART_BAR} Metrics", color="yellow")
 
     metrics = [
         "Build time:     2m 34s",
@@ -359,7 +360,7 @@ def test_mixed_content():
     console.frame(metrics, title="Build Info", border="rounded", border_color="blue")
 
     console.newline()
-    console.text(f"{EMOJI.SPARKLES} Report generated successfully!", color="green", bold=True)
+    console.text(f"{icons.SPARKLES} Report generated successfully!", color="green", bold=True)
     console.newline()
 
 
