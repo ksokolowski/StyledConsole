@@ -51,9 +51,97 @@ ______________________________________________________________________
 **Target:** Q1 2026
 **Status:** PLANNED
 
-### Feature 1: Icon Provider (ASCII Fallback)
+### Feature 1: Icon Provider (Colored ASCII Fallback)
 
 **Problem:** Emojis don't render correctly in all terminals (CI/CD, SSH, Windows cmd).
+However, ANSI colors typically work even when Unicode fails.
+
+**Design Philosophy:**
+
+- ASCII fallback symbols preserve **semantic meaning**
+- Colors preserve **visual communication** (green=success, red=error)
+- Mapping is centralized for consistency across all presets
+- Auto-detection based on `TerminalProfile.emoji_safe`
+
+<details>
+<summary><strong>Complete Icon Mapping (click to expand)</strong></summary>
+
+#### Status & Results
+
+| Name       | Unicode | ASCII    | Color    | Hex Code  |
+| ---------- | ------- | -------- | -------- | --------- |
+| `success`  | ✅      | `[OK]`   | green    | `#00ff00` |
+| `error`    | ❌      | `[FAIL]` | red      | `#ff0000` |
+| `warning`  | ⚠️      | `[WARN]` | yellow   | `#ffff00` |
+| `info`     | ℹ️      | `[INFO]` | cyan     | `#00ffff` |
+| `debug`    | 🔍      | `[DBG]`  | gray     | `#808080` |
+| `critical` | 🔥      | `[CRIT]` | red bold | `#ff0000` |
+| `skip`     | ⏭️      | `[SKIP]` | dim      | `#666666` |
+| `pending`  | ⏳      | `[...]`  | yellow   | `#ffff00` |
+| `running`  | 🔄      | `[~]`    | cyan     | `#00ffff` |
+
+#### Test Execution
+
+| Name        | Unicode | ASCII | Color  | Hex Code  |
+| ----------- | ------- | ----- | ------ | --------- |
+| `test`      | 🧪      | `[T]` | purple | `#9370db` |
+| `suite`     | 📁      | `[S]` | blue   | `#1e90ff` |
+| `step`      | ▶       | `>`   | cyan   | `#00ffff` |
+| `keyword`   | 🔧      | `[K]` | gray   | `#808080` |
+| `assertion` | ✓       | `[x]` | green  | `#00ff00` |
+
+#### Colored Indicators (Circles → Dots)
+
+| Name     | Unicode | ASCII | Color   | Hex Code  |
+| -------- | ------- | ----- | ------- | --------- |
+| `red`    | 🔴      | `●`   | red     | `#ff0000` |
+| `yellow` | 🟡      | `●`   | yellow  | `#ffff00` |
+| `green`  | 🟢      | `●`   | green   | `#00ff00` |
+| `blue`   | 🔵      | `●`   | blue    | `#0000ff` |
+| `orange` | 🟠      | `●`   | orange  | `#ff8c00` |
+| `purple` | 🟣      | `●`   | magenta | `#ff00ff` |
+
+#### Metrics & Data
+
+| Name       | Unicode | ASCII | Color | Hex Code  |
+| ---------- | ------- | ----- | ----- | --------- |
+| `time`     | ⏱️      | `[t]` | cyan  | `#00ffff` |
+| `chart`    | 📊      | `[#]` | blue  | `#1e90ff` |
+| `up`       | 📈      | `[^]` | green | `#00ff00` |
+| `down`     | 📉      | `[v]` | red   | `#ff0000` |
+| `database` | 🗃️      | `[D]` | gray  | `#808080` |
+| `api`      | 🌐      | `[@]` | blue  | `#1e90ff` |
+
+#### Actions & Objects
+
+| Name      | Unicode | ASCII | Color  | Hex Code  |
+| --------- | ------- | ----- | ------ | --------- |
+| `rocket`  | 🚀      | `>>>` | cyan   | `#00ffff` |
+| `star`    | ⭐      | `*`   | yellow | `#ffd700` |
+| `fire`    | 🔥      | `~`   | red    | `#ff4500` |
+| `bulb`    | 💡      | `*`   | yellow | `#ffd700` |
+| `gear`    | ⚙️      | `[*]` | gray   | `#808080` |
+| `wrench`  | 🔧      | `[T]` | gray   | `#808080` |
+| `target`  | 🎯      | `(o)` | red    | `#ff0000` |
+| `trophy`  | 🏆      | `[#]` | gold   | `#ffd700` |
+| `package` | 📦      | `[P]` | brown  | `#8b4513` |
+| `folder`  | 📁      | `[/]` | blue   | `#1e90ff` |
+| `file`    | 📄      | `[f]` | white  | `#ffffff` |
+| `lock`    | 🔒      | `[L]` | gray   | `#808080` |
+| `key`     | 🔑      | `[k]` | gold   | `#ffd700` |
+| `link`    | 🔗      | `[-]` | blue   | `#1e90ff` |
+| `tag`     | 🏷️      | `[t]` | purple | `#9370db` |
+
+#### Arrows (No Color - Terminal Default)
+
+| Name    | Unicode | ASCII |
+| ------- | ------- | ----- |
+| `right` | →       | `->`  |
+| `left`  | ←       | `<-`  |
+| `up`    | ↑       | `^`   |
+| `down`  | ↓       | `v`   |
+
+</details>
 
 **Proposed API:**
 
@@ -62,26 +150,87 @@ from styledconsole import icons, Console
 
 # Auto-detects terminal capability
 console = Console()
-console.text(f"{icons.success} Tests passed")  # ✅ or [OK]
-console.text(f"{icons.error} Build failed")    # ❌ or [FAIL]
+console.text(f"{icons.success} Tests passed")  # ✅ (emoji) or [OK] (green)
+console.text(f"{icons.error} Build failed")    # ❌ (emoji) or [FAIL] (red)
 
-# Force ASCII mode
+# Force ASCII mode globally
 from styledconsole import set_icon_mode
-set_icon_mode("ascii")
+set_icon_mode("ascii")  # Forces colored ASCII everywhere
+
+# Force specific mode per console
+console = Console(icon_mode="ascii")   # Always ASCII
+console = Console(icon_mode="emoji")   # Always emoji
+console = Console(icon_mode="auto")    # Auto-detect (default)
 ```
 
-**Icon Mapping:**
+**Implementation Plan:**
 
-| Name     | Unicode | ASCII  |
-| -------- | ------- | ------ |
-| success  | ✅      | [OK]   |
-| error    | ❌      | [FAIL] |
-| warning  | ⚠️      | [WARN] |
-| info     | ℹ️      | [INFO] |
-| debug    | 🔍      | [DBG]  |
-| critical | 🔥      | [CRIT] |
-| rocket   | 🚀      | [>>]   |
-| check    | ✓       | [x]    |
+| File                         | Purpose                           |
+| ---------------------------- | --------------------------------- |
+| `src/styledconsole/icons.py` | Icon provider with mode switching |
+| `utils/terminal.py`          | Add `supports_emoji()` helper     |
+| `console.py`                 | Add `icon_mode` parameter         |
+
+**Icon Class Design:**
+
+```python
+# src/styledconsole/icons.py
+from dataclasses import dataclass
+from typing import Literal
+
+IconMode = Literal["auto", "emoji", "ascii"]
+
+@dataclass
+class Icon:
+    """Single icon with emoji and colored ASCII variants."""
+    name: str
+    emoji: str
+    ascii: str
+    color: str | None = None  # CSS4 color name or hex
+
+    def __str__(self) -> str:
+        """Return appropriate representation based on current mode."""
+        if _current_mode == "emoji" or (_current_mode == "auto" and _emoji_safe):
+            return self.emoji
+        # Return Rich-compatible colored ASCII
+        if self.color:
+            return f"[{self.color}]{self.ascii}[/]"
+        return self.ascii
+
+class IconProvider:
+    """Central icon registry with mode switching."""
+
+    # Status
+    success = Icon("success", "✅", "[OK]", "green")
+    error = Icon("error", "❌", "[FAIL]", "red")
+    warning = Icon("warning", "⚠️", "[WARN]", "yellow")
+    # ... (all icons from mapping)
+
+# Module-level instance
+icons = IconProvider()
+```
+
+**Integration with Presets:**
+
+All test automation presets (v0.10.0+) will use `icons` instead of raw emojis:
+
+```python
+# Before (v0.8.0)
+console.frame(f"✅ Tests passed", ...)
+
+# After (v0.9.0+)
+from styledconsole import icons
+console.frame(f"{icons.success} Tests passed", ...)
+```
+
+**Testing Strategy:**
+
+| Test Category | Coverage                               |
+| ------------- | -------------------------------------- |
+| Unit tests    | Each icon renders correctly in 3 modes |
+| Integration   | Console respects `icon_mode` parameter |
+| Terminal mock | Auto-detection from `TerminalProfile`  |
+| Visual tests  | Snapshot tests for both modes          |
 
 ### Feature 2: Runtime Policy System
 
