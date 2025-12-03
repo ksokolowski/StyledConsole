@@ -1,8 +1,8 @@
 # StyledConsole Project Status
 
-**Version:** 0.8.0
-**Status:** Release Ready
-**Last Updated:** December 3, 2025
+**Version:** 0.9.0
+**Status:** In Development
+**Last Updated:** December 4, 2025
 
 ______________________________________________________________________
 
@@ -10,11 +10,11 @@ ______________________________________________________________________
 
 | Metric        | Value       |
 | ------------- | ----------- |
-| Current       | v0.8.0      |
-| Lines of Code | ~5,500      |
-| Tests         | 754 passing |
-| Coverage      | 84%+        |
-| Examples      | 29          |
+| Current       | v0.9.0-dev  |
+| Lines of Code | ~6,200      |
+| Tests         | 797 passing |
+| Coverage      | 85%+        |
+| Examples      | 30          |
 
 ______________________________________________________________________
 
@@ -34,37 +34,93 @@ ______________________________________________________________________
 
 ### Planned
 
-| Version | Target  | Theme                                     | Status  |
-| ------- | ------- | ----------------------------------------- | ------- |
-| v0.9.0  | Q1 2026 | Icon Provider & Runtime Policy            | PLANNED |
-| v0.10.0 | Q1 2026 | Test Automation Presets - Core            | PLANNED |
-| v0.11.0 | Q1 2026 | Test Automation Presets - Assertions      | PLANNED |
-| v0.12.0 | Q2 2026 | Test Automation Presets - Data & API      | PLANNED |
-| v0.13.0 | Q2 2026 | Test Automation Presets - CI/CD           | PLANNED |
-| v0.14.0 | Q2 2026 | Test Automation Presets - Robot Framework | PLANNED |
-| v1.0.0  | Q3 2026 | API freeze & Production Hardening         | PLANNED |
+| Version | Target  | Theme                                     | Status      |
+| ------- | ------- | ----------------------------------------- | ----------- |
+| v0.9.0  | Q1 2026 | Icon Provider & Runtime Policy            | IN PROGRESS |
+| v0.10.0 | Q1 2026 | Test Automation Presets - Core            | PLANNED     |
+| v0.11.0 | Q1 2026 | Test Automation Presets - Assertions      | PLANNED     |
+| v0.12.0 | Q2 2026 | Test Automation Presets - Data & API      | PLANNED     |
+| v0.13.0 | Q2 2026 | Test Automation Presets - CI/CD           | PLANNED     |
+| v0.14.0 | Q2 2026 | Test Automation Presets - Robot Framework | PLANNED     |
+| v1.0.0  | Q3 2026 | API freeze & Production Hardening         | PLANNED     |
 
 ______________________________________________________________________
 
 ## v0.9.0: Icon Provider & Runtime Policy
 
 **Target:** Q1 2026
-**Status:** PLANNED
+**Status:** IN PROGRESS
 
-### Feature 1: Icon Provider (Colored ASCII Fallback)
+### Feature 1: Icon Provider (Colored ASCII Fallback) ✅ IMPLEMENTED
 
 **Problem:** Emojis don't render correctly in all terminals (CI/CD, SSH, Windows cmd).
 However, ANSI colors typically work even when Unicode fails.
 
-**Design Philosophy:**
+**Solution Implemented:**
 
-- ASCII fallback symbols preserve **semantic meaning**
-- Colors preserve **visual communication** (green=success, red=error)
-- Mapping is centralized for consistency across all presets
-- Auto-detection based on `TerminalProfile.emoji_safe`
+- 224 emoji→ASCII mappings organized in 16 categories
+- ANSI escape codes for colored ASCII (avoids Rich markup conflicts)
+- Parentheses-style ASCII: `(OK)`, `(FAIL)`, `(WARN)` (not square brackets)
+- Three rendering modes: `auto`, `emoji`, `ascii`
+- Module-level singleton `icons` for easy access
+
+**Files Created:**
+
+| File                                   | Purpose                                        |
+| -------------------------------------- | ---------------------------------------------- |
+| `src/styledconsole/utils/icon_data.py` | 224 emoji→ASCII+color mappings (16 categories) |
+| `src/styledconsole/icons.py`           | Icon, IconProvider classes, mode switching     |
+| `tests/unit/test_icons.py`             | 43 unit tests (all passing)                    |
+| `examples/demos/icon_provider_demo.py` | Interactive demonstration                      |
+
+**API (Implemented):**
+
+```python
+from styledconsole import icons, set_icon_mode, get_icon_mode, reset_icon_mode
+
+# Access icons via attribute
+print(icons.success)  # ✅ (emoji mode) or (OK) in green (ascii mode)
+print(icons.error)    # ❌ (emoji mode) or (FAIL) in red (ascii mode)
+
+# Mode control
+set_icon_mode("ascii")   # Force colored ASCII everywhere
+set_icon_mode("emoji")   # Force emoji everywhere
+set_icon_mode("auto")    # Auto-detect (default)
+reset_icon_mode()        # Reset to auto
+
+# Bulk conversion
+from styledconsole import convert_emoji_to_ascii
+text = "✅ Test passed ❌ Test failed"
+ascii_text = convert_emoji_to_ascii(text)  # "(OK) Test passed (FAIL) Test failed"
+```
+
+**Icon Categories (224 total):**
+
+| Category  | Count | Examples                          |
+| --------- | ----- | --------------------------------- |
+| STATUS    | 11    | success, error, warning, info     |
+| STARS     | 7     | star, glowing_star, sparkles      |
+| DOCUMENT  | 9     | file, folder, clipboard, memo     |
+| BOOK      | 12    | book_red, books, notebook         |
+| TECH      | 16    | laptop, phone, keyboard, battery  |
+| TOOLS     | 13    | wrench, hammer, gear, magnet      |
+| ACTIVITY  | 11    | running, trophy, medal, dice      |
+| TRANSPORT | 10    | rocket, car, airplane, ship       |
+| WEATHER   | 12    | sun, moon, cloud, rain, lightning |
+| PLANT     | 9     | seedling, tree, flower, cactus    |
+| FOOD      | 12    | apple, pizza, coffee, cake        |
+| PEOPLE    | 12    | person, wave, thumbs_up, clap     |
+| ARROW     | 15    | right, left, up, down, cycle      |
+| SYMBOL    | 17    | check, cross, plus, minus, star   |
+| HEART     | 9     | heart_red, heart_blue, hearts     |
+| MISC      | 49    | Various UI and semantic icons     |
 
 <details>
-<summary><strong>Complete Icon Mapping (click to expand)</strong></summary>
+<summary><strong>Complete Icon Mapping (click to expand - ARCHIVED)</strong></summary>
+
+> Note: The original planning table is preserved below for reference.
+> Actual implementation uses parentheses `(X)` instead of brackets `[X]`
+> to avoid Rich markup parser conflicts.
 
 #### Status & Results
 
@@ -143,96 +199,9 @@ However, ANSI colors typically work even when Unicode fails.
 
 </details>
 
-**Proposed API:**
+### Feature 2: Runtime Policy System (PENDING)
 
-```python
-from styledconsole import icons, Console
-
-# Auto-detects terminal capability
-console = Console()
-console.text(f"{icons.success} Tests passed")  # ✅ (emoji) or [OK] (green)
-console.text(f"{icons.error} Build failed")    # ❌ (emoji) or [FAIL] (red)
-
-# Force ASCII mode globally
-from styledconsole import set_icon_mode
-set_icon_mode("ascii")  # Forces colored ASCII everywhere
-
-# Force specific mode per console
-console = Console(icon_mode="ascii")   # Always ASCII
-console = Console(icon_mode="emoji")   # Always emoji
-console = Console(icon_mode="auto")    # Auto-detect (default)
-```
-
-**Implementation Plan:**
-
-| File                         | Purpose                           |
-| ---------------------------- | --------------------------------- |
-| `src/styledconsole/icons.py` | Icon provider with mode switching |
-| `utils/terminal.py`          | Add `supports_emoji()` helper     |
-| `console.py`                 | Add `icon_mode` parameter         |
-
-**Icon Class Design:**
-
-```python
-# src/styledconsole/icons.py
-from dataclasses import dataclass
-from typing import Literal
-
-IconMode = Literal["auto", "emoji", "ascii"]
-
-@dataclass
-class Icon:
-    """Single icon with emoji and colored ASCII variants."""
-    name: str
-    emoji: str
-    ascii: str
-    color: str | None = None  # CSS4 color name or hex
-
-    def __str__(self) -> str:
-        """Return appropriate representation based on current mode."""
-        if _current_mode == "emoji" or (_current_mode == "auto" and _emoji_safe):
-            return self.emoji
-        # Return Rich-compatible colored ASCII
-        if self.color:
-            return f"[{self.color}]{self.ascii}[/]"
-        return self.ascii
-
-class IconProvider:
-    """Central icon registry with mode switching."""
-
-    # Status
-    success = Icon("success", "✅", "[OK]", "green")
-    error = Icon("error", "❌", "[FAIL]", "red")
-    warning = Icon("warning", "⚠️", "[WARN]", "yellow")
-    # ... (all icons from mapping)
-
-# Module-level instance
-icons = IconProvider()
-```
-
-**Integration with Presets:**
-
-All test automation presets (v0.10.0+) will use `icons` instead of raw emojis:
-
-```python
-# Before (v0.8.0)
-console.frame(f"✅ Tests passed", ...)
-
-# After (v0.9.0+)
-from styledconsole import icons
-console.frame(f"{icons.success} Tests passed", ...)
-```
-
-**Testing Strategy:**
-
-| Test Category | Coverage                               |
-| ------------- | -------------------------------------- |
-| Unit tests    | Each icon renders correctly in 3 modes |
-| Integration   | Console respects `icon_mode` parameter |
-| Terminal mock | Auto-detection from `TerminalProfile`  |
-| Visual tests  | Snapshot tests for both modes          |
-
-### Feature 2: Runtime Policy System
+**Status:** Not yet implemented
 
 **Problem:** No central control over rendering decisions based on environment.
 
