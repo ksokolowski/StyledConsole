@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, NotRequired, TypedDict
 
 from styledconsole.console import Console
+from styledconsole.icons import icons
 
 if TYPE_CHECKING:
     from styledconsole.console import Console
@@ -18,24 +19,24 @@ class TestResult(TypedDict):
 def _calculate_status(
     passed: int, failed: int, skipped: int, errors: int, total: int
 ) -> tuple[str, str, str]:
-    """Determine overall status, color, and emoji.
+    """Determine overall status, color, and icon.
 
-    Uses semantic color names that themes can resolve.
+    Uses semantic color names and icons module for policy-aware rendering.
     """
     if failed > 0 or errors > 0:
-        return "FAILED", "error", "❌"
+        return "FAILED", "error", str(icons.CROSS)
     elif passed == total and total > 0:
-        return "PASSED", "success", "✅"
+        return "PASSED", "success", str(icons.CHECK)
     elif total == 0:
-        return "NO TESTS", "warning", "⚠️"
+        return "NO TESTS", "warning", str(icons.WARNING)
     else:
-        return "MIXED", "warning", "⚠️"
+        return "MIXED", "warning", str(icons.WARNING)
 
 
 def _list_failures(console: Console, results: list[TestResult]) -> None:
     """List failed tests.
 
-    Uses semantic color 'error' which themes can resolve.
+    Uses semantic color 'error' and icons module for policy-aware rendering.
     """
     failures = [r for r in results if r["status"].upper() in ("FAIL", "ERROR")]
     if not failures:
@@ -47,7 +48,7 @@ def _list_failures(console: Console, results: list[TestResult]) -> None:
 
     for fail in failures:
         status = fail["status"].upper()
-        icon = "❌" if status == "FAIL" else "💥"
+        icon = str(icons.CROSS) if status == "FAIL" else str(icons.FIRE)
 
         content = [f"{icon} [bold]{fail['name']}[/]"]
         if "message" in fail:
@@ -85,14 +86,13 @@ def test_summary(
     skipped = sum(1 for r in results if r["status"].upper() == "SKIP")
     errors = sum(1 for r in results if r["status"].upper() == "ERROR")
 
-    overall_status, color, emoji = _calculate_status(passed, failed, skipped, errors, total)
+    overall_status, color, icon = _calculate_status(passed, failed, skipped, errors, total)
 
     # Header - uses semantic colors that themes can resolve
-    # Note: Rich markup colors inside content need hex codes for Rich compatibility
     # The border_color uses semantic names resolved by console.frame()
     console.frame(
         content=[
-            f"[bold]{emoji}  Test Execution Summary[/]",
+            f"[bold]{icon}  Test Execution Summary[/]",
             "",
             f"Total:   [bold]{total}[/]",
             f"Passed:  {passed}",

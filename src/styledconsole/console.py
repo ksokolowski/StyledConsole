@@ -149,7 +149,7 @@ class Console:
         )
 
         # Initialize rendering engine (handles frame, banner, text, rule, newline)
-        self._renderer = RenderingEngine(self._rich_console, debug=debug)
+        self._renderer = RenderingEngine(self._rich_console, debug=debug, policy=self._policy)
 
         # Initialize export manager (handles HTML and text export)
         self._exporter = ExportManager(self._rich_console, debug=debug)
@@ -1068,6 +1068,7 @@ class Console:
             transient=transient,
             auto_refresh=auto_refresh,
             expand=expand,
+            policy=self._policy,
         )
 
     def resolve_color(self, color: str | None) -> str | None:

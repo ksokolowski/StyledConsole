@@ -5,6 +5,10 @@ using Rich's native renderables (Panel, Align, etc.) with our gradient
 enhancements.
 
 v0.3.0: Architectural rework - uses Rich Panel/Align instead of custom renderers.
+
+Policy-aware: Respects RenderPolicy for graceful degradation on limited terminals.
+- When policy.unicode=False: Uses ASCII borders
+- When policy.color=False: Skips gradient/color application
 """
 
 from __future__ import annotations
@@ -17,13 +21,15 @@ from rich.console import Console as RichConsole
 from rich.text import Text as RichText
 
 from styledconsole.core.banner import Banner
-from styledconsole.core.box_mapping import get_box_style
+from styledconsole.core.box_mapping import get_box_style_for_policy
 from styledconsole.core.gradient_utils import apply_vertical_border_gradient, colorize
 from styledconsole.utils.color import normalize_color_for_rich
 from styledconsole.utils.text import adjust_emoji_spacing_in_text
 
 if TYPE_CHECKING:
     import pyfiglet
+
+    from styledconsole.policy import RenderPolicy
 
 
 class RenderingEngine:
@@ -32,21 +38,31 @@ class RenderingEngine:
     Manages specialized renderers using lazy initialization and delegates
     text/rule/newline operations to Rich Console.
 
+    Policy-aware: Respects RenderPolicy for graceful degradation.
+
     Attributes:
         _rich_console: Rich Console instance for low-level rendering.
         _debug: Enable debug logging for rendering operations.
         _logger: Logger for this rendering engine.
+        _policy: Optional RenderPolicy for environment-aware rendering.
     """
 
-    def __init__(self, rich_console: RichConsole, debug: bool = False) -> None:
+    def __init__(
+        self,
+        rich_console: RichConsole,
+        debug: bool = False,
+        policy: RenderPolicy | None = None,
+    ) -> None:
         """Initialize the rendering engine.
 
         Args:
             rich_console: Rich Console instance to use for rendering.
             debug: Enable debug logging. Defaults to False.
+            policy: Optional RenderPolicy for environment-aware rendering.
         """
         self._rich_console = rich_console
         self._debug = debug
+        self._policy = policy
         self._logger = self._setup_logging()
 
         if self._debug:
@@ -121,8 +137,12 @@ class RenderingEngine:
             end_color=end_color,
         )
 
-        # Apply border gradient if needed
+        # Apply border gradient if needed (skip if color disabled)
         if border_gradient_start and border_gradient_end:
+            # Skip gradient if policy disables color
+            if self._policy is not None and not self._policy.color:
+                return output
+
             # Normalize border gradient colors
             border_gradient_start_norm = normalize_color_for_rich(border_gradient_start)
             border_gradient_end_norm = normalize_color_for_rich(border_gradient_end)
@@ -130,7 +150,12 @@ class RenderingEngine:
             lines = output.splitlines()
             if border_gradient_direction == "vertical":
                 colored_lines = apply_vertical_border_gradient(
-                    lines, border_gradient_start_norm, border_gradient_end_norm, border, title
+                    lines,
+                    border_gradient_start_norm,
+                    border_gradient_end_norm,
+                    border,
+                    title,
+                    self._policy,
                 )
                 return "\n".join(colored_lines)
             else:
@@ -181,8 +206,8 @@ class RenderingEngine:
             width, padding, max_content_width, title_width, title
         )
 
-        # Get box style and build frame
-        box_style = get_box_style(border)
+        # Get box style (policy-aware: falls back to ASCII when unicode disabled)
+        box_style = get_box_style_for_policy(border, self._policy)
 
         # Build borders
         top_line = self._build_top_border(
@@ -264,9 +289,9 @@ class RenderingEngine:
 
             styled_title = adj_title
             if title_color:
-                styled_title = colorize(styled_title, title_color)
+                styled_title = colorize(styled_title, title_color, self._policy)
             elif border_color:
-                styled_title = colorize(styled_title, border_color)
+                styled_title = colorize(styled_title, border_color, self._policy)
 
             top_bar = (
                 box_style.top * left_pad + " " + styled_title + " " + box_style.top * right_pad
@@ -274,7 +299,7 @@ class RenderingEngine:
 
         top_line = f"{box_style.top_left}{top_bar}{box_style.top_right}"
         if border_color:
-            top_line = colorize(top_line, border_color)
+            top_line = colorize(top_line, border_color, self._policy)
         return top_line
 
     def _build_bottom_border(self, box_style, inner_width: int, border_color: str | None) -> str:
@@ -283,7 +308,7 @@ class RenderingEngine:
             f"{box_style.bottom_left}{box_style.bottom * inner_width}{box_style.bottom_right}"
         )
         if border_color:
-            bottom_line = colorize(bottom_line, border_color)
+            bottom_line = colorize(bottom_line, border_color, self._policy)
         return bottom_line
 
     def _build_content_lines(
@@ -321,8 +346,8 @@ class RenderingEngine:
             left_border = box_style.mid_left
             right_border = box_style.mid_right
             if border_color:
-                left_border = colorize(left_border, border_color)
-                right_border = colorize(right_border, border_color)
+                left_border = colorize(left_border, border_color, self._policy)
+                right_border = colorize(right_border, border_color, self._policy)
 
             rendered.append(f"{left_border}{full_line}{right_border}")
 
@@ -343,9 +368,9 @@ class RenderingEngine:
 
             ratio = index / (total - 1) if total > 1 else 0
             color = interpolate_color(start_color, end_color, ratio)
-            return colorize(line, color)
+            return colorize(line, color, self._policy)
         elif content_color:
-            return colorize(line, content_color)
+            return colorize(line, content_color, self._policy)
         return line
 
     def print_frame(

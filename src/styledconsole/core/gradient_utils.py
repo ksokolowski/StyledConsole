@@ -2,16 +2,23 @@
 
 This module provides helper functions for applying gradients to text lines,
 extracted from effects.py to allow reuse in RenderingEngine.
+
+Policy-aware: All colorization functions accept an optional `policy` parameter.
+When policy.color=False, functions return plain text without ANSI codes.
 """
 
 from __future__ import annotations
 
 import re
 from collections.abc import Callable
+from typing import TYPE_CHECKING
 
 from styledconsole.core.styles import BorderStyle, get_border_style
 from styledconsole.utils.color import interpolate_color, parse_color
 from styledconsole.utils.text import strip_ansi, visual_width
+
+if TYPE_CHECKING:
+    from styledconsole.policy import RenderPolicy
 
 # Regex for ANSI escape codes
 ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
@@ -34,19 +41,26 @@ RAINBOW_COLORS = [
 ]
 
 
-def colorize(text: str, color: str) -> str:
+def colorize(text: str, color: str, policy: RenderPolicy | None = None) -> str:
     """Apply color to text using ANSI codes.
 
     Handles nested ANSI resets by re-applying the outer color after any
     internal reset codes (\033[0m).
 
+    Policy-aware: returns plain text when policy.color=False.
+
     Args:
         text: Text to colorize
         color: Color specification (hex, rgb, or CSS4 name)
+        policy: Optional RenderPolicy. If policy.color=False, returns text unchanged.
 
     Returns:
-        ANSI colored text
+        ANSI colored text (or plain text if color disabled)
     """
+    # Check policy - skip colorization if color is disabled
+    if policy is not None and not policy.color:
+        return text
+
     r, g, b = parse_color(color)
     start_sequence = f"\033[38;2;{r};{g};{b}m"
     reset_sequence = "\033[0m"
@@ -159,19 +173,28 @@ def apply_vertical_content_gradient(
 
 
 def _colorize_line_with_ansi(
-    line: str, color: str, should_color_func: Callable[[str, int, int], bool]
+    line: str,
+    color: str,
+    should_color_func: Callable[[str, int, int], bool],
+    policy: RenderPolicy | None = None,
 ) -> str:
     """Colorize a line while preserving ANSI codes, based on a predicate function.
+
+    Policy-aware: returns line unchanged when policy.color=False.
 
     Args:
         line: The text line to colorize (may contain ANSI codes)
         color: The color to apply
         should_color_func: Predicate function(char, visible_index, total_visible_length)
                            that returns True if the character should be colored.
+        policy: Optional RenderPolicy. If policy.color=False, returns line unchanged.
 
     Returns:
-        Colorized line with ANSI codes preserved
+        Colorized line with ANSI codes preserved (or plain line if color disabled)
     """
+    # Check policy - skip colorization if color is disabled
+    if policy is not None and not policy.color:
+        return line
     # Split into segments (text vs ansi)
     segments = []
     pos = 0
@@ -208,7 +231,7 @@ def _colorize_line_with_ansi(
                     # Flush current group
                     text_chunk = "".join(current_group)
                     if current_should_color:
-                        result_parts.append(colorize(text_chunk, color))
+                        result_parts.append(colorize(text_chunk, color, policy))
                     else:
                         result_parts.append(text_chunk)
                     # Start new group
@@ -221,7 +244,7 @@ def _colorize_line_with_ansi(
             if current_group:
                 text_chunk = "".join(current_group)
                 if current_should_color:
-                    result_parts.append(colorize(text_chunk, color))
+                    result_parts.append(colorize(text_chunk, color, policy))
                 else:
                     result_parts.append(text_chunk)
 
@@ -229,14 +252,36 @@ def _colorize_line_with_ansi(
 
 
 def apply_vertical_border_gradient(
-    lines: list[str], start_color: str, end_color: str, border: str, title: str | None
+    lines: list[str],
+    start_color: str,
+    end_color: str,
+    border: str,
+    title: str | None,
+    policy: RenderPolicy | None = None,
 ) -> list[str]:
     """Apply vertical gradient to border characters only.
 
     This function colors only the actual border characters (top/bottom borders,
     vertical borders) without affecting the content, which may already have
     ANSI formatting from Rich's Text markup.
+
+    Policy-aware: returns lines unchanged when policy.color=False.
+
+    Args:
+        lines: The text lines to colorize
+        start_color: Start color for the gradient
+        end_color: End color for the gradient
+        border: Border style name
+        title: Optional title (unused but kept for API compatibility)
+        policy: Optional RenderPolicy. If policy.color=False, returns lines unchanged.
+
+    Returns:
+        Colorized lines (or original lines if color disabled)
     """
+    # Check policy - skip colorization if color is disabled
+    if policy is not None and not policy.color:
+        return lines
+
     style = get_border_style(border)
     border_chars = get_border_chars(style)
     colored_lines = []
@@ -257,13 +302,13 @@ def apply_vertical_border_gradient(
             # Top or bottom border (possibly with title)
             # Color all characters that are part of the border set
             colored_lines.append(
-                _colorize_line_with_ansi(line, color, lambda c, i, t: c in border_chars)
+                _colorize_line_with_ansi(line, color, lambda c, i, t: c in border_chars, policy)
             )
         elif is_vertical:
             # Content line with vertical borders
             # Color only the first and last visible characters
             colored_lines.append(
-                _colorize_line_with_ansi(line, color, lambda c, i, t: i == 0 or i == t - 1)
+                _colorize_line_with_ansi(line, color, lambda c, i, t: i == 0 or i == t - 1, policy)
             )
         else:
             # Not a border line (e.g. empty or just content?)

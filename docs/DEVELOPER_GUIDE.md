@@ -1,7 +1,7 @@
 # StyledConsole Developer Guide
 
-**Version:** 0.6.0
-**Last Updated:** November 30, 2025
+**Version:** 0.9.0
+**Last Updated:** December 3, 2025
 **Audience:** Contributors and advanced users
 
 ______________________________________________________________________
@@ -11,6 +11,7 @@ ______________________________________________________________________
 1. [Architecture Overview](#architecture-overview)
 1. [Module Structure](#module-structure)
 1. [Core Components](#core-components)
+1. [Policy-Aware Rendering](#policy-aware-rendering)
 1. [Extending the Library](#extending-the-library)
 1. [API Reference](#api-reference)
 1. [Testing](#testing)
@@ -634,6 +635,167 @@ parse_color((30, 144, 255))    # (30, 144, 255)
 
 # Gradient interpolation
 interpolate_color("red", "blue", 0.5)  # Midpoint hex
+```
+
+______________________________________________________________________
+
+## Policy-Aware Rendering
+
+### Overview
+
+StyledConsole v0.9.0 implements **comprehensive policy-awareness** throughout the
+rendering pipeline. The `RenderPolicy` class controls how output adapts to different
+terminal environments.
+
+### Policy Flow
+
+```text
+Console(policy=RenderPolicy.from_env())
+    │
+    ├─→ RenderingEngine(policy)
+    │       │
+    │       ├─→ box_mapping.get_box_style_for_policy()
+    │       │       └─→ ASCII box when unicode=False
+    │       │
+    │       ├─→ gradient_utils.colorize(policy=policy)
+    │       │       └─→ Plain text when color=False
+    │       │
+    │       └─→ gradient_utils.apply_vertical_border_gradient(policy)
+    │               └─→ Skipped when color=False
+    │
+    ├─→ StyledProgress(policy)
+    │       └─→ Text-based fallback when TTY unavailable
+    │
+    └─→ icons module
+            └─→ Colored ASCII when emoji=False
+```
+
+### Implementation Pattern
+
+All policy-aware functions follow this pattern:
+
+```python
+def colorize_text(
+    text: str,
+    color: str,
+    policy: RenderPolicy | None = None
+) -> str:
+    """Apply color, respecting policy."""
+    # Guard clause: skip if policy disables colors
+    if policy is not None and not policy.color:
+        return text
+
+    # Normal colorization logic
+    return f"\033[38;2;{r};{g};{b}m{text}\033[0m"
+```
+
+### Policy-Aware Components
+
+| Module                     | Function/Class                     | Policy Param |
+| -------------------------- | ---------------------------------- | ------------ |
+| `utils/color.py`           | `apply_line_gradient()`            | ✅           |
+| `utils/color.py`           | `colorize_text()`                  | ✅           |
+| `core/gradient_utils.py`   | `colorize()`                       | ✅           |
+| `core/gradient_utils.py`   | `apply_vertical_border_gradient()` | ✅           |
+| `core/box_mapping.py`      | `get_box_style_for_policy()`       | ✅           |
+| `core/progress.py`         | `StyledProgress`                   | ✅           |
+| `core/rendering_engine.py` | `RenderingEngine`                  | ✅           |
+| `animation.py`             | `_supports_cursor_control()`       | Implicit     |
+| `presets/status.py`        | Uses `icons` module                | Implicit     |
+| `presets/summary.py`       | Uses `icons` module                | Implicit     |
+
+### RenderPolicy Class
+
+```python
+@dataclass
+class RenderPolicy:
+    color: bool = True       # ANSI color codes
+    unicode: bool = True     # Unicode box drawing
+    emoji: bool = True       # Unicode emoji symbols
+    force_ascii_icons: bool = False  # Force ASCII even for icons
+
+    @classmethod
+    def from_env(cls) -> RenderPolicy:
+        """Auto-detect from environment."""
+        # Detects: NO_COLOR, FORCE_COLOR, TERM=dumb, CI, TTY
+
+    @classmethod
+    def full(cls) -> RenderPolicy:
+        """All features enabled."""
+
+    @classmethod
+    def minimal(cls) -> RenderPolicy:
+        """ASCII only, no colors."""
+
+    @classmethod
+    def ci_friendly(cls) -> RenderPolicy:
+        """Colors enabled, ASCII icons."""
+
+    def with_override(self, **kwargs) -> RenderPolicy:
+        """Clone with specific overrides."""
+```
+
+### Progress Bar Fallback
+
+When Rich progress bars aren't suitable (piped output, no TTY, limited terminal):
+
+```python
+class StyledProgress:
+    def _should_use_fallback(self) -> bool:
+        """Check if we need text-based output."""
+        if self._policy is not None:
+            if not self._policy.color:
+                return True
+        if not sys.stdout.isatty():
+            return True
+        return False
+
+    def _fallback_update(self, task: _FallbackTask) -> None:
+        """Text-based progress: [####........] 40% (40/100) 00:05 / 00:08"""
+        bar = "#" * filled + "." * empty
+        print(f"\r[{bar}] {percent}% ({completed}/{total}) {elapsed} / {eta}", end="")
+```
+
+### Icons Module Integration
+
+Presets use the `icons` module for policy-aware symbol rendering:
+
+```python
+# In presets/status.py
+from styledconsole import icons
+
+STATUS_THEME = {
+    "PASS": {"icon": icons.CHECK, "color": "green"},
+    "FAIL": {"icon": icons.CROSS, "color": "red"},
+    "ERROR": {"icon": icons.FIRE, "color": "red"},
+    "WARN": {"icon": icons.WARNING, "color": "yellow"},
+}
+```
+
+The `icons` module automatically returns emoji or colored ASCII based on the
+current icon mode (which can be set by `RenderPolicy.apply_to_icons()`).
+
+### Testing Policy-Aware Code
+
+```python
+import pytest
+from styledconsole import RenderPolicy
+
+@pytest.fixture
+def no_color_policy():
+    """Policy with colors disabled."""
+    return RenderPolicy(color=False, unicode=True, emoji=True)
+
+@pytest.fixture
+def minimal_policy():
+    """Fully degraded policy."""
+    return RenderPolicy.minimal()
+
+def test_graceful_degradation(no_color_policy):
+    """Test output without colors."""
+    result = colorize_text("hello", "red", policy=no_color_policy)
+    assert result == "hello"  # No ANSI codes
+    assert "\033[" not in result
 ```
 
 ______________________________________________________________________

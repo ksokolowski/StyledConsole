@@ -14,7 +14,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from styledconsole import EMOJI, Console
+from styledconsole import Console, icons
 
 console = Console()
 
@@ -46,8 +46,8 @@ def display_menu(categories: dict[str, list[Path]]) -> tuple[list[Path], int]:
     """Display the example selection menu."""
     console.newline()
     console.frame(
-        f"{EMOJI.SPARKLES} Choose an example to run",
-        title=f"{EMOJI.PALETTE} StyledConsole Examples",
+        f"{icons.SPARKLES} Choose an example to run",
+        title=f"{icons.PALETTE} StyledConsole Examples",
         border="rounded",
         border_color="cyan",
         width=70,
@@ -67,7 +67,7 @@ def display_menu(categories: dict[str, list[Path]]) -> tuple[list[Path], int]:
 
         console.frame(
             lines,
-            title=f"{EMOJI.FOLDER} {category}",
+            title=f"{icons.FOLDER} {category}",
             border="solid",
             width=70,
             align="left",
@@ -81,7 +81,7 @@ def display_menu(categories: dict[str, list[Path]]) -> tuple[list[Path], int]:
             f"  [{idx:2}] Run ALL examples",
             "  [ 0] Exit",
         ],
-        title=f"{EMOJI.LIGHTNING} Options",
+        title=f"{icons.LIGHTNING} Options",
         border="solid",
         width=70,
         align="left",
@@ -94,7 +94,7 @@ def display_menu(categories: dict[str, list[Path]]) -> tuple[list[Path], int]:
 def run_example(example_path: Path, auto_continue: bool = False) -> bool:
     """Run a single example script."""
     console.newline()
-    console.rule(f"{EMOJI.ROCKET} Running: {example_path.name}", color="cyan")
+    console.rule(f"{icons.ROCKET} Running: {example_path.name}", color="cyan")
     console.newline()
 
     try:
@@ -107,10 +107,10 @@ def run_example(example_path: Path, auto_continue: bool = False) -> bool:
 
         console.newline()
         if success:
-            console.text(f"{EMOJI.CHECK} Completed: {example_path.name}", color="green")
+            console.text(f"{icons.CHECK} Completed: {example_path.name}", color="green")
         else:
             console.text(
-                f"{EMOJI.CROSS} Failed: {example_path.name} (exit code {result.returncode})",
+                f"{icons.CROSS} Failed: {example_path.name} (exit code {result.returncode})",
                 color="red",
             )
 
@@ -121,7 +121,7 @@ def run_example(example_path: Path, auto_continue: bool = False) -> bool:
 
     except KeyboardInterrupt:
         console.newline()
-        console.text(f"{EMOJI.WARNING} Interrupted", color="yellow")
+        console.text(f"{icons.WARNING} Interrupted", color="yellow")
         return False
 
 
@@ -132,7 +132,7 @@ def run_all_examples(example_list: list[Path], auto_continue: bool = False):
     console.newline()
     console.frame(
         f"Running {total} examples...",
-        title=f"{EMOJI.FIRE} Run All",
+        title=f"{icons.FIRE} Run All",
         border="double",
         border_color="yellow",
         width=50,
@@ -151,7 +151,7 @@ def run_all_examples(example_list: list[Path], auto_continue: bool = False):
     status = "green" if success_count == total else "yellow"
     console.frame(
         f"Passed: {success_count}/{total}",
-        title=f"{EMOJI.CHART_BAR} Summary",
+        title=f"{icons.CHART_BAR} Summary",
         border="double",
         border_color=status,
         width=40,
@@ -172,7 +172,7 @@ def interactive_mode(categories: dict[str, list[Path]]):
                 console.newline()
                 console.frame(
                     "Thanks for exploring StyledConsole!",
-                    title=f"{EMOJI.WAVE} Goodbye",
+                    title=f"{icons.WAVE} Goodbye",
                     border="rounded",
                     border_color="cyan",
                     width=50,
@@ -188,15 +188,15 @@ def interactive_mode(categories: dict[str, list[Path]]):
             elif 1 <= choice_num <= len(example_list):
                 run_example(example_list[choice_num - 1], auto_continue=False)
             else:
-                console.text(f"{EMOJI.CROSS} Invalid choice: {choice_num}", color="red")
+                console.text(f"{icons.CROSS} Invalid choice: {choice_num}", color="red")
                 input("Press Enter to continue...")
 
         except ValueError:
-            console.text(f"{EMOJI.CROSS} Invalid input: '{choice}'", color="red")
+            console.text(f"{icons.CROSS} Invalid input: '{choice}'", color="red")
             input("Press Enter to continue...")
         except KeyboardInterrupt:
             console.newline()
-            console.text(f"{EMOJI.WAVE} Interrupted!", color="yellow")
+            console.text(f"{icons.WAVE} Interrupted!", color="yellow")
             break
 
 
@@ -205,7 +205,7 @@ def main():
     categories = get_all_examples()
 
     if not any(categories.values()):
-        console.text(f"{EMOJI.WARNING} No examples found!", color="yellow")
+        console.text(f"{icons.WARNING} No examples found!", color="yellow")
         return
 
     # Check command line args

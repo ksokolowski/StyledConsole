@@ -1,12 +1,14 @@
 import pytest
 
 from styledconsole import Console
+from styledconsole.policy import RenderPolicy
 
 
 class TestNestedFrames:
     @pytest.fixture
     def console(self):
-        return Console()
+        # Use full policy to ensure color output in tests
+        return Console(policy=RenderPolicy.full())
 
     def test_render_frame_returns_string(self, console):
         """Verify render_frame returns a string."""

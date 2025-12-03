@@ -1,7 +1,7 @@
 # StyledConsole User Guide
 
-**Version:** 0.7.0
-**Last Updated:** November 30, 2025
+**Version:** 0.9.0
+**Last Updated:** December 3, 2025
 
 ______________________________________________________________________
 
@@ -13,6 +13,8 @@ ______________________________________________________________________
 1. [Banners](#banners)
 1. [Colors & Gradients](#colors--gradients)
 1. [Emojis](#emojis)
+1. [Icons & Terminal Fallback](#icons--terminal-fallback)
+1. [Render Policy](#render-policy)
 1. [Presets](#presets)
 1. [HTML Export](#html-export)
 1. [Tips & Best Practices](#tips--best-practices)
@@ -477,9 +479,222 @@ ZWJ (Zero Width Joiner) sequences break alignment:
 
 ______________________________________________________________________
 
+## Icons & Terminal Fallback
+
+While `EMOJI` provides raw Unicode emojis, the `icons` module provides **policy-aware icons** that automatically fall back to colored ASCII in terminals that don't support emoji.
+
+### Why Use Icons?
+
+| Environment     | EMOJI        | icons        |
+| --------------- | ------------ | ------------ |
+| Modern terminal | ✅           | ✅           |
+| CI/CD (Jenkins) | ❌ (boxes)   | ✅ (colored) |
+| SSH sessions    | ❌ (broken)  | ✅ (ASCII)   |
+| Windows cmd.exe | ❌ (garbled) | ✅ (colored) |
+| Piped output    | ❌ (broken)  | ✅ (plain)   |
+
+### Using Icons
+
+```python
+from styledconsole import icons, set_icon_mode
+
+# Access icons via attributes - automatically chooses emoji or ASCII
+print(f"{icons.CHECK} Tests passed")    # ✅ or (OK) in green
+print(f"{icons.CROSS} Build failed")    # ❌ or (FAIL) in red
+print(f"{icons.WARNING} Deprecation")   # ⚠️ or (WARN) in yellow
+print(f"{icons.ROCKET} Deploying...")   # 🚀 or >>> in cyan
+
+# Force specific mode globally
+set_icon_mode("ascii")   # Force colored ASCII everywhere
+set_icon_mode("emoji")   # Force emoji everywhere
+set_icon_mode("auto")    # Auto-detect (default)
+```
+
+### Icon Categories
+
+| Category  | Examples                          | Count |
+| --------- | --------------------------------- | ----- |
+| STATUS    | CHECK, CROSS, WARNING, INFO       | 11    |
+| STARS     | STAR, SPARKLES, GLOWING_STAR      | 7     |
+| DOCUMENT  | FILE, FOLDER, CLIPBOARD, MEMO     | 9     |
+| TECH      | LAPTOP, PHONE, KEYBOARD, BATTERY  | 16    |
+| TOOLS     | WRENCH, HAMMER, GEAR, MAGNET      | 13    |
+| TRANSPORT | ROCKET, CAR, AIRPLANE, SHIP       | 10    |
+| WEATHER   | SUN, MOON, CLOUD, RAIN, LIGHTNING | 12    |
+| ARROWS    | ARROW_RIGHT, ARROW_UP, CYCLE      | 15    |
+
+### Icon Properties
+
+```python
+from styledconsole import icons
+
+icon = icons.get("CHECK")
+print(icon.emoji)       # "✅"
+print(icon.ascii)       # "(OK)"
+print(icon.color)       # "green"
+print(icon.as_emoji())  # Always returns emoji
+print(icon.as_ascii())  # Always returns colored ASCII
+```
+
+______________________________________________________________________
+
+## Render Policy
+
+**RenderPolicy** is the central control mechanism for adapting output to different terminal environments. It automatically detects terminal capabilities and adjusts rendering accordingly.
+
+### Why Use RenderPolicy?
+
+StyledConsole is **policy-aware** throughout the entire rendering pipeline:
+
+- **Colors**: Skipped when `policy.color=False`
+- **Unicode borders**: Falls back to ASCII when `policy.unicode=False`
+- **Emojis**: Uses colored ASCII fallback when `policy.emoji=False`
+- **Gradients**: Plain text when colors disabled
+- **Progress bars**: Text-based fallback without cursor control
+
+### Automatic Detection
+
+By default, Console auto-detects the best policy from the environment:
+
+```python
+from styledconsole import Console
+
+# Auto-detects capabilities from environment
+console = Console()
+
+# Access the detected policy
+print(console.policy)
+# RenderPolicy(color=True, unicode=True, emoji=True, ...)
+```
+
+### Environment Variables
+
+| Variable         | Effect                               |
+| ---------------- | ------------------------------------ |
+| `NO_COLOR`       | Disables all color output            |
+| `FORCE_COLOR`    | Forces color even without TTY        |
+| `TERM=dumb`      | Disables Unicode and emoji           |
+| `CI=true`        | Conservative mode (colors, no emoji) |
+| `GITHUB_ACTIONS` | CI-friendly output                   |
+| `GITLAB_CI`      | CI-friendly output                   |
+| `JENKINS_URL`    | CI-friendly output                   |
+
+### Explicit Policy Control
+
+```python
+from styledconsole import Console, RenderPolicy
+
+# Factory methods for common scenarios
+policy = RenderPolicy.full()          # All features enabled
+policy = RenderPolicy.minimal()       # ASCII only, no colors
+policy = RenderPolicy.ci_friendly()   # Colors, ASCII icons
+policy = RenderPolicy.no_color()      # Respects NO_COLOR standard
+
+# Use with Console
+console = Console(policy=RenderPolicy.ci_friendly())
+
+# Auto-detect with overrides
+policy = RenderPolicy.from_env().with_override(emoji=False)
+console = Console(policy=policy)
+```
+
+### Policy Properties
+
+| Property  | True                | False                |
+| --------- | ------------------- | -------------------- |
+| `color`   | ANSI color codes    | Plain text           |
+| `unicode` | Unicode box drawing | ASCII `+--+`         |
+| `emoji`   | Unicode emoji       | Colored ASCII `(OK)` |
+
+### Creating Custom Policies
+
+```python
+from styledconsole import RenderPolicy, Console
+
+# Full manual control
+policy = RenderPolicy(
+    color=True,     # Enable ANSI colors
+    unicode=True,   # Use Unicode borders
+    emoji=False,    # Use ASCII icons
+)
+console = Console(policy=policy)
+
+# Override specific settings
+base = RenderPolicy.from_env()
+custom = base.with_override(
+    emoji=False,    # Force ASCII icons
+    color=True,     # Force colors on
+)
+```
+
+### Global Default Policy
+
+```python
+from styledconsole import set_default_policy, reset_default_policy, RenderPolicy
+
+# Set for entire application
+set_default_policy(RenderPolicy.ci_friendly())
+
+# All new Console instances use this policy
+console1 = Console()  # Uses ci_friendly
+console2 = Console()  # Uses ci_friendly
+
+# Reset to auto-detection
+reset_default_policy()
+```
+
+### What Gets Affected
+
+| Component        | policy.color=False | policy.unicode=False | policy.emoji=False  |
+| ---------------- | ------------------ | -------------------- | ------------------- |
+| Frame borders    | No color           | ASCII `+--+`         | (no effect)         |
+| Border gradients | Skipped            | (no effect)          | (no effect)         |
+| Content colors   | Plain text         | (no effect)          | (no effect)         |
+| icons module     | Plain ASCII        | (no effect)          | Colored ASCII       |
+| Progress bars    | Text-based         | ASCII progress       | (no effect)         |
+| Presets (status) | Plain text         | ASCII borders        | Colored ASCII icons |
+
+### Example: CI/CD Output
+
+```python
+from styledconsole import Console, RenderPolicy, icons
+
+# In CI environment - auto-detected
+console = Console()  # Detects CI=true, uses conservative settings
+
+# Explicit CI mode
+console = Console(policy=RenderPolicy.ci_friendly())
+
+# Works in all environments
+console.frame(
+    f"{icons.CHECK} All tests passed\n{icons.ROCKET} Deploying...",
+    title="Build Status",
+    border="rounded",
+    border_color="green"
+)
+
+# Output in modern terminal:
+# ╭────── Build Status ──────╮
+# │ ✅ All tests passed      │
+# │ 🚀 Deploying...          │
+# ╰──────────────────────────╯
+
+# Output in CI (ASCII mode):
+# +------ Build Status ------+
+# | (OK) All tests passed    |
+# | >>> Deploying...         |
+# +--------------------------+
+```
+
+______________________________________________________________________
+
 ## Presets
 
 Presets are pre-built, high-level components for common CLI patterns.
+
+> **💡 Policy-Aware**: All presets respect the Console's render policy. They use the
+> `icons` module for symbols, so they degrade gracefully in CI/CD environments,
+> SSH sessions, and terminals without emoji support.
 
 ### Available Presets
 

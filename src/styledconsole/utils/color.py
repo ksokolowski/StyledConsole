@@ -7,16 +7,27 @@ Supports multiple color formats:
 
 The combined color system allows using human-readable names from both
 CSS4 standard and Rich's extended palette throughout the library.
+
+Policy-aware colorization:
+- All colorization functions accept an optional `policy` parameter
+- When `policy.color=False`, functions return plain text without ANSI codes
+- This enables graceful degradation for NO_COLOR, CI environments, etc.
 """
+
+from __future__ import annotations
 
 import re
 from functools import lru_cache
+from typing import TYPE_CHECKING
 
 from styledconsole.utils.color_data import (
     CSS4_COLORS,
     RICH_TO_CSS4_MAPPING,
     get_color_names,
 )
+
+if TYPE_CHECKING:
+    from styledconsole.policy import RenderPolicy
 
 # Regex patterns for color parsing
 HEX_PATTERN = re.compile(r"^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")
@@ -356,18 +367,21 @@ def apply_line_gradient(
     lines: list[str],
     start_color: str,
     end_color: str,
+    policy: RenderPolicy | None = None,
 ) -> list[str]:
     """Apply vertical gradient to lines (top to bottom).
 
     Optimized with cached color parsing and RGB interpolation.
+    Policy-aware: returns uncolored lines when policy.color=False.
 
     Args:
         lines: Text lines to colorize
         start_color: Starting color (hex, RGB, or CSS4 name)
         end_color: Ending color (hex, RGB, or CSS4 name)
+        policy: Optional RenderPolicy. If policy.color=False, returns lines unchanged.
 
     Returns:
-        Lines with ANSI color codes applied
+        Lines with ANSI color codes applied (or unchanged if color disabled)
 
     Example:
         >>> lines = ["Line 1", "Line 2", "Line 3"]
@@ -376,6 +390,10 @@ def apply_line_gradient(
         ...     print(line)  # Gradient from red to blue
     """
     if not lines:
+        return lines
+
+    # Check policy - skip colorization if color is disabled
+    if policy is not None and not policy.color:
         return lines
 
     # Parse colors once (cached by lru_cache)
@@ -399,26 +417,53 @@ def apply_line_gradient(
     return colored_lines
 
 
-def colorize_text(text: str, color: str) -> str:
+def colorize_text(
+    text: str,
+    color: str,
+    policy: RenderPolicy | None = None,
+) -> str:
     """Apply color to text using ANSI codes.
+
+    Policy-aware: returns plain text when policy.color=False.
 
     Args:
         text: Text to colorize
         color: Color specification (hex, RGB, or CSS4 name)
+        policy: Optional RenderPolicy. If policy.color=False, returns text unchanged.
 
     Returns:
-        ANSI colored text
+        ANSI colored text (or plain text if color disabled)
 
     Example:
         >>> colored = colorize_text("Hello", "red")
         >>> print(colored)  # Red text
     """
+    # Check policy - skip colorization if color is disabled
+    if policy is not None and not policy.color:
+        return text
+
     r, g, b = parse_color(color)
     return f"\033[38;2;{r};{g};{b}m{text}\033[0m"
 
 
-# Alias for clarity
-color_to_ansi = colorize_text
+def color_to_ansi(
+    text: str,
+    color: str,
+    policy: RenderPolicy | None = None,
+) -> str:
+    """Apply color to text using ANSI codes (alias for colorize_text).
+
+    Policy-aware: returns plain text when policy.color=False.
+
+    Args:
+        text: Text to colorize
+        color: Color specification (hex, RGB, or CSS4 name)
+        policy: Optional RenderPolicy. If policy.color=False, returns text unchanged.
+
+    Returns:
+        ANSI colored text (or plain text if color disabled)
+    """
+    return colorize_text(text, color, policy)
 
 
 __all__ = [

@@ -121,9 +121,52 @@ policy.apply_to_icons()
 | `examples/demos/icon_provider_demo.py` | Icon system demonstration          |
 | `examples/demos/render_policy_demo.py` | Policy system demonstration        |
 
+#### Comprehensive Policy Integration
+
+Policy-awareness now propagates through **every** rendering component:
+
+| Component                  | Before             | After (policy-aware)                     |
+| -------------------------- | ------------------ | ---------------------------------------- |
+| `utils/color.py`           | Always emits ANSI  | Skips ANSI when `policy.color=False`     |
+| `core/gradient_utils.py`   | Always colorizes   | Plain text when colors disabled          |
+| `core/box_mapping.py`      | Rich Box only      | ASCII `+--+` when `policy.unicode=False` |
+| `core/progress.py`         | Rich progress only | Text-based `[####....]` fallback         |
+| `core/rendering_engine.py` | Ignored policy     | Full policy integration                  |
+| `animation.py`             | Required cursor    | Static print fallback                    |
+| `presets/status.py`        | Hardcoded emojis   | Uses `icons` module                      |
+| `presets/summary.py`       | Hardcoded emojis   | Uses `icons` module                      |
+
+**Progress Bar Text Fallback:**
+
+```text
+[####........] 40% (40/100) 00:05 / 00:08
+[########....] 80% (80/100) 00:08 / 00:10
+[############] 100% (100/100) Complete
+```
+
+**Policy Integration Pattern:**
+
+```python
+def colorize_text(text, color, policy=None):
+    if policy is not None and not policy.color:
+        return text  # Skip ANSI codes
+    # ... normal colorization
+```
+
 ### Changed
 
 - Updated `__init__.py` to export icons and policy module components
+- `RenderingEngine` now accepts and propagates `policy` to all color operations
+- `StyledProgress` includes text-based fallback for limited terminals
+- All preset modules (`status.py`, `summary.py`) now use `icons` module instead of hardcoded emojis
+- `box_mapping.py` added `get_box_style_for_policy()` for ASCII border fallback
+- Animation module detects cursor control support and falls back gracefully
+
+### Documentation
+
+- **USER_GUIDE.md**: Added "Icons & Terminal Fallback" and "Render Policy" sections
+- **DEVELOPER_GUIDE.md**: Added "Policy-Aware Rendering" architecture section
+- **PROJECT_STATUS.md**: Added "Feature 3: Comprehensive Policy Integration"
 
 ## [0.8.0] - 2025-11-30
 

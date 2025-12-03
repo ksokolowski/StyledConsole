@@ -3,12 +3,21 @@ from unittest.mock import Mock, patch
 import pytest
 
 from styledconsole.console import Console
+from styledconsole.icons import set_icon_mode
 from styledconsole.presets.status import status_frame
 
 
 @pytest.fixture
 def mock_console():
     return Mock(spec=Console)
+
+
+@pytest.fixture(autouse=True)
+def force_emoji_mode():
+    """Force emoji mode for all tests in this module to ensure consistent output."""
+    set_icon_mode("emoji")
+    yield
+    set_icon_mode("auto")
 
 
 def test_status_frame_pass(mock_console):
@@ -58,7 +67,8 @@ def test_status_frame_error(mock_console):
     assert kwargs["title"] == " ERROR "
     assert kwargs["border_color"] == "error"  # Semantic color name (same as FAIL)
     assert kwargs["title_color"] == "error"  # Semantic color name
-    assert "💥  [bold]Test Case 4[/]" in kwargs["content"][0]
+    # Uses 🔥 (FIRE icon) for ERROR status
+    assert "🔥  [bold]Test Case 4[/]" in kwargs["content"][0]
 
 
 def test_status_frame_with_duration(mock_console):

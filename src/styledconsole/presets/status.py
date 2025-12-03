@@ -5,22 +5,22 @@ from typing import TYPE_CHECKING, Any, NotRequired, TypedDict
 from rich.markup import escape
 
 from styledconsole.console import Console
+from styledconsole.icons import icons
 
 if TYPE_CHECKING:
     from styledconsole.console import Console
 
 
 # Configuration for status themes
-# Using emojis from SAFE_EMOJIS for consistent width handling
-# VS16 emojis (⚠️, ℹ️) are now supported via automatic spacing adjustment
+# Using icons module for policy-aware emoji/ASCII fallback
 # Colors use semantic names that themes can resolve (success, error, warning, info)
 STATUS_THEME = {
-    "PASS": {"color": "success", "emoji": "✅"},
-    "FAIL": {"color": "error", "emoji": "❌"},
-    "SKIP": {"color": "warning", "emoji": "⚠️"},  # VS16 warning sign - auto-adjusted
-    "ERROR": {"color": "error", "emoji": "💥"},
+    "PASS": {"color": "success", "icon": icons.CHECK},
+    "FAIL": {"color": "error", "icon": icons.CROSS},
+    "SKIP": {"color": "warning", "icon": icons.WARNING},
+    "ERROR": {"color": "error", "icon": icons.FIRE},
 }
-DEFAULT_STATUS = {"color": "info", "emoji": "ℹ️"}  # VS16 info sign - auto-adjusted
+DEFAULT_STATUS = {"color": "info", "icon": icons.INFO}
 
 
 class StatusEntry(TypedDict):
@@ -46,9 +46,9 @@ def _build_status_content(
     status_key = status.upper()
     theme = STATUS_THEME.get(status_key, DEFAULT_STATUS)
     color = theme["color"]
-    emoji = theme["emoji"]
+    icon = str(theme["icon"])  # Uses icons module for policy-aware rendering
 
-    lines: list[str] = [f"{emoji}  [bold]{escape(name)}[/]"]
+    lines: list[str] = [f"{icon}  [bold]{escape(name)}[/]"]
 
     if duration is not None:
         lines.append(f"[{color}]Duration: {duration:.2f}s[/]")

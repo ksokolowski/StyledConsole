@@ -2,10 +2,20 @@
 
 This module provides compatibility between our legacy border names and Rich's
 native box styles, allowing seamless transition to Rich Panel.
+
+Policy-aware: Use get_box_style_for_policy() to automatically fall back
+to ASCII borders when policy.unicode=False.
 """
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from rich import box
 from rich.box import Box
+
+if TYPE_CHECKING:
+    from styledconsole.policy import RenderPolicy
 
 # Custom box style for THICK - uses block characters (█ ▀ ▄) for a bold, thick appearance
 # Uses upper blocks (▀) for top, lower blocks (▄) for bottom for proper visual alignment
@@ -93,3 +103,33 @@ def get_box_style(border_name: str) -> box.Box:
             f"Unknown border style: {border_name}. Valid options: {', '.join(BORDER_TO_BOX.keys())}"
         )
     return BORDER_TO_BOX[border_name_lower]
+
+
+def get_box_style_for_policy(
+    border_name: str,
+    policy: RenderPolicy | None = None,
+) -> box.Box:
+    """Get Rich box style with policy-aware fallback.
+
+    When policy.unicode=False, automatically returns ASCII box style
+    regardless of the requested border style. This ensures graceful
+    degradation on terminals that don't support Unicode.
+
+    Args:
+        border_name: Border style name (solid, rounded, double, etc.)
+        policy: Optional RenderPolicy. If policy.unicode=False, returns ASCII.
+
+    Returns:
+        Rich Box instance (ASCII if unicode disabled, otherwise requested style).
+
+    Example:
+        >>> from styledconsole.policy import RenderPolicy
+        >>> policy = RenderPolicy.minimal()  # unicode=False
+        >>> get_box_style_for_policy("rounded", policy)
+        <ASCII box>  # Falls back to ASCII
+    """
+    # If policy disables unicode, force ASCII borders
+    if policy is not None and not policy.unicode:
+        return box.ASCII
+
+    return get_box_style(border_name)

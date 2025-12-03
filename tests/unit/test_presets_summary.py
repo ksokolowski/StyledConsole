@@ -3,6 +3,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 from styledconsole.console import Console
+from styledconsole.icons import set_icon_mode
 from styledconsole.presets.summary import TestResult
 from styledconsole.presets.summary import test_summary as render_test_summary
 
@@ -10,6 +11,14 @@ from styledconsole.presets.summary import test_summary as render_test_summary
 @pytest.fixture
 def mock_console():
     return Mock(spec=Console)
+
+
+@pytest.fixture(autouse=True)
+def force_emoji_mode():
+    """Force emoji mode for all tests in this module to ensure consistent output."""
+    set_icon_mode("emoji")
+    yield
+    set_icon_mode("auto")
 
 
 def test_summary_all_pass(mock_console):
