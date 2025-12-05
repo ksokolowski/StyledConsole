@@ -124,7 +124,7 @@ class TestValidateDimensions:
 
     def test_min_greater_than_max(self):
         """Test min_width > max_width raises ValueError."""
-        with pytest.raises(ValueError, match="min_width.*must be <= max_width"):
+        with pytest.raises(ValueError, match=r"min_width.*must be <= max_width"):
             validate_dimensions(min_width=100, max_width=50)
 
     def test_min_equal_max(self):
@@ -133,7 +133,7 @@ class TestValidateDimensions:
 
     def test_width_less_than_min(self):
         """Test width < min_width raises ValueError."""
-        with pytest.raises(ValueError, match="width.*must be >= min_width"):
+        with pytest.raises(ValueError, match=r"width.*must be >= min_width"):
             validate_dimensions(width=30, min_width=50)
 
     def test_width_equal_min(self):
@@ -162,5 +162,5 @@ class TestValidationConstants:
 
     def test_valid_alignments_constant(self):
         """Test VALID_ALIGNMENTS contains expected values."""
-        assert VALID_ALIGNMENTS == {"left", "center", "right"}
+        assert {"left", "center", "right"} == VALID_ALIGNMENTS
         assert len(VALID_ALIGNMENTS) == 3

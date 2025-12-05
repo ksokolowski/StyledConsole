@@ -20,7 +20,7 @@ def main() -> None:
     console.text(f"{EMOJI.ROCKET} Basic Progress Bar:", bold=True)
     with console.progress() as progress:
         task = progress.add_task("Downloading files", total=100)
-        for i in range(100):
+        for _ in range(100):
             time.sleep(0.02)
             progress.update(task, advance=1)
     console.text(f"  {EMOJI.CHECK} Complete!\n")
@@ -54,12 +54,12 @@ def main() -> None:
 
     # Theme-aware progress
     console.text(f"{EMOJI.PALETTE} Themed Progress Bars:", bold=True)
-    for theme_name in ["DARK", "MONOKAI", "NORD"]:
+    for theme_name in ["DARK", "MONOKAI", "NORD", "FIRE", "SUNNY"]:
         theme = THEMES.get_theme(theme_name)
         themed_console = Console(theme=theme)
         themed_console.text(f"  Theme: {theme_name}")
 
-        with console.progress() as progress:
+        with themed_console.progress() as progress:
             task = progress.add_task(f"Processing with {theme_name}", total=50)
             for _ in range(50):
                 time.sleep(0.01)

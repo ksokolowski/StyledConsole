@@ -440,13 +440,13 @@ class TestConsoleErrorHandling:
         # Should raise RuntimeError
         try:
             console.export_html()
-            assert False, "Should have raised RuntimeError"
+            raise AssertionError("Should have raised RuntimeError")
         except RuntimeError as e:
             assert "Recording mode not enabled" in str(e)
 
         try:
             console.export_text()
-            assert False, "Should have raised RuntimeError"
+            raise AssertionError("Should have raised RuntimeError")
         except RuntimeError as e:
             assert "Recording mode not enabled" in str(e)
 
@@ -456,7 +456,7 @@ class TestConsoleErrorHandling:
 
         try:
             console.newline(-1)
-            assert False, "Should have raised ValueError"
+            raise AssertionError("Should have raised ValueError")
         except ValueError as e:
             assert "count must be >= 0" in str(e)
 

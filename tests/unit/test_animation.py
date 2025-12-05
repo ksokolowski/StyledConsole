@@ -66,9 +66,11 @@ class TestAnimationRun:
                 yield f"Frame {i}\n"
 
         # Run in fallback mode (no TTY)
-        with patch.object(sys.stdout, "isatty", return_value=False):
-            with patch.object(sys, "stdout", new=io.StringIO()):
-                Animation.run(frame_gen(), fps=100, duration=1)
+        with (
+            patch.object(sys.stdout, "isatty", return_value=False),
+            patch.object(sys, "stdout", new=io.StringIO()),
+        ):
+            Animation.run(frame_gen(), fps=100, duration=1)
 
         assert frames_shown == [0, 1, 2]
 
@@ -84,11 +86,13 @@ class TestAnimationRun:
                 frame_count += 1
                 yield f"Frame {frame_count}\n"
 
-        with patch.object(sys.stdout, "isatty", return_value=False):
-            with patch.object(sys, "stdout", new=io.StringIO()):
-                start = time.time()
-                Animation.run(infinite_frames(), fps=100, duration=0.2)
-                elapsed = time.time() - start
+        with (
+            patch.object(sys.stdout, "isatty", return_value=False),
+            patch.object(sys, "stdout", new=io.StringIO()),
+        ):
+            start = time.time()
+            Animation.run(infinite_frames(), fps=100, duration=0.2)
+            elapsed = time.time() - start
 
         # Should stop around 0.2 seconds
         assert 0.1 < elapsed < 0.5

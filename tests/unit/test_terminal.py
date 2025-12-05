@@ -203,19 +203,21 @@ class TestDetectTerminalCapabilities:
         monkeypatch.setenv("COLORTERM", "truecolor")
         monkeypatch.setenv("LANG", "en_US.UTF-8")
 
-        with patch("sys.stdout.isatty", return_value=True):
-            with patch("os.get_terminal_size") as mock_size:
-                mock_size.return_value = MagicMock(columns=120, lines=40)
+        with (
+            patch("sys.stdout.isatty", return_value=True),
+            patch("os.get_terminal_size") as mock_size,
+        ):
+            mock_size.return_value = MagicMock(columns=120, lines=40)
 
-                profile = detect_terminal_capabilities()
+            profile = detect_terminal_capabilities()
 
-                assert profile.ansi_support is True
-                assert profile.color_depth == 16777216
-                assert profile.emoji_safe is True
-                assert profile.width == 120
-                assert profile.height == 40
-                assert profile.term == "xterm-256color"
-                assert profile.colorterm == "truecolor"
+            assert profile.ansi_support is True
+            assert profile.color_depth == 16777216
+            assert profile.emoji_safe is True
+            assert profile.width == 120
+            assert profile.height == 40
+            assert profile.term == "xterm-256color"
+            assert profile.colorterm == "truecolor"
 
     def test_detect_256_color_terminal(self, monkeypatch):
         """Test detection of 256 color terminal."""
@@ -223,17 +225,19 @@ class TestDetectTerminalCapabilities:
         monkeypatch.delenv("COLORTERM", raising=False)
         monkeypatch.setenv("LANG", "en_US.UTF-8")
 
-        with patch("sys.stdout.isatty", return_value=True):
-            with patch("os.get_terminal_size") as mock_size:
-                mock_size.return_value = MagicMock(columns=100, lines=30)
+        with (
+            patch("sys.stdout.isatty", return_value=True),
+            patch("os.get_terminal_size") as mock_size,
+        ):
+            mock_size.return_value = MagicMock(columns=100, lines=30)
 
-                profile = detect_terminal_capabilities()
+            profile = detect_terminal_capabilities()
 
-                assert profile.ansi_support is True
-                assert profile.color_depth == 256
-                assert profile.emoji_safe is True
-                assert profile.term == "xterm-256color"
-                assert profile.colorterm is None
+            assert profile.ansi_support is True
+            assert profile.color_depth == 256
+            assert profile.emoji_safe is True
+            assert profile.term == "xterm-256color"
+            assert profile.colorterm is None
 
     def test_detect_basic_terminal(self, monkeypatch):
         """Test detection of basic ANSI terminal."""
@@ -241,45 +245,51 @@ class TestDetectTerminalCapabilities:
         monkeypatch.delenv("COLORTERM", raising=False)
         monkeypatch.setenv("LANG", "en_US.UTF-8")
 
-        with patch("sys.stdout.isatty", return_value=True):
-            with patch("os.get_terminal_size") as mock_size:
-                mock_size.return_value = MagicMock(columns=80, lines=24)
+        with (
+            patch("sys.stdout.isatty", return_value=True),
+            patch("os.get_terminal_size") as mock_size,
+        ):
+            mock_size.return_value = MagicMock(columns=80, lines=24)
 
-                profile = detect_terminal_capabilities()
+            profile = detect_terminal_capabilities()
 
-                assert profile.ansi_support is True
-                assert profile.color_depth == 8
-                assert profile.emoji_safe is True
+            assert profile.ansi_support is True
+            assert profile.color_depth == 8
+            assert profile.emoji_safe is True
 
     def test_detect_dumb_terminal(self, monkeypatch):
         """Test detection of dumb terminal."""
         monkeypatch.setenv("TERM", "dumb")
 
-        with patch("sys.stdout.isatty", return_value=True):
-            with patch("os.get_terminal_size") as mock_size:
-                mock_size.return_value = MagicMock(columns=80, lines=24)
+        with (
+            patch("sys.stdout.isatty", return_value=True),
+            patch("os.get_terminal_size") as mock_size,
+        ):
+            mock_size.return_value = MagicMock(columns=80, lines=24)
 
-                profile = detect_terminal_capabilities()
+            profile = detect_terminal_capabilities()
 
-                assert profile.ansi_support is False
-                assert profile.color_depth == 0
-                assert profile.emoji_safe is False
-                assert profile.term == "dumb"
+            assert profile.ansi_support is False
+            assert profile.color_depth == 0
+            assert profile.emoji_safe is False
+            assert profile.term == "dumb"
 
     def test_detect_no_tty(self, monkeypatch):
         """Test detection when output is not a TTY (pipe/redirect)."""
         monkeypatch.setenv("TERM", "xterm-256color")
         monkeypatch.setenv("COLORTERM", "truecolor")
 
-        with patch("sys.stdout.isatty", return_value=False):
-            with patch("os.get_terminal_size") as mock_size:
-                mock_size.return_value = MagicMock(columns=80, lines=24)
+        with (
+            patch("sys.stdout.isatty", return_value=False),
+            patch("os.get_terminal_size") as mock_size,
+        ):
+            mock_size.return_value = MagicMock(columns=80, lines=24)
 
-                profile = detect_terminal_capabilities()
+            profile = detect_terminal_capabilities()
 
-                assert profile.ansi_support is False
-                assert profile.color_depth == 0
-                assert profile.emoji_safe is False
+            assert profile.ansi_support is False
+            assert profile.color_depth == 0
+            assert profile.emoji_safe is False
 
     def test_detect_with_no_color(self, monkeypatch):
         """Test detection when NO_COLOR is set."""

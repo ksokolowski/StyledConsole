@@ -36,12 +36,9 @@ def _supports_cursor_control(policy: RenderPolicy | None = None) -> bool:
     import os
 
     # TERM=dumb means no cursor control
-    if os.environ.get("TERM", "") == "dumb":
-        return False
-
     # NO_COLOR doesn't disable cursor control, but let's be safe
     # and check for explicit terminal capability indicators
-    return True
+    return os.environ.get("TERM", "") != "dumb"
 
 
 class Animation:

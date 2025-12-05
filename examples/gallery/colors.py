@@ -267,7 +267,7 @@ def demo_blue_family():
         "The darkest hour, before dawn breaks",
     ]
 
-    for color, desc in zip(blues, descriptions):
+    for color, desc in zip(blues, descriptions, strict=False):
         console.frame(
             f"{desc}",
             title=f"{EMOJI.GEM} {color.title()}",

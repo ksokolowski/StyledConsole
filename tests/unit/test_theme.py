@@ -23,7 +23,9 @@ class TestGradientSpec:
     def test_gradient_spec_is_frozen(self):
         """Test GradientSpec is immutable."""
         spec = GradientSpec(start="red", end="blue")
-        with pytest.raises(Exception):  # FrozenInstanceError
+        from dataclasses import FrozenInstanceError
+
+        with pytest.raises(FrozenInstanceError):
             spec.start = "green"
 
 

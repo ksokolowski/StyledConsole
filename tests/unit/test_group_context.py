@@ -76,10 +76,12 @@ class TestGroupContextNesting:
     def test_deeply_nested_groups(self):
         """Three levels of nesting work correctly."""
         console = Console(record=True, width=80)
-        with console.group(title="Level 1"):
-            with console.group(title="Level 2"):
-                with console.group(title="Level 3"):
-                    console.frame("Deep content")
+        with (
+            console.group(title="Level 1"),
+            console.group(title="Level 2"),
+            console.group(title="Level 3"),
+        ):
+            console.frame("Deep content")
         output = console.export_text()
         assert "Level 1" in output
         assert "Level 2" in output
@@ -195,10 +197,9 @@ class TestGroupContextExceptionHandling:
     def test_exception_in_group_propagates(self):
         """Exceptions inside group propagate normally."""
         console = Console(record=True, width=80)
-        with pytest.raises(ValueError, match="test error"):
-            with console.group(title="Error"):
-                console.frame("Before error")
-                raise ValueError("test error")
+        with pytest.raises(ValueError, match="test error"), console.group(title="Error"):
+            console.frame("Before error")
+            raise ValueError("test error")
 
     def test_frames_not_rendered_on_exception(self):
         """Frames are not rendered if exception occurs."""

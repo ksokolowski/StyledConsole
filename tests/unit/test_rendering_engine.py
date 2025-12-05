@@ -122,15 +122,17 @@ class TestRenderingEngineBanner:
         rich_console = RichConsole()
         engine = RenderingEngine(rich_console, debug=True)
 
-        with patch.object(engine._logger, "debug") as mock_debug:
+        with (
+            patch.object(engine._logger, "debug") as mock_debug,
             # We mock _render_banner_lines to avoid actual rendering logic
-            with patch.object(engine, "_render_banner_lines", return_value=["line"]):
-                engine.print_banner("Test", font="standard", start_color="blue", end_color="cyan")
+            patch.object(engine, "_render_banner_lines", return_value=["line"]),
+        ):
+            engine.print_banner("Test", font="standard", start_color="blue", end_color="cyan")
 
-                # Check debug calls
-                calls = [str(call) for call in mock_debug.call_args_list]
-                assert any("Rendering banner" in str(call) for call in calls)
-                assert any("Banner rendered" in str(call) for call in calls)
+            # Check debug calls
+            calls = [str(call) for call in mock_debug.call_args_list]
+            assert any("Rendering banner" in str(call) for call in calls)
+            assert any("Banner rendered" in str(call) for call in calls)
 
 
 class TestRenderingEngineText:

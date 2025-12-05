@@ -49,6 +49,7 @@ ______________________________________________________________________
 
 **Released:** December 3, 2025
 **Status:** RELEASED
+**Key Features:** Icon Provider, Runtime Policy, Advanced Progress Theming, QA Standardization
 
 ### Feature 1: Icon Provider (Colored ASCII Fallback) ✅ IMPLEMENTED
 
@@ -113,6 +114,26 @@ ascii_text = convert_emoji_to_ascii(text)  # "(OK) Test passed (FAIL) Test faile
 | SYMBOL    | 17    | check, cross, plus, minus, star   |
 | HEART     | 9     | heart_red, heart_blue, hearts     |
 | MISC      | 49    | Various UI and semantic icons     |
+
+### Feature 2: Advanced Progress Theming ✅ IMPLEMENTED
+
+**Problem:** Progress bars looked identical across themes, or lost their specific identity upon completion (legacy green override).
+
+**Solution:**
+
+- **Split Behavior:** Default consoles use classic Green bars. Themed consoles (e.g., Fire, Monokai) use their distinct colors for the entire lifecycle.
+- **Granular Styling:** Spinners, steps, and percentages now inherit theme colors (Primary/Secondary/Muted).
+- **New Themes:** Added `FIRE` and `SUNNY` themes.
+
+### Feature 3: QA Standardization ✅ IMPLEMENTED
+
+**Problem:** Inconsistent development tools between projects.
+
+**Solution:**
+
+- Unified `Makefile` targets: `qa`, `qa-quick`, `hooks`.
+- Standardized `pre-commit` hooks.
+- Integrated `mypy` type checking (lenient mode).
 
 <details>
 <summary><strong>Complete Icon Mapping (click to expand - ARCHIVED)</strong></summary>

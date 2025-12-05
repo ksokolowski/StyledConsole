@@ -3,11 +3,11 @@ from styledconsole.presets.status import StatusEntry, status_frame, status_summa
 from styledconsole.presets.summary import TestResult, test_summary
 
 __all__ = [
-    "status_frame",
-    "status_summary",
+    "DashboardWidget",
     "StatusEntry",
-    "test_summary",
     "TestResult",
     "dashboard",
-    "DashboardWidget",
+    "status_frame",
+    "status_summary",
+    "test_summary",
 ]

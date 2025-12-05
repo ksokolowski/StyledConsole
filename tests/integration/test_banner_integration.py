@@ -68,7 +68,7 @@ def test_multiple_fonts():
         assert len(lines) > 0
 
     # Different fonts should produce different output
-    assert len(set(tuple(lines) for lines in outputs.values())) == len(fonts)
+    assert len({tuple(lines) for lines in outputs.values()}) == len(fonts)
 
 
 def test_gradient_variations():

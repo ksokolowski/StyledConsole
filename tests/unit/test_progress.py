@@ -25,7 +25,7 @@ class TestStyledProgress:
         with StyledProgress(transient=True) as progress:
             task = progress.add_task("Test", total=10)
             assert task is not None
-            for i in range(10):
+            for _i in range(10):
                 progress.update(task, advance=1)
 
     def test_add_task_outside_context_raises(self):
@@ -58,7 +58,7 @@ class TestStyledProgress:
             task1 = progress.add_task("Task 1", total=5)
             task2 = progress.add_task("Task 2", total=5)
 
-            for i in range(5):
+            for _i in range(5):
                 progress.update(task1, advance=1)
                 progress.update(task2, advance=1)
 

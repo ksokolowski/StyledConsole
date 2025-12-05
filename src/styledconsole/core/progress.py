@@ -29,13 +29,16 @@ from rich.progress import (
     BarColumn,
     MofNCompleteColumn,
     Progress,
+    ProgressColumn,
     SpinnerColumn,
+    Task,
     TaskID,
     TaskProgressColumn,
     TextColumn,
     TimeElapsedColumn,
     TimeRemainingColumn,
 )
+from rich.text import Text
 
 if TYPE_CHECKING:
     from rich.console import Console as RichConsole
@@ -55,6 +58,21 @@ class _FallbackTask:
     visible: bool = True
     start_time: float = field(default_factory=time.time)
     last_print_time: float = field(default_factory=time.time)
+
+
+class MofNThemedColumn(ProgressColumn):
+    """A themed column showing completed/total steps."""
+
+    def __init__(self, color: str = "gray", table_column: Any | None = None):
+        super().__init__(table_column=table_column)
+        self.color = color
+
+    def render(self, task: Task) -> Text:
+        """Show completed/total."""
+        completed = int(task.completed)
+        if task.total is None:
+            return Text(f"{completed}/?", style=self.color)
+        return Text(f"{completed}/{int(task.total)}", style=self.color)
 
 
 class StyledProgress:
@@ -122,39 +140,44 @@ class StyledProgress:
         - Policy disables color (NO_COLOR)
         """
         # Check TTY - if not TTY and no policy override, use fallback
-        if not sys.stdout.isatty():
-            # But if policy explicitly enables color, Rich can still work
-            if self._policy is None or not self._policy.color:
-                return True
+        # But if policy explicitly enables color, Rich can still work
+        if not sys.stdout.isatty() and (self._policy is None or not self._policy.color):
+            return True
 
         # Check policy
-        if self._policy is not None:
-            # TERM=dumb means no cursor control, must use fallback
-            if not self._policy.unicode:
-                return True
-
-        return False
+        # TERM=dumb means no cursor control, must use fallback
+        return self._policy is not None and not self._policy.unicode
 
     def _get_columns(self) -> list[Any]:
         """Build progress columns based on theme."""
-        # Get colors from theme or use defaults
-        if self._theme:
-            primary = self._theme.primary
-            muted = self._theme.muted
-            success = self._theme.success
-        else:
-            primary = "cyan"
-            muted = "gray"
-            success = "green"
+        # Check if we are using a specific theme or just default
+        is_themed = self._theme is not None and self._theme.name != "default"
 
+        if is_themed and self._theme:
+            primary = self._theme.primary
+            secondary = self._theme.secondary
+            muted = self._theme.muted
+
+            return [
+                SpinnerColumn(style=primary),
+                TextColumn(f"[{primary}]{{task.description}}[/]"),
+                BarColumn(complete_style=primary, finished_style=primary, pulse_style=primary),
+                TaskProgressColumn(text_format=f"[{secondary}]{{task.percentage:>3.0f}}%[/]"),
+                MofNThemedColumn(color=muted),
+                TimeElapsedColumn(),
+                TextColumn(f"[{muted}]•[/]"),
+                TimeRemainingColumn(),
+            ]
+
+        # Default / Classic Behavior (Green Bar)
         return [
             SpinnerColumn(),
-            TextColumn(f"[{primary}]{{task.description}}[/]"),
-            BarColumn(complete_style=success, finished_style=success),
+            TextColumn("[progress.description]{task.description}"),
+            BarColumn(complete_style="green", finished_style="green", pulse_style="green"),
             TaskProgressColumn(),
             MofNCompleteColumn(),
             TimeElapsedColumn(),
-            TextColumn(f"[{muted}]•[/]"),
+            TextColumn("•"),
             TimeRemainingColumn(),
         ]
 

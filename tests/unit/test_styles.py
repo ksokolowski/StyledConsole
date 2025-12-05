@@ -54,7 +54,10 @@ class TestBorderStyle:
     def test_border_style_is_frozen(self):
         """Test that BorderStyle is immutable (frozen)."""
         style = SOLID
-        with pytest.raises(Exception):  # FrozenInstanceError or AttributeError
+        # Since we use frozen dataclass (or similar checks), it raises FrozenInstanceError
+        from dataclasses import FrozenInstanceError
+
+        with pytest.raises(FrozenInstanceError):
             style.name = "modified"  # type: ignore
 
 

@@ -78,23 +78,23 @@ def show_custom_gradient_theme(console: Console) -> None:
 
     # Create custom theme with gradients
     custom_theme = Theme(
-        name="fire",
-        primary="orangered",
-        secondary="gold",
+        name="forest",
+        primary="green",
+        secondary="lime",
         success="lime",
-        warning="orange",
-        error="crimson",
-        info="deepskyblue",
-        border="coral",
-        border_gradient=GradientSpec("darkred", "gold"),
-        banner_gradient=GradientSpec("crimson", "yellow"),
-        text_gradient=GradientSpec("orangered", "gold"),
+        warning="yellow",
+        error="orange",
+        info="cyan",
+        border="green",
+        border_gradient=GradientSpec("darkgreen", "lime"),
+        banner_gradient=GradientSpec("green", "yellow"),
+        text_gradient=GradientSpec("darkgreen", "lime"),
     )
 
     custom_console = Console(theme=custom_theme)
-    custom_console.banner("FIRE", font="slant")
+    custom_console.banner("FOREST", font="slant")
     custom_console.frame(
-        f"{EMOJI.FIRE} Custom fire theme with warm gradients!",
+        f"{EMOJI.SEEDLING} Custom forest theme with leafy gradients!",
         border="rounded",
     )
     console.text("")

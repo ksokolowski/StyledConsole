@@ -216,7 +216,7 @@ class IconProvider:
         mapping = EMOJI_TO_ICON.get(emoji)
         if mapping:
             # Find the name by matching emoji
-            for name, icon in self._icons.items():
+            for _name, icon in self._icons.items():
                 if icon.emoji == emoji:
                     return icon
         return None
@@ -375,14 +375,14 @@ def convert_emoji_to_ascii(text: str) -> str:
 __all__ = [
     # Core classes
     "Icon",
-    "IconProvider",
     "IconMode",
-    # Singleton instance
-    "icons",
-    # Mode control functions
-    "set_icon_mode",
-    "get_icon_mode",
-    "reset_icon_mode",
+    "IconProvider",
     # Utility functions
     "convert_emoji_to_ascii",
+    "get_icon_mode",
+    # Singleton instance
+    "icons",
+    "reset_icon_mode",
+    # Mode control functions
+    "set_icon_mode",
 ]

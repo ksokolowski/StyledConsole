@@ -30,7 +30,7 @@ def test_summary_all_pass(mock_console):
     render_test_summary(results, total_duration=0.3, console=mock_console)
 
     mock_console.frame.assert_called_once()
-    args, kwargs = mock_console.frame.call_args
+    _, kwargs = mock_console.frame.call_args
 
     assert kwargs["title"] == " PASSED "
     assert kwargs["border_color"] == "success"  # Semantic color name

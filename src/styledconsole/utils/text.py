@@ -87,9 +87,7 @@ def _grapheme_width_legacy(grapheme: str) -> int:
     for char in grapheme:
         if _is_skin_tone_modifier(char):
             g_width += 2
-        elif char == VARIATION_SELECTOR_16:
-            continue
-        elif char == "\u200d":
+        elif char == VARIATION_SELECTOR_16 or char == "\u200d":
             continue
         else:
             w = wcwidth.wcwidth(char)
@@ -122,13 +120,12 @@ def visual_width(text: str, markup: bool = False) -> int:
     clean_text = strip_ansi(text)
 
     if markup:
-        try:
+        import contextlib
+
+        with contextlib.suppress(MarkupError):
             # Parse markup to get plain text for width calculation
             # We use Rich to strip tags and handle entities
             clean_text = RichText.from_markup(clean_text).plain
-        except MarkupError:
-            # Invalid markup syntax - fall through with original text
-            pass
 
     # Split into graphemes to handle complex sequences correctly
     graphemes = split_graphemes(clean_text)
@@ -175,9 +172,7 @@ def _should_extend_grapheme(current: str, char: str) -> bool:
     if prev_char == "\u200d":
         return True
     # Skin tone modifiers extend previous
-    if _is_skin_tone_modifier(char):
-        return True
-    return False
+    return bool(_is_skin_tone_modifier(char))
 
 
 def split_graphemes(text: str) -> list[str]:
@@ -600,8 +595,7 @@ def get_emoji_spacing_adjustment(emoji: str) -> int:
     """
     if emoji not in SAFE_EMOJIS:
         raise ValueError(
-            f"Emoji {repr(emoji)} not in safe list. "
-            f"Use validate_emoji() to check unsupported emojis."
+            f"Emoji {emoji!r} not in safe list. Use validate_emoji() to check unsupported emojis."
         )
 
     # Get emoji metadata
@@ -691,9 +685,8 @@ def _assume_vs16_enabled() -> bool:
     if val is None:
         return True
     val_lower = str(val).lower().strip()
-    if val_lower in ("", "0", "false", "no"):  # explicit off
-        return False
-    return True
+    val_lower = str(val).lower().strip()
+    return val_lower not in ("", "0", "false", "no")
 
 
 def default_gluing_emojis() -> set[str]:
@@ -749,11 +742,8 @@ def adjust_emoji_spacing_in_text(
 
     # Determine which emojis to consider
     targets: set[str]
-    if gluing_emojis is None:
-        # Use library default assumption (can be disabled via env)
-        targets = default_gluing_emojis()
-    else:
-        targets = set(gluing_emojis)
+    # Use library default assumption (can be disabled via env)
+    targets = default_gluing_emojis() if gluing_emojis is None else set(gluing_emojis)
 
     if not targets:
         return text
@@ -790,18 +780,18 @@ def adjust_emoji_spacing_in_text(
 
 
 __all__ = [
-    "visual_width",
-    "strip_ansi",
-    "split_graphemes",
-    "pad_to_width",
-    "truncate_to_width",
-    "normalize_content",
-    "validate_emoji",
-    "get_safe_emojis",
-    "get_emoji_spacing_adjustment",
-    "format_emoji_with_spacing",
-    "adjust_emoji_spacing_in_text",
-    "default_gluing_emojis",
     "SAFE_EMOJIS",
     "AlignType",
+    "adjust_emoji_spacing_in_text",
+    "default_gluing_emojis",
+    "format_emoji_with_spacing",
+    "get_emoji_spacing_adjustment",
+    "get_safe_emojis",
+    "normalize_content",
+    "pad_to_width",
+    "split_graphemes",
+    "strip_ansi",
+    "truncate_to_width",
+    "validate_emoji",
+    "visual_width",
 ]

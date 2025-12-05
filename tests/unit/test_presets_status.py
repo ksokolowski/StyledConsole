@@ -24,7 +24,7 @@ def test_status_frame_pass(mock_console):
     status_frame("Test Case 1", "PASS", console=mock_console)
 
     mock_console.frame.assert_called_once()
-    args, kwargs = mock_console.frame.call_args
+    _args, kwargs = mock_console.frame.call_args
 
     assert kwargs["title"] == " PASS "
     assert kwargs["border_color"] == "success"  # Semantic color name
@@ -36,7 +36,7 @@ def test_status_frame_fail(mock_console):
     status_frame("Test Case 2", "FAIL", message="AssertionError: 1 != 2", console=mock_console)
 
     mock_console.frame.assert_called_once()
-    args, kwargs = mock_console.frame.call_args
+    _args, kwargs = mock_console.frame.call_args
 
     assert kwargs["title"] == " FAIL "
     assert kwargs["border_color"] == "error"  # Semantic color name
@@ -49,7 +49,7 @@ def test_status_frame_skip(mock_console):
     status_frame("Test Case 3", "SKIP", console=mock_console)
 
     mock_console.frame.assert_called_once()
-    args, kwargs = mock_console.frame.call_args
+    _args, kwargs = mock_console.frame.call_args
 
     assert kwargs["title"] == " SKIP "
     assert kwargs["border_color"] == "warning"  # Semantic color name
@@ -62,7 +62,7 @@ def test_status_frame_error(mock_console):
     status_frame("Test Case 4", "ERROR", console=mock_console)
 
     mock_console.frame.assert_called_once()
-    args, kwargs = mock_console.frame.call_args
+    _args, kwargs = mock_console.frame.call_args
 
     assert kwargs["title"] == " ERROR "
     assert kwargs["border_color"] == "error"  # Semantic color name (same as FAIL)
@@ -75,7 +75,7 @@ def test_status_frame_with_duration(mock_console):
     status_frame("Test Case 5", "PASS", duration=1.234, console=mock_console)
 
     mock_console.frame.assert_called_once()
-    args, kwargs = mock_console.frame.call_args
+    _args, kwargs = mock_console.frame.call_args
 
     # Check if duration is present in the content
     # It might be in the second line if duration is the only detail
@@ -99,7 +99,7 @@ def test_status_frame_markup_escaping(mock_console):
     status_frame("[red]Malicious[/red]", "PASS", message="[bold]Break[/bold]", console=mock_console)
 
     mock_console.frame.assert_called_once()
-    args, kwargs = mock_console.frame.call_args
+    _args, kwargs = mock_console.frame.call_args
 
     # The content should contain the escaped version, not the raw tags
     # rich.markup.escape replaces [ with \[
@@ -115,7 +115,7 @@ def test_status_frame_kwargs_override(mock_console):
     )
 
     mock_console.frame.assert_called_once()
-    args, kwargs = mock_console.frame.call_args
+    _args, kwargs = mock_console.frame.call_args
 
     assert kwargs["border"] == "double"
     assert kwargs["padding"] == 2

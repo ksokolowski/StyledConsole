@@ -17,7 +17,7 @@ class TestSafeEmojiList:
 
     def test_safe_emoji_list_structure(self):
         """Each emoji entry should have required fields."""
-        for emoji, info in SAFE_EMOJIS.items():
+        for _emoji, info in SAFE_EMOJIS.items():
             assert isinstance(info, dict)
             assert "name" in info
             assert "width" in info
@@ -43,8 +43,8 @@ class TestSafeEmojiList:
         """Common status emojis should be in safe list."""
         # Uses emojis confirmed in SAFE_EMOJIS
         common = {"✅", "❌", "🔴", "⚡", "❓"}  # 🔴 is large_red_circle
-        for emoji in common:
-            assert emoji in SAFE_EMOJIS or True  # Skip if not available
+        for _emoji in common:
+            assert True  # Skip if not available
 
     def test_tech_emojis_present(self):
         """Common tech emojis should be present."""
@@ -57,8 +57,8 @@ class TestSafeEmojiList:
         """Common nature emojis should be present."""
         # Only check emojis confirmed in SAFE_EMOJIS
         nature = {"🌈", "⭐", "✨", "🔥"}
-        for emoji in nature:
-            assert emoji in SAFE_EMOJIS or True  # Skip if not available
+        for _emoji in nature:
+            assert True  # Skip if not available
 
 
 class TestValidateEmoji:
@@ -158,7 +158,7 @@ class TestGetSafeEmojis:
             category = next(iter(all_categories))
             category_emojis = get_safe_emojis(category)
             assert len(category_emojis) > 0
-            for emoji, info in category_emojis.items():
+            for _emoji, info in category_emojis.items():
                 assert info["category"] == category
 
     def test_get_safe_emojis_all_categories(self):
@@ -168,7 +168,7 @@ class TestGetSafeEmojis:
         for category in all_categories:
             emojis = get_safe_emojis(category)
             assert len(emojis) > 0, f"No emojis found for category: {category}"
-            for emoji, info in emojis.items():
+            for _emoji, info in emojis.items():
                 assert info["category"] == category
 
     def test_get_safe_emojis_category_returns_copy(self):

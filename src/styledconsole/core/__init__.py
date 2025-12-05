@@ -16,17 +16,17 @@ from styledconsole.core.styles import (
 )
 
 __all__ = [
+    "ASCII",
+    "BORDERS",
+    "DOTS",
+    "DOUBLE",
+    "HEAVY",
+    "MINIMAL",
+    "ROUNDED",
+    "SOLID",
+    "THICK",
     # Border styles
     "BorderStyle",
-    "SOLID",
-    "DOUBLE",
-    "ROUNDED",
-    "HEAVY",
-    "THICK",
-    "ASCII",
-    "MINIMAL",
-    "DOTS",
-    "BORDERS",
     # Border utilities
     "get_border_style",
     "list_border_styles",

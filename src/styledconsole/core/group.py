@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from styledconsole.console import Console
 
 # Context variable to track active group stack (thread-safe)
-_active_groups: ContextVar[list[FrameGroupContext]] = ContextVar("_active_groups", default=[])
+_active_groups: ContextVar[list[FrameGroupContext]] = ContextVar("_active_groups")
 
 
 @dataclass
@@ -78,7 +78,7 @@ class FrameGroupContext:
     def __enter__(self) -> FrameGroupContext:
         """Enter the context and start capturing frames."""
         # Get current stack (or create new one)
-        stack = _active_groups.get()
+        stack = _active_groups.get(None)
         if stack is None:
             stack = []
             _active_groups.set(stack)
@@ -96,7 +96,7 @@ class FrameGroupContext:
     def __exit__(self, exc_type, exc_val, exc_tb) -> bool:
         """Exit the context, render captured frames, and clean up."""
         # Pop this group from the stack
-        stack = _active_groups.get()
+        stack = _active_groups.get(None)
         if stack and stack[-1] is self:
             stack.pop()
             _active_groups.set(stack)
@@ -191,10 +191,7 @@ class FrameGroupContext:
         for frame in self._captured_frames:
             # Calculate content width
             content = frame.content
-            if isinstance(content, str):
-                lines = content.split("\n")
-            else:
-                lines = content
+            lines = content.split("\n") if isinstance(content, str) else content
 
             content_width = 0
             for line in lines:
@@ -243,7 +240,7 @@ def get_active_group() -> FrameGroupContext | None:
     Returns:
         The innermost active FrameGroupContext, or None if not in a group context.
     """
-    stack = _active_groups.get()
+    stack = _active_groups.get(None)
     if stack:
         return stack[-1]
     return None

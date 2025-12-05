@@ -385,7 +385,7 @@ def demo_rainbow_gallery():
         ("magenta", "red"),
     ]
 
-    for border, color_pair in zip(borders, colors):
+    for border, color_pair in zip(borders, colors, strict=False):
         console.frame(
             f"{EMOJI.RAINBOW} {border.upper()} in rainbow gradients\n"
             f"Where color meets structure,\n"

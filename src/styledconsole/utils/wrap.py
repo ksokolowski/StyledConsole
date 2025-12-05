@@ -153,7 +153,7 @@ def truncate_lines(
     omitted_count = len(lines) - max_lines
     indicator = truncation_indicator.format(count=omitted_count)
 
-    return lines[:max_lines] + [indicator]
+    return [*lines[:max_lines], indicator]
 
 
 def prepare_frame_content(
@@ -192,10 +192,7 @@ def prepare_frame_content(
         >>> # Content is now wrapped to 40 chars per line
     """
     # Normalize to list of lines
-    if isinstance(text, str):
-        lines = [text]
-    else:
-        lines = text if text else [""]  # Handle empty list
+    lines = [text] if isinstance(text, str) else (text if text else [""])
 
     # Apply wrapping if enabled
     if wrap:
@@ -248,10 +245,7 @@ def auto_size_content(
         >>> # Use lines and width with Console.frame()
     """
     # Normalize to list
-    if isinstance(text, str):
-        lines = text.splitlines() if text else [""]
-    else:
-        lines = text
+    lines = (text.splitlines() if text else [""]) if isinstance(text, str) else text
 
     # Calculate optimal width based on content
     max_line_width = 0
@@ -275,10 +269,10 @@ def auto_size_content(
 
 
 __all__ = [
-    "wrap_text",
-    "wrap_multiline",
-    "truncate_lines",
-    "prepare_frame_content",
-    "auto_size_content",
     "AlignType",
+    "auto_size_content",
+    "prepare_frame_content",
+    "truncate_lines",
+    "wrap_multiline",
+    "wrap_text",
 ]

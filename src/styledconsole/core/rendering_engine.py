@@ -202,7 +202,7 @@ class RenderingEngine:
         adj_title, title_width = self._prepare_title(title)
 
         # Calculate dimensions
-        frame_width, inner_width, content_area_width = self._calculate_frame_dimensions(
+        _frame_width, inner_width, content_area_width = self._calculate_frame_dimensions(
             width, padding, max_content_width, title_width, title
         )
 

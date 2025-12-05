@@ -256,15 +256,9 @@ def interpolate_color(
         '#800080'
     """
     # Parse colors to RGB
-    if isinstance(start, tuple):
-        start_rgb = start
-    else:
-        start_rgb = parse_color(start)
+    start_rgb = start if isinstance(start, tuple) else parse_color(start)
 
-    if isinstance(end, tuple):
-        end_rgb = end
-    else:
-        end_rgb = parse_color(end)
+    end_rgb = end if isinstance(end, tuple) else parse_color(end)
 
     # Use optimized RGB interpolation
     result_rgb = interpolate_rgb(start_rgb, end_rgb, t)
@@ -292,15 +286,9 @@ def color_distance(color1: str | RGBColor, color2: str | RGBColor) -> float:
         True
     """
     # Parse colors
-    if isinstance(color1, tuple):
-        rgb1 = color1
-    else:
-        rgb1 = parse_color(color1)
+    rgb1 = color1 if isinstance(color1, tuple) else parse_color(color1)
 
-    if isinstance(color2, tuple):
-        rgb2 = color2
-    else:
-        rgb2 = parse_color(color2)
+    rgb2 = color2 if isinstance(color2, tuple) else parse_color(color2)
 
     # Euclidean distance in RGB space
     return ((rgb1[0] - rgb2[0]) ** 2 + (rgb1[1] - rgb2[1]) ** 2 + (rgb1[2] - rgb2[2]) ** 2) ** 0.5
@@ -467,17 +455,17 @@ def color_to_ansi(
 
 
 __all__ = [
-    "hex_to_rgb",
-    "rgb_to_hex",
-    "parse_color",
-    "interpolate_color",
-    "interpolate_rgb",
-    "color_distance",
-    "normalize_color_for_rich",
-    "apply_line_gradient",
-    "colorize_text",
-    "color_to_ansi",
-    "get_color_names",
     "CSS4_COLORS",
     "RGBColor",
+    "apply_line_gradient",
+    "color_distance",
+    "color_to_ansi",
+    "colorize_text",
+    "get_color_names",
+    "hex_to_rgb",
+    "interpolate_color",
+    "interpolate_rgb",
+    "normalize_color_for_rich",
+    "parse_color",
+    "rgb_to_hex",
 ]

@@ -2,7 +2,7 @@
 
 [![Python >=3.10](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-0.5.0-brightgreen.svg)](https://github.com/yourusername/styledconsole/releases/tag/v0.5.0)
+[![Version](https://img.shields.io/badge/version-0.9.0-brightgreen.svg)](https://github.com/yourusername/styledconsole/releases/tag/v0.9.0)
 [![Tests](https://img.shields.io/badge/tests-700%2B%20passing-success.svg)](https://github.com/yourusername/styledconsole)
 [![Coverage](https://img.shields.io/badge/coverage-95%25%2B-brightgreen.svg)](https://github.com/yourusername/styledconsole)
 
@@ -292,6 +292,12 @@ ______________________________________________________________________
 | 📊 Coverage | 95%+         |
 | 📚 Examples | 27 working   |
 | 🐍 Python   | 3.10 - 3.13  |
+
+______________________________________________________________________
+
+## 🤝 Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on our development workflow (`make qa`, `make test`, etc.).
 
 ______________________________________________________________________
 

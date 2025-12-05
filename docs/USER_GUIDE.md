@@ -427,6 +427,68 @@ Animation.run(frame_generator(), fps=20, duration=10)
 
 ______________________________________________________________________
 
+## Themes
+
+> **New in v0.8.0**
+
+StyledConsole includes a powerful theming engine that ensures consistency across your application.
+
+### Using Themes
+
+```python
+from styledconsole import Console, THEMES
+
+# Apply a predefined theme
+console = Console(theme=THEMES.MONOKAI)
+console.frame("Content matches the theme!", title="Themed Output")
+```
+
+### Available Themes
+
+| Theme         | Primary             | Secondary          | Success           | Style Description                            |
+| :------------ | :------------------ | :----------------- | :---------------- | :------------------------------------------- |
+| **DARK**      | 🟦 `cyan`           | 🟪 `magenta`       | 🟩 `bright_green` | Standard high-contrast dark mode             |
+| **LIGHT**     | 🟦 `blue`           | 🟪 `magenta`       | 🟩 `green`        | Clean light mode for white terminals         |
+| **MONOKAI**   | 🟪 `magenta`        | 🟦 `bright_blue`   | 🟩 `green`        | Classic IDE theme, retro feel                |
+| **NORD**      | 🟦 `bright_blue`    | 🟪 `magenta`       | 🟩 `green`        | Cool arctic blue palette, soft contrast      |
+| **DRACULA**   | 🟪 `bright_magenta` | 🟪 `purple`        | 🟩 `green`        | Vignette-style dark theme with high contrast |
+| **SOLARIZED** | 🟦 `cyan`           | � `green`          | 🟩 `green`        | Precision colors designed for eye comfort    |
+| **FIRE**      | 🟥 `red`            | 🟧 `orange3`       | 🟨 `yellow`       | 🔥 Intense gradients for critical alerts     |
+| **SUNNY**     | 🟨 `gold3`          | 🟧 `orange1`       | 🟩 `bright_green` | ☀️ Warm, positive, high-energy vibes         |
+| **RAINBOW**   | 🟪 `magenta`        | 🟦 `cyan`          | 🟩 `bright_green` | 🌈 Animated full-spectrum gradients          |
+| **OCEAN**     | 🟦 `blue`           | 🟦 `cyan`          | 🟩 `green`        | 🌊 Deep blue monochromatic gradients         |
+| **SUNSET**    | 🟥 `red`            | � `magenta`        | 🟩 `bright_green` | 🌅 Warm red-to-yellow gradient transitions   |
+| **NEON**      | � `bright_green`    | � `bright_magenta` | 🟩 `bright_green` | ⚡ Cyberpunk aesthetic with high saturation  |
+
+### Themed Progress Bars
+
+Progress bars automatically adapt to your chosen theme, with a special "Dual-mode" behavior:
+
+1. **Default Console (No Theme)**:
+
+   - **Behavior**: Classic "Green Means Go".
+   - **Color**: Green bar for both running and finished states.
+
+1. **Themed Console (e.g., FIRE)**:
+
+   - **Behavior**: Fully immersive theming.
+   - **Color**: Uses the theme's **Primary** color (e.g., Red for Fire) for *both* running and finished states, ensuring the aesthetic is preserved.
+   - **Components**: Spinners, percent text, and steps are all colored to match the theme.
+
+```python
+# Green bar (classic)
+console = Console()
+with console.progress() as progress:
+    ...
+
+# Red bar (immersive)
+console = Console(theme=THEMES.FIRE)
+with console.progress() as progress:
+    ...
+```
+
+______________________________________________________________________
+
 ## Emojis
 
 ### Quick Reference

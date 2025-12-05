@@ -43,10 +43,10 @@ from styledconsole.utils.color import interpolate_color
 from styledconsole.utils.text import strip_ansi
 
 __all__ = [
-    "gradient_frame",
     "diagonal_gradient_frame",
-    "rainbow_frame",
+    "gradient_frame",
     "rainbow_cycling_frame",
+    "rainbow_frame",
 ]
 
 

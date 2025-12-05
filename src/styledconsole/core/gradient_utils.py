@@ -440,8 +440,6 @@ def process_regular_line(
         else:
             colored_chars.append(char)
 
-        visual_col += 1
-
     return "".join(colored_chars)
 
 
@@ -610,9 +608,6 @@ def apply_diagonal_rainbow(
                 colored_chars.append(colorize(char, char_color))
             else:
                 colored_chars.append(char)
-
-            # Update visual column position
-            visual_col += 1
 
         colored_lines.append("".join(colored_chars))
 

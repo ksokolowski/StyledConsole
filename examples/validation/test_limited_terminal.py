@@ -104,7 +104,7 @@ def test_progress_bar():
 
     with console.progress() as progress:
         task = progress.add_task("Downloading...", total=100)
-        for i in range(100):
+        for _ in range(100):
             time.sleep(0.02)
             progress.update(task, advance=1)
 
@@ -122,7 +122,7 @@ def test_progress_with_explicit_policy():
 
     with console.progress() as progress:
         task = progress.add_task("Processing...", total=50)
-        for i in range(50):
+        for _ in range(50):
             time.sleep(0.03)
             progress.update(task, advance=1)
 

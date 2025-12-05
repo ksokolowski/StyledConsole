@@ -178,7 +178,7 @@ class TestAutoSizeContent:
     def test_multiline_content(self):
         """Test multiline content."""
         lines_in = ["Short", "Medium length", "Very very long line"]
-        lines_out, width = auto_size_content(lines_in, max_width=50)
+        lines_out, _width = auto_size_content(lines_in, max_width=50)
 
         assert len(lines_out) >= len(lines_in)
 

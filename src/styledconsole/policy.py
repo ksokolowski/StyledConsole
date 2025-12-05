@@ -279,6 +279,6 @@ def reset_default_policy() -> None:
 __all__ = [
     "RenderPolicy",
     "get_default_policy",
-    "set_default_policy",
     "reset_default_policy",
+    "set_default_policy",
 ]
