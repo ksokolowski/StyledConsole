@@ -7,7 +7,7 @@ This document synthesizes the best practices observed in both `styledconsole` an
 **Goal:** Reduce cognitive load by abstracting complex commands into simple, memorable targets.
 
 - **Tool:** `Makefile` (or `Justfile`)
-- **Best Practice (from `robotframework-suds`):**
+- **Best Practice (Shared):**
   - Do not require developers to memorize flags for `pytest`, `ruff`, or `uv`.
   - Provide standard targets:
     - `make setup`: Install dependencies (handling venv/uv automatically).
@@ -25,7 +25,7 @@ This document synthesizes the best practices observed in both `styledconsole` an
 
 - **Tool:** `ruff`
 
-- **Best Practice (from `robotframework-suds`):**
+- **Best Practice (Shared):**
 
   - **Strict Rules:** Enable modern rulesets in `pyproject.toml`:
     - `UP` (pyupgrade): Enforce modern Python syntax (e.g., `list[str]` over `List[str]`).
@@ -63,6 +63,7 @@ This document synthesizes the best practices observed in both `styledconsole` an
 **Goal:** documentation should answer "What?", "How?", and "Why?".
 
 - **Artifacts (from `styledconsole`):**
+  - `CONTRIBUTING.md`: Entry point for new developers.
   - `USER_GUIDE.md`: For end-users. Tutorials and API usage.
   - `DEVELOPER_GUIDE.md`: For contributors. Contains **Architecture Diagrams** (Mermaid), sequence flows, and file structure explanation.
   - `PROJECT_STATUS.md`: High-level roadmap and current version goals.
@@ -90,11 +91,11 @@ This document synthesizes the best practices observed in both `styledconsole` an
 
 ## Summary of Recommendations
 
-| Feature          | StyledConsole       | RobotFramework-Suds     | Recommendation to Both      |
-| :--------------- | :------------------ | :---------------------- | :-------------------------- |
-| **Automation**   | ❌ (Manual scripts) | ✅ `Makefile`           | Adopt `Makefile` standard   |
-| **Linting**      | ✅ Basic            | ✅ Strict (`UP`, `SIM`) | Adopt Strict `ruff` rules   |
-| **Docs**         | ✅ Comprehensive    | ⚠️ Basic                | Create `DEVELOPER_GUIDE.md` |
-| **Architecture** | ✅ Facade, Policy   | ❓ Verify               | Use Facade for public API   |
-| **Onboarding**   | ✅ Visual Gallery   | ❓ Verify               | Add `examples/` folder      |
-| **Typing**       | ✅ `py.typed`       | ❓ Verify               | Add `py.typed`              |
+| Feature          | StyledConsole     | RobotFramework-Suds     | Recommendation to Both      |
+| :--------------- | :---------------- | :---------------------- | :-------------------------- |
+| **Automation**   | ✅ `Makefile`     | ✅ `Makefile`           | Adopt `Makefile` standard   |
+| **Linting**      | ✅ Strict         | ✅ Strict (`UP`, `SIM`) | Adopt Strict `ruff` rules   |
+| **Docs**         | ✅ Comprehensive  | ⚠️ Basic                | Create `DEVELOPER_GUIDE.md` |
+| **Architecture** | ✅ Facade, Policy | ❓ Verify               | Use Facade for public API   |
+| **Onboarding**   | ✅ Visual Gallery | ❓ Verify               | Add `examples/` folder      |
+| **Typing**       | ✅ `py.typed`     | ❓ Verify               | Add `py.typed`              |
