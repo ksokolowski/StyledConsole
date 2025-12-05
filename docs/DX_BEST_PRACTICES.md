@@ -118,4 +118,4 @@ This document synthesizes the best practices observed in both `styledconsole` an
 | **Docs**         | ✅ Comprehensive  | ⚠️ Basic                | Create `DEVELOPER_GUIDE.md` |
 | **Architecture** | ✅ Facade, Policy | ✅ Wrapped Facade       | Use Facade for public API   |
 | **Onboarding**   | ✅ Visual Gallery | ✅ Acceptance Tests     | Maintain Executable Docs    |
-| **Typing**       | ✅ `py.typed`     | ❌ Missing `py.typed`   | Add `py.typed`              |
+| **Typing**       | ✅ `py.typed`     | ✅ `py.typed`           | Add `py.typed`              |
