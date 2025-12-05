@@ -100,8 +100,11 @@ This document synthesizes the best practices observed in both `styledconsole` an
 - **Best Practice (Shared):**
   - **Pre-Commit Strategy:**
     - Always run `make hooks` (or `make qa-quick`) *before* running `git commit`.
-    - **Why?** Pre-commit hooks often auto-fix files (formatting, imports). If you commit first, the hook will fail, modify the file, and force you to add + commit again.
     - **Workflow:** `make hooks` -> `git add .` -> `git commit`.
+  - **Intentional Commits:**
+    - **Anti-Pattern:** Auto-committing and pushing every local file save or minor change.
+    - **Best Practice:** Commit logically related changes ("Atomic Commits").
+    - **Pushing:** Push to remote only when the feature/fix is stable or ready for backup. Avoid triggering CI pipelines for micro-changes.
   - **Conventional Commits:**
     - Use structured messages: `feat: add fire theme`, `fix: resolve crash`, `docs: update readme`.
     - This allows automated changelog generation and version bumping.
