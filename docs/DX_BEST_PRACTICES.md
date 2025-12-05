@@ -69,16 +69,20 @@ This document synthesizes the best practices observed in both `styledconsole` an
   - `PROJECT_STATUS.md`: High-level roadmap and current version goals.
   - `CHANGELOG.md`: Human-readable history of changes (Keep A Changelog format).
 
-## 5. Developer Onboarding (Example Gallery)
+## 5. Developer Onboarding
 
-**Goal:** Enable a new developer to see the library in action in < 60 seconds.
+**Goal:** Enable a new developer to understand the library's capabilities quickly.
 
-- **Structure (from `styledconsole`):**
-  - **`examples/` directory:**
-    - `demos/`: Interactive, flashy scripts showing off capabilities.
-    - `gallery/`: Visual reference of styles/options.
-    - `usecases/`: Real-world scenarios (e.g., "Build Pipeline Output").
-  - **Runnable Script:** A `run_examples.py` or `make demo` target that runs through all examples.
+- **Visual Libraries (e.g., `styledconsole`):**
+
+  - **Structure:** `examples/gallery/` scripts.
+  - **Why:** Visual feedback is instant.
+
+- **Functional/Test Libraries (e.g., `robotframework-suds`):**
+
+  - **Structure:** Acceptance Tests (ATDD).
+  - **Why:** Executable specifications (`.robot` files) demonstrate exactly how keywords are used in real scenarios.
+  - **Best Practice:** Ensure tests are readable and serve as documentation.
 
 ## 6. Dependency Management
 
@@ -110,5 +114,5 @@ This document synthesizes the best practices observed in both `styledconsole` an
 | **Linting**      | ✅ Strict         | ✅ Strict (`UP`, `SIM`) | Adopt Strict `ruff` rules   |
 | **Docs**         | ✅ Comprehensive  | ⚠️ Basic                | Create `DEVELOPER_GUIDE.md` |
 | **Architecture** | ✅ Facade, Policy | ✅ Wrapped Facade       | Use Facade for public API   |
-| **Onboarding**   | ✅ Visual Gallery | ❌ Missing examples     | Add `examples/` folder      |
+| **Onboarding**   | ✅ Visual Gallery | ✅ Acceptance Tests     | Maintain Executable Docs    |
 | **Typing**       | ✅ `py.typed`     | ❌ Missing `py.typed`   | Add `py.typed`              |
