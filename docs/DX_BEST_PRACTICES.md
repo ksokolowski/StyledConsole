@@ -115,7 +115,7 @@ This document synthesizes the best practices observed in both `styledconsole` an
 | :--------------- | :---------------- | :---------------------- | :-------------------------- |
 | **Automation**   | ✅ `Makefile`     | ✅ `Makefile`           | Adopt `Makefile` standard   |
 | **Linting**      | ✅ Strict         | ✅ Strict (`UP`, `SIM`) | Adopt Strict `ruff` rules   |
-| **Docs**         | ✅ Comprehensive  | ⚠️ Basic                | Create `DEVELOPER_GUIDE.md` |
+| **Docs**         | ✅ Comprehensive  | ✅ Comprehensive        | Create `DEVELOPER_GUIDE.md` |
 | **Architecture** | ✅ Facade, Policy | ✅ Wrapped Facade       | Use Facade for public API   |
 | **Onboarding**   | ✅ Visual Gallery | ✅ Acceptance Tests     | Maintain Executable Docs    |
 | **Typing**       | ✅ `py.typed`     | ✅ `py.typed`           | Add `py.typed`              |
