@@ -89,6 +89,19 @@ This document synthesizes the best practices observed in both `styledconsole` an
   - **Lockfiles:** Commit `uv.lock` or `pdm.lock` to ensure CI runs exactly what developers run.
   - **Dev Dependencies:** explicit `[project.optional-dependencies] dev = [...]` in `pyproject.toml`.
 
+## 7. Git Workflow & Best Practices
+
+**Goal:** Maintain a clean history and avoid frustration with CI/pre-commit failures.
+
+- **Best Practice (Shared):**
+  - **Pre-Commit Strategy:**
+    - Always run `make hooks` (or `make qa-quick`) *before* running `git commit`.
+    - **Why?** Pre-commit hooks often auto-fix files (formatting, imports). If you commit first, the hook will fail, modify the file, and force you to add + commit again.
+    - **Workflow:** `make hooks` -> `git add .` -> `git commit`.
+  - **Conventional Commits:**
+    - Use structured messages: `feat: add fire theme`, `fix: resolve crash`, `docs: update readme`.
+    - This allows automated changelog generation and version bumping.
+
 ## Summary of Recommendations
 
 | Feature          | StyledConsole     | RobotFramework-Suds     | Recommendation to Both      |
