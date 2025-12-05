@@ -42,7 +42,6 @@ flowchart TB
 
     subgraph Core["🔧 Core Layer"]
         BM[📦 box_mapping]
-        GU[🌈 gradient_utils]
         ST[🎭 styles]
         BN[🔤 banner]
     end
@@ -68,7 +67,6 @@ flowchart TB
     CONSOLE --> EM
     CONSOLE --> TM
     RE --> BM
-    RE --> GU
     RE --> ST
     RE --> BN
     RE --> ENG
@@ -245,7 +243,6 @@ flowchart LR
         EM[📤 export_manager]
         TM[🔍 terminal_manager]
         BM[📦 box_mapping]
-        GU[🌈 gradient_utils]
         ST[🎭 styles]
         BN[🔤 banner]
     end
@@ -275,7 +272,6 @@ flowchart LR
     CON --> EM
     CON --> TM
     RE --> BM
-    RE --> GU
     RE --> ST
     RE --> BN
     RE --> ENG
@@ -298,7 +294,6 @@ flowchart LR
     style EM fill:#2196F3,color:#fff,stroke:#1565C0
     style TM fill:#2196F3,color:#fff,stroke:#1565C0
     style BM fill:#64B5F6,color:#1565C0,stroke:#2196F3
-    style GU fill:#64B5F6,color:#1565C0,stroke:#2196F3
     style ST fill:#64B5F6,color:#1565C0,stroke:#2196F3
     style BN fill:#64B5F6,color:#1565C0,stroke:#2196F3
     style STR fill:#FFB74D,color:#E65100,stroke:#FF9800
@@ -325,7 +320,6 @@ src/styledconsole/
 │   ├── box_mapping.py            # Border → Rich Box mapping
 │   ├── rendering_engine.py       # Rich Panel coordinator
 │   ├── banner.py                 # ASCII art (pyfiglet)
-│   ├── gradient_utils.py         # Gradient application
 │   ├── styles.py                 # Border style definitions
 │   ├── export_manager.py         # HTML export
 │   └── terminal_manager.py       # Terminal detection
@@ -657,10 +651,10 @@ Console(policy=RenderPolicy.from_env())
     │       ├─→ box_mapping.get_box_style_for_policy()
     │       │       └─→ ASCII box when unicode=False
     │       │
-    │       ├─→ gradient_utils.colorize(policy=policy)
+    │       ├─→ effects.engine.apply_gradient(policy=policy)
     │       │       └─→ Plain text when color=False
     │       │
-    │       └─→ gradient_utils.apply_vertical_border_gradient(policy)
+    │       └─→ utils/color.colorize_text(policy=policy)
     │               └─→ Skipped when color=False
     │
     ├─→ StyledProgress(policy)
@@ -691,18 +685,17 @@ def colorize_text(
 
 ### Policy-Aware Components
 
-| Module                     | Function/Class                     | Policy Param |
-| -------------------------- | ---------------------------------- | ------------ |
-| `utils/color.py`           | `apply_line_gradient()`            | ✅           |
-| `utils/color.py`           | `colorize_text()`                  | ✅           |
-| `core/gradient_utils.py`   | `colorize()`                       | ✅           |
-| `core/gradient_utils.py`   | `apply_vertical_border_gradient()` | ✅           |
-| `core/box_mapping.py`      | `get_box_style_for_policy()`       | ✅           |
-| `core/progress.py`         | `StyledProgress`                   | ✅           |
-| `core/rendering_engine.py` | `RenderingEngine`                  | ✅           |
-| `animation.py`             | `_supports_cursor_control()`       | Implicit     |
-| `presets/status.py`        | Uses `icons` module                | Implicit     |
-| `presets/summary.py`       | Uses `icons` module                | Implicit     |
+| Module                     | Function/Class               | Policy Param |
+| -------------------------- | ---------------------------- | ------------ |
+| `utils/color.py`           | `apply_line_gradient()`      | ✅           |
+| `utils/color.py`           | `colorize_text()`            | ✅           |
+| `effects/engine.py`        | `apply_gradient()`           | ✅           |
+| `core/box_mapping.py`      | `get_box_style_for_policy()` | ✅           |
+| `core/progress.py`         | `StyledProgress`             | ✅           |
+| `core/rendering_engine.py` | `RenderingEngine`            | ✅           |
+| `animation.py`             | `_supports_cursor_control()` | Implicit     |
+| `presets/status.py`        | Uses `icons` module          | Implicit     |
+| `presets/summary.py`       | Uses `icons` module          | Implicit     |
 
 ### RenderPolicy Class
 

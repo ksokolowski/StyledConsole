@@ -5,6 +5,26 @@ All notable changes to StyledConsole will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### 🔧 Unified Gradient Engine Consolidation
+
+This update consolidates all gradient logic into a single unified engine using the Strategy Pattern.
+
+### Changed
+
+- **Gradient Engine Consolidation**: Removed `core/gradient_utils.py` (614 lines) in favor of unified `effects/engine.py`
+- **Rendering Engine**: Now uses `apply_gradient()` from `effects.engine` with strategy pattern
+- **Color Utilities**: Added `get_rainbow_color()`, `colorize` alias, and `RAINBOW_COLORS` constant to `utils/color.py`
+- **Styles Module**: Added `get_border_chars()` function for efficient border character lookup
+- **Nested Gradient Fix**: Fixed rendering issues with nested gradient frames
+
+### Removed
+
+- **`core/gradient_utils.py`**: All functionality migrated to `effects/engine.py` and `utils/color.py`
+
+______________________________________________________________________
+
 ## [0.9.0] - 2025-12-03
 
 ### 🎨 Icon Provider & Runtime Policy
@@ -128,7 +148,7 @@ Policy-awareness now propagates through **every** rendering component:
 | Component                  | Before             | After (policy-aware)                     |
 | -------------------------- | ------------------ | ---------------------------------------- |
 | `utils/color.py`           | Always emits ANSI  | Skips ANSI when `policy.color=False`     |
-| `core/gradient_utils.py`   | Always colorizes   | Plain text when colors disabled          |
+| `effects/engine.py`        | Always colorizes   | Plain text when colors disabled          |
 | `core/box_mapping.py`      | Rich Box only      | ASCII `+--+` when `policy.unicode=False` |
 | `core/progress.py`         | Rich progress only | Text-based `[####....]` fallback         |
 | `core/rendering_engine.py` | Ignored policy     | Full policy integration                  |

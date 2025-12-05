@@ -299,7 +299,7 @@ and presets used hardcoded emojis.
 | Component             | Before             | After (policy-aware)                     |
 | --------------------- | ------------------ | ---------------------------------------- |
 | `color.py`            | Always emits ANSI  | Skips ANSI when `policy.color=False`     |
-| `gradient_utils.py`   | Always colorizes   | Plain text when colors disabled          |
+| `effects/engine.py`   | Always colorizes   | Plain text when colors disabled          |
 | `box_mapping.py`      | Rich Box only      | ASCII `+--+` when `policy.unicode=False` |
 | `progress.py`         | Rich progress only | Text-based `[####....]` fallback         |
 | `rendering_engine.py` | Ignored policy     | Full policy integration                  |
@@ -312,7 +312,7 @@ and presets used hardcoded emojis.
 | File                                         | Changes                                    |
 | -------------------------------------------- | ------------------------------------------ |
 | `src/styledconsole/utils/color.py`           | Added `policy` param to colorize functions |
-| `src/styledconsole/core/gradient_utils.py`   | All functions now policy-aware             |
+| `src/styledconsole/effects/engine.py`        | Unified gradient engine, policy-aware      |
 | `src/styledconsole/core/box_mapping.py`      | Added `get_box_style_for_policy()`         |
 | `src/styledconsole/core/progress.py`         | Complete rewrite with text fallback        |
 | `src/styledconsole/core/rendering_engine.py` | Passes policy to all color operations      |

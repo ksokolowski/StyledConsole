@@ -212,25 +212,25 @@ def main():
     """Run all tests."""
     print_environment_info()
 
-    input("Press Enter to start TEST 1 (Simple Animation)...")
+    print("\n>>> TEST 1 (Simple Animation)")
     test_simple_animation()
 
-    input("Press Enter to start TEST 2 (Spinner Animation)...")
+    print("\n>>> TEST 2 (Spinner Animation)")
     test_spinner_animation()
 
-    input("Press Enter to start TEST 3 (Progress Bar)...")
+    print("\n>>> TEST 3 (Progress Bar)")
     test_progress_bar()
 
-    input("Press Enter to start TEST 4 (Progress with Minimal Policy)...")
+    print("\n>>> TEST 4 (Progress with Minimal Policy)")
     test_progress_with_explicit_policy()
 
-    input("Press Enter to start TEST 5 (Multi-line Animation)...")
+    print("\n>>> TEST 5 (Multi-line Animation)")
     test_multiline_animation()
 
-    input("Press Enter to start TEST 6 (Frame Rendering)...")
+    print("\n>>> TEST 6 (Frame Rendering)")
     test_frame_rendering()
 
-    input("Press Enter to start TEST 7 (Simple Text Progress)...")
+    print("\n>>> TEST 7 (Simple Text Progress)")
     test_simple_text_progress()
 
     print("=" * 60)

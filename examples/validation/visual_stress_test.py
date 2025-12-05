@@ -375,11 +375,6 @@ def main():
 
     parser = argparse.ArgumentParser(description="Visual stress test for StyledConsole")
     parser.add_argument(
-        "--auto",
-        action="store_true",
-        help="Run all tests without waiting for input",
-    )
-    parser.add_argument(
         "--skip-slow",
         action="store_true",
         help="Skip slow tests (animations, progress bars)",
@@ -409,18 +404,10 @@ def main():
 
     for i, (name, test_func, is_slow) in enumerate(tests, 1):
         if args.skip_slow and is_slow:
-            print(f"\nSKIPPING TEST {i}: {name} (use --auto to include)")
+            print(f"\nSKIPPING TEST {i}: {name}")
             continue
 
-        if args.auto:
-            print(f"\n>>> TEST {i}: {name}")
-        else:
-            try:
-                input(f"\nPress Enter for TEST {i}: {name}...")
-            except EOFError:
-                # Non-interactive mode (pipe), run automatically
-                print(f"\n>>> TEST {i}: {name}")
-
+        print(f"\n>>> TEST {i}: {name}")
         try:
             test_func()
         except Exception as e:
