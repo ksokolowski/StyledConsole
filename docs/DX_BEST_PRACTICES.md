@@ -109,6 +109,6 @@ This document synthesizes the best practices observed in both `styledconsole` an
 | **Automation**   | ✅ `Makefile`     | ✅ `Makefile`           | Adopt `Makefile` standard   |
 | **Linting**      | ✅ Strict         | ✅ Strict (`UP`, `SIM`) | Adopt Strict `ruff` rules   |
 | **Docs**         | ✅ Comprehensive  | ⚠️ Basic                | Create `DEVELOPER_GUIDE.md` |
-| **Architecture** | ✅ Facade, Policy | ❓ Verify               | Use Facade for public API   |
-| **Onboarding**   | ✅ Visual Gallery | ❓ Verify               | Add `examples/` folder      |
-| **Typing**       | ✅ `py.typed`     | ❓ Verify               | Add `py.typed`              |
+| **Architecture** | ✅ Facade, Policy | ✅ Wrapped Facade       | Use Facade for public API   |
+| **Onboarding**   | ✅ Visual Gallery | ❌ Missing examples     | Add `examples/` folder      |
+| **Typing**       | ✅ `py.typed`     | ❌ Missing `py.typed`   | Add `py.typed`              |
