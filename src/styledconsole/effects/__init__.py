@@ -20,11 +20,6 @@ from __future__ import annotations
 from io import StringIO
 from typing import Literal
 
-from styledconsole import Console
-from styledconsole.core.gradient_utils import (
-    colorize,
-    get_rainbow_color,
-)
 from styledconsole.core.styles import get_border_style
 from styledconsole.effects.engine import apply_gradient
 from styledconsole.effects.strategies import (
@@ -39,7 +34,7 @@ from styledconsole.effects.strategies import (
     TargetFilter,
     VerticalPosition,
 )
-from styledconsole.utils.color import interpolate_color
+from styledconsole.utils.color import colorize, get_rainbow_color, interpolate_color
 from styledconsole.utils.text import strip_ansi
 
 __all__ = [
@@ -116,6 +111,8 @@ def gradient_frame(
 
     # Render base frame
     buffer = StringIO()
+    from styledconsole import Console
+
     console = Console(file=buffer, detect_terminal=False, record=False)
     console.frame(
         content_lines,
@@ -192,6 +189,8 @@ def diagonal_gradient_frame(
 
     # Render base frame
     buffer = StringIO()
+    from styledconsole import Console
+
     console = Console(file=buffer, detect_terminal=False, record=False)
     console.frame(
         content_lines,
@@ -247,6 +246,8 @@ def rainbow_frame(
 
     # Render base frame
     buffer = StringIO()
+    from styledconsole import Console
+
     console = Console(file=buffer, detect_terminal=False, record=False)
     console.frame(
         content_lines,
@@ -304,6 +305,8 @@ def rainbow_cycling_frame(
 
     # Render base frame
     buffer = StringIO()
+    from styledconsole import Console
+
     console = Console(file=buffer, detect_terminal=False, record=False)
     console.frame(
         content_lines,

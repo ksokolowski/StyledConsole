@@ -433,6 +433,34 @@ def list_border_styles() -> list[str]:
     return sorted(BORDERS.keys())
 
 
+def get_border_chars(style: BorderStyle) -> set[str]:
+    """Extract all border characters from a style for efficient lookup.
+
+    Args:
+        style: BorderStyle instance to extract characters from
+
+    Returns:
+        Set of all border characters used by the style
+    """
+    chars = {
+        style.top_left,
+        style.top_right,
+        style.bottom_left,
+        style.bottom_right,
+        style.horizontal,
+        style.vertical,
+        style.left_joint,
+        style.right_joint,
+        style.top_joint,
+        style.bottom_joint,
+        style.cross,
+    }
+    # Special case for THICK style which uses lower half block for bottom border
+    if style.horizontal == "▀":
+        chars.add("▄")
+    return chars
+
+
 __all__ = [
     "ASCII",
     "BORDERS",
@@ -444,6 +472,7 @@ __all__ = [
     "SOLID",
     "THICK",
     "BorderStyle",
+    "get_border_chars",
     "get_border_style",
     "list_border_styles",
 ]

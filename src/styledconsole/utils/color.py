@@ -431,7 +431,14 @@ def colorize_text(
         return text
 
     r, g, b = parse_color(color)
-    return f"\033[38;2;{r};{g};{b}m{text}\033[0m"
+    start_sequence = f"\033[38;2;{r};{g};{b}m"
+    reset_sequence = "\033[0m"
+
+    # Handle nested resets to preserve gradient
+    if reset_sequence in text:
+        text = text.replace(reset_sequence, reset_sequence + start_sequence)
+
+    return f"{start_sequence}{text}{reset_sequence}"
 
 
 def color_to_ansi(
@@ -454,14 +461,54 @@ def color_to_ansi(
     return colorize_text(text, color, policy)
 
 
+# Rainbow color spectrum (7 colors: ROYGBIV)
+RAINBOW_COLORS = [
+    "red",  # #FF0000
+    "orange",  # #FFA500
+    "yellow",  # #FFFF00
+    "lime",  # #00FF00 (bright green for rainbow spectrum)
+    "blue",  # #0000FF
+    "indigo",  # #4B0082
+    "darkviolet",  # #9400D3
+]
+
+
+def get_rainbow_color(position: float) -> str:
+    """Get rainbow color at a specific position.
+
+    Args:
+        position: Position in rainbow (0.0 = red, 1.0 = violet)
+
+    Returns:
+        Hex color code at that position in rainbow spectrum
+    """
+    position = max(0.0, min(1.0, position))
+    num_segments = len(RAINBOW_COLORS) - 1
+    segment_size = 1.0 / num_segments
+    segment_index = min(int(position / segment_size), num_segments - 1)
+    local_position = (position - segment_index * segment_size) / segment_size
+
+    return interpolate_color(
+        RAINBOW_COLORS[segment_index], RAINBOW_COLORS[segment_index + 1], local_position
+    )
+
+
+# Alias for backward compatibility
+colorize = colorize_text
+
+
 __all__ = [
     "CSS4_COLORS",
     "RGBColor",
     "apply_line_gradient",
+    "apply_line_gradient",
+    "color_distance",
     "color_distance",
     "color_to_ansi",
+    "colorize",
     "colorize_text",
     "get_color_names",
+    "get_rainbow_color",
     "hex_to_rgb",
     "interpolate_color",
     "interpolate_rgb",

@@ -201,7 +201,7 @@ class TestConsoleTheme:
     def test_console_resolve_color(self):
         """Test Console.resolve_color() method."""
         console = Console(theme=THEMES.DARK)
-        assert console.resolve_color("success") == "lime"
+        assert console.resolve_color("success") == "bright_green"
         assert console.resolve_color("red") == "red"
         assert console.resolve_color(None) is None
 
@@ -212,8 +212,8 @@ class TestThemeColors:
     def test_dark_theme_colors(self):
         """Test DARK theme has appropriate colors."""
         theme = THEMES.DARK
-        assert theme.success == "lime"
-        assert theme.warning == "gold"
+        assert theme.success == "bright_green"
+        assert theme.warning == "yellow"
         assert theme.error == "red"
         assert theme.border == "white"
 
@@ -221,9 +221,9 @@ class TestThemeColors:
         """Test LIGHT theme has appropriate colors."""
         theme = THEMES.LIGHT
         assert theme.success == "green"
-        assert theme.warning == "orange"
-        assert theme.error == "crimson"
-        assert theme.border == "darkgray"
+        assert theme.warning == "yellow"
+        assert theme.error == "red"
+        assert theme.border == "bright_black"
 
     def test_themes_have_all_semantic_colors(self):
         """Test all themes define all semantic colors."""

@@ -22,8 +22,14 @@ from rich.text import Text as RichText
 
 from styledconsole.core.banner import Banner
 from styledconsole.core.box_mapping import get_box_style_for_policy
-from styledconsole.core.gradient_utils import apply_vertical_border_gradient, colorize
-from styledconsole.utils.color import normalize_color_for_rich
+from styledconsole.core.styles import get_border_chars, get_border_style
+from styledconsole.effects.engine import apply_gradient
+from styledconsole.effects.strategies import (
+    BorderOnly,
+    LinearGradient,
+    VerticalPosition,
+)
+from styledconsole.utils.color import colorize, normalize_color_for_rich
 from styledconsole.utils.text import adjust_emoji_spacing_in_text
 
 if TYPE_CHECKING:
@@ -149,13 +155,14 @@ class RenderingEngine:
 
             lines = output.splitlines()
             if border_gradient_direction == "vertical":
-                colored_lines = apply_vertical_border_gradient(
+                colored_lines = apply_gradient(
                     lines,
-                    border_gradient_start_norm,
-                    border_gradient_end_norm,
-                    border,
-                    title,
-                    self._policy,
+                    position_strategy=VerticalPosition(),
+                    color_source=LinearGradient(
+                        border_gradient_start_norm, border_gradient_end_norm
+                    ),
+                    target_filter=BorderOnly(),
+                    border_chars=get_border_chars(get_border_style(border)),
                 )
                 return "\n".join(colored_lines)
             else:
@@ -327,51 +334,46 @@ class RenderingEngine:
         """Build all content lines with borders and colors."""
         from styledconsole.utils.text import pad_to_width, truncate_to_width, visual_width
 
-        rendered = []
-        for i, line in enumerate(lines):
-            # Truncate if needed
+        # 1. Prepare raw padded lines
+        padded_lines = []
+        for line in lines:
             if width and visual_width(line) > content_area_width:
                 line = truncate_to_width(line, content_area_width)
 
-            # Pad and add padding spaces
             padded_line = pad_to_width(line, content_area_width, align=align)
             full_line = (" " * padding) + padded_line + (" " * padding)
+            padded_lines.append(full_line)
 
-            # Apply gradient or color
-            full_line = self._apply_content_color(
-                full_line, i, len(lines), start_color, end_color, content_color
+        # 2. Apply coloring (Gradient or Solid)
+        if start_color and end_color:
+            from styledconsole.effects.engine import apply_gradient
+            from styledconsole.effects.strategies import Both, LinearGradient, VerticalPosition
+
+            # Use Unified Engine for gradient
+            padded_lines = apply_gradient(
+                padded_lines,
+                position_strategy=VerticalPosition(),
+                color_source=LinearGradient(start_color, end_color),
+                target_filter=Both(),
+                border_chars=set(),
             )
+        elif content_color:
+            # Apply solid color
+            padded_lines = [colorize(line, content_color, self._policy) for line in padded_lines]
 
-            # Add borders
-            left_border = box_style.mid_left
-            right_border = box_style.mid_right
-            if border_color:
-                left_border = colorize(left_border, border_color, self._policy)
-                right_border = colorize(right_border, border_color, self._policy)
+        # 3. Add borders
+        rendered = []
+        left_border = box_style.mid_left
+        right_border = box_style.mid_right
 
-            rendered.append(f"{left_border}{full_line}{right_border}")
+        if border_color:
+            left_border = colorize(left_border, border_color, self._policy)
+            right_border = colorize(right_border, border_color, self._policy)
+
+        for line in padded_lines:
+            rendered.append(f"{left_border}{line}{right_border}")
 
         return rendered
-
-    def _apply_content_color(
-        self,
-        line: str,
-        index: int,
-        total: int,
-        start_color: str | None,
-        end_color: str | None,
-        content_color: str | None,
-    ) -> str:
-        """Apply gradient or solid color to content line."""
-        if start_color and end_color:
-            from styledconsole.utils.color import interpolate_color
-
-            ratio = index / (total - 1) if total > 1 else 0
-            color = interpolate_color(start_color, end_color, ratio)
-            return colorize(line, color, self._policy)
-        elif content_color:
-            return colorize(line, content_color, self._policy)
-        return line
 
     def print_frame(
         self,
@@ -490,17 +492,23 @@ class RenderingEngine:
 
         # Gradient application
         if start_color and end_color:
-            from styledconsole.utils.color import interpolate_color
-
+            lines = content_str.split("\n")
             lines = content_str.split("\n")
             if len(lines) > 1:
-                styled_lines = []
-                for i, line in enumerate(lines):
-                    ratio = i / (len(lines) - 1) if len(lines) > 1 else 0
-                    color = interpolate_color(start_color, end_color, ratio)
-                    styled_lines.append(f"[{color}]{line}[/]")
+                from styledconsole.effects.engine import apply_gradient
+                from styledconsole.effects.strategies import Both, LinearGradient, VerticalPosition
+
+                # Apply gradient to all content (ignoring borders since this is just a text block)
+                styled_lines = apply_gradient(
+                    lines,
+                    position_strategy=VerticalPosition(),
+                    color_source=LinearGradient(start_color, end_color),
+                    target_filter=Both(),
+                    border_chars=set(),  # No borders in content block
+                )
+
                 # Create Text with markup then set no_wrap
-                text_obj = Text.from_markup("\n".join(styled_lines))
+                text_obj = Text.from_ansi("\n".join(styled_lines))
                 text_obj.no_wrap = True
                 text_obj.overflow = "ignore"
                 return text_obj

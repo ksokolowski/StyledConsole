@@ -6,8 +6,7 @@ into pluggable strategies following the Strategy pattern.
 
 from typing import Protocol
 
-from styledconsole.core.gradient_utils import get_rainbow_color
-from styledconsole.utils.color import interpolate_color
+from styledconsole.utils.color import get_rainbow_color, interpolate_color
 
 # ============================================================================
 # Position Strategies (How to calculate gradient position for each character)
