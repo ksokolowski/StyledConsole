@@ -22,7 +22,7 @@ def demo_context_manager_basic():
     console.newline()
 
     # Simple group with context manager
-    with console.group(title=f"{EMOJI.CHART_BAR} Dashboard", border="double", border_color="cyan"):
+    with console.group(title=f"{EMOJI.BAR_CHART} Dashboard", border="double", border_color="cyan"):
         console.frame("System status: Online", title="Status")
         console.frame("CPU: 45%\nMemory: 2.1GB\nDisk: 120GB", title="Resources")
         console.frame("Last backup: 2 hours ago", title="Backup")
@@ -37,12 +37,12 @@ def demo_context_manager_nested():
     console.text("Nested Context Managers:", bold=True, color="yellow")
     console.newline()
 
-    with console.group(title=f"{EMOJI.FOLDER} Project Overview", border="heavy"):
+    with console.group(title=f"{EMOJI.FILE_FOLDER} Project Overview", border="heavy"):
         console.frame("Main application ready", title="App Status")
 
         with console.group(title="Services", border="rounded", border_color="cyan"):
-            console.frame(f"{EMOJI.CHECK} Database connected", border_color="green")
-            console.frame(f"{EMOJI.CHECK} Cache active", border_color="green")
+            console.frame(f"{EMOJI.CHECK_MARK_BUTTON} Database connected", border_color="green")
+            console.frame(f"{EMOJI.CHECK_MARK_BUTTON} Cache active", border_color="green")
             console.frame(f"{EMOJI.WARNING} Queue slow", border_color="yellow")
 
         console.frame("All tests passing", title="CI/CD")
@@ -60,13 +60,15 @@ def demo_context_manager_align_widths():
     # align_widths=True makes all inner frames the same width
     with console.group(title=f"{EMOJI.CLIPBOARD} System Report", align_widths=True):
         console.frame(
-            f"{EMOJI.CHECK} All systems operational", title="Success", border_color="green"
+            f"{EMOJI.CHECK_MARK_BUTTON} All systems operational",
+            title="Success",
+            border_color="green",
         )
         console.frame(
             f"{EMOJI.WARNING} High memory usage detected", title="Warning", border_color="yellow"
         )
         console.frame(
-            f"{EMOJI.CROSS} Database connection failed", title="Error", border_color="red"
+            f"{EMOJI.CROSS_MARK} Database connection failed", title="Error", border_color="red"
         )
 
     console.newline(2)
@@ -85,7 +87,7 @@ def demo_frame_group_basic():
             {"content": "System status: Online", "title": "Status"},
             {"content": "CPU: 45%\nMemory: 2.1GB", "title": "Resources"},
         ],
-        title=f"{EMOJI.CHART_BAR} Quick Stats",
+        title=f"{EMOJI.BAR_CHART} Quick Stats",
         border="rounded",
         border_color="cyan",
         gap=1,
@@ -149,10 +151,10 @@ def demo_comparison():
     console.text("When to Use Each Approach:", bold=True, color="white")
     console.newline()
 
-    with console.group(title=f"{EMOJI.LIGHTBULB} Choosing the Right API", border="rounded"):
+    with console.group(title=f"{EMOJI.LIGHT_BULB} Choosing the Right API", border="rounded"):
         console.frame(
             [
-                f"{EMOJI.CHECK} console.group() context manager:",
+                f"{EMOJI.CHECK_MARK_BUTTON} console.group() context manager:",
                 "  • Most Pythonic approach",
                 "  • Arbitrary nesting depth",
                 "  • Dynamic content during context",

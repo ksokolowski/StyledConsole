@@ -29,7 +29,7 @@ def main():
 
     print()
     print("=" * 80)
-    print(f"{EMOJI.SIREN} ALERT MESSAGES - Real-World Use Cases")
+    print(f"{EMOJI.POLICE_CAR_LIGHT} ALERT MESSAGES - Real-World Use Cases")
     print("=" * 80)
     print()
 
@@ -37,7 +37,7 @@ def main():
     # SUCCESS ALERTS - Green theme, checkmark emoji
     # ============================================================================
 
-    console.text(f"{EMOJI.CHECK} SUCCESS ALERTS", color="lime", bold=True)
+    console.text(f"{EMOJI.CHECK_MARK_BUTTON} SUCCESS ALERTS", color="lime", bold=True)
     console.text(
         "Use for: Completed operations, successful deployments, passed tests",
         color="gray",
@@ -47,7 +47,7 @@ def main():
     # Simple success
     console.frame(
         "Application deployed successfully to production!",
-        title=f"{EMOJI.CHECK} Deployment Complete",
+        title=f"{EMOJI.CHECK_MARK_BUTTON} Deployment Complete",
         border="rounded",
         border_color="lime",
         content_color="lightgreen",
@@ -65,7 +65,7 @@ def main():
             "Artifacts: 12 files (4.2 MB)",
             "Environment: production",
         ],
-        title=f"{EMOJI.CHECK} Build Success",
+        title=f"{EMOJI.CHECK_MARK_BUTTON} Build Success",
         border="double",
         border_color="green",
         content_color="white",
@@ -79,7 +79,7 @@ def main():
     # ERROR ALERTS - Red theme, X emoji
     # ============================================================================
 
-    console.text(f"{EMOJI.CROSS} ERROR ALERTS", color="red", bold=True)
+    console.text(f"{EMOJI.CROSS_MARK} ERROR ALERTS", color="red", bold=True)
     console.text(
         "Use for: Failed operations, critical errors, deployment failures",
         color="gray",
@@ -89,7 +89,7 @@ def main():
     # Simple error
     console.frame(
         "Database connection failed!",
-        title=f"{EMOJI.CROSS} Connection Error",
+        title=f"{EMOJI.CROSS_MARK} Connection Error",
         border="heavy",
         border_color="red",
         content_color="lightcoral",
@@ -107,7 +107,7 @@ def main():
             "File: /var/www/app/config.yml",
             "Action: Check deployment credentials",
         ],
-        title=f"{EMOJI.CROSS} Deployment Failed",
+        title=f"{EMOJI.CROSS_MARK} Deployment Failed",
         border="double",
         border_color="darkred",
         content_color="white",
@@ -160,7 +160,7 @@ def main():
     # INFO ALERTS - Blue theme, info emoji
     # ============================================================================
 
-    console.text(f"{EMOJI.INFO}  INFO ALERTS", color="dodgerblue", bold=True)
+    console.text(f"{EMOJI.INFORMATION}  INFO ALERTS", color="dodgerblue", bold=True)
     console.text(
         "Use for: Status updates, informational messages, progress notifications", color="gray"
     )
@@ -169,7 +169,7 @@ def main():
     # Simple info
     console.frame(
         "Health check passed for all services",
-        title=f"{EMOJI.INFO}  System Status",
+        title=f"{EMOJI.INFORMATION}  System Status",
         border="rounded",
         border_color="dodgerblue",
         content_color="lightblue",
@@ -187,7 +187,7 @@ def main():
             "Total size: 12.8 GB",
             "Next backup: Tomorrow 02:00 AM",
         ],
-        title=f"{EMOJI.INFO}  Backup Status",
+        title=f"{EMOJI.INFORMATION}  Backup Status",
         border="double",
         border_color="steelblue",
         content_color="white",
@@ -209,7 +209,7 @@ def main():
     # Starting
     console.frame(
         "Starting deployment to production...",
-        title=f"{EMOJI.INFO}  Deploy Started",
+        title=f"{EMOJI.INFORMATION}  Deploy Started",
         border="rounded",
         border_color="dodgerblue",
         content_color="lightblue",
@@ -237,9 +237,9 @@ def main():
             "Instances: 8 updated",
             "Health checks: All passing",
             "",
-            f"{EMOJI.GLOBE} https://app.example.com",
+            f"{EMOJI.GLOBE_WITH_MERIDIANS} https://app.example.com",
         ],
-        title=f"{EMOJI.CHECK} Deployment Complete",
+        title=f"{EMOJI.CHECK_MARK_BUTTON} Deployment Complete",
         border="double",
         border_color="lime",
         content_color="white",
@@ -252,7 +252,7 @@ def main():
     # DESIGN GUIDELINES
     # ============================================================================
 
-    console.text(f"{EMOJI.TRIANGLE_RULER} DESIGN GUIDELINES", color="magenta", bold=True)
+    console.text(f"{EMOJI.TRIANGULAR_RULER} DESIGN GUIDELINES", color="magenta", bold=True)
     print()
 
     console.frame(

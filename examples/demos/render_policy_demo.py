@@ -55,7 +55,7 @@ def demo_auto_detection() -> None:
 
     # Show current environment's policy
     policy = RenderPolicy.from_env()
-    show_policy_info(policy, f"{icons.INFO} Current Environment Policy")
+    show_policy_info(policy, f"{icons.INFORMATION} Current Environment Policy")
 
 
 def demo_factory_methods() -> None:
@@ -105,11 +105,11 @@ def demo_icon_integration() -> None:
     # Demonstrate different modes
     print("\nWith emoji-enabled policy:")
     RenderPolicy.full().apply_to_icons()
-    print(f"  {icons.CHECK} Success  {icons.CROSS} Error  {icons.WARNING} Warning")
+    print(f"  {icons.CHECK_MARK_BUTTON} Success  {icons.CROSS_MARK} Error  {icons.WARNING} Warning")
 
     print("\nWith ASCII-forced policy:")
     RenderPolicy.ci_friendly().apply_to_icons()
-    print(f"  {icons.CHECK} Success  {icons.CROSS} Error  {icons.WARNING} Warning")
+    print(f"  {icons.CHECK_MARK_BUTTON} Success  {icons.CROSS_MARK} Error  {icons.WARNING} Warning")
 
     # Reset to auto
     from styledconsole.icons import reset_icon_mode
@@ -130,7 +130,7 @@ def demo_with_override() -> None:
             "",
             "Original policy is unchanged (immutable).",
         ],
-        title=f"{icons.REFRESH} Policy Override",
+        title=f"{icons.COUNTERCLOCKWISE_ARROWS_BUTTON} Policy Override",
         border="rounded",
     )
 
@@ -189,11 +189,11 @@ def main() -> None:
     console = Console()
     console.frame(
         [
-            f"{icons.CHECK} Auto-detection from environment",
-            f"{icons.CHECK} Factory methods for common scenarios",
-            f"{icons.CHECK} Icon system integration",
-            f"{icons.CHECK} Immutable with override support",
-            f"{icons.CHECK} Global default policy management",
+            f"{icons.CHECK_MARK_BUTTON} Auto-detection from environment",
+            f"{icons.CHECK_MARK_BUTTON} Factory methods for common scenarios",
+            f"{icons.CHECK_MARK_BUTTON} Icon system integration",
+            f"{icons.CHECK_MARK_BUTTON} Immutable with override support",
+            f"{icons.CHECK_MARK_BUTTON} Global default policy management",
         ],
         title=f"{icons.TROPHY} RenderPolicy Features",
         border="double",

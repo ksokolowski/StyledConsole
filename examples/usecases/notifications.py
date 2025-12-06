@@ -30,7 +30,7 @@ console.newline()
 # ----------------------------------------------------------------------------
 # 1. INFO NOTIFICATIONS - General Information
 # ----------------------------------------------------------------------------
-console.rule(f"{EMOJI.INFO} INFORMATIONAL MESSAGES", style="cyan")
+console.rule(f"{EMOJI.INFORMATION} INFORMATIONAL MESSAGES", style="cyan")
 console.text("Use for: General updates, non-urgent information, status changes")
 console.newline()
 
@@ -40,7 +40,7 @@ console.frame(
 Backed up: 2,847 files (4.2 GB)
 Duration: 3m 42s
 Next backup: Tomorrow at 2:00 AM""",
-    title=f"{EMOJI.INFO} Backup Complete",
+    title=f"{EMOJI.INFORMATION} Backup Complete",
     border="rounded",
     border_color="cyan",
     width=65,
@@ -65,7 +65,7 @@ Run 'sudo apt upgrade' to install updates""",
 # 2. SUCCESS NOTIFICATIONS - Completed Actions
 # ----------------------------------------------------------------------------
 console.newline(2)
-console.rule(f"{EMOJI.CHECK} SUCCESS CONFIRMATIONS", style="green")
+console.rule(f"{EMOJI.CHECK_MARK_BUTTON} SUCCESS CONFIRMATIONS", style="green")
 console.text("Use for: Successful operations, confirmations, achievements")
 console.newline()
 
@@ -77,7 +77,7 @@ PID: 12847
 Status: Active (running)
 Memory: 45.2 MB
 Uptime: 2 seconds""",
-    title=f"{EMOJI.CHECK} Service Status",
+    title=f"{EMOJI.CHECK_MARK_BUTTON} Service Status",
     border="rounded",
     border_color="green",
     width=65,
@@ -93,7 +93,7 @@ New pages: 3
 Build time: 2.8s
 
 View at: https://docs.example.com""",
-    title=f"{EMOJI.CHECK} Build Complete",
+    title=f"{EMOJI.CHECK_MARK_BUTTON} Build Complete",
     border="double",
     border_color="green",
     width=65,
@@ -124,7 +124,7 @@ Action: Clean up old files or expand storage""",
 console.newline()
 
 console.frame(
-    f"""{EMOJI.CLOCK} Certificate expiring soon
+    f"""{EMOJI.ONE_OCLOCK} Certificate expiring soon
 
 Certificate: example.com
 Expires: 2025-11-25 (14 days)
@@ -141,7 +141,7 @@ Action: Run 'certbot renew' to update""",
 # 4. CRITICAL NOTIFICATIONS - Immediate Action Required
 # ----------------------------------------------------------------------------
 console.newline(2)
-console.rule(f"{EMOJI.SIREN} CRITICAL ALERTS", style="red")
+console.rule(f"{EMOJI.POLICE_CAR_LIGHT} CRITICAL ALERTS", style="red")
 console.text("Use for: Critical errors, security issues, service outages")
 console.newline()
 
@@ -154,7 +154,7 @@ Last log: Connection refused
 Attempts: 3 (all failed)
 
 Action: Check logs at /var/log/postgresql/""",
-    title=f"{EMOJI.CROSS} Critical Failure",
+    title=f"{EMOJI.CROSS_MARK} Critical Failure",
     border="double",
     border_color="red",
     width=65,
@@ -163,7 +163,7 @@ Action: Check logs at /var/log/postgresql/""",
 console.newline()
 
 console.frame(
-    f"""{EMOJI.LOCK} Security vulnerability detected
+    f"""{EMOJI.LOCKED} Security vulnerability detected
 
 Package: openssl
 Version: 1.1.1k
@@ -171,7 +171,7 @@ CVE: CVE-2023-12345 (CRITICAL)
 CVSS Score: 9.8
 
 Action: Update immediately with 'apt upgrade openssl'""",
-    title=f"{EMOJI.SIREN} Security Alert",
+    title=f"{EMOJI.POLICE_CAR_LIGHT} Security Alert",
     border="thick",
     border_color="red",
     width=65,
@@ -181,7 +181,7 @@ Action: Update immediately with 'apt upgrade openssl'""",
 # 5. PROGRESS NOTIFICATIONS - Background Tasks
 # ----------------------------------------------------------------------------
 console.newline(2)
-console.rule(f"{EMOJI.HOURGLASS} PROGRESS UPDATES", style="blue")
+console.rule(f"{EMOJI.HOURGLASS_DONE} PROGRESS UPDATES", style="blue")
 console.text("Use for: Long-running tasks, batch operations, downloads")
 console.newline()
 
@@ -193,7 +193,7 @@ Files: 45 / 120 (37.5%)
 Current: vacation_2024.mp4
 Speed: 2.3x realtime
 ETA: 18 minutes""",
-    title=f"{EMOJI.HOURGLASS} Background Task",
+    title=f"{EMOJI.HOURGLASS_DONE} Background Task",
     border="rounded",
     border_color="blue",
     width=65,
@@ -202,7 +202,7 @@ ETA: 18 minutes""",
 console.newline()
 
 console.frame(
-    f"""{EMOJI.GLOBE} Downloading updates...
+    f"""{EMOJI.GLOBE_WITH_MERIDIANS} Downloading updates...
 
 Package: system-update-2024.11
 Size: 847 MB / 1.2 GB (70.6%)
@@ -218,7 +218,7 @@ Time remaining: ~23 seconds""",
 # 6. TIME-SENSITIVE NOTIFICATIONS
 # ----------------------------------------------------------------------------
 console.newline(2)
-console.rule(f"{EMOJI.ALARM} TIME-SENSITIVE ALERTS", style="magenta")
+console.rule(f"{EMOJI.ALARM_CLOCK} TIME-SENSITIVE ALERTS", style="magenta")
 console.text("Use for: Scheduled events, reminders, deadlines")
 console.newline()
 
@@ -231,7 +231,7 @@ Duration: ~15 minutes
 Impact: Read-only mode
 
 Prepare: Save work, expect brief downtime""",
-    title=f"{EMOJI.CLOCK} Upcoming Maintenance",
+    title=f"{EMOJI.ONE_OCLOCK} Upcoming Maintenance",
     border="rounded",
     border_color="magenta",
     width=65,
@@ -244,7 +244,7 @@ console.frame(
 
 Report: System Health Summary
 Date: 2025-11-11
-Status: {EMOJI.CHECK} All systems operational
+Status: {EMOJI.CHECK_MARK_BUTTON} All systems operational
 
 View at: /var/reports/daily/2025-11-11.html""",
     title=f"{EMOJI.MEMO} Daily Report",
@@ -262,13 +262,13 @@ console.banner("NOTIFICATION DESIGN")
 
 console.frame(
     f"""
-{EMOJI.TARGET} DESIGN PRINCIPLES
+{EMOJI.BULLSEYE} DESIGN PRINCIPLES
 
 1. VISUAL HIERARCHY
-   • Critical: Red, double border, {EMOJI.SIREN}/{EMOJI.CROSS}
+   • Critical: Red, double border, {EMOJI.POLICE_CAR_LIGHT}/{EMOJI.CROSS_MARK}
    • Warning: Yellow, thick border, {EMOJI.WARNING}
-   • Success: Green, rounded, {EMOJI.CHECK}
-   • Info: Cyan/blue, rounded, {EMOJI.INFO}
+   • Success: Green, rounded, {EMOJI.CHECK_MARK_BUTTON}
+   • Info: Cyan/blue, rounded, {EMOJI.INFORMATION}
 
 2. ACTIONABLE INFORMATION
    • Always include: What happened, why it matters
@@ -276,16 +276,16 @@ console.frame(
    • Time-sensitive: Show deadlines/ETAs
 
 3. EMOJI USAGE
-   • Status: {EMOJI.CHECK} {EMOJI.WARNING} {EMOJI.CROSS} {EMOJI.INFO}
+   • Status: {EMOJI.CHECK_MARK_BUTTON} {EMOJI.WARNING} {EMOJI.CROSS_MARK} {EMOJI.INFORMATION}
    • Priority: {EMOJI.RED_CIRCLE} {EMOJI.YELLOW_CIRCLE} {EMOJI.GREEN_CIRCLE}
-   • Context: {EMOJI.LOCK} {EMOJI.GEAR} {EMOJI.PACKAGE} {EMOJI.CLOCK}
+   • Context: {EMOJI.LOCKED} {EMOJI.GEAR} {EMOJI.PACKAGE} {EMOJI.ONE_OCLOCK}
 
 4. CONSISTENCY
    • Same colors for same priorities
    • Same borders for same urgency
    • Same emojis for same types
 """,
-    title=f"{EMOJI.LIGHTBULB} Best Practices",
+    title=f"{EMOJI.LIGHT_BULB} Best Practices",
     border="rounded",
     border_color="cyan",
     width=75,
@@ -301,12 +301,12 @@ console.frame(
     f"""
 PRIORITY LEVELS:
 
-{EMOJI.INFO} INFO          Blue/Cyan, rounded    General updates
-{EMOJI.CHECK} SUCCESS       Green, rounded        Confirmations
+{EMOJI.INFORMATION} INFO          Blue/Cyan, rounded    General updates
+{EMOJI.CHECK_MARK_BUTTON} SUCCESS       Green, rounded        Confirmations
 {EMOJI.WARNING} WARNING       Yellow, thick         Attention needed
-{EMOJI.SIREN} CRITICAL      Red, double           Immediate action
-{EMOJI.HOURGLASS} PROGRESS       Blue, rounded         Background tasks
-{EMOJI.CLOCK} TIME-SENSITIVE Magenta, rounded      Scheduled events
+{EMOJI.POLICE_CAR_LIGHT} CRITICAL      Red, double           Immediate action
+{EMOJI.HOURGLASS_DONE} PROGRESS       Blue, rounded         Background tasks
+{EMOJI.ONE_OCLOCK} TIME-SENSITIVE Magenta, rounded      Scheduled events
 
 WHEN TO USE:
 • Info: Package updates, backups, status changes

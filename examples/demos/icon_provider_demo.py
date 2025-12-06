@@ -32,8 +32,8 @@ Terminal emoji safe: detected automatically""",
 
     console.text("")
     console.text("Status icons:")
-    console.text(f"  {icons.CHECK} Success    {icons.CROSS} Error")
-    console.text(f"  {icons.WARNING} Warning    {icons.INFO} Info")
+    console.text(f"  {icons.CHECK_MARK_BUTTON} Success    {icons.CROSS_MARK} Error")
+    console.text(f"  {icons.WARNING} Warning    {icons.INFORMATION} Info")
     console.text("")
 
 
@@ -45,7 +45,7 @@ def demo_emoji_mode() -> None:
 Icons always render as Unicode emojis.
 
 {icons.ROCKET} Rocket  {icons.STAR} Star  {icons.FIRE} Fire
-{icons.TROPHY} Trophy  {icons.TARGET} Target  {icons.LIGHTBULB} Idea""",
+{icons.TROPHY} Trophy  {icons.BULLSEYE} Target  {icons.LIGHT_BULB} Idea""",
         title=f"{icons.SPARKLES} Emoji Mode",
         border="rounded",
         border_color="cyan",
@@ -61,14 +61,14 @@ def demo_ascii_mode() -> None:
 Icons render as colored ASCII symbols.
 
 Status:
-  {icons.CHECK} Success (green)
-  {icons.CROSS} Error (red)
+  {icons.CHECK_MARK_BUTTON} Success (green)
+  {icons.CROSS_MARK} Error (red)
   {icons.WARNING} Warning (yellow)
-  {icons.INFO} Info (cyan)
+  {icons.INFORMATION} Info (cyan)
 
 Objects:
-  {icons.ROCKET} Rocket  {icons.STAR} Star  {icons.FOLDER} Folder
-  {icons.GEAR} Gear    {icons.LOCK} Lock  {icons.KEY} Key""",
+  {icons.ROCKET} Rocket  {icons.STAR} Star  {icons.FILE_FOLDER} Folder
+  {icons.GEAR} Gear    {icons.LOCKED} Lock  {icons.KEY} Key""",
         title="[*] ASCII Mode",  # Manual ASCII since we're in ASCII mode
         border="rounded",
         border_color="yellow",
@@ -94,18 +94,18 @@ def demo_test_output() -> None:
     # Emoji mode
     set_icon_mode("emoji")
     console.text("Test Results (emoji mode):")
-    console.text(f"  {icons.CHECK} test_login_success")
-    console.text(f"  {icons.CHECK} test_logout")
-    console.text(f"  {icons.CROSS} test_payment_timeout")
+    console.text(f"  {icons.CHECK_MARK_BUTTON} test_login_success")
+    console.text(f"  {icons.CHECK_MARK_BUTTON} test_logout")
+    console.text(f"  {icons.CROSS_MARK} test_payment_timeout")
     console.text(f"  {icons.WARNING} test_slow_query (2.5s)")
     console.text("")
 
     # ASCII mode
     set_icon_mode("ascii")
     console.text("Test Results (ASCII mode):")
-    console.text(f"  {icons.CHECK} test_login_success")
-    console.text(f"  {icons.CHECK} test_logout")
-    console.text(f"  {icons.CROSS} test_payment_timeout")
+    console.text(f"  {icons.CHECK_MARK_BUTTON} test_login_success")
+    console.text(f"  {icons.CHECK_MARK_BUTTON} test_logout")
+    console.text(f"  {icons.CROSS_MARK} test_payment_timeout")
     console.text(f"  {icons.WARNING} test_slow_query (2.5s)")
     console.text("")
 
@@ -114,12 +114,12 @@ def demo_categories() -> None:
     """Show icons from different categories."""
     set_icon_mode("emoji")
     console.frame(
-        f"""Transport: {icons.ROCKET} {icons.AIRPLANE} {icons.CAR} {icons.TRAIN}
-Weather:   {icons.SUN} {icons.CLOUD} {icons.SNOWFLAKE} {icons.LIGHTNING}
-Nature:    {icons.TREE} {icons.SEEDLING} {icons.BLOSSOM} {icons.FIRE}
-Tech:      {icons.COMPUTER} {icons.FLOPPY} {icons.GLOBE} {icons.GEAR}
-Activity:  {icons.TARGET} {icons.TROPHY} {icons.PARTY} {icons.GIFT}""",
-        title=f"{icons.ART} Icon Categories",
+        f"""Transport: {icons.ROCKET} {icons.AIRPLANE} {icons.AUTOMOBILE} {icons.LOCOMOTIVE}
+Weather:   {icons.SUN} {icons.CLOUD} {icons.SNOWFLAKE} {icons.HIGH_VOLTAGE}
+Nature:    {icons.EVERGREEN_TREE} {icons.SEEDLING} {icons.CHERRY_BLOSSOM} {icons.FIRE}
+Tech:      {icons.LAPTOP} {icons.FLOPPY_DISK} {icons.GLOBE_WITH_MERIDIANS} {icons.GEAR}
+Activity:  {icons.BULLSEYE} {icons.TROPHY} {icons.PARTY_POPPER} {icons.WRAPPED_GIFT}""",
+        title=f"{icons.ARTIST_PALETTE} Icon Categories",
         border="double",
     )
     console.text("")

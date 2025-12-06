@@ -94,7 +94,7 @@ def demo_double_borders():
         "Double lines command respect.\n"
         "They frame what matters most,\n"
         "Drawing focus with geometric precision.",
-        title=f"{EMOJI.LIGHTNING} The Emphasis",
+        title=f"{EMOJI.HIGH_VOLTAGE} The Emphasis",
         border="double",
         border_color="orange",
         content_color="yellow",
@@ -142,7 +142,7 @@ def demo_thick_borders():
         "Energy radiates from these borders,\n"
         "Pulsing with digital vitality.\n"
         "Your message becomes unmissable.",
-        title=f"{EMOJI.LIGHTNING} Electric Energy",
+        title=f"{EMOJI.HIGH_VOLTAGE} Electric Energy",
         border="thick",
         border_color="magenta",
         content_color="white",
@@ -174,13 +174,13 @@ def demo_heavy_borders():
     # Nested heavy frames - demonstrating content with security theme
     protected_content = f"""Security through layers:
 
-{EMOJI.LOCK} Protected Zone
+{EMOJI.LOCKED} Protected Zone
 Data encrypted
 Access controlled"""
 
     console.frame(
         protected_content,
-        title=f"{EMOJI.LOCK} Secure Container",
+        title=f"{EMOJI.LOCKED} Secure Container",
         border="heavy",
         border_color="blue",
         content_color="cyan",
@@ -199,7 +199,7 @@ def demo_minimal_borders():
         "Whispers on the terminal canvas,\n"
         "Light touches that organize without overwhelming.\n"
         "Minimalism is the ultimate sophistication.",
-        title=f"{EMOJI.BLOSSOM} Light Touch",
+        title=f"{EMOJI.CHERRY_BLOSSOM} Light Touch",
         border="minimal",
         border_color="cyan",
         content_color="white",
@@ -232,7 +232,7 @@ def demo_ascii_borders():
         "Where Unicode cannot tread,\n"
         "ASCII borders carry the torch.\n"
         "Universal compatibility, timeless simplicity.",
-        title=f"{EMOJI.EARTH_GLOBE_EUROPE_AFRICA} Universal",
+        title=f"{EMOJI.GLOBE_SHOWING_EUROPE_AFRICA} Universal",
         border="ascii",
         border_color="green",
         content_color="white",
@@ -264,7 +264,7 @@ def demo_dashed_borders():
         "Motion frozen in ASCII art,\n"
         "Dashed lines pulse with energy.\n"
         "Perfect for temporary states and transitions.",
-        title=f"{EMOJI.LIGHTNING} Dynamic Flow",
+        title=f"{EMOJI.HIGH_VOLTAGE} Dynamic Flow",
         border="dots",
         border_color="yellow",
         content_color="white",
@@ -311,7 +311,7 @@ Threads: 16 running"""
 
     console.frame(
         cpu_content,
-        title=f"{EMOJI.MICROPROCESSOR} CPU Status",
+        title=f"{EMOJI.DESKTOP_COMPUTER} CPU Status",
         border="rounded",
         border_color="green",
         content_color="bright_green",
@@ -329,7 +329,7 @@ Available: 3.6 GB"""
 
     console.frame(
         memory_content,
-        title=f"{EMOJI.MEMORY} Memory Status",
+        title=f"{EMOJI.FLOPPY_DISK} Memory Status",
         border="rounded",
         border_color="yellow",
         content_color="bright_yellow",
@@ -356,7 +356,7 @@ Packets: 45,231 sent"""
 
     console.newline(2)
     console.text(
-        f"{EMOJI.LIGHTBULB} Note: True nested frames (frames within frames) "
+        f"{EMOJI.LIGHT_BULB} Note: True nested frames (frames within frames) "
         "require rich.Panel composition.\n"
         "This example shows multiple independent frames that could logically "
         "be grouped.\n"
@@ -438,7 +438,7 @@ def demo_comparison_grid():
 
 def main():
     """Run the complete borders showcase."""
-    console.rule(f"{EMOJI.ART} BORDER STYLES GALLERY", color="magenta")
+    console.rule(f"{EMOJI.ARTIST_PALETTE} BORDER STYLES GALLERY", color="magenta")
     console.newline()
 
     console.text(
@@ -469,7 +469,7 @@ def main():
     console.rule(f"{EMOJI.SPARKLES}", color="magenta")
     console.newline()
     console.frame(
-        f"{EMOJI.ART} BORDER MASTERY ACHIEVED\n\n"
+        f"{EMOJI.ARTIST_PALETTE} BORDER MASTERY ACHIEVED\n\n"
         "You've witnessed the full spectrum of border aesthetics.\n"
         "From solid foundations to dashed energy,\n"
         "From minimal whispers to heavy fortresses.\n\n"

@@ -13,8 +13,8 @@ Usage:
     from styledconsole import icons
 
     # Auto-detects terminal capability
-    print(f"{icons.CHECK} Tests passed")     # ✅ or [OK] (green)
-    print(f"{icons.CROSS} Build failed")     # ❌ or [FAIL] (red)
+    print(f"{icons.CHECK_MARK_BUTTON} Tests passed")     # ✅ or [OK] (green)
+    print(f"{icons.CROSS_MARK} Build failed")     # ❌ or [FAIL] (red)
     print(f"{icons.WARNING} Deprecation")    # ⚠️ or [WARN] (yellow)
 
     # Force specific mode globally
@@ -141,14 +141,14 @@ class IconProvider:
     """Central registry of icons with attribute-style access.
 
     Provides access to all icons via attribute names matching
-    the constants in emojis.py (e.g., icons.CHECK, icons.WARNING).
+    the constants in emojis.py (e.g., icons.CHECK_MARK_BUTTON, icons.WARNING).
 
     The provider is a singleton-like object that should be accessed
     via the module-level `icons` instance.
 
     Example:
         >>> from styledconsole import icons
-        >>> print(icons.CHECK)           # ✅ or [OK]
+        >>> print(icons.CHECK_MARK_BUTTON)           # ✅ or [OK]
         >>> print(icons.ROCKET)          # 🚀 or >>>
         >>> icon = icons.get("WARNING")  # Get Icon object
         >>> print(icon.color)            # "yellow"
@@ -315,11 +315,11 @@ def set_icon_mode(mode: IconMode) -> None:
     Example:
         >>> from styledconsole import set_icon_mode, icons
         >>> set_icon_mode("ascii")
-        >>> print(icons.CHECK)  # Always prints [OK] in green
+        >>> print(icons.CHECK_MARK_BUTTON)  # Always prints [OK] in green
         >>> set_icon_mode("emoji")
-        >>> print(icons.CHECK)  # Always prints ✅
+        >>> print(icons.CHECK_MARK_BUTTON)  # Always prints ✅
         >>> set_icon_mode("auto")
-        >>> print(icons.CHECK)  # Depends on terminal
+        >>> print(icons.CHECK_MARK_BUTTON)  # Depends on terminal
     """
     global _current_mode
     if mode not in ("auto", "emoji", "ascii"):

@@ -29,9 +29,9 @@ console.newline()
 
 console.frame(
     f"""
-{EMOJI.CHECK} Stage 1: Clone Repository        [DONE]    2.3s
-{EMOJI.CHECK} Stage 2: Install Dependencies    [DONE]    8.1s
-{EMOJI.CHECK} Stage 3: Run Tests               [DONE]   42.8s
+{EMOJI.CHECK_MARK_BUTTON} Stage 1: Clone Repository        [DONE]    2.3s
+{EMOJI.CHECK_MARK_BUTTON} Stage 2: Install Dependencies    [DONE]    8.1s
+{EMOJI.CHECK_MARK_BUTTON} Stage 3: Run Tests               [DONE]   42.8s
 {EMOJI.GEAR} Stage 4: Build Application        [RUNNING] 15.2s...
 {EMOJI.YELLOW_CIRCLE} Stage 5: Deploy to Staging         [PENDING]
 {EMOJI.YELLOW_CIRCLE} Stage 6: Run Smoke Tests           [PENDING]
@@ -58,15 +58,15 @@ console.newline()
 
 console.frame(
     f"""
-{EMOJI.CHECK} Pre-deployment Checks
-  {EMOJI.CHECK} Health checks passed
-  {EMOJI.CHECK} Capacity verified
-  {EMOJI.CHECK} Rollback plan ready
+{EMOJI.CHECK_MARK_BUTTON} Pre-deployment Checks
+  {EMOJI.CHECK_MARK_BUTTON} Health checks passed
+  {EMOJI.CHECK_MARK_BUTTON} Capacity verified
+  {EMOJI.CHECK_MARK_BUTTON} Rollback plan ready
 
 {EMOJI.GEAR} Deployment in Progress
-  {EMOJI.CHECK} Traffic drained (0% on old version)
+  {EMOJI.CHECK_MARK_BUTTON} Traffic drained (0% on old version)
   {EMOJI.GEAR} Deploying to 3 zones...
-    {EMOJI.CHECK} us-east-1: 12/12 instances healthy
+    {EMOJI.CHECK_MARK_BUTTON} us-east-1: 12/12 instances healthy
     {EMOJI.GEAR} us-west-2: 8/12 instances starting...
     {EMOJI.YELLOW_CIRCLE} eu-west-1: 0/12 waiting
 
@@ -74,7 +74,7 @@ console.frame(
   {EMOJI.YELLOW_CIRCLE} Smoke tests (pending)
   {EMOJI.YELLOW_CIRCLE} Monitoring verification (pending)
 """,
-    title=f"{EMOJI.GLOBE} Multi-Region Deployment",
+    title=f"{EMOJI.GLOBE_WITH_MERIDIANS} Multi-Region Deployment",
     border="double",
     border_color="green",
     width=70,
@@ -91,7 +91,7 @@ console.newline()
 
 console.frame(
     f"""
-{EMOJI.BOOK} Build Configuration
+{EMOJI.OPEN_BOOK} Build Configuration
   Project: large-scale-application
   Target: production
   Compiler: gcc 11.4.0
@@ -104,7 +104,7 @@ console.frame(
   Time remaining: ~29s
 
 {EMOJI.FIRE} Hot Modules
-  {EMOJI.CHECK} Core libraries (423 files)
+  {EMOJI.CHECK_MARK_BUTTON} Core libraries (423 files)
   {EMOJI.GEAR} Network layer (127/156 files)
   {EMOJI.YELLOW_CIRCLE} UI components (0/312 files)
   {EMOJI.YELLOW_CIRCLE} Tests (0/312 files)
@@ -121,18 +121,18 @@ console.newline()
 # DATA PROCESSING
 # ============================================================================
 
-console.rule(f"{EMOJI.CHART_BAR} DATA PROCESSING", style="magenta")
+console.rule(f"{EMOJI.BAR_CHART} DATA PROCESSING", style="magenta")
 console.newline()
 
 console.frame(
     f"""
-{EMOJI.HOURGLASS} Batch Job Progress
+{EMOJI.HOURGLASS_DONE} Batch Job Progress
 
 Job ID: analytics-daily-2025-11-11
 Started: 14:00:00 (3h 45m ago)
 
-{EMOJI.CHECK} Phase 1: Data Ingestion          100% ━━━━━━━━━━ 2.1M records
-{EMOJI.CHECK} Phase 2: Data Validation          100% ━━━━━━━━━━ 2.0M valid
+{EMOJI.CHECK_MARK_BUTTON} Phase 1: Data Ingestion          100% ━━━━━━━━━━ 2.1M records
+{EMOJI.CHECK_MARK_BUTTON} Phase 2: Data Validation          100% ━━━━━━━━━━ 2.0M valid
 {EMOJI.GEAR} Phase 3: Data Transformation        67% ━━━━━━━━░░ 1.3M / 2.0M
 {EMOJI.YELLOW_CIRCLE} Phase 4: Data Aggregation           0% ░░░░░░░░░░
 {EMOJI.YELLOW_CIRCLE} Phase 5: Export Results              0% ░░░░░░░░░░
@@ -152,22 +152,22 @@ console.newline()
 # DATABASE MIGRATION
 # ============================================================================
 
-console.rule(f"{EMOJI.FLOPPY} DATABASE MIGRATION", style="yellow")
+console.rule(f"{EMOJI.FLOPPY_DISK} DATABASE MIGRATION", style="yellow")
 console.newline()
 
 console.frame(
     f"""
 {EMOJI.GEAR} Migration Status: v2.5.0 → v2.6.0
 
-{EMOJI.CHECK} Pre-migration Tasks
-  {EMOJI.CHECK} Backup completed (4.2 GB)
-  {EMOJI.CHECK} Read-only mode enabled
-  {EMOJI.CHECK} Connection pool drained
+{EMOJI.CHECK_MARK_BUTTON} Pre-migration Tasks
+  {EMOJI.CHECK_MARK_BUTTON} Backup completed (4.2 GB)
+  {EMOJI.CHECK_MARK_BUTTON} Read-only mode enabled
+  {EMOJI.CHECK_MARK_BUTTON} Connection pool drained
 
 {EMOJI.GEAR} Schema Updates (3 / 7 migrations)
-  {EMOJI.CHECK} 001_add_user_indexes.sql           [DONE]    2.1s
-  {EMOJI.CHECK} 002_create_audit_tables.sql        [DONE]    5.8s
-  {EMOJI.CHECK} 003_update_permissions.sql         [DONE]    1.3s
+  {EMOJI.CHECK_MARK_BUTTON} 001_add_user_indexes.sql           [DONE]    2.1s
+  {EMOJI.CHECK_MARK_BUTTON} 002_create_audit_tables.sql        [DONE]    5.8s
+  {EMOJI.CHECK_MARK_BUTTON} 003_update_permissions.sql         [DONE]    1.3s
   {EMOJI.GEAR} 004_migrate_user_data.sql           [RUNNING] 45.2s...
                  Rows: 123,847 / 500,000 (24.8%)
   {EMOJI.YELLOW_CIRCLE} 005_add_foreign_keys.sql             [PENDING]
@@ -200,10 +200,10 @@ Platform: linux/amd64
 Build context: 847 MB
 
 {EMOJI.GEAR} Build Steps (4 / 8 completed)
-  {EMOJI.CHECK} Step 1/8 : FROM node:18-alpine
-  {EMOJI.CHECK} Step 2/8 : WORKDIR /app
-  {EMOJI.CHECK} Step 3/8 : COPY package*.json ./
-  {EMOJI.CHECK} Step 4/8 : RUN npm ci --production
+  {EMOJI.CHECK_MARK_BUTTON} Step 1/8 : FROM node:18-alpine
+  {EMOJI.CHECK_MARK_BUTTON} Step 2/8 : WORKDIR /app
+  {EMOJI.CHECK_MARK_BUTTON} Step 3/8 : COPY package*.json ./
+  {EMOJI.CHECK_MARK_BUTTON} Step 4/8 : RUN npm ci --production
   {EMOJI.GEAR} Step 5/8 : COPY . .
                  Transferring: 423 MB / 847 MB (50%)
   {EMOJI.YELLOW_CIRCLE} Step 6/8 : RUN npm run build
@@ -231,13 +231,13 @@ console.frame(
     f"""
 {EMOJI.TEST_TUBE} Test Suite Progress
 
-{EMOJI.CHECK} Unit Tests                 [PASSED]    847 / 847    8.2s
-{EMOJI.CHECK} Integration Tests          [PASSED]     52 / 52    23.1s
+{EMOJI.CHECK_MARK_BUTTON} Unit Tests                 [PASSED]    847 / 847    8.2s
+{EMOJI.CHECK_MARK_BUTTON} Integration Tests          [PASSED]     52 / 52    23.1s
 {EMOJI.GEAR} End-to-End Tests            [RUNNING]    12 / 28    45.2s...
-  {EMOJI.CHECK} Login flow
-  {EMOJI.CHECK} User registration
-  {EMOJI.CHECK} Dashboard loading
-  {EMOJI.CHECK} Data export
+  {EMOJI.CHECK_MARK_BUTTON} Login flow
+  {EMOJI.CHECK_MARK_BUTTON} User registration
+  {EMOJI.CHECK_MARK_BUTTON} Dashboard loading
+  {EMOJI.CHECK_MARK_BUTTON} Data export
   {EMOJI.GEAR} Payment processing (running)
   {EMOJI.YELLOW_CIRCLE} Admin panel (pending)
   {EMOJI.YELLOW_CIRCLE} API stress test (pending)
@@ -245,7 +245,7 @@ console.frame(
 Total: 911 / 927 tests (98.3%)
 Coverage: 87.4% (target: 85%)
 """,
-    title=f"{EMOJI.CHECK} Automated Testing",
+    title=f"{EMOJI.CHECK_MARK_BUTTON} Automated Testing",
     border="double",
     border_color="green",
     width=70,
@@ -266,7 +266,7 @@ console.frame(
 
 Worker 1: {EMOJI.GEAR} Processing batch 1/10  [RUNNING]  23% ━━━░░░░░░░
 Worker 2: {EMOJI.GEAR} Processing batch 2/10  [RUNNING]  45% ━━━━━░░░░░
-Worker 3: {EMOJI.CHECK} Processing batch 3/10  [DONE]    100% ━━━━━━━━━━
+Worker 3: {EMOJI.CHECK_MARK_BUTTON} Processing batch 3/10  [DONE]    100% ━━━━━━━━━━
 Worker 4: {EMOJI.GEAR} Processing batch 4/10  [RUNNING]  67% ━━━━━━━░░░
 
 Completed: 3 / 10 batches (30%)
@@ -290,13 +290,13 @@ console.banner("PROGRESS UI DESIGN")
 
 console.frame(
     f"""
-{EMOJI.TARGET} PROGRESS DASHBOARD PRINCIPLES
+{EMOJI.BULLSEYE} PROGRESS DASHBOARD PRINCIPLES
 
 1. VISUAL STATUS HIERARCHY
-   {EMOJI.CHECK} Done: Green, check mark
+   {EMOJI.CHECK_MARK_BUTTON} Done: Green, check mark
    {EMOJI.GEAR} Running: Blue/cyan, gear/spinner
    {EMOJI.YELLOW_CIRCLE} Pending: Yellow, circle
-   {EMOJI.CROSS} Failed: Red, X mark
+   {EMOJI.CROSS_MARK} Failed: Red, X mark
 
 2. PROGRESS INDICATORS
    • Percentages: "847 / 1,203 (70.4%)"
@@ -317,11 +317,11 @@ console.frame(
    • Dependencies visible
 
 5. ERROR HANDLING
-   {EMOJI.CROSS} Failed steps: Show error clearly
+   {EMOJI.CROSS_MARK} Failed steps: Show error clearly
    {EMOJI.WARNING} Warnings: Don't stop progress
-   {EMOJI.INFO} Retries: Show attempt count
+   {EMOJI.INFORMATION} Retries: Show attempt count
 """,
-    title=f"{EMOJI.LIGHTBULB} Best Practices",
+    title=f"{EMOJI.LIGHT_BULB} Best Practices",
     border="rounded",
     border_color="cyan",
     width=75,
@@ -333,12 +333,12 @@ console.frame(
     f"""
 STATUS INDICATORS REFERENCE:
 
-{EMOJI.CHECK} COMPLETED       Green        Task finished successfully
+{EMOJI.CHECK_MARK_BUTTON} COMPLETED       Green        Task finished successfully
 {EMOJI.GEAR} IN PROGRESS     Blue/Cyan    Currently executing
 {EMOJI.YELLOW_CIRCLE} PENDING         Yellow       Waiting to start
-{EMOJI.CROSS} FAILED          Red          Task failed
+{EMOJI.CROSS_MARK} FAILED          Red          Task failed
 {EMOJI.WARNING} WARNING         Yellow       Issues but continuing
-{EMOJI.HOURGLASS} QUEUED          Gray         In queue, not started
+{EMOJI.HOURGLASS_DONE} QUEUED          Gray         In queue, not started
 
 PROGRESS FORMATS:
 

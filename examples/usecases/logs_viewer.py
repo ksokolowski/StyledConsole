@@ -29,16 +29,16 @@ console.newline()
 
 console.frame(
     f"""
-{EMOJI.INFO} 2025-11-11 14:23:15.234  INFO     [HTTP] GET /api/users → 200 (23ms)
-{EMOJI.INFO} 2025-11-11 14:23:15.456  INFO     [HTTP] GET /api/products → 200 (45ms)
-{EMOJI.CHECK} 2025-11-11 14:23:16.123  INFO     [AUTH] User login successful: alice@example.com
-{EMOJI.INFO} 2025-11-11 14:23:16.789  INFO     [DB] Query executed in 12ms
+{EMOJI.INFORMATION} 2025-11-11 14:23:15.234  INFO     [HTTP] GET /api/users → 200 (23ms)
+{EMOJI.INFORMATION} 2025-11-11 14:23:15.456  INFO     [HTTP] GET /api/products → 200 (45ms)
+{EMOJI.CHECK_MARK_BUTTON} 2025-11-11 14:23:16.123  INFO     [AUTH] User login: alice@example.com
+{EMOJI.INFORMATION} 2025-11-11 14:23:16.789  INFO     [DB] Query executed in 12ms
 {EMOJI.WARNING} 2025-11-11 14:23:17.234  WARN     [CACHE] Cache miss for key: user:1234
-{EMOJI.INFO} 2025-11-11 14:23:17.567  INFO     [HTTP] POST /api/orders → 201 (234ms)
-{EMOJI.CROSS} 2025-11-11 14:23:18.890  ERROR    [DB] Connection timeout after 5000ms
-{EMOJI.INFO} 2025-11-11 14:23:19.123  INFO     [DB] Reconnection successful
-{EMOJI.INFO} 2025-11-11 14:23:19.456  INFO     [HTTP] GET /api/analytics → 200 (567ms)
-{EMOJI.CHECK} 2025-11-11 14:23:20.789  INFO     [AUTH] Session renewed: alice@example.com
+{EMOJI.INFORMATION} 2025-11-11 14:23:17.567  INFO     [HTTP] POST /api/orders → 201 (234ms)
+{EMOJI.CROSS_MARK} 2025-11-11 14:23:18.890  ERROR    [DB] Connection timeout after 5000ms
+{EMOJI.INFORMATION} 2025-11-11 14:23:19.123  INFO     [DB] Reconnection successful
+{EMOJI.INFORMATION} 2025-11-11 14:23:19.456  INFO     [HTTP] GET /api/analytics → 200 (567ms)
+{EMOJI.CHECK_MARK_BUTTON} 2025-11-11 14:23:20.789  INFO     [AUTH] Session renewed: alice
 """,
     title=f"{EMOJI.SCROLL} Application Logs (Last 10 entries)",
     border="rounded",
@@ -52,22 +52,22 @@ console.newline()
 # SYSTEM LOGS
 # ============================================================================
 
-console.rule(f"{EMOJI.COMPUTER} SYSTEM LOGS", style="blue")
+console.rule(f"{EMOJI.LAPTOP} SYSTEM LOGS", style="blue")
 console.newline()
 
 console.frame(
     f"""
-{EMOJI.INFO} Nov 11 14:20:15 prod-web-01 systemd[1]: Started nginx.service
-{EMOJI.CHECK} Nov 11 14:20:16 prod-web-01 nginx: configuration file test successful
-{EMOJI.INFO} Nov 11 14:20:16 prod-web-01 systemd[1]: Reloading nginx
-{EMOJI.CHECK} Nov 11 14:20:17 prod-web-01 nginx: signal process started
-{EMOJI.INFO} Nov 11 14:21:34 prod-web-01 sshd[12847]: Accepted publickey for alice
-{EMOJI.INFO} Nov 11 14:22:15 prod-web-01 sudo: alice : command /usr/bin/systemctl status nginx
+{EMOJI.INFORMATION} Nov 11 14:20:15 prod-web-01 systemd[1]: Started nginx.service
+{EMOJI.CHECK_MARK_BUTTON} Nov 11 14:20:16 prod-web-01 nginx: config test successful
+{EMOJI.INFORMATION} Nov 11 14:20:16 prod-web-01 systemd[1]: Reloading nginx
+{EMOJI.CHECK_MARK_BUTTON} Nov 11 14:20:17 prod-web-01 nginx: signal process started
+{EMOJI.INFORMATION} Nov 11 14:21:34 prod-web-01 sshd[12847]: Accepted publickey for alice
+{EMOJI.INFORMATION} Nov 11 14:22:15 prod-web-01 sudo: alice : /usr/bin/systemctl status nginx
 {EMOJI.WARNING} Nov 11 14:23:42 prod-web-01 kernel: [12847.234] Out of memory
-{EMOJI.CROSS} Nov 11 14:23:43 prod-web-01 systemd[1]: node-app.service: Main process exited
+{EMOJI.CROSS_MARK} Nov 11 14:23:43 prod-web-01 systemd[1]: node-app.service: Main process exited
 {EMOJI.WARNING} Nov 11 14:23:43 prod-web-01 systemd[1]: node-app.service: Failed with 'oom-kill'
-{EMOJI.INFO} Nov 11 14:23:44 prod-web-01 systemd[1]: node-app.service: Scheduled restart
-{EMOJI.CHECK} Nov 11 14:23:45 prod-web-01 systemd[1]: Started node-app.service
+{EMOJI.INFORMATION} Nov 11 14:23:44 prod-web-01 systemd[1]: node-app.service: Scheduled restart
+{EMOJI.CHECK_MARK_BUTTON} Nov 11 14:23:45 prod-web-01 systemd[1]: Started node-app.service
 """,
     title=f"{EMOJI.GEAR} System Logs (/var/log/syslog)",
     border="solid",
@@ -81,12 +81,12 @@ console.newline()
 # ERROR LOGS
 # ============================================================================
 
-console.rule(f"{EMOJI.CROSS} ERROR TRACKING", style="red")
+console.rule(f"{EMOJI.CROSS_MARK} ERROR TRACKING", style="red")
 console.newline()
 
 console.frame(
     f"""
-{EMOJI.CROSS} 2025-11-11 14:23:18.890  ERROR
+{EMOJI.CROSS_MARK} 2025-11-11 14:23:18.890  ERROR
   Component: Database
   Message: Connection timeout after 5000ms
   Query: SELECT * FROM users WHERE id = $1
@@ -96,7 +96,7 @@ console.frame(
     at UserService.findById (/app/services/user.js:45)
     at UserController.getUser (/app/controllers/user.js:23)
 
-{EMOJI.CROSS} 2025-11-11 14:25:32.123  ERROR
+{EMOJI.CROSS_MARK} 2025-11-11 14:25:32.123  ERROR
   Component: Payment Processing
   Message: Payment gateway returned 503
   Transaction ID: txn_1234567890
@@ -104,7 +104,7 @@ console.frame(
   Retry: 3/3 attempts failed
   Next action: Manual review required
 
-{EMOJI.CROSS} 2025-11-11 14:27:45.678  ERROR
+{EMOJI.CROSS_MARK} 2025-11-11 14:27:45.678  ERROR
   Component: Email Service
   Message: SMTP connection failed
   Recipient: customer@example.com
@@ -112,7 +112,7 @@ console.frame(
   Error code: ECONNREFUSED
   Action: Queued for retry in 5 minutes
 """,
-    title=f"{EMOJI.SIREN} Critical Errors (Last hour)",
+    title=f"{EMOJI.POLICE_CAR_LIGHT} Critical Errors (Last hour)",
     border="double",
     border_color="red",
     width=80,
@@ -129,7 +129,7 @@ console.newline()
 
 console.frame(
     f"""
-{EMOJI.INFO} 2025-11-11 14:23:15.234
+{EMOJI.INFORMATION} 2025-11-11 14:23:15.234
   level: info
   component: http
   method: GET
@@ -148,7 +148,7 @@ console.frame(
   action: fetch_from_db
   duration: 12ms
 
-{EMOJI.CROSS} 2025-11-11 14:23:18.890
+{EMOJI.CROSS_MARK} 2025-11-11 14:23:18.890
   level: error
   component: database
   event: connection_timeout
@@ -174,7 +174,7 @@ console.newline()
 
 console.frame(
     f"""
-{EMOJI.CHECK} 2025-11-11 14:20:00  USER_LOGIN
+{EMOJI.CHECK_MARK_BUTTON} 2025-11-11 14:20:00  USER_LOGIN
   User: alice@example.com (ID: 1234)
   IP: 192.168.1.100
   Location: San Francisco, CA
@@ -188,13 +188,13 @@ console.frame(
   New value: 30
   Reason: Performance optimization
 
-{EMOJI.CROSS} 2025-11-11 14:22:30  PERMISSION_DENIED
+{EMOJI.CROSS_MARK} 2025-11-11 14:22:30  PERMISSION_DENIED
   User: bob@example.com (ID: 5678)
   Action: Attempted to delete user account
   Resource: User ID 9012
   Reason: Insufficient permissions (requires admin role)
 
-{EMOJI.CHECK} 2025-11-11 14:23:45  DATA_EXPORT
+{EMOJI.CHECK_MARK_BUTTON} 2025-11-11 14:23:45  DATA_EXPORT
   User: charlie@example.com (ID: 9012)
   Resource: Customer database
   Records: 12,847
@@ -202,7 +202,7 @@ console.frame(
   Size: 4.2 MB
   Compliance: GDPR approved
 """,
-    title=f"{EMOJI.LOCK} Security Audit Trail",
+    title=f"{EMOJI.LOCKED} Security Audit Trail",
     border="thick",
     border_color="yellow",
     width=85,
@@ -227,11 +227,11 @@ console.frame(
 {EMOJI.GEAR} 2025-11-11 14:23:15.139  DEBUG    [Cache] Storing result in cache
   Key: user:1234
   TTL: 3600s
-{EMOJI.CHECK} 2025-11-11 14:23:15.142  DEBUG    [UserService] User found and cached
+{EMOJI.CHECK_MARK_BUTTON} 2025-11-11 14:23:15.142  DEBUG    [UserService] User found and cached
 {EMOJI.GEAR} 2025-11-11 14:23:15.145  DEBUG    [HTTP] Building response
   Status: 200
   Body size: 847 bytes
-{EMOJI.CHECK} 2025-11-11 14:23:15.148  DEBUG    [HTTP] Response sent successfully
+{EMOJI.CHECK_MARK_BUTTON} 2025-11-11 14:23:15.148  DEBUG    [HTTP] Response sent successfully
   Total time: 25ms
 """,
     title=f"{EMOJI.TEST_TUBE} Debug Log (Verbose Mode)",
@@ -246,17 +246,17 @@ console.newline()
 # LOG AGGREGATION VIEW
 # ============================================================================
 
-console.rule(f"{EMOJI.CHART_BAR} LOG STATISTICS", style="green")
+console.rule(f"{EMOJI.BAR_CHART} LOG STATISTICS", style="green")
 console.newline()
 
 console.frame(
     f"""
-{EMOJI.CHART_BAR} Log Summary (Last hour)
+{EMOJI.BAR_CHART} Log Summary (Last hour)
 
 SEVERITY BREAKDOWN:
-  {EMOJI.CROSS} ERROR      23 entries    (1.2%)
+  {EMOJI.CROSS_MARK} ERROR      23 entries    (1.2%)
   {EMOJI.WARNING} WARN       82 entries    (4.3%)
-  {EMOJI.INFO} INFO      1,847 entries (96.5%)
+  {EMOJI.INFORMATION} INFO      1,847 entries (96.5%)
   {EMOJI.GEAR} DEBUG     12,234 entries (not shown by default)
 
 TOP ERROR SOURCES:
@@ -297,18 +297,18 @@ console.frame(
     f"""
 {EMOJI.FIRE} Following /var/log/app/production.log...
 
-{EMOJI.INFO} 14:28:45.123  INFO   [HTTP] GET /api/users → 200 (23ms)
-{EMOJI.INFO} 14:28:45.456  INFO   [HTTP] GET /api/products → 200 (45ms)
-{EMOJI.CHECK} 14:28:46.789  INFO   [AUTH] Token validated: user_1234
-{EMOJI.INFO} 14:28:47.012  INFO   [CACHE] Hit rate: 94.2%
+{EMOJI.INFORMATION} 14:28:45.123  INFO   [HTTP] GET /api/users → 200 (23ms)
+{EMOJI.INFORMATION} 14:28:45.456  INFO   [HTTP] GET /api/products → 200 (45ms)
+{EMOJI.CHECK_MARK_BUTTON} 14:28:46.789  INFO   [AUTH] Token validated: user_1234
+{EMOJI.INFORMATION} 14:28:47.012  INFO   [CACHE] Hit rate: 94.2%
 {EMOJI.WARNING} 14:28:47.345  WARN   [DB] Slow query detected (2,345ms)
-{EMOJI.INFO} 14:28:48.678  INFO   [HTTP] POST /api/orders → 201 (234ms)
-{EMOJI.INFO} 14:28:49.901  INFO   [HTTP] GET /health → 200 (2ms)
-{EMOJI.INFO} 14:28:50.234  INFO   [SCHEDULER] Running background job
-{EMOJI.CHECK} 14:28:51.567  INFO   [JOB] Processed 847 items in 1.2s
-{EMOJI.INFO} 14:28:52.890  INFO   [HTTP] GET /api/analytics → 200 (567ms)
+{EMOJI.INFORMATION} 14:28:48.678  INFO   [HTTP] POST /api/orders → 201 (234ms)
+{EMOJI.INFORMATION} 14:28:49.901  INFO   [HTTP] GET /health → 200 (2ms)
+{EMOJI.INFORMATION} 14:28:50.234  INFO   [SCHEDULER] Running background job
+{EMOJI.CHECK_MARK_BUTTON} 14:28:51.567  INFO   [JOB] Processed 847 items in 1.2s
+{EMOJI.INFORMATION} 14:28:52.890  INFO   [HTTP] GET /api/analytics → 200 (567ms)
 
-{EMOJI.INFO} Press Ctrl+C to stop following...
+{EMOJI.INFORMATION} Press Ctrl+C to stop following...
 """,
     title=f"{EMOJI.SCROLL} Live Log Tail (tail -f production.log)",
     border="solid",
@@ -326,13 +326,13 @@ console.banner("LOG DISPLAY DESIGN")
 
 console.frame(
     f"""
-{EMOJI.TARGET} LOG VIEWER PRINCIPLES
+{EMOJI.BULLSEYE} LOG VIEWER PRINCIPLES
 
 1. SEVERITY HIERARCHY
-   {EMOJI.CROSS} ERROR: Red, immediate attention required
+   {EMOJI.CROSS_MARK} ERROR: Red, immediate attention required
    {EMOJI.WARNING} WARN: Yellow, should investigate
-   {EMOJI.INFO} INFO: Cyan/blue, normal operations
-   {EMOJI.CHECK} SUCCESS: Green, positive confirmation
+   {EMOJI.INFORMATION} INFO: Cyan/blue, normal operations
+   {EMOJI.CHECK_MARK_BUTTON} SUCCESS: Green, positive confirmation
    {EMOJI.GEAR} DEBUG: Gray/dim, verbose details
 
 2. TIMESTAMP FORMATTING
@@ -360,7 +360,7 @@ console.frame(
    • Truncate long values: Or wrap intelligently
    • Group related entries: Blank lines between requests
 """,
-    title=f"{EMOJI.LIGHTBULB} Best Practices",
+    title=f"{EMOJI.LIGHT_BULB} Best Practices",
     border="rounded",
     border_color="cyan",
     width=75,
@@ -372,7 +372,7 @@ console.frame(
     f"""
 LOG LEVEL GUIDELINES:
 
-{EMOJI.CROSS} ERROR
+{EMOJI.CROSS_MARK} ERROR
   System failures, exceptions, data loss
   Requires immediate investigation
   Example: Database connection failed, API error
@@ -382,12 +382,12 @@ LOG LEVEL GUIDELINES:
   Should investigate but not urgent
   Example: Slow query, cache miss, retry succeeded
 
-{EMOJI.INFO} INFO
+{EMOJI.INFORMATION} INFO
   Normal operations, state changes, milestones
   Standard operational logging
   Example: HTTP requests, service start/stop, user login
 
-{EMOJI.CHECK} SUCCESS
+{EMOJI.CHECK_MARK_BUTTON} SUCCESS
   Explicitly successful operations
   Useful for auditing and confirmation
   Example: Deployment complete, backup successful

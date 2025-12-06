@@ -31,16 +31,16 @@ console.frame(
     f"""
 METRIC                    CURRENT      TARGET       STATUS
 ──────────────────────────────────────────────────────────────
-Response Time (p95)       127 ms       < 200 ms     {EMOJI.CHECK} OK
-Response Time (p99)       342 ms       < 500 ms     {EMOJI.CHECK} OK
-Error Rate                0.03%        < 0.1%       {EMOJI.CHECK} OK
-Throughput                2,847/s      > 1,000/s    {EMOJI.CHECK} OK
-CPU Usage                 34.2%        < 80%        {EMOJI.CHECK} OK
-Memory Usage              12.8 GB      < 28 GB      {EMOJI.CHECK} OK
-Disk Usage                68.4%        < 90%        {EMOJI.CHECK} OK
-Active Connections        847          < 10,000     {EMOJI.CHECK} OK
+Response Time (p95)       127 ms       < 200 ms     {EMOJI.CHECK_MARK_BUTTON} OK
+Response Time (p99)       342 ms       < 500 ms     {EMOJI.CHECK_MARK_BUTTON} OK
+Error Rate                0.03%        < 0.1%       {EMOJI.CHECK_MARK_BUTTON} OK
+Throughput                2,847/s      > 1,000/s    {EMOJI.CHECK_MARK_BUTTON} OK
+CPU Usage                 34.2%        < 80%        {EMOJI.CHECK_MARK_BUTTON} OK
+Memory Usage              12.8 GB      < 28 GB      {EMOJI.CHECK_MARK_BUTTON} OK
+Disk Usage                68.4%        < 90%        {EMOJI.CHECK_MARK_BUTTON} OK
+Active Connections        847          < 10,000     {EMOJI.CHECK_MARK_BUTTON} OK
 """,
-    title=f"{EMOJI.CHART_BAR} Performance Metrics",
+    title=f"{EMOJI.BAR_CHART} Performance Metrics",
     border="rounded",
     border_color="green",
     width=75,
@@ -52,7 +52,7 @@ console.newline()
 # SERVER INVENTORY
 # ============================================================================
 
-console.rule(f"{EMOJI.COMPUTER} INFRASTRUCTURE INVENTORY", style="cyan")
+console.rule(f"{EMOJI.LAPTOP} INFRASTRUCTURE INVENTORY", style="cyan")
 console.newline()
 
 console.frame(
@@ -80,7 +80,7 @@ console.newline()
 # USER STATISTICS
 # ============================================================================
 
-console.rule(f"{EMOJI.PEOPLE} USER STATISTICS", style="magenta")
+console.rule(f"{EMOJI.BUSTS_IN_SILHOUETTE} USER STATISTICS", style="magenta")
 console.newline()
 
 console.frame(
@@ -119,14 +119,14 @@ Version                   v2.3.1
 Build Date                2025-11-08 14:23:15
 Commit Hash               a7f3e92
 
-{EMOJI.COMPUTER} Server Settings
+{EMOJI.LAPTOP} Server Settings
   Host                    0.0.0.0
   Port                    3000
   Workers                 8
   Timeout                 30s
   Max Connections         10,000
 
-{EMOJI.FLOPPY} Database
+{EMOJI.FLOPPY_DISK} Database
   Host                    prod-db-01.internal
   Port                    5432
   Database                myapp_production
@@ -140,7 +140,7 @@ Commit Hash               a7f3e92
   TTL                     3600s
   Max Memory              2 GB
 
-{EMOJI.LOCK} Security
+{EMOJI.LOCKED} Security
   HTTPS Enabled           Yes
   TLS Version             1.3
   Certificate Expiry      2026-03-15
@@ -158,23 +158,23 @@ console.newline()
 # API ENDPOINTS
 # ============================================================================
 
-console.rule(f"{EMOJI.GLOBE} API ENDPOINTS", style="green")
+console.rule(f"{EMOJI.GLOBE_WITH_MERIDIANS} API ENDPOINTS", style="green")
 console.newline()
 
 console.frame(
     f"""
 ENDPOINT                 METHOD    AVG TIME    CALLS/MIN    ERROR RATE
 ─────────────────────────────────────────────────────────────────────────
-/api/users               GET       23 ms       2,847        0.01%  {EMOJI.CHECK}
-/api/users/:id           GET       12 ms       4,234        0.02%  {EMOJI.CHECK}
-/api/users               POST      87 ms       234          0.05%  {EMOJI.CHECK}
-/api/products            GET       45 ms       3,456        0.03%  {EMOJI.CHECK}
+/api/users               GET       23 ms       2,847        0.01%  {EMOJI.CHECK_MARK_BUTTON}
+/api/users/:id           GET       12 ms       4,234        0.02%  {EMOJI.CHECK_MARK_BUTTON}
+/api/users               POST      87 ms       234          0.05%  {EMOJI.CHECK_MARK_BUTTON}
+/api/products            GET       45 ms       3,456        0.03%  {EMOJI.CHECK_MARK_BUTTON}
 /api/orders              POST      234 ms      567          0.12%  {EMOJI.WARNING}
-/api/payments            POST      1,234 ms    123          0.08%  {EMOJI.CHECK}
-/api/analytics           GET       567 ms      89           0.00%  {EMOJI.CHECK}
-/api/reports             GET       2,345 ms    12           0.00%  {EMOJI.CHECK}
+/api/payments            POST      1,234 ms    123          0.08%  {EMOJI.CHECK_MARK_BUTTON}
+/api/analytics           GET       567 ms      89           0.00%  {EMOJI.CHECK_MARK_BUTTON}
+/api/reports             GET       2,345 ms    12           0.00%  {EMOJI.CHECK_MARK_BUTTON}
 """,
-    title=f"{EMOJI.CHART_BAR} API Performance",
+    title=f"{EMOJI.BAR_CHART} API Performance",
     border="solid",
     border_color="green",
     width=85,
@@ -186,7 +186,7 @@ console.newline()
 # FINANCIAL REPORT
 # ============================================================================
 
-console.rule(f"{EMOJI.DOLLAR} FINANCIAL DATA", style="yellow")
+console.rule(f"{EMOJI.DOLLAR_BANKNOTE} FINANCIAL DATA", style="yellow")
 console.newline()
 
 console.frame(
@@ -205,8 +205,8 @@ Other               $678            0.1%      {EMOJI.CHART_INCREASING} +0.5%
 ─────────────────────────────────────────────────────────────
 TOTAL               $568,045        100.0%    {EMOJI.CHART_INCREASING} +9.8%
 
-{EMOJI.CHART_BAR} Month-over-Month Growth: +9.8%
-{EMOJI.TARGET} Target for November: $550,000 (103.3% achieved)
+{EMOJI.BAR_CHART} Month-over-Month Growth: +9.8%
+{EMOJI.BULLSEYE} Target for November: $550,000 (103.3% achieved)
 """,
     title=f"{EMOJI.MONEY_BAG} Monthly Revenue Report",
     border="thick",
@@ -234,9 +234,9 @@ Hapi             9,234           34 ms      178 MB    {EMOJI.STAR * 3}
 Nest.js          8,456           42 ms      234 MB    {EMOJI.STAR}{EMOJI.STAR}{EMOJI.STAR}
 
 {EMOJI.TROPHY} Winner: Fastify (highest throughput, lowest latency)
-{EMOJI.TARGET} Our choice: Express.js (good balance, mature ecosystem)
+{EMOJI.BULLSEYE} Our choice: Express.js (good balance, mature ecosystem)
 """,
-    title=f"{EMOJI.CHART_BAR} Framework Benchmarks",
+    title=f"{EMOJI.BAR_CHART} Framework Benchmarks",
     border="rounded",
     border_color="cyan",
     width=75,
@@ -255,13 +255,13 @@ console.frame(
     f"""
 VERSION    DATE                 DEPLOYED BY    DURATION    STATUS
 ───────────────────────────────────────────────────────────────────────
-v2.3.1     2025-11-11 14:23    alice          3m 42s      {EMOJI.CHECK} Success
-v2.3.0     2025-11-08 10:15    bob            4m 18s      {EMOJI.CHECK} Success
-v2.2.9     2025-11-05 16:45    alice          2m 54s      {EMOJI.CHECK} Success
-v2.2.8     2025-11-03 09:30    charlie        5m 23s      {EMOJI.CHECK} Success
-v2.2.7     2025-11-01 11:00    alice          3m 12s      {EMOJI.CROSS} Failed
-v2.2.6     2025-10-29 14:20    bob            4m 05s      {EMOJI.CHECK} Success
-v2.2.5     2025-10-25 08:45    alice          3m 38s      {EMOJI.CHECK} Success
+v2.3.1     2025-11-11 14:23    alice          3m 42s      {EMOJI.CHECK_MARK_BUTTON} Success
+v2.3.0     2025-11-08 10:15    bob            4m 18s      {EMOJI.CHECK_MARK_BUTTON} Success
+v2.2.9     2025-11-05 16:45    alice          2m 54s      {EMOJI.CHECK_MARK_BUTTON} Success
+v2.2.8     2025-11-03 09:30    charlie        5m 23s      {EMOJI.CHECK_MARK_BUTTON} Success
+v2.2.7     2025-11-01 11:00    alice          3m 12s      {EMOJI.CROSS_MARK} Failed
+v2.2.6     2025-10-29 14:20    bob            4m 05s      {EMOJI.CHECK_MARK_BUTTON} Success
+v2.2.5     2025-10-25 08:45    alice          3m 38s      {EMOJI.CHECK_MARK_BUTTON} Success
 """,
     title=f"{EMOJI.CALENDAR} Recent Deployments",
     border="solid",
@@ -275,7 +275,7 @@ console.newline()
 # ERROR LOG SUMMARY
 # ============================================================================
 
-console.rule(f"{EMOJI.CROSS} ERROR SUMMARY", style="red")
+console.rule(f"{EMOJI.CROSS_MARK} ERROR SUMMARY", style="red")
 console.newline()
 
 console.frame(
@@ -283,12 +283,12 @@ console.frame(
 ERROR TYPE                      COUNT      LAST SEEN           SEVERITY
 ─────────────────────────────────────────────────────────────────────────
 Database Connection Timeout     23         3 minutes ago       {EMOJI.WARNING} Medium
-API Rate Limit Exceeded         12         5 minutes ago       {EMOJI.INFO} Low
-Invalid User Input              8          1 minute ago        {EMOJI.INFO} Low
-Memory Allocation Failed        3          15 minutes ago      {EMOJI.CROSS} High
-File Not Found                  2          30 minutes ago      {EMOJI.INFO} Low
+API Rate Limit Exceeded         12         5 minutes ago       {EMOJI.INFORMATION} Low
+Invalid User Input              8          1 minute ago        {EMOJI.INFORMATION} Low
+Memory Allocation Failed        3          15 minutes ago      {EMOJI.CROSS_MARK} High
+File Not Found                  2          30 minutes ago      {EMOJI.INFORMATION} Low
 Authentication Failed           47         < 1 minute ago      {EMOJI.WARNING} Medium
-Network Unreachable             1          2 hours ago         {EMOJI.CROSS} High
+Network Unreachable             1          2 hours ago         {EMOJI.CROSS_MARK} High
 ─────────────────────────────────────────────────────────────────────────
 TOTAL ERRORS (Last Hour)        96
 TOTAL WARNINGS                  82
@@ -297,7 +297,7 @@ TOTAL INFO                      57
 {EMOJI.CHART_DECREASING} Trend: Errors decreased 12% compared to last hour
 {EMOJI.BELL} Alerts triggered: 2 (Memory, Network)
 """,
-    title=f"{EMOJI.SIREN} Error Log Analysis",
+    title=f"{EMOJI.POLICE_CAR_LIGHT} Error Log Analysis",
     border="double",
     border_color="red",
     width=85,
@@ -313,7 +313,7 @@ console.banner("DATA TABLE DESIGN")
 
 console.frame(
     f"""
-{EMOJI.TARGET} TABLE DESIGN PRINCIPLES
+{EMOJI.BULLSEYE} TABLE DESIGN PRINCIPLES
 
 1. ALIGNMENT & FORMATTING
    • Left-align: Text, labels, categories
@@ -334,10 +334,10 @@ console.frame(
    • Trends: Show arrows or % change
 
 4. STATUS INDICATORS
-   {EMOJI.CHECK} Success/OK: Green, met targets
+   {EMOJI.CHECK_MARK_BUTTON} Success/OK: Green, met targets
    {EMOJI.WARNING} Warning: Yellow, attention needed
-   {EMOJI.CROSS} Error/Critical: Red, immediate action
-   {EMOJI.INFO} Info: Blue, informational
+   {EMOJI.CROSS_MARK} Error/Critical: Red, immediate action
+   {EMOJI.INFORMATION} Info: Blue, informational
 
 5. TABLE WIDTH
    • Fit content: Don't force unnecessary width
@@ -345,7 +345,7 @@ console.frame(
    • Align columns: Fixed-width fonts help
    • Wrap long values: Or truncate with "..."
 """,
-    title=f"{EMOJI.LIGHTBULB} Best Practices",
+    title=f"{EMOJI.LIGHT_BULB} Best Practices",
     border="rounded",
     border_color="cyan",
     width=75,
@@ -357,11 +357,11 @@ console.frame(
     f"""
 TABLE TYPES & USE CASES:
 
-{EMOJI.CHART_BAR} METRICS TABLE
+{EMOJI.BAR_CHART} METRICS TABLE
   Metrics + Current + Target + Status
   Use: Performance monitoring, SLAs, health checks
 
-{EMOJI.COMPUTER} INVENTORY TABLE
+{EMOJI.LAPTOP} INVENTORY TABLE
   Resources + Identifiers + Status + Metrics
   Use: Server lists, infrastructure, resources
 
@@ -377,7 +377,7 @@ TABLE TYPES & USE CASES:
   Period + Metrics over time + Trends
   Use: Reports, analytics, historical data
 
-{EMOJI.CROSS} ERROR/LOG TABLE
+{EMOJI.CROSS_MARK} ERROR/LOG TABLE
   Error type + Count + Timestamp + Severity
   Use: Debugging, monitoring, incident analysis
 

@@ -55,7 +55,7 @@ def show_environment():
     ]
 
     console.frame(env_info, title=f"{icons.GEAR} Environment", border="rounded")
-    console.frame(policy_info, title=f"{icons.INFO} Policy", border="rounded")
+    console.frame(policy_info, title=f"{icons.INFORMATION} Policy", border="rounded")
     console.newline()
 
 
@@ -88,7 +88,7 @@ def test_emoji_rich_frames():
 
     # Status frame with policy-aware icons
     status_content = [
-        f"{icons.CHECK} All tests passed",
+        f"{icons.CHECK_MARK_BUTTON} All tests passed",
         f"{icons.ROCKET} Deployment ready",
         f"{icons.STAR} Performance: Excellent",
         f"{icons.FIRE} 0 critical issues",
@@ -103,7 +103,7 @@ def test_emoji_rich_frames():
     # Warning frame
     warning_content = [
         f"{icons.WARNING} 3 deprecation warnings",
-        f"{icons.CLOCK} Build time: 45s",
+        f"{icons.ONE_OCLOCK} Build time: 45s",
     ]
     console.frame(
         warning_content,
@@ -114,12 +114,12 @@ def test_emoji_rich_frames():
 
     # Error frame
     error_content = [
-        f"{icons.CROSS} Connection timeout",
+        f"{icons.CROSS_MARK} Connection timeout",
         f"{icons.BUG} Stack trace available",
     ]
     console.frame(
         error_content,
-        title=f"{icons.CROSS} Errors",
+        title=f"{icons.CROSS_MARK} Errors",
         border="rounded",
         border_color="red",
     )
@@ -136,10 +136,10 @@ def test_icon_provider():
 
     # Icons adapt to terminal capabilities
     icon_demo = [
-        f"{icons.CHECK} Success icon",
-        f"{icons.CROSS} Error icon",
+        f"{icons.CHECK_MARK_BUTTON} Success icon",
+        f"{icons.CROSS_MARK} Error icon",
         f"{icons.WARNING} Warning icon",
-        f"{icons.INFO} Info icon",
+        f"{icons.INFORMATION} Info icon",
         f"{icons.STAR} Star icon",
         f"{icons.ARROW_RIGHT} Arrow right",
     ]
@@ -219,7 +219,7 @@ def test_animated_dashboard():
 
         for i in range(8):
             content = [
-                f"{icons.CHART_BAR} System Monitor",
+                f"{icons.BAR_CHART} System Monitor",
                 "",
             ]
             for name, *values in metrics:
@@ -236,11 +236,11 @@ def test_animated_dashboard():
                 content.append(f"  {name}: [{bar}] {val:3d}% {status_icon}")
 
             content.append("")
-            content.append(f"  {icons.CLOCK} Update {i + 1}/8")
+            content.append(f"  {icons.ONE_OCLOCK} Update {i + 1}/8")
 
             frame = console.render_frame(
                 content,
-                title=f"{icons.COMPUTER} Dashboard",
+                title=f"{icons.LAPTOP} Dashboard",
                 border="rounded",
                 border_color="cyan",
                 width=45,
@@ -271,7 +271,7 @@ def test_progress_bars():
     with console.progress() as progress:
         task1 = progress.add_task(f"{icons.ARROW_DOWN} Downloading", total=100)
         task2 = progress.add_task(f"{icons.GEAR} Processing", total=100)
-        task3 = progress.add_task(f"{icons.CHECK} Verifying", total=100)
+        task3 = progress.add_task(f"{icons.CHECK_MARK_BUTTON} Verifying", total=100)
 
         for i in range(100):
             time.sleep(0.03)
@@ -344,17 +344,17 @@ def test_mixed_content():
         end_color="blue",
     )
 
-    console.rule(f"{icons.INFO} Summary", color="cyan")
+    console.rule(f"{icons.INFORMATION} Summary", color="cyan")
 
     summary = [
-        f"{icons.CHECK} 142 tests passed",
-        f"{icons.CROSS} 3 tests failed",
+        f"{icons.CHECK_MARK_BUTTON} 142 tests passed",
+        f"{icons.CROSS_MARK} 3 tests failed",
         f"{icons.WARNING} 12 warnings",
-        f"{icons.INFO} Coverage: 94.2%",
+        f"{icons.INFORMATION} Coverage: 94.2%",
     ]
     console.frame(summary, title="Test Results", border="rounded", border_color="green")
 
-    console.rule(f"{icons.CHART_BAR} Metrics", color="yellow")
+    console.rule(f"{icons.BAR_CHART} Metrics", color="yellow")
 
     metrics = [
         "Build time:     2m 34s",

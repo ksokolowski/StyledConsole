@@ -26,7 +26,7 @@ def main():
         {
             "title": f"{EMOJI.WARNING} Alerts",
             "content": f"{EMOJI.WARNING} High Latency (us-east-1)\n"
-            f"{EMOJI.CHECK} Database Backup Complete",
+            f"{EMOJI.CHECK_MARK_BUTTON} Database Backup Complete",
         },
         {
             "title": f"{EMOJI.CALENDAR} Schedule",

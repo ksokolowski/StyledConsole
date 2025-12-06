@@ -45,12 +45,12 @@ class IconMapping(NamedTuple):
 # -----------------------------------------------------------------------------
 STATUS_ICONS: Final[dict[str, IconMapping]] = {
     # Primary status - use parentheses or other symbols
-    "CHECK": IconMapping("✅", "(OK)", "green"),
-    "CROSS": IconMapping("❌", "(FAIL)", "red"),
+    "CHECK_MARK_BUTTON": IconMapping("✅", "(OK)", "green"),
+    "CROSS_MARK": IconMapping("❌", "(FAIL)", "red"),
     "WARNING": IconMapping("⚠️", "(WARN)", "yellow"),
-    "INFO": IconMapping("ℹ️", "(INFO)", "cyan"),
-    "QUESTION": IconMapping("❓", "(?)", "magenta"),
-    "REFRESH": IconMapping("🔄", "(~)", "cyan"),
+    "INFORMATION": IconMapping("ℹ️", "(INFO)", "cyan"),
+    "RED_QUESTION_MARK": IconMapping("❓", "(?)", "magenta"),
+    "COUNTERCLOCKWISE_ARROWS_BUTTON": IconMapping("🔄", "(~)", "cyan"),
     # Colored circles -> colored bullets
     "RED_CIRCLE": IconMapping("🔴", "●", "red"),
     "YELLOW_CIRCLE": IconMapping("🟡", "●", "yellow"),
@@ -77,20 +77,19 @@ STARS_ICONS: Final[dict[str, IconMapping]] = {
 # -----------------------------------------------------------------------------
 DOCUMENT_ICONS: Final[dict[str, IconMapping]] = {
     # Charts
-    "CHART_BAR": IconMapping("📊", "(#)", "blue"),
+    "BAR_CHART": IconMapping("📊", "(#)", "blue"),
     "CHART_INCREASING": IconMapping("📈", "(^)", "green"),
     "CHART_DECREASING": IconMapping("📉", "(v)", "red"),
     "PACKAGE": IconMapping("📦", "(P)", "saddlebrown"),
     # Folders
-    "FOLDER": IconMapping("📁", "(/)", "blue"),
-    "OPEN_FOLDER": IconMapping("📂", "(+)", "blue"),
+    "FILE_FOLDER": IconMapping("📁", "(/)", "blue"),
+    "OPEN_FILE_FOLDER": IconMapping("📂", "(+)", "blue"),
     "FILE_CABINET": IconMapping("🗄", "(=)", "gray"),
     "CARD_FILE_BOX": IconMapping("🗃", "(=)", "gray"),
     "WASTEBASKET": IconMapping("🗑", "(x)", "gray"),
     # Files
-    "FILE": IconMapping("📄", "(f)", None),
-    "PAGE": IconMapping("📄", "(f)", None),  # Alias
-    "DOCUMENT": IconMapping("📃", "(d)", None),
+    "PAGE_FACING_UP": IconMapping("📄", "(f)", None),
+    "PAGE_WITH_CURL": IconMapping("📃", "(d)", None),
     "SCROLL": IconMapping("📜", "(s)", "goldenrod"),
     "MEMO": IconMapping("📝", "(m)", None),
     "CLIPBOARD": IconMapping("📋", "(c)", None),
@@ -106,7 +105,7 @@ DOCUMENT_ICONS: Final[dict[str, IconMapping]] = {
 # Books & Reading
 # -----------------------------------------------------------------------------
 BOOK_ICONS: Final[dict[str, IconMapping]] = {
-    "BOOK": IconMapping("📖", "(B)", None),
+    "OPEN_BOOK": IconMapping("📖", "(B)", None),
     "BOOKS": IconMapping("📚", "(BB)", None),
     "NOTEBOOK": IconMapping("📓", "(N)", None),
     "LEDGER": IconMapping("📒", "(L)", "yellow"),
@@ -115,24 +114,21 @@ BOOK_ICONS: Final[dict[str, IconMapping]] = {
     "BLUE_BOOK": IconMapping("📘", "(B)", "blue"),
     "ORANGE_BOOK": IconMapping("📙", "(B)", "darkorange"),
     "NEWSPAPER": IconMapping("📰", "(N)", None),
-    "ROLLED_NEWSPAPER": IconMapping("🗞", "(N)", None),
+    "ROLLED_UP_NEWSPAPER": IconMapping("🗞", "(N)", None),
 }
 
 # -----------------------------------------------------------------------------
 # Technology - Computers, devices
 # -----------------------------------------------------------------------------
 TECH_ICONS: Final[dict[str, IconMapping]] = {
-    "COMPUTER": IconMapping("💻", "(PC)", None),
-    "LAPTOP": IconMapping("💻", "(PC)", None),  # Alias
+    "LAPTOP": IconMapping("💻", "(PC)", None),
     "DESKTOP": IconMapping("🖥", "(PC)", None),
     "KEYBOARD": IconMapping("⌨", "(kb)", None),
     "MOUSE": IconMapping("🖱", "(m)", None),
-    "FLOPPY": IconMapping("💾", "(D)", None),
-    "FLOPPY_DISK": IconMapping("💾", "(D)", None),  # Alias
+    "FLOPPY_DISK": IconMapping("💾", "(D)", None),
     "CD": IconMapping("💿", "(O)", None),
     "DVD": IconMapping("📀", "(O)", "gold"),
-    "MICROPROCESSOR": IconMapping("🖥", "(C)", None),
-    "MEMORY": IconMapping("💾", "(M)", None),
+    "DESKTOP_COMPUTER": IconMapping("🖥", "(C)", None),
     "SATELLITE_ANTENNA": IconMapping("📡", "(A)", None),
     "GLOBE_WITH_MERIDIANS": IconMapping("🌐", "(@)", "blue"),
 }
@@ -154,13 +150,12 @@ TOOLS_ICONS: Final[dict[str, IconMapping]] = {
 # Activities & Celebrations
 # -----------------------------------------------------------------------------
 ACTIVITY_ICONS: Final[dict[str, IconMapping]] = {
-    "TARGET": IconMapping("🎯", "(o)", "red"),
-    "ART": IconMapping("🎨", "(~)", None),
-    "PALETTE": IconMapping("🎨", "(~)", None),  # Alias
+    "BULLSEYE": IconMapping("🎯", "(o)", "red"),
+    "ARTIST_PALETTE": IconMapping("🎨", "(~)", None),
     "PAINTBRUSH": IconMapping("🖌️", "(/)", None),
-    "PARTY": IconMapping("🎉", "(!)", "gold"),
-    "CONFETTI": IconMapping("🎊", "(!)", "gold"),
-    "GIFT": IconMapping("🎁", "(G)", "red"),
+    "PARTY_POPPER": IconMapping("🎉", "(!)", "gold"),
+    "CONFETTI_BALL": IconMapping("🎊", "(!)", "gold"),
+    "WRAPPED_GIFT": IconMapping("🎁", "(G)", "red"),
     "BALLOON": IconMapping("🎈", "o", "red"),
     "TROPHY": IconMapping("🏆", "(#)", "gold"),
     "MEDAL": IconMapping("🏅", "(m)", "gold"),
@@ -175,9 +170,9 @@ ACTIVITY_ICONS: Final[dict[str, IconMapping]] = {
 TRANSPORT_ICONS: Final[dict[str, IconMapping]] = {
     "ROCKET": IconMapping("🚀", ">>>", "cyan"),
     "AIRPLANE": IconMapping("✈️", "->", None),
-    "CAR": IconMapping("🚗", "(>)", "red"),
+    "AUTOMOBILE": IconMapping("🚗", "(>)", "red"),
     "BIKE": IconMapping("🚲", "(o)", None),
-    "TRAIN": IconMapping("🚂", "(=)", None),
+    "LOCOMOTIVE": IconMapping("🚂", "(=)", None),
     "SHIP": IconMapping("🚢", "(~)", None),
 }
 
@@ -189,37 +184,30 @@ WEATHER_ICONS: Final[dict[str, IconMapping]] = {
     "SUN": IconMapping("☀️", "(O)", "yellow"),
     "SUNRISE": IconMapping("🌅", "(^)", "darkorange"),
     "MOON": IconMapping("🌙", "(C)", "yellow"),
-    "STAR_SIMPLE": IconMapping("⭐", "*", "yellow"),  # Alias
     "DROPLET": IconMapping("💧", "o", "blue"),
-    "WATER": IconMapping("💧", "o", "blue"),  # Alias
     "WATER_WAVE": IconMapping("🌊", "~~~", "blue"),
-    "OCEAN": IconMapping("🌊", "~~~", "blue"),  # Alias
     "FIRE": IconMapping("🔥", "~", "orangered"),
     "SNOWFLAKE": IconMapping("❄️", "*", "cyan"),
     "CLOUD": IconMapping("☁️", "(~)", None),
-    "LIGHTNING": IconMapping("⚡", "/\\", "yellow"),
+    "HIGH_VOLTAGE": IconMapping("⚡", "/\\", "yellow"),
     "TORNADO": IconMapping("🌪", "@", "gray"),
     "MILKY_WAY": IconMapping("🌌", "(*)", "mediumpurple"),
-    "GALAXY": IconMapping("🌌", "(*)", "mediumpurple"),  # Alias
-    "EARTH_GLOBE_EUROPE_AFRICA": IconMapping("🌍", "(@)", "green"),
+    "GLOBE_SHOWING_EUROPE_AFRICA": IconMapping("🌍", "(@)", "green"),
 }
 
 # -----------------------------------------------------------------------------
 # Plants
 # -----------------------------------------------------------------------------
 PLANT_ICONS: Final[dict[str, IconMapping]] = {
-    "TREE": IconMapping("🌲", "(T)", "green"),
-    "EVERGREEN": IconMapping("🌲", "(T)", "green"),  # Alias
+    "EVERGREEN_TREE": IconMapping("🌲", "(T)", "green"),
     "PALM": IconMapping("🌴", "(Y)", "green"),
     "CACTUS": IconMapping("🌵", "(|)", "green"),
     "SEEDLING": IconMapping("🌱", "(.)", "green"),
     "HERB": IconMapping("🌿", "(~)", "green"),
     "SHAMROCK": IconMapping("☘", "(*)", "green"),
     "FOUR_LEAF_CLOVER": IconMapping("🍀", "(+)", "green"),
-    "BLOSSOM": IconMapping("🌸", "(*)", "lightpink"),
-    "CHERRY_BLOSSOM": IconMapping("🌸", "(*)", "lightpink"),  # Alias
-    "LEAVES": IconMapping("🍃", "~~", "green"),
-    "LEAF": IconMapping("🍃", "~~", "green"),  # Alias
+    "CHERRY_BLOSSOM": IconMapping("🌸", "(*)", "lightpink"),
+    "LEAF_FLUTTERING_IN_WIND": IconMapping("🍃", "~~", "green"),
     "MAPLE_LEAF": IconMapping("🍁", "(*)", "orangered"),  # autumn
 }
 
@@ -236,8 +224,7 @@ FOOD_ICONS: Final[dict[str, IconMapping]] = {
     "COCKTAIL": IconMapping("🍹", "(Y)", None),
     "CAKE": IconMapping("🍰", "(^)", "lightpink"),
     "COOKIE": IconMapping("🍪", "(o)", "saddlebrown"),
-    "ORANGE_FRUIT": IconMapping("🍊", "(o)", "darkorange"),
-    "TANGERINE": IconMapping("🍊", "(o)", "darkorange"),  # Alias
+    "TANGERINE": IconMapping("🍊", "(o)", "darkorange"),
     "GRAPES": IconMapping("🍇", "oo", "purple"),
     "WATERMELON": IconMapping("🍉", "[>", "green"),
     "CHESTNUT": IconMapping("🌰", "()", "saddlebrown"),
@@ -247,15 +234,14 @@ FOOD_ICONS: Final[dict[str, IconMapping]] = {
 # People & Gestures
 # -----------------------------------------------------------------------------
 PEOPLE_ICONS: Final[dict[str, IconMapping]] = {
-    "PEOPLE": IconMapping("👥", "(PP)", None),
+    "BUSTS_IN_SILHOUETTE": IconMapping("👥", "(PP)", None),
     "PERSON": IconMapping("👤", "(P)", None),
     "THUMBS_UP": IconMapping("👍", "(+)", "green"),
     "THUMBS_DOWN": IconMapping("👎", "(-)", "red"),
-    "WAVE": IconMapping("👋", "(/)", None),
+    "WAVING_HAND": IconMapping("👋", "(/)", None),
     "HANDS_UP": IconMapping("🙌", "(^^)", None),
     "CLAP": IconMapping("👏", "(*)", None),
     "MUSCLE": IconMapping("💪", "(!)", None),
-    "FLEXED_BICEPS": IconMapping("💪", "(!)", None),  # Alias
 }
 
 # -----------------------------------------------------------------------------
@@ -267,7 +253,7 @@ ARROW_ICONS: Final[dict[str, IconMapping]] = {
     "ARROW_LEFT": IconMapping("←", "<-", None),
     "ARROW_UP": IconMapping("↑", "^", None),
     "ARROW_DOWN": IconMapping("↓", "v", None),
-    "ARROW_UP_RIGHT": IconMapping("↗", "/^", None),
+    "UP_RIGHT_ARROW": IconMapping("↗", "/^", None),
     "ARROW_DOWN_RIGHT": IconMapping("↘", "\\v", None),
     "ARROW_DOWN_LEFT": IconMapping("↙", "/v", None),
     "ARROW_UP_LEFT": IconMapping("↖", "\\^", None),
@@ -282,17 +268,16 @@ ARROW_ICONS: Final[dict[str, IconMapping]] = {
 # Symbols - Mixed utility icons
 # -----------------------------------------------------------------------------
 SYMBOL_ICONS: Final[dict[str, IconMapping]] = {
-    "LIGHTBULB": IconMapping("💡", "(!)", "yellow"),
+    "LIGHT_BULB": IconMapping("💡", "(!)", "yellow"),
     "BELL": IconMapping("🔔", "(b)", "yellow"),
-    "SIREN": IconMapping("🚨", "(!)", "red"),
-    "TRIANGLE_RULER": IconMapping("📐", "(/)", None),
-    "LOCK": IconMapping("🔒", "(L)", "gray"),
+    "POLICE_CAR_LIGHT": IconMapping("🚨", "(!)", "red"),
+    "TRIANGULAR_RULER": IconMapping("📐", "(/)", None),
+    "LOCKED": IconMapping("🔒", "(L)", "gray"),
     "UNLOCK": IconMapping("🔓", "(U)", "gray"),
     "KEY": IconMapping("🔑", "(k)", "gold"),
     "LINK": IconMapping("🔗", "(-)", "blue"),
     "CHAIN": IconMapping("⛓", "(-)", "gray"),
     "MAG": IconMapping("🔍", "(?)", None),
-    "MAGNIFYING_GLASS": IconMapping("🔍", "(?)", None),  # Alias
     "SHIELD": IconMapping("🛡", "(#)", "gray"),
     "CROWN": IconMapping("👑", "(^)", "gold"),
 }
@@ -312,7 +297,7 @@ MATH_ICONS: Final[dict[str, IconMapping]] = {
 # Hearts - Use appropriate colors
 # -----------------------------------------------------------------------------
 HEART_ICONS: Final[dict[str, IconMapping]] = {
-    "HEART": IconMapping("❤️", "<3", "red"),
+    "RED_HEART": IconMapping("❤️", "<3", "red"),
     "ORANGE_HEART": IconMapping("🧡", "<3", "darkorange"),
     "YELLOW_HEART": IconMapping("💛", "<3", "yellow"),
     "GREEN_HEART": IconMapping("💚", "<3", "green"),
@@ -327,24 +312,22 @@ HEART_ICONS: Final[dict[str, IconMapping]] = {
 # Currency & Money
 # -----------------------------------------------------------------------------
 MONEY_ICONS: Final[dict[str, IconMapping]] = {
-    "DOLLAR": IconMapping("💵", "($)", "green"),
+    "DOLLAR_BANKNOTE": IconMapping("💵", "($)", "green"),
     "MONEY_BAG": IconMapping("💰", "($)", "gold"),
     "COIN": IconMapping("🪙", "(o)", "gold"),
     "CREDIT_CARD": IconMapping("💳", "(=)", None),
-    "GEM": IconMapping("💎", "<>", "cyan"),
-    "DIAMOND": IconMapping("💎", "<>", "cyan"),  # Alias
-    "GEM_STONE": IconMapping("💎", "<>", "cyan"),  # Alias
+    "GEM_STONE": IconMapping("💎", "<>", "cyan"),
 }
 
 # -----------------------------------------------------------------------------
 # Time & Calendar
 # -----------------------------------------------------------------------------
 TIME_ICONS: Final[dict[str, IconMapping]] = {
-    "CLOCK": IconMapping("🕐", "(t)", None),
-    "ALARM": IconMapping("⏰", "(!)", "red"),
+    "ONE_OCLOCK": IconMapping("🕐", "(t)", None),
+    "ALARM_CLOCK": IconMapping("⏰", "(!)", "red"),
     "STOPWATCH": IconMapping("⏱", "(t)", "cyan"),
     "TIMER": IconMapping("⏲", "(t)", "cyan"),
-    "HOURGLASS": IconMapping("⌛", "(t)", None),
+    "HOURGLASS_DONE": IconMapping("⌛", "(t)", None),
     "CALENDAR": IconMapping("📅", "(#)", None),
 }
 
@@ -352,16 +335,15 @@ TIME_ICONS: Final[dict[str, IconMapping]] = {
 # Communication & Media
 # -----------------------------------------------------------------------------
 COMM_ICONS: Final[dict[str, IconMapping]] = {
-    "PHONE": IconMapping("📱", "(p)", None),
+    "MOBILE_PHONE": IconMapping("📱", "(p)", None),
     "TELEPHONE": IconMapping("☎️", "(p)", None),
-    "EMAIL": IconMapping("📧", "(@)", None),
+    "E_MAIL": IconMapping("📧", "(@)", None),
     "ENVELOPE": IconMapping("✉️", "(_)", None),
     "MAILBOX": IconMapping("📬", "(M)", None),
     "SPEAKER": IconMapping("🔊", "(>)", None),
     "MEGAPHONE": IconMapping("📣", "(>)", None),
     "LOUDSPEAKER": IconMapping("📢", "(>)", None),
-    "GLOBE": IconMapping("🌐", "(@)", "blue"),
-    "GLOBE_MERIDIANS": IconMapping("🌐", "(@)", "blue"),  # Alias
+    "GLOBE_WITH_MERIDIANS": IconMapping("🌐", "(@)", "blue"),
 }
 
 # -----------------------------------------------------------------------------
@@ -369,7 +351,6 @@ COMM_ICONS: Final[dict[str, IconMapping]] = {
 # -----------------------------------------------------------------------------
 BUILDING_ICONS: Final[dict[str, IconMapping]] = {
     "HOME": IconMapping("🏠", "(H)", None),
-    "HOUSE": IconMapping("🏠", "(H)", None),  # Alias
     "OFFICE": IconMapping("🏢", "(O)", None),
     "FACTORY": IconMapping("🏭", "(F)", "gray"),
     "HOSPITAL": IconMapping("🏥", "(+)", "red"),

@@ -16,15 +16,15 @@ console.banner("FILE & DOCUMENT EMOJIS")
 
 console.frame(
     f"""
-{EMOJI.FOLDER} project/
-  {EMOJI.OPEN_FOLDER} src/
-    {EMOJI.FILE} main.py
-    {EMOJI.FILE} utils.py
-  {EMOJI.OPEN_FOLDER} docs/
-    {EMOJI.DOCUMENT} README.md
+{EMOJI.FILE_FOLDER} project/
+  {EMOJI.OPEN_FILE_FOLDER} src/
+    {EMOJI.PAGE_FACING_UP} main.py
+    {EMOJI.PAGE_FACING_UP} utils.py
+  {EMOJI.OPEN_FILE_FOLDER} docs/
+    {EMOJI.PAGE_WITH_CURL} README.md
     {EMOJI.SCROLL} LICENSE
   {EMOJI.PACKAGE} dist/
-    {EMOJI.FLOPPY} app-v1.0.zip
+    {EMOJI.FLOPPY_DISK} app-v1.0.zip
 """,
     title=f"{EMOJI.FILE_CABINET} File System",
     border="rounded",
@@ -46,7 +46,7 @@ console.frame(
 {EMOJI.LEDGER} Notes: 47 entries
 {EMOJI.BOOKMARK} Bookmarks: 12 pages
 """,
-    title=f"{EMOJI.BOOK} Reading List",
+    title=f"{EMOJI.OPEN_BOOK} Reading List",
     border="solid",
     width=60,
 )
@@ -74,13 +74,13 @@ console.newline()
 console.frame(
     f"""
 {EMOJI.NEWSPAPER} Daily Tech News
-  {EMOJI.ROLLED_NEWSPAPER} Breaking: Python 3.14 Released!
-  {EMOJI.ROLLED_NEWSPAPER} Featured: Best VS Code Extensions
-  {EMOJI.ROLLED_NEWSPAPER} Tutorial: Docker Compose Guide
+  {EMOJI.ROLLED_UP_NEWSPAPER} Breaking: Python 3.14 Released!
+  {EMOJI.ROLLED_UP_NEWSPAPER} Featured: Best VS Code Extensions
+  {EMOJI.ROLLED_UP_NEWSPAPER} Tutorial: Docker Compose Guide
 
 {EMOJI.MEMO} Latest Articles: 15 new today
 """,
-    title=f"{EMOJI.GLOBE} News Feed",
+    title=f"{EMOJI.GLOBE_WITH_MERIDIANS} News Feed",
     border="thick",
     width=60,
 )

@@ -34,28 +34,28 @@ console.frame(
 {EMOJI.ROCKET} Main Menu
 
 {EMOJI.GREEN_CIRCLE} 1. Start Application
-  {EMOJI.INFO} Launch the main application server
+  {EMOJI.INFORMATION} Launch the main application server
 
 {EMOJI.GEAR} 2. Configuration
-  {EMOJI.INFO} Manage application settings and preferences
+  {EMOJI.INFORMATION} Manage application settings and preferences
 
-{EMOJI.CHART_BAR} 3. View Logs
-  {EMOJI.INFO} Browse application logs and monitoring data
+{EMOJI.BAR_CHART} 3. View Logs
+  {EMOJI.INFORMATION} Browse application logs and monitoring data
 
 {EMOJI.TEST_TUBE} 4. Run Tests
-  {EMOJI.INFO} Execute test suites and validation
+  {EMOJI.INFORMATION} Execute test suites and validation
 
 {EMOJI.WRENCH} 5. Database Tools
-  {EMOJI.INFO} Database migrations, backups, and maintenance
+  {EMOJI.INFORMATION} Database migrations, backups, and maintenance
 
-{EMOJI.GLOBE} 6. Deployment
-  {EMOJI.INFO} Deploy application to various environments
+{EMOJI.GLOBE_WITH_MERIDIANS} 6. Deployment
+  {EMOJI.INFORMATION} Deploy application to various environments
 
-{EMOJI.LIGHTBULB} 7. Help & Documentation
-  {EMOJI.INFO} View documentation and get help
+{EMOJI.LIGHT_BULB} 7. Help & Documentation
+  {EMOJI.INFORMATION} View documentation and get help
 
-{EMOJI.CROSS} 0. Exit
-  {EMOJI.INFO} Close the application
+{EMOJI.CROSS_MARK} 0. Exit
+  {EMOJI.INFORMATION} Close the application
 
 ─────────────────────────────────────────────────────────────
 Enter your choice [0-7]:
@@ -79,32 +79,32 @@ console.frame(
     f"""
 Current Configuration:
 
-{EMOJI.COMPUTER} Environment: production
-{EMOJI.FLOPPY} Database: PostgreSQL (prod-db-01.internal)
+{EMOJI.LAPTOP} Environment: production
+{EMOJI.FLOPPY_DISK} Database: PostgreSQL (prod-db-01.internal)
 {EMOJI.CARD_FILE_BOX} Cache: Redis (prod-cache-01.internal)
-{EMOJI.LOCK} Security: TLS 1.3 enabled
+{EMOJI.LOCKED} Security: TLS 1.3 enabled
 
 ─────────────────────────────────────────────────────────────
 
 {EMOJI.GEAR} Configuration Options:
 
-  {EMOJI.CHECK} 1. Change Environment
+  {EMOJI.CHECK_MARK_BUTTON} 1. Change Environment
      Current: production
      Options: development, staging, production
 
-  {EMOJI.FLOPPY} 2. Database Settings
+  {EMOJI.FLOPPY_DISK} 2. Database Settings
      Connection, pool size, timeout
 
   {EMOJI.CARD_FILE_BOX} 3. Cache Configuration
      Type, TTL, max memory
 
-  {EMOJI.LOCK} 4. Security Settings
+  {EMOJI.LOCKED} 4. Security Settings
      TLS, authentication, session timeout
 
-  {EMOJI.GLOBE} 5. Network Settings
+  {EMOJI.GLOBE_WITH_MERIDIANS} 5. Network Settings
      Port, host, workers, timeouts
 
-  {EMOJI.CHART_BAR} 6. Logging & Monitoring
+  {EMOJI.BAR_CHART} 6. Logging & Monitoring
      Log level, metrics, alerts
 
   {EMOJI.ARROW_LEFT} 9. Back to Main Menu
@@ -124,22 +124,22 @@ console.newline()
 # SELECTION WITH PREVIEW
 # ============================================================================
 
-console.rule(f"{EMOJI.TARGET} SELECTION INTERFACE", style="magenta")
+console.rule(f"{EMOJI.BULLSEYE} SELECTION INTERFACE", style="magenta")
 console.newline()
 
 console.frame(
     f"""
 {EMOJI.ROCKET} Select Deployment Environment:
 
-  {EMOJI.COMPUTER} 1. Development
-     {EMOJI.INFO} URL: https://dev.example.com
-     {EMOJI.INFO} Branch: develop
-     {EMOJI.INFO} Auto-deploy: Enabled
+  {EMOJI.LAPTOP} 1. Development
+     {EMOJI.INFORMATION} URL: https://dev.example.com
+     {EMOJI.INFORMATION} Branch: develop
+     {EMOJI.INFORMATION} Auto-deploy: Enabled
 
 > {EMOJI.GREEN_CIRCLE} 2. Staging              {EMOJI.ARROW_LEFT} SELECTED
-     {EMOJI.INFO} URL: https://staging.example.com
-     {EMOJI.INFO} Branch: main
-     {EMOJI.INFO} Manual approval required
+     {EMOJI.INFORMATION} URL: https://staging.example.com
+     {EMOJI.INFORMATION} Branch: main
+     {EMOJI.INFORMATION} Manual approval required
 
   {EMOJI.FIRE} 3. Production
      {EMOJI.WARNING} URL: https://example.com
@@ -147,9 +147,9 @@ console.frame(
      {EMOJI.WARNING} Requires 2FA + approval
 
 ─────────────────────────────────────────────────────────────
-{EMOJI.CHECK} Confirm [Y/n] | {EMOJI.CROSS} Cancel [Ctrl+C]
+{EMOJI.CHECK_MARK_BUTTON} Confirm [Y/n] | {EMOJI.CROSS_MARK} Cancel [Ctrl+C]
 """,
-    title=f"{EMOJI.GLOBE} Environment Selection",
+    title=f"{EMOJI.GLOBE_WITH_MERIDIANS} Environment Selection",
     border="rounded",
     border_color="magenta",
     width=70,
@@ -168,10 +168,10 @@ console.frame(
     f"""
 {EMOJI.GEAR} Application Setup Wizard
 
-{EMOJI.CHECK} Step 1: Choose Database      [COMPLETED]
+{EMOJI.CHECK_MARK_BUTTON} Step 1: Choose Database      [COMPLETED]
     Selected: PostgreSQL
 
-{EMOJI.CHECK} Step 2: Configure Connection [COMPLETED]
+{EMOJI.CHECK_MARK_BUTTON} Step 2: Configure Connection [COMPLETED]
     Host: localhost
     Port: 5432
 
@@ -188,7 +188,7 @@ console.frame(
   {EMOJI.YELLOW_CIRCLE} Step 5: Review & Confirm     [PENDING]
 
 ─────────────────────────────────────────────────────────────
-{EMOJI.ARROW_RIGHT} Continue [Enter] | {EMOJI.ARROW_LEFT} Back [P] | {EMOJI.CROSS} Cancel [C]
+{EMOJI.ARROW_RIGHT} Continue [Enter] | {EMOJI.ARROW_LEFT} Back [P] | {EMOJI.CROSS_MARK} Cancel [C]
 
 Progress: 3/5 steps (60%)
 """,
@@ -211,31 +211,31 @@ console.frame(
     f"""
 {EMOJI.PACKAGE} Select Components to Install:
 
-{EMOJI.CHECK} [X] Core Application (required)
-  {EMOJI.INFO} 145 MB | Essential application files
+{EMOJI.CHECK_MARK_BUTTON} [X] Core Application (required)
+  {EMOJI.INFORMATION} 145 MB | Essential application files
 
-{EMOJI.CHECK} [X] Web Server (nginx)
-  {EMOJI.INFO} 23 MB | HTTP server and reverse proxy
+{EMOJI.CHECK_MARK_BUTTON} [X] Web Server (nginx)
+  {EMOJI.INFORMATION} 23 MB | HTTP server and reverse proxy
 
-{EMOJI.CHECK} [X] Database (PostgreSQL)
-  {EMOJI.INFO} 287 MB | Relational database system
+{EMOJI.CHECK_MARK_BUTTON} [X] Database (PostgreSQL)
+  {EMOJI.INFORMATION} 287 MB | Relational database system
 
 {EMOJI.GREEN_CIRCLE} [X] Cache Server (Redis)
-  {EMOJI.INFO} 12 MB | In-memory data store
+  {EMOJI.INFORMATION} 12 MB | In-memory data store
 
 {EMOJI.YELLOW_CIRCLE} [ ] Monitoring Tools
-  {EMOJI.INFO} 67 MB | Metrics, logs, and dashboards
+  {EMOJI.INFORMATION} 67 MB | Metrics, logs, and dashboards
 
 {EMOJI.YELLOW_CIRCLE} [ ] Development Tools
-  {EMOJI.INFO} 234 MB | Debuggers, profilers, analyzers
+  {EMOJI.INFORMATION} 234 MB | Debuggers, profilers, analyzers
 
 {EMOJI.YELLOW_CIRCLE} [ ] Documentation
-  {EMOJI.INFO} 45 MB | API docs and tutorials
+  {EMOJI.INFORMATION} 45 MB | API docs and tutorials
 
 ─────────────────────────────────────────────────────────────
 Selected: 4 components | Total size: 467 MB
 
-{EMOJI.INFO} Use Space to toggle | Enter to continue
+{EMOJI.INFORMATION} Use Space to toggle | Enter to continue
 """,
     title=f"{EMOJI.WRENCH} Component Selection",
     border="solid",
@@ -249,14 +249,14 @@ console.newline()
 # NESTED MENU
 # ============================================================================
 
-console.rule(f"{EMOJI.FOLDER} NESTED NAVIGATION", style="blue")
+console.rule(f"{EMOJI.FILE_FOLDER} NESTED NAVIGATION", style="blue")
 console.newline()
 
 console.frame(
     f"""
 {EMOJI.WRENCH} Database Tools
 
-{EMOJI.FLOPPY} 1. Migrations
+{EMOJI.FLOPPY_DISK} 1. Migrations
    {EMOJI.ARROW_RIGHT} Pending: 3 | Applied: 47 | Status: Up to date
 
 {EMOJI.PACKAGE} 2. Backup & Restore
@@ -265,7 +265,7 @@ console.frame(
 {EMOJI.TEST_TUBE} 3. Database Health Check
    {EMOJI.ARROW_RIGHT} Status: {EMOJI.GREEN_CIRCLE} All checks passed
 
-{EMOJI.CHART_BAR} 4. Performance Analysis
+{EMOJI.BAR_CHART} 4. Performance Analysis
    {EMOJI.ARROW_RIGHT} Query stats, slow queries, indexes
 
 {EMOJI.GEAR} 5. Connection Management
@@ -275,7 +275,7 @@ console.frame(
 
 ─────────────────────────────────────────────────────────────
 
-{EMOJI.FLOPPY} Migrations {EMOJI.ARROW_RIGHT} [1]
+{EMOJI.FLOPPY_DISK} Migrations {EMOJI.ARROW_RIGHT} [1]
 
   {EMOJI.CHART_INCREASING} 1. View Migration Status
   {EMOJI.ROCKET} 2. Run Pending Migrations
@@ -313,15 +313,15 @@ You are about to delete the database:
   Tables: 47
   Records: ~2.4M
 
-{EMOJI.CROSS} This action cannot be undone!
+{EMOJI.CROSS_MARK} This action cannot be undone!
 
 ─────────────────────────────────────────────────────────────
 
 Type "DELETE" to confirm:
 
-{EMOJI.INFO} Or press Ctrl+C to cancel
+{EMOJI.INFORMATION} Or press Ctrl+C to cancel
 """,
-    title=f"{EMOJI.SIREN} Destructive Action Warning",
+    title=f"{EMOJI.POLICE_CAR_LIGHT} Destructive Action Warning",
     border="thick",
     border_color="red",
     width=70,
@@ -340,14 +340,14 @@ console.frame(
     f"""
 {EMOJI.FIRE} Quick Actions (Press key to execute)
 
-[1] {EMOJI.ROCKET} Deploy to Staging        [6] {EMOJI.CHART_BAR} View Metrics
+[1] {EMOJI.ROCKET} Deploy to Staging        [6] {EMOJI.BAR_CHART} View Metrics
 [2] {EMOJI.TEST_TUBE} Run Tests                    [7] {EMOJI.SCROLL} View Logs
-[3] {EMOJI.FLOPPY} Backup Database          [8] {EMOJI.COMPUTER} SSH to Server
+[3] {EMOJI.FLOPPY_DISK} Backup Database          [8] {EMOJI.LAPTOP} SSH to Server
 [4] {EMOJI.GEAR} Restart Services          [9] {EMOJI.CALENDAR} View Schedule
-[5] {EMOJI.WRENCH} Clear Cache               [0] {EMOJI.LIGHTBULB} Help
+[5] {EMOJI.WRENCH} Clear Cache               [0] {EMOJI.LIGHT_BULB} Help
 
 ─────────────────────────────────────────────────────────────
-{EMOJI.INFO} Shortcuts: [Q]uit | [R]efresh | [H]elp
+{EMOJI.INFORMATION} Shortcuts: [Q]uit | [R]efresh | [H]elp
 """,
     title=f"{EMOJI.FIRE} Quick Actions Panel",
     border="rounded",
@@ -365,7 +365,7 @@ console.banner("MENU DESIGN PATTERNS")
 
 console.frame(
     f"""
-{EMOJI.TARGET} MENU DESIGN PRINCIPLES
+{EMOJI.BULLSEYE} MENU DESIGN PRINCIPLES
 
 1. VISUAL HIERARCHY
    • Title: Clear context, where am I?
@@ -381,17 +381,17 @@ console.frame(
 
 3. OPTION FORMATTING
    {EMOJI.GREEN_CIRCLE} [1] Action Name
-      {EMOJI.INFO} Brief description or current state
+      {EMOJI.INFORMATION} Brief description or current state
    • Emoji: Visual category indicator
    • Number: Quick selection
    • Description: What will happen
 
 4. STATUS INDICATORS
-   {EMOJI.CHECK} Completed or enabled
+   {EMOJI.CHECK_MARK_BUTTON} Completed or enabled
    {EMOJI.GEAR} Currently running or active
    {EMOJI.YELLOW_CIRCLE} Pending or disabled
    {EMOJI.WARNING} Requires attention
-   {EMOJI.CROSS} Error or unavailable
+   {EMOJI.CROSS_MARK} Error or unavailable
 
 5. INTERACTIVE ELEMENTS
    • Show available keys: [1-6, 0]
@@ -399,7 +399,7 @@ console.frame(
    • Progress bars: ━━━━━░░░░░
    • Confirmation: Type keyword or press Y/N
 """,
-    title=f"{EMOJI.LIGHTBULB} Best Practices",
+    title=f"{EMOJI.LIGHT_BULB} Best Practices",
     border="rounded",
     border_color="cyan",
     width=75,
@@ -419,7 +419,7 @@ MENU PATTERNS:
   Current values shown, options to change
   Use: Settings, preferences, system config
 
-{EMOJI.TARGET} SELECTION INTERFACE
+{EMOJI.BULLSEYE} SELECTION INTERFACE
   Options with preview/details
   Use: Choosing from alternatives, environments
 
@@ -431,7 +431,7 @@ MENU PATTERNS:
   Checkboxes [X] [ ], Space to toggle
   Use: Component selection, feature flags
 
-{EMOJI.FOLDER} NESTED NAVIGATION
+{EMOJI.FILE_FOLDER} NESTED NAVIGATION
   Breadcrumbs, hierarchical menus
   Use: Complex tools, file browsers
 

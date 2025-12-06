@@ -26,11 +26,11 @@ def demo_status_emojis():
     console.newline()
 
     console.frame(
-        f"{EMOJI.CHECK} Success - Operation completed\n"
-        f"{EMOJI.CROSS} Error - Operation failed\n"
+        f"{EMOJI.CHECK_MARK_BUTTON} Success - Operation completed\n"
+        f"{EMOJI.CROSS_MARK} Error - Operation failed\n"
         f"{EMOJI.WARNING} Warning - Proceed with caution\n"
-        f"{EMOJI.INFO} Information - Details available\n"
-        f"{EMOJI.QUESTION} Unknown - Status unclear\n\n"
+        f"{EMOJI.INFORMATION} Information - Details available\n"
+        f"{EMOJI.RED_QUESTION_MARK} Unknown - Status unclear\n\n"
         "The five essential status indicators,\n"
         "Speaking volumes without words.",
         title="🎯 Status Indicators",
@@ -46,11 +46,11 @@ def demo_status_emojis():
     # Demonstrate in context
     console.frame(
         "BUILD PIPELINE STATUS:\n\n"
-        f"{EMOJI.CHECK} Lint checks passed\n"
-        f"{EMOJI.CHECK} Unit tests passed (427/427)\n"
+        f"{EMOJI.CHECK_MARK_BUTTON} Lint checks passed\n"
+        f"{EMOJI.CHECK_MARK_BUTTON} Unit tests passed (427/427)\n"
         f"{EMOJI.WARNING} Coverage at 94% (target: 95%)\n"
-        f"{EMOJI.CHECK} Integration tests passed\n"
-        f"{EMOJI.CROSS} Deployment failed - rollback initiated\n\n"
+        f"{EMOJI.CHECK_MARK_BUTTON} Integration tests passed\n"
+        f"{EMOJI.CROSS_MARK} Deployment failed - rollback initiated\n\n"
         "Status emojis provide instant visual feedback.",
         title="💼 Real-World Usage",
         border="solid",
@@ -72,8 +72,8 @@ def demo_arrow_emojis():
         f"{EMOJI.ARROW_DOWN} Down - Next, decrease, download\n"
         f"{EMOJI.ARROW_LEFT} Left - Back, undo, previous\n"
         f"{EMOJI.ARROW_RIGHT} Right - Forward, next, continue\n"
-        f"{EMOJI.ARROW_UP_RIGHT} Diagonal - External link, export\n"
-        f"{EMOJI.REFRESH} Refresh - Reload, retry, restart\n\n"
+        f"{EMOJI.UP_RIGHT_ARROW} Diagonal - External link, export\n"
+        f"{EMOJI.COUNTERCLOCKWISE_ARROWS_BUTTON} Refresh - Reload, retry, restart\n\n"
         "Arrows guide users through interfaces,\n"
         "Pointing the way with visual clarity.",
         title="🧭 Navigation",
@@ -92,7 +92,9 @@ def demo_arrow_emojis():
         f"{EMOJI.ARROW_RIGHT} View Metrics\n"
         f"{EMOJI.ARROW_RIGHT} Configuration\n"
         f"{EMOJI.ARROW_DOWN} More Options\n\n"
-        f"{EMOJI.ARROW_LEFT} Back   {EMOJI.REFRESH} Refresh   {EMOJI.CROSS} Exit",
+        f"{EMOJI.ARROW_LEFT} Back   "
+        f"{EMOJI.COUNTERCLOCKWISE_ARROWS_BUTTON} Refresh   "
+        f"{EMOJI.CROSS_MARK} Exit",
         title="📋 Menu Navigation",
         border="solid",
         border_color="blue",
@@ -109,12 +111,12 @@ def demo_progress_emojis():
     console.newline()
 
     console.frame(
-        f"{EMOJI.HOURGLASS} Pending - Waiting to start\n"
+        f"{EMOJI.HOURGLASS_DONE} Pending - Waiting to start\n"
         f"{EMOJI.GEAR} In Progress - Currently running\n"
         f"{EMOJI.ROCKET} Launching - Startup phase\n"
         f"{EMOJI.FIRE} Active - High activity\n"
         f"{EMOJI.SPARKLES} Complete - Finished successfully\n"
-        f"{EMOJI.CLOCK} Scheduled - Queued for later\n\n"
+        f"{EMOJI.ONE_OCLOCK} Scheduled - Queued for later\n\n"
         "Progress emojis show state transitions,\n"
         "Making time visible.",
         title="⏱️  Progress States",
@@ -130,11 +132,11 @@ def demo_progress_emojis():
     # Pipeline example
     console.frame(
         "DEPLOYMENT PIPELINE:\n\n"
-        f"{EMOJI.CHECK} Build      (2m 34s) Complete\n"
-        f"{EMOJI.CHECK} Test       (4m 12s) Complete\n"
+        f"{EMOJI.CHECK_MARK_BUTTON} Build      (2m 34s) Complete\n"
+        f"{EMOJI.CHECK_MARK_BUTTON} Test       (4m 12s) Complete\n"
         f"{EMOJI.GEAR} Deploy     (1m 45s) In Progress...\n"
-        f"{EMOJI.HOURGLASS} Verify    (---) Pending\n"
-        f"{EMOJI.HOURGLASS} Announce  (---) Pending\n\n"
+        f"{EMOJI.HOURGLASS_DONE} Verify    (---) Pending\n"
+        f"{EMOJI.HOURGLASS_DONE} Announce  (---) Pending\n\n"
         "Visual progress tracking at a glance.",
         title="🚀 Pipeline Status",
         border="solid",
@@ -152,13 +154,13 @@ def demo_tech_emojis():
     console.newline()
 
     console.frame(
-        f"{EMOJI.COMPUTER} Computer - System, machine, host\n"
+        f"{EMOJI.LAPTOP} Computer - System, machine, host\n"
         f"{EMOJI.ROCKET} Rocket - Launch, deploy, fast\n"
         f"{EMOJI.GEAR} Gear - Settings, configuration\n"
         f"{EMOJI.PACKAGE} Package - Module, library, bundle\n"
-        f"{EMOJI.FOLDER} Folder - Directory, collection\n"
-        f"{EMOJI.FILE} File - Document, data\n"
-        f"{EMOJI.LOCK} Lock - Secure, encrypted, private\n"
+        f"{EMOJI.FILE_FOLDER} Folder - Directory, collection\n"
+        f"{EMOJI.PAGE_FACING_UP} File - Document, data\n"
+        f"{EMOJI.LOCKED} Lock - Secure, encrypted, private\n"
         f"{EMOJI.KEY} Key - Authentication, access\n"
         f"{EMOJI.LINK} Link - Connection, reference\n\n"
         "Tech emojis speak the language\n"
@@ -176,10 +178,10 @@ def demo_tech_emojis():
     # System status example
     console.frame(
         "SYSTEM OVERVIEW:\n\n"
-        f"{EMOJI.COMPUTER} Hostname: prod-web-01\n"
+        f"{EMOJI.LAPTOP} Hostname: prod-web-01\n"
         f"{EMOJI.PACKAGE} Services: 12 running\n"
-        f"{EMOJI.FOLDER} Storage: 2.4TB / 4TB\n"
-        f"{EMOJI.LOCK} Security: All checks passed\n"
+        f"{EMOJI.FILE_FOLDER} Storage: 2.4TB / 4TB\n"
+        f"{EMOJI.LOCKED} Security: All checks passed\n"
         f"{EMOJI.LINK} Network: 1Gbps up/down\n\n"
         "Tech emojis make system info scannable.",
         title="🖥️  System Status",
@@ -198,11 +200,11 @@ def demo_nature_emojis():
     console.newline()
 
     console.frame(
-        f"{EMOJI.TREE} Tree - Growth, branching, stability\n"
+        f"{EMOJI.EVERGREEN_TREE} Tree - Growth, branching, stability\n"
         f"{EMOJI.SEEDLING} Seedling - New, starting, potential\n"
-        f"{EMOJI.LEAF} Leaf - Natural, organic, green\n"
+        f"{EMOJI.LEAF_FLUTTERING_IN_WIND} Leaf - Natural, organic, green\n"
         f"{EMOJI.FIRE} Fire - Energy, danger, heat\n"
-        f"{EMOJI.WATER} Water - Flow, liquid, clean\n"
+        f"{EMOJI.DROPLET} Water - Flow, liquid, clean\n"
         f"{EMOJI.STAR} Star - Favorite, important, rating\n"
         f"{EMOJI.SPARKLES} Sparkles - Magic, special, new\n"
         f"{EMOJI.RAINBOW} Rainbow - Colorful, complete, joy\n\n"
@@ -221,9 +223,9 @@ def demo_nature_emojis():
     # Environment monitoring
     console.frame(
         "ENVIRONMENT METRICS:\n\n"
-        f"{EMOJI.TREE} Carbon offset: 2.4 tons\n"
-        f"{EMOJI.LEAF} Green energy: 85%\n"
-        f"{EMOJI.WATER} Water usage: -12% YoY\n"
+        f"{EMOJI.EVERGREEN_TREE} Carbon offset: 2.4 tons\n"
+        f"{EMOJI.LEAF_FLUTTERING_IN_WIND} Green energy: 85%\n"
+        f"{EMOJI.DROPLET} Water usage: -12% YoY\n"
         f"{EMOJI.SEEDLING} New initiatives: 3 started\n"
         f"{EMOJI.STAR} Sustainability score: 4.7/5\n\n"
         "Nature emojis for environmental metrics.",
@@ -245,12 +247,12 @@ def demo_symbol_emojis():
     console.frame(
         f"{EMOJI.BELL} Bell - Notification, alert, reminder\n"
         f"{EMOJI.TROPHY} Trophy - Achievement, success, winner\n"
-        f"{EMOJI.TARGET} Target - Goal, objective, aim\n"
+        f"{EMOJI.BULLSEYE} Target - Goal, objective, aim\n"
         f"{EMOJI.SHIELD} Shield - Protection, security, safe\n"
         f"{EMOJI.CROWN} Crown - Premium, royal, best\n"
-        f"{EMOJI.DIAMOND} Diamond - Valuable, rare, premium\n"
-        f"{EMOJI.HEART} Heart - Favorite, like, love\n"
-        f"{EMOJI.LIGHTNING} Lightning - Fast, powerful, energy\n\n"
+        f"{EMOJI.GEM_STONE} Diamond - Valuable, rare, premium\n"
+        f"{EMOJI.RED_HEART} Heart - Favorite, like, love\n"
+        f"{EMOJI.HIGH_VOLTAGE} Lightning - Fast, powerful, energy\n\n"
         "Symbols convey meaning instantly,\n"
         "Transcending language barriers.",
         title="⚡ Universal Symbols",
@@ -268,8 +270,8 @@ def demo_symbol_emojis():
         "ACHIEVEMENTS UNLOCKED:\n\n"
         f"{EMOJI.TROPHY} First Deployment - Completed\n"
         f"{EMOJI.CROWN} Zero Downtime Week - Achieved\n"
-        f"{EMOJI.DIAMOND} 99.99% Uptime - Maintained\n"
-        f"{EMOJI.TARGET} Performance Goals - Met\n"
+        f"{EMOJI.GEM_STONE} 99.99% Uptime - Maintained\n"
+        f"{EMOJI.BULLSEYE} Performance Goals - Met\n"
         f"{EMOJI.SHIELD} Security Audit - Passed\n\n"
         "Symbols celebrate accomplishments.",
         title="🏆 Achievement Board",
@@ -300,12 +302,12 @@ def demo_emoji_combinations():
         },
         {
             "title": "✅ Complete Success",
-            "pattern": f"{EMOJI.CHECK}{EMOJI.TROPHY}",
+            "pattern": f"{EMOJI.CHECK_MARK_BUTTON}{EMOJI.TROPHY}",
             "meaning": "Task completed with exceptional results",
         },
         {
             "title": "🔒 Secure Connection",
-            "pattern": f"{EMOJI.LOCK}{EMOJI.CHECK}",
+            "pattern": f"{EMOJI.LOCKED}{EMOJI.CHECK_MARK_BUTTON}",
             "meaning": "Security verified and active",
         },
         {
@@ -346,9 +348,9 @@ def demo_emoji_best_practices():
     practices = [
         {
             "title": "✅ DO: Use Consistently",
-            "text": f"{EMOJI.CHECK} Stick to one emoji per status type\n"
-            f"{EMOJI.CHECK} Always use {EMOJI.CHECK} for success\n"
-            f"{EMOJI.CHECK} Always use {EMOJI.CROSS} for errors\n\n"
+            "text": f"{EMOJI.CHECK_MARK_BUTTON} Stick to one emoji per status type\n"
+            f"{EMOJI.CHECK_MARK_BUTTON} Always use {EMOJI.CHECK_MARK_BUTTON} for success\n"
+            f"{EMOJI.CHECK_MARK_BUTTON} Always use {EMOJI.CROSS_MARK} for errors\n\n"
             "Consistency builds user familiarity.",
             "color": "green",
         },
@@ -356,7 +358,7 @@ def demo_emoji_best_practices():
             "title": "✅ DO: Consider Context",
             "text": f"{EMOJI.ROCKET} Rocket for deployments (exciting!)\n"
             f"{EMOJI.GEAR} Gear for processing (neutral)\n"
-            f"{EMOJI.HOURGLASS} Hourglass for waiting (patient)\n\n"
+            f"{EMOJI.HOURGLASS_DONE} Hourglass for waiting (patient)\n\n"
             "Match emoji energy to the situation.",
             "color": "cyan",
         },
@@ -376,8 +378,8 @@ def demo_emoji_best_practices():
         },
         {
             "title": "✅ DO: Provide Text Fallback",
-            "text": f"{EMOJI.CHECK} Build succeeded\n"
-            f"{EMOJI.CROSS} Build failed\n\n"
+            "text": f"{EMOJI.CHECK_MARK_BUTTON} Build succeeded\n"
+            f"{EMOJI.CROSS_MARK} Build failed\n\n"
             "Never rely on emoji alone.\n"
             "Text ensures clarity for all users.",
             "color": "purple",
@@ -415,11 +417,11 @@ def demo_emoji_catalog():
         {
             "name": "Status & Alerts",
             "emojis": [
-                (EMOJI.CHECK, "Check"),
-                (EMOJI.CROSS, "Cross"),
+                (EMOJI.CHECK_MARK_BUTTON, "Check"),
+                (EMOJI.CROSS_MARK, "Cross"),
                 (EMOJI.WARNING, "Warning"),
-                (EMOJI.INFO, "Info"),
-                (EMOJI.QUESTION, "Question"),
+                (EMOJI.INFORMATION, "Info"),
+                (EMOJI.RED_QUESTION_MARK, "Question"),
             ],
         },
         {
@@ -429,15 +431,15 @@ def demo_emoji_catalog():
                 (EMOJI.ARROW_DOWN, "Down"),
                 (EMOJI.ARROW_LEFT, "Left"),
                 (EMOJI.ARROW_RIGHT, "Right"),
-                (EMOJI.ARROW_UP_RIGHT, "Up-Right"),
-                (EMOJI.REFRESH, "Refresh"),
+                (EMOJI.UP_RIGHT_ARROW, "Up-Right"),
+                (EMOJI.COUNTERCLOCKWISE_ARROWS_BUTTON, "Refresh"),
             ],
         },
         {
             "name": "Progress & Time",
             "emojis": [
-                (EMOJI.HOURGLASS, "Hourglass"),
-                (EMOJI.CLOCK, "Clock"),
+                (EMOJI.HOURGLASS_DONE, "Hourglass"),
+                (EMOJI.ONE_OCLOCK, "Clock"),
                 (EMOJI.GEAR, "Gear"),
                 (EMOJI.ROCKET, "Rocket"),
                 (EMOJI.SPARKLES, "Sparkles"),
@@ -446,11 +448,11 @@ def demo_emoji_catalog():
         {
             "name": "Technology",
             "emojis": [
-                (EMOJI.COMPUTER, "Computer"),
+                (EMOJI.LAPTOP, "Computer"),
                 (EMOJI.PACKAGE, "Package"),
-                (EMOJI.FOLDER, "Folder"),
-                (EMOJI.FILE, "File"),
-                (EMOJI.LOCK, "Lock"),
+                (EMOJI.FILE_FOLDER, "Folder"),
+                (EMOJI.PAGE_FACING_UP, "File"),
+                (EMOJI.LOCKED, "Lock"),
                 (EMOJI.KEY, "Key"),
                 (EMOJI.LINK, "Link"),
             ],
@@ -458,11 +460,11 @@ def demo_emoji_catalog():
         {
             "name": "Nature",
             "emojis": [
-                (EMOJI.TREE, "Tree"),
+                (EMOJI.EVERGREEN_TREE, "Tree"),
                 (EMOJI.SEEDLING, "Seedling"),
-                (EMOJI.LEAF, "Leaf"),
+                (EMOJI.LEAF_FLUTTERING_IN_WIND, "Leaf"),
                 (EMOJI.FIRE, "Fire"),
-                (EMOJI.WATER, "Water"),
+                (EMOJI.DROPLET, "Water"),
                 (EMOJI.RAINBOW, "Rainbow"),
             ],
         },
@@ -471,12 +473,12 @@ def demo_emoji_catalog():
             "emojis": [
                 (EMOJI.BELL, "Bell"),
                 (EMOJI.TROPHY, "Trophy"),
-                (EMOJI.TARGET, "Target"),
+                (EMOJI.BULLSEYE, "Target"),
                 (EMOJI.SHIELD, "Shield"),
                 (EMOJI.CROWN, "Crown"),
-                (EMOJI.DIAMOND, "Diamond"),
-                (EMOJI.HEART, "Heart"),
-                (EMOJI.LIGHTNING, "Lightning"),
+                (EMOJI.GEM_STONE, "Diamond"),
+                (EMOJI.RED_HEART, "Heart"),
+                (EMOJI.HIGH_VOLTAGE, "Lightning"),
                 (EMOJI.STAR, "Star"),
             ],
         },
@@ -514,7 +516,7 @@ def demo_creative_showcase():
         f"  {EMOJI.STAR}{EMOJI.SPARKLES}{EMOJI.SPARKLES}{EMOJI.SPARKLES}{EMOJI.STAR}\n\n"
         "Achievement pyramid!\n"
         "Emojis as ASCII art.",
-        title=f"{EMOJI.ART} Emoji Art",
+        title=f"{EMOJI.ARTIST_PALETTE} Emoji Art",
         border="double",
         border_gradient_start="yellow",
         border_gradient_end="orange",
@@ -527,11 +529,11 @@ def demo_creative_showcase():
     # Progress bar with emojis
     console.frame(
         "Build Progress:\n\n"
-        f"{EMOJI.CHECK}{EMOJI.CHECK}{EMOJI.CHECK}{EMOJI.CHECK}{EMOJI.CHECK}"
-        f"{EMOJI.CHECK}{EMOJI.CHECK}{EMOJI.GEAR}{EMOJI.HOURGLASS}{EMOJI.HOURGLASS}\n\n"
+        f"{EMOJI.CHECK_MARK_BUTTON}{EMOJI.CHECK_MARK_BUTTON}{EMOJI.CHECK_MARK_BUTTON}{EMOJI.CHECK_MARK_BUTTON}{EMOJI.CHECK_MARK_BUTTON}"
+        f"{EMOJI.CHECK_MARK_BUTTON}{EMOJI.CHECK_MARK_BUTTON}{EMOJI.GEAR}{EMOJI.HOURGLASS_DONE}{EMOJI.HOURGLASS_DONE}\n\n"
         "70% Complete\n\n"
         "Emojis as progress indicators!",
-        title=f"{EMOJI.CHART_BAR} Visual Progress",
+        title=f"{EMOJI.BAR_CHART} Visual Progress",
         border="rounded",
         border_gradient_start="lime",
         border_gradient_end="green",
@@ -596,11 +598,11 @@ def main():
     console.frame(
         f"{EMOJI.TROPHY} EMOJI MASTERY ACHIEVED\n\n"
         "You've explored:\n\n"
-        f"{EMOJI.CHECK} 50+ Tier 1 safe emojis\n"
-        f"{EMOJI.CHECK} 6 thematic categories\n"
-        f"{EMOJI.CHECK} Creative combinations\n"
-        f"{EMOJI.CHECK} Best practices guide\n"
-        f"{EMOJI.CHECK} Real-world applications\n\n"
+        f"{EMOJI.CHECK_MARK_BUTTON} 50+ Tier 1 safe emojis\n"
+        f"{EMOJI.CHECK_MARK_BUTTON} 6 thematic categories\n"
+        f"{EMOJI.CHECK_MARK_BUTTON} Creative combinations\n"
+        f"{EMOJI.CHECK_MARK_BUTTON} Best practices guide\n"
+        f"{EMOJI.CHECK_MARK_BUTTON} Real-world applications\n\n"
         "Emojis are the universal language\n"
         "Of modern terminal interfaces.\n\n"
         f"Now go forth and communicate visually! {EMOJI.ROCKET}{EMOJI.SPARKLES}",

@@ -40,7 +40,7 @@ def demo_red_family():
         f"{EMOJI.FIRE} The color of fire and passion\n"
         "From delicate coral to deep crimson\n"
         "Red commands attention and stirs emotion",
-        title=f"{EMOJI.HEART}  Red Spectrum",
+        title=f"{EMOJI.RED_HEART}  Red Spectrum",
         border="rounded",
         border_color="red",
         content_color="lightcoral",
@@ -81,7 +81,7 @@ def demo_orange_family():
     console.newline()
 
     console.frame(
-        f"{EMOJI.ORANGE_FRUIT} The color of sunset and creativity\n"
+        f"{EMOJI.TANGERINE} The color of sunset and creativity\n"
         "Warm, inviting, and energetic\n"
         "Orange bridges red passion and yellow joy",
         title=f"{EMOJI.SUNRISE} Orange Spectrum",
@@ -166,7 +166,7 @@ def demo_green_family():
         f"{EMOJI.HERB} The color of nature and renewal\n"
         "From electric lime to deep forest\n"
         "Green soothes, balances, and revitalizes",
-        title=f"{EMOJI.LEAVES} Green Spectrum",
+        title=f"{EMOJI.LEAF_FLUTTERING_IN_WIND} Green Spectrum",
         border="rounded",
         border_color="lime",
         content_color="lightgreen",
@@ -179,7 +179,7 @@ def demo_green_family():
     console.frame(
         "A Walk Through the Forest:\n\n"
         f"{EMOJI.SEEDLING} Lime ────→ Spring Green ────→ Forest Green ────→ "
-        f"Dark Green {EMOJI.TREE}\n\n"
+        f"Dark Green {EMOJI.EVERGREEN_TREE}\n\n"
         "From new growth to ancient trees,\n"
         "The green spectrum encompasses\n"
         "The full cycle of natural life",
@@ -270,7 +270,7 @@ def demo_blue_family():
     for color, desc in zip(blues, descriptions, strict=False):
         console.frame(
             f"{desc}",
-            title=f"{EMOJI.GEM} {color.title()}",
+            title=f"{EMOJI.GEM_STONE} {color.title()}",
             border="solid",
             border_color=color,
             content_color="white",
@@ -333,7 +333,7 @@ def demo_pink_family():
     ]
 
     console.frame(
-        f"{EMOJI.BLOSSOM} The color of tenderness and joy\n"
+        f"{EMOJI.CHERRY_BLOSSOM} The color of tenderness and joy\n"
         "From soft blush to vibrant hot pink\n"
         "Pink brings warmth and playfulness",
         title=f"{EMOJI.GROWING_HEART} Pink Spectrum",
@@ -407,7 +407,7 @@ def demo_white_gray_black():
         f"{EMOJI.WHITE_CIRCLE} The spectrum from light to dark\n"
         "From pure white to absolute black\n"
         "Neutrals provide structure and balance",
-        title=f"{EMOJI.PALETTE} Neutral Spectrum",
+        title=f"{EMOJI.ARTIST_PALETTE} Neutral Spectrum",
         border="rounded",
         border_color="white",
         content_color="lightgray",
@@ -480,7 +480,7 @@ def demo_color_gradients():
             f"{'═' * 50}\n\n"
             "Watch as one color melts into another,\n"
             "Creating infinite intermediate shades.",
-            title=f"{EMOJI.PALETTE} {name}",
+            title=f"{EMOJI.ARTIST_PALETTE} {name}",
             border="thick",
             border_gradient_start=start,
             border_gradient_end=end,
@@ -527,7 +527,7 @@ def main():
     console.rule(f"{EMOJI.SPARKLES}", color="magenta")
     console.newline()
     console.frame(
-        f"{EMOJI.PALETTE} COLOR MASTERY ACHIEVED\n\n"
+        f"{EMOJI.ARTIST_PALETTE} COLOR MASTERY ACHIEVED\n\n"
         "You've explored the complete CSS4 color palette:\n\n"
         "• 148 named colors\n"
         "• 9 chromatic families\n"

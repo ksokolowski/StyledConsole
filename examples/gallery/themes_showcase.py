@@ -12,7 +12,7 @@ from styledconsole.utils.color import normalize_color_for_rich
 
 def show_solid_themes(console: Console) -> None:
     """Show solid (non-gradient) themes."""
-    console.text(f"\n{EMOJI.PALETTE} Solid Themes:", bold=True, color="cyan")
+    console.text(f"\n{EMOJI.ARTIST_PALETTE} Solid Themes:", bold=True, color="cyan")
     console.text("")
 
     for theme in THEMES.solid_themes():
@@ -26,13 +26,13 @@ def show_solid_themes(console: Console) -> None:
         muted_hex = normalize_color_for_rich(theme.muted)
 
         # Build content with Rich markup for colors INSIDE the frame
-        content = f"""[bold]{EMOJI.PALETTE} {theme.name.upper()} Theme[/bold]
+        content = f"""[bold]{EMOJI.ARTIST_PALETTE} {theme.name.upper()} Theme[/bold]
 
 [{primary_hex}]{EMOJI.STAR} Primary: {theme.primary}[/]
-[{success_hex}]{EMOJI.CHECK} Success: {theme.success}[/]
+[{success_hex}]{EMOJI.CHECK_MARK_BUTTON} Success: {theme.success}[/]
 [{warning_hex}]{EMOJI.WARNING} Warning: {theme.warning}[/]
-[{error_hex}]{EMOJI.CROSS} Error: {theme.error}[/]
-[{info_hex}]{EMOJI.INFO} Info: {theme.info}[/]
+[{error_hex}]{EMOJI.CROSS_MARK} Error: {theme.error}[/]
+[{info_hex}]{EMOJI.INFORMATION} Info: {theme.info}[/]
 [{secondary_hex}]{EMOJI.SPARKLES} Secondary: {theme.secondary}[/]
 [{muted_hex}]{EMOJI.WHITE_CIRCLE} Muted: {theme.muted}[/]"""
 
@@ -102,12 +102,12 @@ def show_custom_gradient_theme(console: Console) -> None:
 
 def show_semantic_colors(console: Console) -> None:
     """Show semantic color frames."""
-    console.text(f"\n{EMOJI.LIGHTBULB} Semantic Frame Colors:", bold=True)
+    console.text(f"\n{EMOJI.LIGHT_BULB} Semantic Frame Colors:", bold=True)
 
     dark_console = Console(theme="dark")
 
     dark_console.frame(
-        f"{EMOJI.CHECK} Success message!",
+        f"{EMOJI.CHECK_MARK_BUTTON} Success message!",
         border="rounded",
         border_color="success",
     )
@@ -117,12 +117,12 @@ def show_semantic_colors(console: Console) -> None:
         border_color="warning",
     )
     dark_console.frame(
-        f"{EMOJI.CROSS} Error message!",
+        f"{EMOJI.CROSS_MARK} Error message!",
         border="rounded",
         border_color="error",
     )
     dark_console.frame(
-        f"{EMOJI.INFO} Info message!",
+        f"{EMOJI.INFORMATION} Info message!",
         border="rounded",
         border_color="info",
     )

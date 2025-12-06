@@ -121,13 +121,13 @@ class TestIconProvider:
 
     def test_provider_attribute_access(self):
         """Test icons can be accessed as attributes."""
-        icon = icons.CHECK
+        icon = icons.CHECK_MARK_BUTTON
         assert isinstance(icon, Icon)
         assert icon.emoji == "✅"
 
     def test_provider_attribute_access_various_icons(self):
         """Test various icons can be accessed."""
-        assert icons.CROSS.emoji == "❌"
+        assert icons.CROSS_MARK.emoji == "❌"
         assert icons.WARNING.emoji == "⚠️"
         assert icons.ROCKET.emoji == "🚀"
         assert icons.STAR.emoji == "⭐"
@@ -144,7 +144,7 @@ class TestIconProvider:
 
     def test_provider_get_method(self):
         """Test get() method returns icon or None."""
-        icon = icons.get("CHECK")
+        icon = icons.get("CHECK_MARK_BUTTON")
         assert icon is not None
         assert icon.emoji == "✅"
 
@@ -154,7 +154,7 @@ class TestIconProvider:
         """Test get_by_emoji() looks up icon by emoji character."""
         icon = icons.get_by_emoji("✅")
         assert icon is not None
-        assert icon.name == "CHECK"
+        assert icon.name == "CHECK_MARK_BUTTON"
 
         assert icons.get_by_emoji("🤷") is None  # Unknown emoji
 
@@ -162,8 +162,8 @@ class TestIconProvider:
         """Test list_icons() returns sorted list of names."""
         names = icons.list_icons()
         assert isinstance(names, list)
-        assert "CHECK" in names
-        assert "CROSS" in names
+        assert "CHECK_MARK_BUTTON" in names
+        assert "CROSS_MARK" in names
         assert names == sorted(names)  # Sorted
 
     def test_provider_list_by_category(self):
@@ -171,7 +171,7 @@ class TestIconProvider:
         categories = icons.list_by_category()
         assert isinstance(categories, dict)
         assert "status" in categories
-        assert "CHECK" in categories["status"]
+        assert "CHECK_MARK_BUTTON" in categories["status"]
         assert "transport" in categories
         assert "ROCKET" in categories["transport"]
 
@@ -182,13 +182,13 @@ class TestIconProvider:
     def test_provider_iter(self):
         """Test iteration over icon names."""
         names = list(icons)
-        assert "CHECK" in names
+        assert "CHECK_MARK_BUTTON" in names
         assert len(names) == len(icons)
 
     def test_provider_contains(self):
         """Test 'in' operator for icon names."""
-        assert "CHECK" in icons
-        assert "CROSS" in icons
+        assert "CHECK_MARK_BUTTON" in icons
+        assert "CROSS_MARK" in icons
         assert "NONEXISTENT" not in icons
 
 
@@ -236,7 +236,7 @@ class TestIconModeControl:
 
     def test_mode_affects_icon_str(self):
         """Test mode changes affect icon string output."""
-        icon = icons.CHECK
+        icon = icons.CHECK_MARK_BUTTON
 
         set_icon_mode("emoji")
         assert str(icon) == "✅"
@@ -292,10 +292,10 @@ class TestIconDataIntegrity:
 
     def test_all_status_icons_have_colors(self):
         """Test status icons have semantic colors."""
-        assert icons.CHECK.color == "green"
-        assert icons.CROSS.color == "red"
+        assert icons.CHECK_MARK_BUTTON.color == "green"
+        assert icons.CROSS_MARK.color == "red"
         assert icons.WARNING.color == "yellow"
-        assert icons.INFO.color == "cyan"
+        assert icons.INFORMATION.color == "cyan"
 
     def test_colored_circles_match_color(self):
         """Test colored circle icons have matching colors."""
@@ -314,8 +314,8 @@ class TestIconDataIntegrity:
     def test_ascii_representations_readable(self):
         """Test ASCII representations are recognizable."""
         # Status should be parentheses text (to avoid Rich markup conflicts)
-        assert icons.CHECK.ascii == "(OK)"
-        assert icons.CROSS.ascii == "(FAIL)"
+        assert icons.CHECK_MARK_BUTTON.ascii == "(OK)"
+        assert icons.CROSS_MARK.ascii == "(FAIL)"
         assert icons.WARNING.ascii == "(WARN)"
 
         # Arrows should be simple
@@ -344,24 +344,26 @@ class TestIconProviderIntegration:
     def test_icon_in_fstring(self):
         """Test icons work in f-strings."""
         set_icon_mode("emoji")
-        result = f"{icons.CHECK} Tests passed"
+        result = f"{icons.CHECK_MARK_BUTTON} Tests passed"
         assert result == "✅ Tests passed"
 
         set_icon_mode("ascii")
-        result = f"{icons.CHECK} Tests passed"
+        result = f"{icons.CHECK_MARK_BUTTON} Tests passed"
         assert "(OK)" in result
         assert "Tests passed" in result
 
     def test_icon_concatenation(self):
         """Test icons can be concatenated."""
         set_icon_mode("emoji")
-        result = str(icons.CHECK) + " " + str(icons.CROSS)
+        result = str(icons.CHECK_MARK_BUTTON) + " " + str(icons.CROSS_MARK)
         assert result == "✅ ❌"
 
     def test_multiple_icons_in_string(self):
         """Test multiple icons in formatted string."""
         set_icon_mode("ascii")
-        result = f"Pass: {icons.CHECK} | Fail: {icons.CROSS} | Warn: {icons.WARNING}"
+        result = (
+            f"Pass: {icons.CHECK_MARK_BUTTON} | Fail: {icons.CROSS_MARK} | Warn: {icons.WARNING}"
+        )
         assert "(OK)" in result
         assert "(FAIL)" in result
         assert "(WARN)" in result

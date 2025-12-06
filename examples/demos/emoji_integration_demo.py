@@ -58,12 +58,12 @@ def demo_emoji_validation():
     lines = []
     for char, description in test_cases:
         is_valid = is_valid_emoji(char)
-        status = f"{EMOJI.CHECK} Valid" if is_valid else f"{EMOJI.CROSS} Invalid"
+        status = f"{EMOJI.CHECK_MARK_BUTTON} Valid" if is_valid else f"{EMOJI.CROSS_MARK} Invalid"
         lines.append(f"  {char}  {description}: {status}")
 
     console.frame(
         "\n".join(lines),
-        title=f"{EMOJI.MAGNIFYING_GLASS} Emoji Validation",
+        title=f"{EMOJI.MAGNIFYING_GLASS_TILTED_LEFT} Emoji Validation",
         border="rounded",
         border_color="green",
     )
@@ -86,7 +86,7 @@ def demo_zwj_detection():
         if has_zwj:
             status = f"{EMOJI.WARNING} ZWJ (may not render correctly)"
         else:
-            status = f"{EMOJI.CHECK} Terminal safe"
+            status = f"{EMOJI.CHECK_MARK_BUTTON} Terminal safe"
         lines.append(f"  {text}  {description}")
         lines.append(f"      {status}")
 
@@ -114,7 +114,7 @@ def demo_emoji_info():
 
     console.frame(
         "\n".join(lines),
-        title=f"{EMOJI.INFO} Emoji Information",
+        title=f"{EMOJI.INFORMATION} Emoji Information",
         border="rounded",
         border_color="blue",
     )
@@ -132,7 +132,9 @@ def demo_safety_analysis():
     for text in test_texts:
         result = analyze_emoji_safety(text)
         safe_status = (
-            f"{EMOJI.CHECK} All safe" if result["all_safe"] else f"{EMOJI.WARNING} Contains unsafe"
+            f"{EMOJI.CHECK_MARK_BUTTON} All safe"
+            if result["all_safe"]
+            else f"{EMOJI.WARNING} Contains unsafe"
         )
 
         console.text(f'"{text}"', bold=True)
@@ -197,7 +199,7 @@ def demo_version_filtering():
 
     console.frame(
         "\n".join(lines),
-        title=f"{EMOJI.CLOCK} Version Filtering",
+        title=f"{EMOJI.ONE_OCLOCK} Version Filtering",
         border="rounded",
         border_color="orange",
     )
@@ -215,7 +217,7 @@ def demo_emoji_extraction():
 
     console.frame(
         "\n".join(lines),
-        title=f"{EMOJI.MAGNIFYING_GLASS} Emoji Extraction",
+        title=f"{EMOJI.MAGNIFYING_GLASS_TILTED_LEFT} Emoji Extraction",
         border="rounded",
         border_color="green",
     )
@@ -260,11 +262,11 @@ def main():
 
     console.frame(
         f"The emoji package integration provides:\n"
-        f"  {EMOJI.CHECK} 4,000+ emoji validation (vs 200 in SAFE_EMOJIS)\n"
-        f"  {EMOJI.CHECK} Proper ZWJ sequence detection\n"
-        f"  {EMOJI.CHECK} Emoji version filtering for compatibility\n"
-        f"  {EMOJI.CHECK} Shortcode conversion (:rocket: → 🚀)\n"
-        f"  {EMOJI.CHECK} Graceful fallback when package unavailable",
+        f"  {EMOJI.CHECK_MARK_BUTTON} 4,000+ emoji validation (vs 200 in SAFE_EMOJIS)\n"
+        f"  {EMOJI.CHECK_MARK_BUTTON} Proper ZWJ sequence detection\n"
+        f"  {EMOJI.CHECK_MARK_BUTTON} Emoji version filtering for compatibility\n"
+        f"  {EMOJI.CHECK_MARK_BUTTON} Shortcode conversion (:rocket: → 🚀)\n"
+        f"  {EMOJI.CHECK_MARK_BUTTON} Graceful fallback when package unavailable",
         title=f"{EMOJI.SPARKLES} Summary",
         border="double",
         border_color="gold",

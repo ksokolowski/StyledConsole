@@ -24,9 +24,9 @@ def _calculate_status(
     Uses semantic color names and icons module for policy-aware rendering.
     """
     if failed > 0 or errors > 0:
-        return "FAILED", "error", str(icons.CROSS)
+        return "FAILED", "error", str(icons.CROSS_MARK)
     elif passed == total and total > 0:
-        return "PASSED", "success", str(icons.CHECK)
+        return "PASSED", "success", str(icons.CHECK_MARK_BUTTON)
     elif total == 0:
         return "NO TESTS", "warning", str(icons.WARNING)
     else:
@@ -48,7 +48,7 @@ def _list_failures(console: Console, results: list[TestResult]) -> None:
 
     for fail in failures:
         status = fail["status"].upper()
-        icon = str(icons.CROSS) if status == "FAIL" else str(icons.FIRE)
+        icon = str(icons.CROSS_MARK) if status == "FAIL" else str(icons.FIRE)
 
         content = [f"{icon} [bold]{fail['name']}[/]"]
         if "message" in fail:

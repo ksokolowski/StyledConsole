@@ -72,7 +72,8 @@ ______________________________________________________________________
 - **NEVER use sed/grep for code modifications** - Use `read_file()`, `replace_string_in_file()`, `grep_search()` tools
 - **Always run pre-commit before suggesting commits** - `uv run pre-commit run --all-files`
 - **Prefer uv over pip** - All commands should use `uv run` prefix
-- **Show full output** - Don't pipe with `| head` or `| tail` unless explicitly requested
+- **Show full output** - NEVER pipe test/command output through `| head`, `| tail`, `| grep` or other redirections unless explicitly requested. Full output is essential for debugging.
+- **Non-interactive example runs** - Use `--auto` flag: `uv run python examples/run_examples.py --auto`
 
 ### Console API Usage
 

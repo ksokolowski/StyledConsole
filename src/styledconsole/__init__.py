@@ -39,8 +39,11 @@ from styledconsole.effects import (
     rainbow_frame,
 )
 
-# Import emoji constants
-from styledconsole.emojis import EMOJI, E, EmojiConstants
+# Import emoji constants (DRY: from emoji package)
+from styledconsole.emoji_registry import EMOJI, CuratedEmojis, E
+
+# Legacy import for backward compatibility (deprecated)
+from styledconsole.emojis import EmojiConstants
 
 # Import icon system (v0.9.0+)
 from styledconsole.icons import (
@@ -177,6 +180,7 @@ __all__ = [
     "ColorType",
     # Main Console API
     "Console",
+    "CuratedEmojis",
     "E",
     "EmojiConstants",
     "EmojiInfo",

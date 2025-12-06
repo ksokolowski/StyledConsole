@@ -15,12 +15,12 @@ if TYPE_CHECKING:
 # Using icons module for policy-aware emoji/ASCII fallback
 # Colors use semantic names that themes can resolve (success, error, warning, info)
 STATUS_THEME = {
-    "PASS": {"color": "success", "icon": icons.CHECK},
-    "FAIL": {"color": "error", "icon": icons.CROSS},
+    "PASS": {"color": "success", "icon": icons.CHECK_MARK_BUTTON},
+    "FAIL": {"color": "error", "icon": icons.CROSS_MARK},
     "SKIP": {"color": "warning", "icon": icons.WARNING},
     "ERROR": {"color": "error", "icon": icons.FIRE},
 }
-DEFAULT_STATUS = {"color": "info", "icon": icons.INFO}
+DEFAULT_STATUS = {"color": "info", "icon": icons.INFORMATION}
 
 
 class StatusEntry(TypedDict):
