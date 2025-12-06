@@ -45,9 +45,13 @@ def _normalize_name(shortcode: str) -> str:
         :check_mark_button: -> CHECK_MARK_BUTTON
         :1st_place_medal: -> E_1ST_PLACE_MEDAL
         :ON!_arrow: -> ON_ARROW
+        :one_o'clock: -> ONE_OCLOCK
     """
     name = shortcode.strip(":").upper()
-    name = name.replace("-", "_").replace(" ", "_").replace("!", "").replace("'", "")
+    # Replace various characters that aren't valid in Python identifiers
+    name = name.replace("-", "_").replace(" ", "_").replace("!", "")
+    # Handle ASCII apostrophe (') and Unicode right single quotation mark (U+2019)
+    name = name.replace("'", "").replace("\u2019", "")
     # Handle names starting with numbers
     if name and not name[0].isalpha() and name[0] != "_":
         name = "E_" + name
