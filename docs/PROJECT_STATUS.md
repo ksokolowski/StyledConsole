@@ -1,8 +1,8 @@
 # StyledConsole Project Status
 
-**Version:** 0.9.0
+**Version:** 0.9.1
 **Status:** Released
-**Last Updated:** December 3, 2025
+**Last Updated:** December 7, 2025
 
 ______________________________________________________________________
 
@@ -10,11 +10,11 @@ ______________________________________________________________________
 
 | Metric        | Value       |
 | ------------- | ----------- |
-| Current       | v0.9.0      |
+| Current       | v0.9.1      |
 | Lines of Code | ~6,500      |
-| Tests         | 853 passing |
-| Coverage      | 95%+        |
-| Examples      | 31          |
+| Tests         | 898 passing |
+| Coverage      | 89%         |
+| Examples      | 38          |
 
 ______________________________________________________________________
 
@@ -32,6 +32,7 @@ ______________________________________________________________________
 | v0.7.0  | Nov 2025 | Frame Groups                  |
 | v0.8.0  | Nov 2025 | Theme System & Gradients      |
 | v0.9.0  | Dec 2025 | Icon Provider (Colored ASCII) |
+| v0.9.1  | Dec 2025 | Emoji DRY Refactoring         |
 
 ### Planned
 
@@ -42,6 +43,73 @@ ______________________________________________________________________
 | v0.13.0 | Q2 2026 | Test Automation Presets - CI/CD | PLANNED |
 | v0.14.0 | Q2 2026 | Test Automation Presets - Robot Framework | PLANNED |
 | v1.0.0 | Q3 2026 | API freeze & Production Hardening | PLANNED |
+
+______________________________________________________________________
+
+## v0.9.1: Emoji DRY Refactoring
+
+**Released:** December 7, 2025
+**Status:** RELEASED
+**Key Features:** DRY emoji architecture using `emoji` package as single source of truth
+
+### Feature 1: DRY Emoji Registry ✅ IMPLEMENTED
+
+**Problem:** Emoji constants were hardcoded and duplicated between `emojis.py`, `icon_data.py`, and examples.
+Maintenance burden was high, and CLDR naming conventions were inconsistent.
+
+**Solution Implemented:**
+
+- New `emoji_registry.py` module as single source of truth
+- Uses `emoji` package (v2.15.0+) for 4000+ emojis
+- All names follow CLDR canonical standard (e.g., `CHECK_MARK_BUTTON`, not `CHECK`)
+- Lazy initialization with singleton pattern for performance
+- Search and discovery methods (`EMOJI.search()`, `EMOJI.get()`)
+- `CuratedEmojis` class with category-organized name lists
+
+**Files Created/Modified:**
+
+| File                                     | Purpose                           |
+| ---------------------------------------- | --------------------------------- |
+| `src/styledconsole/emoji_registry.py`    | DRY source of truth (new)         |
+| `src/styledconsole/emojis.py`            | Thin re-export layer (simplified) |
+| `src/styledconsole/utils/icon_data.py`   | Keys migrated to canonical names  |
+| `tests/unit/test_emojis.py`              | 46 tests for new architecture     |
+| `scripts/archive/migrate_emoji_names.py` | Migration script (archived)       |
+
+**API (Implemented):**
+
+```python
+from styledconsole import EMOJI, E, CuratedEmojis
+
+# Canonical CLDR names
+EMOJI.CHECK_MARK_BUTTON  # ✅ (not EMOJI.CHECK)
+EMOJI.CROSS_MARK         # ❌ (not EMOJI.CROSS)
+
+# Search for emojis
+EMOJI.search("rocket")   # [('ROCKET', '🚀'), ...]
+
+# Safe access with default
+EMOJI.get("ROCKET", default="*")  # Returns 🚀 or "*"
+
+# Membership testing
+"ROCKET" in EMOJI        # True
+len(EMOJI)               # ~4000+
+
+# Curated category lists
+CuratedEmojis.STATUS     # ['CHECK_MARK_BUTTON', 'CROSS_MARK', ...]
+CuratedEmojis.DEV        # ['ROCKET', 'FIRE', 'STAR', ...]
+```
+
+### Feature 2: Deprecation of EmojiConstants ✅ IMPLEMENTED
+
+- `EmojiConstants` type alias now triggers `DeprecationWarning`
+- Users should use `EMOJI` directly or `type(EMOJI)` for type hints
+- Will be removed in v1.0.0
+
+### Feature 3: Icon Dataclass Optimization ✅ IMPLEMENTED
+
+- Added `slots=True` to `Icon` dataclass for memory efficiency
+- No API changes, internal optimization only
 
 ______________________________________________________________________
 

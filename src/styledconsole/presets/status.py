@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, NotRequired, TypedDict
+from typing import TYPE_CHECKING, Any, TypedDict
 
 from rich.markup import escape
+from typing_extensions import NotRequired
 
 from styledconsole.console import Console
 from styledconsole.icons import icons
@@ -45,7 +46,7 @@ def _build_status_content(
     """
     status_key = status.upper()
     theme = STATUS_THEME.get(status_key, DEFAULT_STATUS)
-    color = theme["color"]
+    color = str(theme["color"])  # Cast to str for type safety
     icon = str(theme["icon"])  # Uses icons module for policy-aware rendering
 
     lines: list[str] = [f"{icon}  [bold]{escape(name)}[/]"]
@@ -94,7 +95,7 @@ def status_frame(
         message=message,
     )
 
-    frame_args = {
+    frame_args: dict[str, Any] = {
         "title": f" {status_key} ",
         "border": "rounded",
         "border_color": color,
@@ -140,7 +141,7 @@ def status_summary(
                 message=entry.get("message"),
             )
 
-            frame_args = {
+            frame_args: dict[str, Any] = {
                 "title": f" {status_key} ",
                 "border": "rounded",
                 "border_color": color,

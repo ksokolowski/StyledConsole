@@ -29,6 +29,7 @@ from styledconsole.effects.strategies import (
     LinearGradient,
     VerticalPosition,
 )
+from styledconsole.types import AlignType, FrameGroupItem
 from styledconsole.utils.color import colorize, normalize_color_for_rich
 from styledconsole.utils.text import adjust_emoji_spacing_in_text
 
@@ -97,7 +98,7 @@ class RenderingEngine:
         border: str = "rounded",
         width: int | None = None,
         padding: int = 1,
-        align: str = "left",
+        align: AlignType = "left",
         content_color: str | None = None,
         border_color: str | None = None,
         title_color: str | None = None,
@@ -153,6 +154,10 @@ class RenderingEngine:
             border_gradient_start_norm = normalize_color_for_rich(border_gradient_start)
             border_gradient_end_norm = normalize_color_for_rich(border_gradient_end)
 
+            # Guard for type checker - normalize returns str for non-None input
+            if border_gradient_start_norm is None or border_gradient_end_norm is None:
+                return output
+
             lines = output.splitlines()
             if border_gradient_direction == "vertical":
                 colored_lines = apply_gradient(
@@ -178,7 +183,7 @@ class RenderingEngine:
         border: str = "rounded",
         width: int | None = None,
         padding: int = 1,
-        align: str = "left",
+        align: AlignType = "left",
         content_color: str | None = None,
         border_color: str | None = None,
         title_color: str | None = None,
@@ -324,7 +329,7 @@ class RenderingEngine:
         box_style,
         content_area_width: int,
         padding: int,
-        align: str,
+        align: AlignType,
         start_color: str | None,
         end_color: str | None,
         content_color: str | None,
@@ -383,7 +388,7 @@ class RenderingEngine:
         border: str = "rounded",
         width: int | None = None,
         padding: int = 1,
-        align: str = "left",
+        align: AlignType = "left",
         content_color: str | None = None,
         border_color: str | None = None,
         title_color: str | None = None,
@@ -539,7 +544,7 @@ class RenderingEngine:
         """
         # Simple caching to avoid repeated font loading
         if not hasattr(self, "_figlet_cache"):
-            self._figlet_cache = {}
+            self._figlet_cache: dict[str, pyfiglet.Figlet] = {}
 
         if font not in self._figlet_cache:
             import pyfiglet
@@ -623,7 +628,7 @@ class RenderingEngine:
         end_color: str | None = None,
         border: str | None = None,
         width: int | None = None,
-        align: str = "center",
+        align: AlignType = "center",
         padding: int = 1,
     ) -> None:
         """Render and print a banner.
@@ -712,7 +717,7 @@ class RenderingEngine:
             style_parts.append(color)
         # Adjust emoji spacing by default for plain text printing
         adj_text = adjust_emoji_spacing_in_text(text)
-        style = " ".join(style_parts) if style_parts else None
+        style = " ".join(style_parts) if style_parts else ""
         rich_text = RichText(adj_text, style=style)
         self._rich_console.print(rich_text, end=end, highlight=False)
 
@@ -722,7 +727,7 @@ class RenderingEngine:
         *,
         color: str = "white",
         style: str = "solid",
-        align: str = "center",
+        align: AlignType = "center",
     ) -> None:
         """Print a horizontal rule line with optional title.
 
@@ -736,7 +741,7 @@ class RenderingEngine:
             self._logger.debug(f"Rendering rule: title='{title}', color={color}")
 
         # Adjust emoji spacing in rule title if provided
-        rule_title = adjust_emoji_spacing_in_text(title) if title else None
+        rule_title = adjust_emoji_spacing_in_text(title) if title else ""
 
         self._rich_console.rule(
             title=rule_title,
@@ -766,13 +771,13 @@ class RenderingEngine:
 
     def render_frame_group_to_string(
         self,
-        items: list[dict],
+        items: list[FrameGroupItem],
         *,
         title: str | None = None,
         border: str = "rounded",
         width: int | None = None,
         padding: int = 1,
-        align: str = "left",
+        align: AlignType = "left",
         border_color: str | None = None,
         title_color: str | None = None,
         border_gradient_start: str | None = None,
@@ -858,13 +863,13 @@ class RenderingEngine:
 
     def print_frame_group(
         self,
-        items: list[dict],
+        items: list[FrameGroupItem],
         *,
         title: str | None = None,
         border: str = "rounded",
         width: int | None = None,
         padding: int = 1,
-        align: str = "left",
+        align: AlignType = "left",
         border_color: str | None = None,
         title_color: str | None = None,
         border_gradient_start: str | None = None,

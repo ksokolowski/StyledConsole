@@ -7,8 +7,12 @@ and debug logging for terminal-related functionality.
 import logging
 import os
 import sys
+from typing import Literal
 
 from styledconsole.utils.terminal import TerminalProfile, detect_terminal_capabilities
+
+# Type alias for Rich-compatible color systems
+ColorSystemType = Literal["auto", "standard", "256", "truecolor", "windows"]
 
 
 class TerminalManager:
@@ -87,7 +91,7 @@ class TerminalManager:
                 f"size={self.profile.width}x{self.profile.height}"
             )
 
-    def get_color_system(self) -> str:
+    def get_color_system(self) -> ColorSystemType:
         """Determine appropriate color system based on terminal capabilities.
 
         Checks in order:
@@ -110,7 +114,8 @@ class TerminalManager:
         if env_override in {"standard", "256", "truecolor", "auto"}:
             if self._debug and self._logger:
                 self._logger.debug(f"Color system overridden by env: {env_override}")
-            return env_override
+            # Cast is safe due to the check above
+            return env_override  # type: ignore[return-value]
 
         # Use detected terminal profile if available
         if self.profile:

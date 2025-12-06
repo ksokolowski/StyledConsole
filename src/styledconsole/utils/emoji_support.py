@@ -347,7 +347,7 @@ def emoji_list(text: str) -> list[dict[str, Any]]:
         [{'emoji': '👋', 'match_start': 6, 'match_end': 7},
          {'emoji': '🌍', 'match_start': 14, 'match_end': 15}]
     """
-    return _emoji_pkg.emoji_list(text)
+    return list(_emoji_pkg.emoji_list(text))  # type: ignore[arg-type]
 
 
 __all__ = [

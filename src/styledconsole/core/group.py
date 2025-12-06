@@ -16,7 +16,9 @@ from __future__ import annotations
 
 from contextvars import ContextVar
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
+
+from styledconsole.types import AlignType
 
 if TYPE_CHECKING:
     from styledconsole.console import Console
@@ -66,7 +68,7 @@ class FrameGroupContext:
     border_gradient_end: str | None = None
     padding: int = 1
     width: int | None = None
-    align: str = "left"
+    align: AlignType = "left"
     gap: int = 1
     inherit_style: bool = False
     align_widths: bool = False
@@ -93,7 +95,7 @@ class FrameGroupContext:
 
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> bool:
+    def __exit__(self, exc_type, exc_val, exc_tb) -> Literal[False]:
         """Exit the context, render captured frames, and clean up."""
         # Pop this group from the stack
         stack = _active_groups.get(None)

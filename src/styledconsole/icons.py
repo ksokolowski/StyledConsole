@@ -64,7 +64,7 @@ def _get_emoji_safe() -> bool:
 # =============================================================================
 # Icon class
 # =============================================================================
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class Icon:
     """A single icon with emoji and colored ASCII variants.
 

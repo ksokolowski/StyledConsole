@@ -23,7 +23,7 @@ import time
 from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
 from rich.progress import (
     BarColumn,
@@ -250,7 +250,7 @@ class StyledProgress:
             self._progress.__enter__()
         return self
 
-    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> bool:
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> Literal[False]:
         """Stop the progress display."""
         self._in_context = False
 
@@ -263,9 +263,8 @@ class StyledProgress:
             return False
 
         if self._progress:
-            result = self._progress.__exit__(exc_type, exc_val, exc_tb)
+            self._progress.__exit__(exc_type, exc_val, exc_tb)
             self._progress = None
-            return result
         return False
 
     def add_task(
@@ -315,7 +314,7 @@ class StyledProgress:
         return self._progress.add_task(
             description,
             total=total,
-            completed=completed,
+            completed=int(completed),
             visible=visible,
             **fields,
         )
@@ -419,7 +418,7 @@ class StyledProgress:
         self._progress.reset(
             task_id,
             total=total,
-            completed=completed,
+            completed=int(completed),
             description=description,
             visible=visible,
         )

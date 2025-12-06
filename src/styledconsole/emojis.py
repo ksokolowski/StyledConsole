@@ -23,15 +23,30 @@ Usage:
 See: docs/USER_GUIDE.md for full emoji support details.
 """
 
+import warnings
+
 # Re-export from the DRY source of truth
 from styledconsole.emoji_registry import EMOJI, CuratedEmojis, E
 
-# Alias for backward compatibility with tests that import EmojiConstants
-EmojiConstants = type(EMOJI)
+# Private reference to the type for internal use
+_EmojiRegistryType = type(EMOJI)
+
+
+def __getattr__(name: str):
+    """Module-level __getattr__ for deprecation warnings."""
+    if name == "EmojiConstants":
+        warnings.warn(
+            "EmojiConstants is deprecated. Use 'EMOJI' directly or "
+            "'type(EMOJI)' for type hints. Will be removed in v1.0.0.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return _EmojiRegistryType
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
 
 __all__ = [
     "EMOJI",
     "CuratedEmojis",
     "E",
-    "EmojiConstants",
 ]

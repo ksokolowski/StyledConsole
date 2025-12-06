@@ -42,9 +42,7 @@ from styledconsole.effects import (
 # Import emoji constants (DRY: from emoji package)
 from styledconsole.emoji_registry import EMOJI, CuratedEmojis, E
 
-# Legacy import for backward compatibility (deprecated)
-from styledconsole.emojis import EmojiConstants
-
+# Note: EmojiConstants is deprecated and available via __getattr__ below
 # Import icon system (v0.9.0+)
 from styledconsole.icons import (
     Icon,
@@ -259,3 +257,18 @@ __all__ = [
     # Text wrapping utilities
     "wrap_text",
 ]
+
+
+def __getattr__(name: str):
+    """Module-level __getattr__ for lazy/deprecated imports."""
+    if name == "EmojiConstants":
+        import warnings
+
+        warnings.warn(
+            "EmojiConstants is deprecated. Use 'EMOJI' directly or "
+            "'type(EMOJI)' for type hints. Will be removed in v1.0.0.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return type(EMOJI)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

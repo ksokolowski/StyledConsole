@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, NotRequired, TypedDict
+from typing import TYPE_CHECKING, TypedDict
+
+from typing_extensions import NotRequired
 
 from styledconsole.console import Console
 from styledconsole.icons import icons

@@ -4,7 +4,12 @@ The emoji registry uses the emoji package as the single source of truth.
 All emoji names follow the CLDR standard (canonical names).
 """
 
-from styledconsole.emojis import EMOJI, E, EmojiConstants
+import warnings
+
+import pytest
+
+from styledconsole.emoji_registry import CuratedEmojis
+from styledconsole.emojis import EMOJI, E
 
 
 class TestEmojiRegistry:
@@ -20,9 +25,18 @@ class TestEmojiRegistry:
         """Test E is an alias for EMOJI."""
         assert E is EMOJI
 
-    def test_emoji_constants_is_type_alias(self):
-        """Test EmojiConstants is the type of EMOJI."""
-        assert isinstance(EMOJI, EmojiConstants)
+    def test_emoji_constants_deprecated(self):
+        """Test EmojiConstants import triggers deprecation warning."""
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            from styledconsole.emojis import EmojiConstants
+
+            # Should have triggered a warning
+            assert len(w) >= 1
+            assert issubclass(w[-1].category, DeprecationWarning)
+            assert "EmojiConstants" in str(w[-1].message)
+            # Should still work (backward compat)
+            assert isinstance(EMOJI, EmojiConstants)
 
     def test_status_emojis(self):
         """Test status emoji constants."""
@@ -276,3 +290,86 @@ class TestEmojiPackageIntegration:
         assert EMOJI.CHECK_MARK_BUTTON == "✅"  # Not "CHECK"
         assert EMOJI.CROSS_MARK == "❌"  # Not "CROSS" or "X"
         assert EMOJI.PARTY_POPPER == "🎉"  # Not "PARTY"
+
+
+class TestCuratedEmojis:
+    """Test CuratedEmojis category lists."""
+
+    def test_status_category(self):
+        """Test STATUS category contains valid emoji names."""
+        assert "CHECK_MARK_BUTTON" in CuratedEmojis.STATUS
+        assert "CROSS_MARK" in CuratedEmojis.STATUS
+        assert "WARNING" in CuratedEmojis.STATUS
+        # All names should be valid
+        for name in CuratedEmojis.STATUS:
+            assert name in EMOJI, f"{name} not in EMOJI registry"
+
+    def test_circles_category(self):
+        """Test CIRCLES category contains colored circles."""
+        assert "RED_CIRCLE" in CuratedEmojis.CIRCLES
+        assert "GREEN_CIRCLE" in CuratedEmojis.CIRCLES
+        for name in CuratedEmojis.CIRCLES:
+            assert name in EMOJI, f"{name} not in EMOJI registry"
+
+    def test_files_category(self):
+        """Test FILES category contains file/folder emojis."""
+        assert "FILE_FOLDER" in CuratedEmojis.FILES
+        assert "PACKAGE" in CuratedEmojis.FILES
+        for name in CuratedEmojis.FILES:
+            assert name in EMOJI, f"{name} not in EMOJI registry"
+
+    def test_dev_category(self):
+        """Test DEV category contains development emojis."""
+        assert "ROCKET" in CuratedEmojis.DEV
+        assert "BUG" in CuratedEmojis.DEV
+        assert "TEST_TUBE" in CuratedEmojis.DEV
+        for name in CuratedEmojis.DEV:
+            assert name in EMOJI, f"{name} not in EMOJI registry"
+
+    def test_curated_lists_immutable(self):
+        """Test curated lists are immutable (Final annotation)."""
+        # Lists should be of type list
+        assert isinstance(CuratedEmojis.STATUS, list)
+        assert isinstance(CuratedEmojis.CIRCLES, list)
+        assert isinstance(CuratedEmojis.FILES, list)
+        assert isinstance(CuratedEmojis.DEV, list)
+
+
+class TestEmojiRegistryEdgeCases:
+    """Test edge cases in emoji registry."""
+
+    def test_unknown_emoji_raises_attribute_error(self):
+        """Test accessing unknown emoji raises AttributeError with hint."""
+        with pytest.raises(AttributeError) as exc_info:
+            _ = EMOJI.NOT_A_REAL_EMOJI_NAME
+        assert "search" in str(exc_info.value).lower()
+
+    def test_private_attribute_raises(self):
+        """Test accessing private attributes raises normally."""
+        with pytest.raises(AttributeError):
+            _ = EMOJI._private
+
+    def test_search_case_insensitive(self):
+        """Test search is case-insensitive."""
+        upper_results = EMOJI.search("ROCKET")
+        lower_results = EMOJI.search("rocket")
+        mixed_results = EMOJI.search("RoCkEt")
+        assert upper_results == lower_results == mixed_results
+
+    def test_search_empty_query(self):
+        """Test search with empty string returns many results."""
+        results = EMOJI.search("", limit=100)
+        # Empty query matches everything
+        assert len(results) == 100
+
+    def test_get_with_empty_default(self):
+        """Test get returns empty string by default."""
+        result = EMOJI.get("NOT_REAL")
+        assert result == ""
+
+    def test_clock_emojis_with_apostrophe(self):
+        """Test clock emojis that have apostrophe in name."""
+        # These test the U+2019 apostrophe handling
+        assert EMOJI.ONE_OCLOCK == "🕐"
+        assert EMOJI.TWO_OCLOCK == "🕑"
+        assert EMOJI.TWELVE_OCLOCK == "🕛"

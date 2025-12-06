@@ -888,7 +888,7 @@ class Console:
         *,
         color: str = "white",
         style: str = "solid",
-        align: str = "center",
+        align: AlignType = "center",
     ) -> None:
         """Print a horizontal rule line with optional title.
 

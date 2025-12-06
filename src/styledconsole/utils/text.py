@@ -408,7 +408,7 @@ def validate_emoji(emoji_char: str) -> dict:
         - 'has_vs16': bool - Whether emoji includes variation selector
         - 'recommendation': str - Any warnings or recommendations
     """
-    result = {
+    result: dict[str, str | bool | int | None] = {
         "safe": False,
         "name": None,
         "width": None,
@@ -462,7 +462,7 @@ def validate_emoji(emoji_char: str) -> dict:
             "This emoji may render with width 1 in some terminals. "
             "Automatic adjustment will apply."
         )
-        recommendation = result["recommendation"]
+        recommendation = str(result["recommendation"])
 
     # If it passed ZWJ/Skin tone checks, it's generally "safe" in our dict sense
     # but VS16 is a special case of "safe but needs adjustment"

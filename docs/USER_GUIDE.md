@@ -40,7 +40,7 @@ from styledconsole import Console, EMOJI
 console = Console()
 
 console.frame(
-    f"{EMOJI.CHECK} Build successful\n{EMOJI.ROCKET} Deployed to production",
+    f"{EMOJI.CHECK_MARK_BUTTON} Build successful\n{EMOJI.ROCKET} Deployed to production",
     title=f"{EMOJI.SPARKLES} Status",
     border="rounded",
     border_color="cyan"
@@ -491,6 +491,8 @@ ______________________________________________________________________
 
 ## Emojis
 
+StyledConsole uses the [`emoji`](https://pypi.org/project/emoji/) package as its emoji backend, providing access to **4000+ emojis** with CLDR standard names.
+
 ### Quick Reference
 
 | Emoji Type    | Support   | Example        |
@@ -502,42 +504,99 @@ ______________________________________________________________________
 
 ### Using EMOJI Constants
 
+All emoji names follow CLDR (Unicode Common Locale Data Repository) canonical names:
+
 ```python
 from styledconsole import EMOJI, E  # E is short alias
 
-# Status indicators
-EMOJI.CHECK         # ✅
-EMOJI.CROSS         # ❌
-EMOJI.WARNING       # ⚠️
-EMOJI.INFO          # ℹ️
+# Status indicators (canonical names)
+EMOJI.CHECK_MARK_BUTTON   # ✅
+EMOJI.CROSS_MARK          # ❌
+EMOJI.WARNING             # ⚠️
+EMOJI.INFORMATION         # ℹ️
 
 # Common icons
-EMOJI.ROCKET        # 🚀
-EMOJI.FIRE          # 🔥
-EMOJI.STAR          # ⭐
-EMOJI.SPARKLES      # ✨
+EMOJI.ROCKET              # 🚀
+EMOJI.FIRE                # 🔥
+EMOJI.STAR                # ⭐
+EMOJI.SPARKLES            # ✨
 
 # Technology
-EMOJI.LAPTOP        # 💻
-EMOJI.GEAR          # ⚙️
-EMOJI.CHART_BAR     # 📊
-EMOJI.PACKAGE       # 📦
+EMOJI.LAPTOP              # 💻
+EMOJI.GEAR                # ⚙️
+EMOJI.BAR_CHART           # 📊
+EMOJI.PACKAGE             # 📦
+```
 
-# Helper methods
-EMOJI.success("Done")   # "✅ Done"
-EMOJI.error("Failed")   # "❌ Failed"
-EMOJI.warning("Care")   # "⚠️ Care"
+### Search & Discovery
+
+Find emojis by partial name:
+
+```python
+# Search for emojis containing "check"
+results = EMOJI.search("check")
+# Returns: [('CHECK_MARK', '✔️'), ('CHECK_MARK_BUTTON', '✅'), ...]
+
+# Limit results
+results = EMOJI.search("circle", limit=5)
+
+# Safe access with default
+emoji = EMOJI.get("ROCKET", default="*")  # Returns 🚀 or "*" if not found
+
+# Check if emoji exists
+if "ROCKET" in EMOJI:
+    print("Rocket available!")
+
+# Get count of available emojis
+print(f"{len(EMOJI)} emojis available")  # ~4000+
+```
+
+### CuratedEmojis: Organized Categories
+
+For discoverability, use the curated category lists:
+
+```python
+from styledconsole import CuratedEmojis, EMOJI
+
+# Status indicators for CLI apps
+for name in CuratedEmojis.STATUS:
+    print(f"{name}: {getattr(EMOJI, name)}")
+# CHECK_MARK_BUTTON: ✅, CROSS_MARK: ❌, WARNING: ⚠️, ...
+
+# Colored circles (great for status dots)
+for name in CuratedEmojis.CIRCLES:
+    print(f"{name}: {getattr(EMOJI, name)}")
+# RED_CIRCLE: 🔴, YELLOW_CIRCLE: 🟡, GREEN_CIRCLE: 🟢, ...
+
+# File/folder related
+CuratedEmojis.FILES
+# ['FILE_FOLDER', 'OPEN_FILE_FOLDER', 'PAGE_FACING_UP', ...]
+
+# Development tools
+CuratedEmojis.DEV
+# ['ROCKET', 'FIRE', 'STAR', 'SPARKLES', 'LIGHT_BULB', 'GEAR', ...]
+```
+
+### Unicode Arrows (Special)
+
+Unicode arrows are available alongside emojis:
+
+```python
+EMOJI.ARROW_UP      # ↑
+EMOJI.ARROW_DOWN    # ↓
+EMOJI.ARROW_LEFT    # ←
+EMOJI.ARROW_RIGHT   # →
 ```
 
 ### Unsupported: ZWJ Sequences
 
 ZWJ (Zero Width Joiner) sequences break alignment:
 
-| Don't Use         | Use Instead  | Constant        |
-| ----------------- | ------------ | --------------- |
-| 👨‍👩‍👧 (Family)       | 👥 (People)  | `EMOJI.PEOPLE`  |
-| 👩‍💻 (Technologist) | 💻 (Laptop)  | `EMOJI.LAPTOP`  |
-| 🏳️‍🌈 (Rainbow Flag) | 🌈 (Rainbow) | `EMOJI.RAINBOW` |
+| Don't Use         | Use Instead  | Constant                    |
+| ----------------- | ------------ | --------------------------- |
+| 👨‍👩‍👧 (Family)       | 👥 (People)  | `EMOJI.BUSTS_IN_SILHOUETTE` |
+| 👩‍💻 (Technologist) | 💻 (Laptop)  | `EMOJI.LAPTOP`              |
+| 🏳️‍🌈 (Rainbow Flag) | 🌈 (Rainbow) | `EMOJI.RAINBOW`             |
 
 ______________________________________________________________________
 
@@ -561,10 +620,10 @@ While `EMOJI` provides raw Unicode emojis, the `icons` module provides **policy-
 from styledconsole import icons, set_icon_mode
 
 # Access icons via attributes - automatically chooses emoji or ASCII
-print(f"{icons.CHECK} Tests passed")    # ✅ or (OK) in green
-print(f"{icons.CROSS} Build failed")    # ❌ or (FAIL) in red
-print(f"{icons.WARNING} Deprecation")   # ⚠️ or (WARN) in yellow
-print(f"{icons.ROCKET} Deploying...")   # 🚀 or >>> in cyan
+print(f"{icons.CHECK_MARK_BUTTON} Tests passed")  # ✅ or (OK) in green
+print(f"{icons.CROSS_MARK} Build failed")         # ❌ or (FAIL) in red
+print(f"{icons.WARNING} Deprecation")             # ⚠️ or (WARN) in yellow
+print(f"{icons.ROCKET} Deploying...")             # 🚀 or >>> in cyan
 
 # Force specific mode globally
 set_icon_mode("ascii")   # Force colored ASCII everywhere
@@ -574,23 +633,23 @@ set_icon_mode("auto")    # Auto-detect (default)
 
 ### Icon Categories
 
-| Category  | Examples                          | Count |
-| --------- | --------------------------------- | ----- |
-| STATUS    | CHECK, CROSS, WARNING, INFO       | 11    |
-| STARS     | STAR, SPARKLES, GLOWING_STAR      | 7     |
-| DOCUMENT  | FILE, FOLDER, CLIPBOARD, MEMO     | 9     |
-| TECH      | LAPTOP, PHONE, KEYBOARD, BATTERY  | 16    |
-| TOOLS     | WRENCH, HAMMER, GEAR, MAGNET      | 13    |
-| TRANSPORT | ROCKET, CAR, AIRPLANE, SHIP       | 10    |
-| WEATHER   | SUN, MOON, CLOUD, RAIN, LIGHTNING | 12    |
-| ARROWS    | ARROW_RIGHT, ARROW_UP, CYCLE      | 15    |
+| Category  | Examples                                              | Count |
+| --------- | ----------------------------------------------------- | ----- |
+| STATUS    | CHECK_MARK_BUTTON, CROSS_MARK, WARNING, INFO          | 11    |
+| STARS     | STAR, SPARKLES, GLOWING_STAR                          | 7     |
+| DOCUMENT  | FILE_FOLDER, CLIPBOARD, MEMO                          | 9     |
+| TECH      | LAPTOP, MOBILE_PHONE, KEYBOARD                        | 16    |
+| TOOLS     | WRENCH, HAMMER, GEAR                                  | 13    |
+| TRANSPORT | ROCKET, AUTOMOBILE, AIRPLANE                          | 10    |
+| WEATHER   | SUN, MOON, CLOUD, DROPLET, HIGH_VOLTAGE               | 12    |
+| ARROWS    | ARROW_RIGHT, ARROW_UP, COUNTERCLOCKWISE_ARROWS_BUTTON | 15    |
 
 ### Icon Properties
 
 ```python
 from styledconsole import icons
 
-icon = icons.get("CHECK")
+icon = icons.get("CHECK_MARK_BUTTON")
 print(icon.emoji)       # "✅"
 print(icon.ascii)       # "(OK)"
 print(icon.color)       # "green"
