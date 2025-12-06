@@ -32,11 +32,15 @@ from typing import TYPE_CHECKING
 # Try to import the emoji package
 try:
     import emoji as _emoji_pkg
+except ImportError as err:
+    # This should technically not happen if installed with dependencies
+    # but we handle it gracefully just in case
+    raise ImportError(
+        "The 'emoji' package is required but not installed. "
+        "Please install styledconsole with dependencies."
+    ) from err
 
-    EMOJI_PACKAGE_AVAILABLE = True
-except ImportError:
-    _emoji_pkg = None
-    EMOJI_PACKAGE_AVAILABLE = False
+EMOJI_PACKAGE_AVAILABLE = True
 
 if TYPE_CHECKING:
     from typing import Any
@@ -68,8 +72,7 @@ class EmojiInfo:
 def is_valid_emoji(char: str) -> bool:
     """Check if a character is a valid emoji.
 
-    Uses the `emoji` package when available for comprehensive Unicode
-    coverage (4,000+ emojis). Falls back to SAFE_EMOJIS lookup otherwise.
+    Uses the `emoji` package for comprehensive Unicode coverage.
 
     Args:
         char: Character to check
@@ -85,13 +88,7 @@ def is_valid_emoji(char: str) -> bool:
         >>> is_valid_emoji("A")
         False
     """
-    if EMOJI_PACKAGE_AVAILABLE:
-        return _emoji_pkg.is_emoji(char)
-
-    # Fallback to SAFE_EMOJIS
-    from styledconsole.utils.emoji_data import SAFE_EMOJIS
-
-    return char in SAFE_EMOJIS
+    return _emoji_pkg.is_emoji(char)
 
 
 def is_zwj_sequence(text: str) -> bool:
@@ -99,9 +96,6 @@ def is_zwj_sequence(text: str) -> bool:
 
     ZWJ sequences combine multiple emojis into one glyph (e.g., 👨‍👩‍👧 family).
     These are often problematic in terminals due to inconsistent rendering.
-
-    Uses the `emoji` package when available for proper Unicode analysis.
-    Falls back to simple U+200D detection otherwise.
 
     Args:
         text: Text to check for ZWJ sequences
@@ -114,26 +108,20 @@ def is_zwj_sequence(text: str) -> bool:
         True
         >>> is_zwj_sequence("🚀")
         False
-        >>> is_zwj_sequence("Hello 👋")
-        False
     """
-    if EMOJI_PACKAGE_AVAILABLE:
-        for token in _emoji_pkg.analyze(text, join_emoji=True):
-            if hasattr(token.value, "emoji"):
-                # Check if the matched emoji contains ZWJ character
-                emoji_str = token.value.emoji
-                if "\u200d" in emoji_str:
-                    return True
-                # Also check for ZWJ/non-RGI match types
-                if isinstance(
-                    token.value,
-                    (_emoji_pkg.EmojiMatchZWJ, _emoji_pkg.EmojiMatchZWJNonRGI),
-                ):
-                    return True
-        return False
-
-    # Fallback: simple ZWJ detection
-    return "\u200d" in text
+    for token in _emoji_pkg.analyze(text, join_emoji=True):
+        if hasattr(token.value, "emoji"):
+            # Check if the matched emoji contains ZWJ character
+            emoji_str = token.value.emoji
+            if "\u200d" in emoji_str:
+                return True
+            # Also check for ZWJ/non-RGI match types
+            if isinstance(
+                token.value,
+                (_emoji_pkg.EmojiMatchZWJ, _emoji_pkg.EmojiMatchZWJNonRGI),
+            ):
+                return True
+    return False
 
 
 def analyze_emoji_safety(text: str) -> dict[str, Any]:
@@ -160,56 +148,29 @@ def analyze_emoji_safety(text: str) -> dict[str, Any]:
         >>> result["all_safe"]
         False
     """
-    if EMOJI_PACKAGE_AVAILABLE:
-        results: dict[str, Any] = {
-            "emoji_count": _emoji_pkg.emoji_count(text),
-            "safe_emojis": [],
-            "zwj_sequences": [],
-            "non_rgi": [],
-            "all_safe": True,
-        }
-
-        for token in _emoji_pkg.analyze(text, join_emoji=True):
-            if hasattr(token.value, "emoji"):
-                match = token.value
-                emoji_char = match.emoji
-
-                # Check for non-RGI ZWJ sequences first
-                if isinstance(match, _emoji_pkg.EmojiMatchZWJNonRGI):
-                    results["non_rgi"].append(emoji_char)
-                    results["all_safe"] = False
-                # Check for ZWJ match type or ZWJ character in emoji
-                elif isinstance(match, _emoji_pkg.EmojiMatchZWJ) or "\u200d" in emoji_char:
-                    results["zwj_sequences"].append(emoji_char)
-                    results["all_safe"] = False
-                else:
-                    results["safe_emojis"].append(emoji_char)
-
-        return results
-
-    # Fallback: basic analysis
-    from styledconsole.utils.emoji_data import SAFE_EMOJIS
-
-    results = {
-        "emoji_count": 0,
+    results: dict[str, Any] = {
+        "emoji_count": _emoji_pkg.emoji_count(text),
         "safe_emojis": [],
         "zwj_sequences": [],
         "non_rgi": [],
         "all_safe": True,
     }
 
-    for char in text:
-        if char in SAFE_EMOJIS:
-            results["emoji_count"] += 1
-            info = SAFE_EMOJIS[char]
-            if info.get("terminal_safe", True):
-                results["safe_emojis"].append(char)
-            else:
-                results["all_safe"] = False
+    for token in _emoji_pkg.analyze(text, join_emoji=True):
+        if hasattr(token.value, "emoji"):
+            match = token.value
+            emoji_char = match.emoji
 
-    if "\u200d" in text:
-        results["all_safe"] = False
-        results["zwj_sequences"].append(text)
+            # Check for non-RGI ZWJ sequences first
+            if isinstance(match, _emoji_pkg.EmojiMatchZWJNonRGI):
+                results["non_rgi"].append(emoji_char)
+                results["all_safe"] = False
+            # Check for ZWJ match type or ZWJ character in emoji
+            elif isinstance(match, _emoji_pkg.EmojiMatchZWJ) or "\u200d" in emoji_char:
+                results["zwj_sequences"].append(emoji_char)
+                results["all_safe"] = False
+            else:
+                results["safe_emojis"].append(emoji_char)
 
     return results
 
@@ -217,8 +178,7 @@ def analyze_emoji_safety(text: str) -> dict[str, Any]:
 def get_emoji_info(char: str) -> EmojiInfo:
     """Get detailed information about an emoji.
 
-    Uses the `emoji` package when available for comprehensive metadata.
-    Falls back to SAFE_EMOJIS lookup otherwise.
+    Uses the `emoji` package for comprehensive metadata.
 
     Args:
         char: Emoji character to get info for
@@ -235,52 +195,36 @@ def get_emoji_info(char: str) -> EmojiInfo:
         >>> info.version
         0.6
     """
-    if EMOJI_PACKAGE_AVAILABLE:
-        if not _emoji_pkg.is_emoji(char):
-            return EmojiInfo(emoji=char, name="", is_valid=False, terminal_safe=False)
-
-        # Check if ZWJ sequence - either by match type or presence of ZWJ character
-        is_zwj = "\u200d" in char  # Direct check for ZWJ character
-        is_zwj_non_rgi = False
-        for token in _emoji_pkg.analyze(char, join_emoji=True):
-            if hasattr(token.value, "emoji"):
-                if isinstance(token.value, _emoji_pkg.EmojiMatchZWJNonRGI):
-                    is_zwj_non_rgi = True
-                    is_zwj = True
-                elif isinstance(token.value, _emoji_pkg.EmojiMatchZWJ):
-                    is_zwj = True
-
-        # Get metadata from EMOJI_DATA
-        data = _emoji_pkg.EMOJI_DATA.get(char, {})
-        name = data.get("en", "").strip(":").replace("_", " ")
-        version = data.get("E")
-
-        # ZWJ sequences are not terminal-safe
-        terminal_safe = not is_zwj
-
-        return EmojiInfo(
-            emoji=char,
-            name=name,
-            is_valid=True,
-            is_zwj=is_zwj,
-            is_zwj_non_rgi=is_zwj_non_rgi,
-            version=version,
-            terminal_safe=terminal_safe,
-        )
-
-    # Fallback to SAFE_EMOJIS
-    from styledconsole.utils.emoji_data import SAFE_EMOJIS
-
-    if char not in SAFE_EMOJIS:
+    if not _emoji_pkg.is_emoji(char):
         return EmojiInfo(emoji=char, name="", is_valid=False, terminal_safe=False)
 
-    info = SAFE_EMOJIS[char]
+    # Check if ZWJ sequence - either by match type or presence of ZWJ character
+    is_zwj = "\u200d" in char  # Direct check for ZWJ character
+    is_zwj_non_rgi = False
+    for token in _emoji_pkg.analyze(char, join_emoji=True):
+        if hasattr(token.value, "emoji"):
+            if isinstance(token.value, _emoji_pkg.EmojiMatchZWJNonRGI):
+                is_zwj_non_rgi = True
+                is_zwj = True
+            elif isinstance(token.value, _emoji_pkg.EmojiMatchZWJ):
+                is_zwj = True
+
+    # Get metadata from EMOJI_DATA
+    data = _emoji_pkg.EMOJI_DATA.get(char, {})
+    name = data.get("en", "").strip(":").replace("_", " ")
+    version = data.get("E")
+
+    # ZWJ sequences are not terminal-safe
+    terminal_safe = not is_zwj
+
     return EmojiInfo(
         emoji=char,
-        name=info.get("name", ""),
+        name=name,
         is_valid=True,
-        is_zwj="\u200d" in char,
-        terminal_safe=info.get("terminal_safe", True),
+        is_zwj=is_zwj,
+        is_zwj_non_rgi=is_zwj_non_rgi,
+        version=version,
+        terminal_safe=terminal_safe,
     )
 
 
@@ -303,9 +247,6 @@ def get_emoji_version(char: str) -> float | None:
         >>> get_emoji_version("A")  # Not an emoji
         None
     """
-    if not EMOJI_PACKAGE_AVAILABLE:
-        return None
-
     if not _emoji_pkg.is_emoji(char):
         return None
 
@@ -329,8 +270,6 @@ def filter_by_version(text: str, max_version: float = 5.0, replacement: str = "�
         >>> filter_by_version("Hello 🚀 World", max_version=0.5)
         'Hello □ World'
     """
-    if not EMOJI_PACKAGE_AVAILABLE:
-        return text
 
     def replacer(chars: str, _data: dict) -> str:
         version = _emoji_pkg.version(chars)
@@ -357,9 +296,6 @@ def emojize(text: str, language: str = "alias") -> str:
         >>> emojize(":check_mark: Done")
         '✔️ Done'
     """
-    if not EMOJI_PACKAGE_AVAILABLE:
-        return text
-
     return _emoji_pkg.emojize(text, language=language)
 
 
@@ -377,17 +313,13 @@ def demojize(text: str, language: str = "alias") -> str:
         >>> demojize("🚀 Launch!")
         ':rocket: Launch!'
     """
-    if not EMOJI_PACKAGE_AVAILABLE:
-        return text
-
     return _emoji_pkg.demojize(text, language=language)
 
 
 def get_all_emojis() -> set[str]:
     """Get a set of all valid emoji characters.
 
-    Returns the complete Unicode emoji set when the `emoji` package
-    is available, otherwise returns SAFE_EMOJIS keys.
+    Returns the complete Unicode emoji set from the `emoji` package.
 
     Returns:
         Set of emoji characters
@@ -398,12 +330,7 @@ def get_all_emojis() -> set[str]:
         >>> len(get_all_emojis())  # ~4000+ with emoji package
         ...
     """
-    if EMOJI_PACKAGE_AVAILABLE:
-        return set(_emoji_pkg.EMOJI_DATA.keys())
-
-    from styledconsole.utils.emoji_data import SAFE_EMOJIS
-
-    return set(SAFE_EMOJIS.keys())
+    return set(_emoji_pkg.EMOJI_DATA.keys())
 
 
 def emoji_list(text: str) -> list[dict[str, Any]]:
@@ -420,17 +347,7 @@ def emoji_list(text: str) -> list[dict[str, Any]]:
         [{'emoji': '👋', 'match_start': 6, 'match_end': 7},
          {'emoji': '🌍', 'match_start': 14, 'match_end': 15}]
     """
-    if EMOJI_PACKAGE_AVAILABLE:
-        return _emoji_pkg.emoji_list(text)
-
-    # Fallback: basic detection
-    from styledconsole.utils.emoji_data import SAFE_EMOJIS
-
-    results = []
-    for i, char in enumerate(text):
-        if char in SAFE_EMOJIS:
-            results.append({"emoji": char, "match_start": i, "match_end": i + 1})
-    return results
+    return _emoji_pkg.emoji_list(text)
 
 
 __all__ = [

@@ -27,15 +27,13 @@ dependencies = [
     "wcwidth>=0.2.13",
     "ansi2html>=1.8.0",
     "typing_extensions>=4.0.0",
+    "emoji>=2.15.0",
 ]
 
 [project.urls]
 Homepage = "http://192.168.0.169:3000/falcon/styledconsole"
 Repository = "http://192.168.0.169:3000/falcon/styledconsole"
 Documentation = "http://192.168.0.169:3000/falcon/styledconsole"
-
-[project.optional-dependencies]
-emoji = ["emoji>=2.15.0"]
 
 [dependency-groups]
 dev = [
@@ -46,7 +44,6 @@ dev = [
     "pre-commit>=3.6",
     "radon>=6.0",
     "mypy>=1.0",
-    "emoji>=2.15.0",
 ]
 
 [build-system]

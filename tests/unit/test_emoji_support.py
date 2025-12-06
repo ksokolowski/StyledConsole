@@ -262,36 +262,27 @@ class TestEmojiInfoDataclass:
 class TestIntegrationWithExistingCode:
     """Test integration with existing StyledConsole code."""
 
-    def test_most_safe_emojis_valid(self):
-        """Most SAFE_EMOJIS should be valid emojis per Unicode standard.
+    def test_safe_emojis_generated_dynamically(self):
+        """get_safe_emojis should generate emoji data dynamically from emoji package."""
+        from styledconsole.utils.text import get_safe_emojis
 
-        Note: Some characters in SAFE_EMOJIS (like trigrams ☰) are symbols
-        but not officially in Unicode's emoji set. The emoji package only
-        recognizes official Unicode emojis.
-        """
-        from styledconsole.utils.emoji_data import SAFE_EMOJIS
+        safe_emojis = get_safe_emojis()
 
-        valid_count = 0
-        invalid_chars = []
+        # Should have many emojis from the emoji package
+        assert len(safe_emojis) > 100
 
-        for emoji_char in SAFE_EMOJIS:
-            # Strip VS16 for comparison
-            base_emoji = emoji_char.replace("\ufe0f", "")
-            if is_valid_emoji(emoji_char) or is_valid_emoji(base_emoji):
-                valid_count += 1
-            else:
-                invalid_chars.append(emoji_char)
+        # Common emojis should be present
+        assert "🚀" in safe_emojis
+        assert "✅" in safe_emojis
 
-        # At least 90% should be valid (some symbols aren't in Unicode emoji set)
-        total = len(SAFE_EMOJIS)
-        assert valid_count / total > 0.9, (
-            f"Only {valid_count}/{total} valid. Invalid: {invalid_chars[:10]}"
-        )
+    def test_validation_uses_emoji_package(self):
+        """Emoji validation should use the emoji package."""
+        from styledconsole.utils.text import validate_emoji
 
-    def test_consistent_with_existing_validation(self):
-        """New validation should be consistent with existing for known emojis."""
-        from styledconsole.utils.emoji_data import SAFE_EMOJIS
+        # Valid emoji
+        result = validate_emoji("🚀")
+        assert result["safe"] is True
 
-        # All SAFE_EMOJIS should be valid
-        for emoji in list(SAFE_EMOJIS.keys())[:10]:
-            assert is_valid_emoji(emoji), f"{emoji} should be valid"
+        # Invalid character
+        result = validate_emoji("X")
+        assert result["safe"] is False

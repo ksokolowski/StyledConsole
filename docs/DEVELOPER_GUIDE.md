@@ -258,7 +258,7 @@ flowchart LR
         WRP[📐 wrap]
         TRM[💻 terminal]
         VAL[✅ validation]
-        ED[😃 emoji_data]
+        ES[😀 emoji_support]
         CD[🎨 color_data]
     end
 
@@ -276,7 +276,7 @@ flowchart LR
     RE --> BN
     RE --> ENG
     ENG --> STR
-    TXT --> ED
+    TXT --> ES
     CLR --> CD
     STA --> CON
     SUM --> CON
@@ -299,7 +299,7 @@ flowchart LR
     style STR fill:#FFB74D,color:#E65100,stroke:#FF9800
     style TXT fill:#4DD0E1,color:#006064,stroke:#00BCD4
     style CLR fill:#4DD0E1,color:#006064,stroke:#00BCD4
-    style ED fill:#80DEEA,color:#006064,stroke:#00BCD4
+    style ES fill:#80DEEA,color:#006064,stroke:#00BCD4
     style CD fill:#80DEEA,color:#006064,stroke:#00BCD4
     style STA fill:#F48FB1,color:#880E4F,stroke:#E91E63
     style SUM fill:#F48FB1,color:#880E4F,stroke:#E91E63
@@ -335,7 +335,7 @@ src/styledconsole/
 │
 └── utils/                        # Utilities
     ├── text.py                   # Emoji-safe width calculation
-    ├── emoji_data.py             # SAFE_EMOJIS dictionary
+    ├── emoji_support.py          # emoji package wrapper (4000+ emojis)
     ├── color.py                  # Color parsing & gradients
     ├── color_data.py             # CSS4 color definitions
     ├── terminal.py               # Terminal capabilities
@@ -531,9 +531,9 @@ flowchart TB
         SEG[_should_extend_grapheme]
     end
 
-    subgraph emoji_data.py["😀 emoji_data.py"]
-        SE[(🗄️ SAFE_EMOJIS<br/>1048 entries)]
-        VS16[🔤 VARIATION_SELECTOR_16]
+    subgraph emoji_pkg["📦 emoji package"]
+        EP[(🗄️ emoji.EMOJI_DATA<br/>4000+ entries)]
+        IS[🔍 emoji.is_emoji]
     end
 
     VW --> SG
@@ -541,18 +541,19 @@ flowchart TB
     VW --> GWS
     SG --> PAS
     SG --> SEG
-    GWL --> VS16
-    GWS --> VS16
+    GWL --> EP
+    GWS --> EP
 
     style text.py fill:#E0F7FA,stroke:#00BCD4,stroke-width:2px
     style Helpers fill:#FFF3E0,stroke:#FF9800,stroke-width:2px
-    style emoji_data.py fill:#FCE4EC,stroke:#E91E63,stroke-width:2px
+    style emoji_pkg fill:#E8F5E9,stroke:#4CAF50,stroke-width:2px
 
     style VW fill:#00BCD4,color:#fff,stroke:#00838F,stroke-width:2px
     style SG fill:#00BCD4,color:#fff,stroke:#00838F,stroke-width:2px
     style PTW fill:#26C6DA,color:#004D40,stroke:#00BCD4
     style TTW fill:#26C6DA,color:#004D40,stroke:#00BCD4
-    style SE fill:#E91E63,color:#fff,stroke:#C2185B,stroke-width:2px
+    style EP fill:#4CAF50,color:#fff,stroke:#2E7D32,stroke-width:2px
+    style IS fill:#81C784,color:#1B5E20,stroke:#4CAF50
     style GWL fill:#FFB74D,color:#E65100,stroke:#FF9800
     style GWS fill:#FFB74D,color:#E65100,stroke:#FF9800
     style PAS fill:#FFB74D,color:#E65100,stroke:#FF9800

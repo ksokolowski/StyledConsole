@@ -1261,17 +1261,17 @@ ______________________________________________________________________
 
 ### Current Limitations
 
-| Area      | Limitation                                |
-| --------- | ----------------------------------------- |
-| Emojis    | Tier 1 only (no skin tones, no ZWJ)       |
-| Terminals | Some emulators have limited emoji support |
-| Gradients | Horizontal not yet implemented            |
+| Area      | Limitation                                                                                                             |
+| --------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Emojis    | Full emoji package support (4000+ emojis via `emoji` package). ZWJ sequences may have inconsistent terminal rendering. |
+| Terminals | Some emulators have limited emoji support                                                                              |
+| Gradients | Horizontal not yet implemented                                                                                         |
 
 ### Not Planned
 
 Based on lessons learned, we explicitly avoid:
 
-- ❌ Tier 2/3 emoji support (complexity risk)
+- ❌ ZWJ emoji width guarantees (terminal-dependent)
 - ❌ Plugin systems
 - ❌ Factory factories
 - ❌ Post-rendering alignment hacks

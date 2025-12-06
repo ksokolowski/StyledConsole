@@ -103,7 +103,6 @@ from styledconsole.utils.terminal import (
     detect_terminal_capabilities,
 )
 from styledconsole.utils.text import (
-    SAFE_EMOJIS,
     format_emoji_with_spacing,
     get_safe_emojis,
     pad_to_width,
@@ -167,7 +166,6 @@ __all__ = [
     "RICH_TO_CSS4_MAPPING",
     "ROUNDED",
     "ROUNDED_THICK",
-    "SAFE_EMOJIS",
     "SOLID",
     "THEMES",
     "THICK",

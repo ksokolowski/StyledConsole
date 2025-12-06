@@ -2,16 +2,16 @@
 """
 🌟 Safe Emojis Showcase
 
-A comprehensive gallery of all 1000+ safe-to-use emojis available in StyledConsole.
-These emojis are verified to be single-codepoint and width-2, ensuring consistent
-rendering across most terminals.
+A comprehensive gallery of safe-to-use emojis available in StyledConsole.
+These emojis are dynamically generated from the emoji package and filtered
+for single-codepoint, width-2 characters for consistent terminal rendering.
 """
 
 from rich.columns import Columns
 from rich.text import Text
 
 from styledconsole import Console
-from styledconsole.utils.text import SAFE_EMOJIS
+from styledconsole.utils.text import get_safe_emojis
 
 console = Console()
 
@@ -25,8 +25,8 @@ def main():
     console.print(
         Align.center(
             Text(
-                "This gallery showcases all verified safe emojis available in "
-                "StyledConsole.\nThese emojis are guaranteed to be width-2 and "
+                "This gallery showcases safe emojis available in "
+                "StyledConsole.\nThese emojis are width-2 and "
                 "single-codepoint for maximum compatibility.",
                 style="green italic",
             )
@@ -34,41 +34,29 @@ def main():
     )
     console.newline(2)
 
-    # Group emojis by category
-    categories = {}
-    for char, info in SAFE_EMOJIS.items():
-        category = info.get("category", "uncategorized")
-        if category not in categories:
-            categories[category] = []
-        categories[category].append((char, info["name"]))
+    # Get safe emojis dynamically
+    safe_emojis = get_safe_emojis()
 
-    # Sort categories and display
-    sorted_categories = sorted(categories.keys())
+    # Create a simple list of emojis (no category in dynamic mode)
+    console.rule(f"All Safe Emojis ({len(safe_emojis)})", color="cyan", align="left")
+    console.newline()
 
-    for category in sorted_categories:
-        items = categories[category]
-        count = len(items)
+    # Create renderables for Columns
+    # Format: "Emoji  name"
+    renderables = []
+    for char, info in list(safe_emojis.items())[:200]:  # Limit to first 200 for display
+        name = info.get("name", "")
+        # Truncate name if too long to keep columns tidy
+        display_name = name[:20] + "..." if len(name) > 20 else name
+        text = Text(f"{char}  {display_name}", style="white")
+        renderables.append(text)
 
-        # Title for the category
-        console.rule(f"{category.title()} ({count})", color="cyan", align="left")
-        console.newline()
-
-        # Create renderables for Columns
-        # Format: "Emoji  name"
-        renderables = []
-        for char, name in items:
-            # Truncate name if too long to keep columns tidy
-            display_name = name[:20] + "..." if len(name) > 20 else name
-            text = Text(f"{char}  {display_name}", style="white")
-            renderables.append(text)
-
-        # Print using Rich Columns via console.print
-        # optimal_width calculation or just letting Rich handle it
-        console.print(Columns(renderables, equal=True, expand=True, column_first=True))
-        console.newline(2)
+    # Print using Rich Columns via console.print
+    console.print(Columns(renderables, equal=True, expand=True, column_first=True))
+    console.newline(2)
 
     console.rule("End of Gallery", color="blue")
-    console.print(Align.center(Text(f"Total Safe Emojis: {len(SAFE_EMOJIS)}", style="cyan bold")))
+    console.print(Align.center(Text(f"Total Safe Emojis: {len(safe_emojis)}", style="cyan bold")))
     console.newline()
 
 

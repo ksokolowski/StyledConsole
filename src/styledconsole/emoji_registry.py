@@ -30,7 +30,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final
 
-# Import emoji package (required dependency for v0.10+)
+# Import emoji package (required dependency)
 import emoji as _emoji_pkg
 
 if TYPE_CHECKING:
