@@ -32,6 +32,9 @@ flowchart TB
 
     subgraph Facade["🎯 Public API Layer"]
         CONSOLE[["🎨 Console<br/>console.py"]]
+        POLICY[["🔧 RenderPolicy<br/>policy.py"]]
+        ICONS[["🎭 IconProvider<br/>icons.py"]]
+        EMOJI_REG[["😀 EMOJI<br/>emoji_registry.py"]]
     end
 
     subgraph Managers["⚙️ Manager Layer"]
@@ -44,6 +47,9 @@ flowchart TB
         BM[📦 box_mapping]
         ST[🎭 styles]
         BN[🔤 banner]
+        TH[🎨 theme]
+        GR[📐 group]
+        PR[⏳ progress]
     end
 
     subgraph Effects["✨ Effects Layer"]
@@ -56,6 +62,7 @@ flowchart TB
         CLR[🎨 color.py]
         WRP[📐 wrap.py]
         TRM[💻 terminal.py]
+        ICD[🎭 icon_data.py]
     end
 
     subgraph Backend["💎 Rich Backend"]
@@ -63,20 +70,28 @@ flowchart TB
     end
 
     APP --> CONSOLE
+    APP --> POLICY
+    APP --> ICONS
+    APP --> EMOJI_REG
     CONSOLE --> RE
     CONSOLE --> EM
     CONSOLE --> TM
+    CONSOLE --> POLICY
     RE --> BM
     RE --> ST
     RE --> BN
+    RE --> TH
+    RE --> GR
     RE --> ENG
     ENG --> STR
     RE --> TXT
     RE --> CLR
     RE --> WRP
     TM --> TRM
+    ICONS --> ICD
     RE --> RICH
     EM --> RICH
+    PR --> RICH
 
     style User fill:#E8F5E9,stroke:#4CAF50,stroke-width:2px
     style Facade fill:#E3F2FD,stroke:#2196F3,stroke-width:3px
@@ -87,12 +102,19 @@ flowchart TB
     style Backend fill:#EDE7F6,stroke:#673AB7,stroke-width:2px
 
     style CONSOLE fill:#4CAF50,color:#fff,stroke:#2E7D32,stroke-width:3px
+    style POLICY fill:#4CAF50,color:#fff,stroke:#2E7D32,stroke-width:2px
+    style ICONS fill:#4CAF50,color:#fff,stroke:#2E7D32,stroke-width:2px
+    style EMOJI_REG fill:#4CAF50,color:#fff,stroke:#2E7D32,stroke-width:2px
     style RE fill:#FF9800,color:#fff,stroke:#F57C00,stroke-width:2px
     style EM fill:#FF9800,color:#fff,stroke:#F57C00,stroke-width:2px
     style TM fill:#FF9800,color:#fff,stroke:#F57C00,stroke-width:2px
     style RICH fill:#673AB7,color:#fff,stroke:#512DA8,stroke-width:3px
     style ENG fill:#9C27B0,color:#fff,stroke:#7B1FA2,stroke-width:2px
     style APP fill:#81C784,color:#1B5E20,stroke:#4CAF50,stroke-width:2px
+    style TH fill:#F48FB1,color:#880E4F,stroke:#E91E63
+    style GR fill:#F48FB1,color:#880E4F,stroke:#E91E63
+    style PR fill:#F48FB1,color:#880E4F,stroke:#E91E63
+    style ICD fill:#80DEEA,color:#006064,stroke:#00BCD4
 ```
 
 ### Data Flow: Frame Rendering
@@ -233,7 +255,10 @@ flowchart LR
     subgraph styledconsole["📦 styledconsole"]
         INIT[🚀 __init__.py]
         CON[🎨 console.py]
-        EMO[😀 emojis.py]
+        POL[🔧 policy.py]
+        ICO[🎭 icons.py]
+        EREG[😀 emoji_registry.py]
+        EMO[📤 emojis.py]
         TYP[📋 types.py]
         ANI[🎬 animation.py]
     end
@@ -245,6 +270,9 @@ flowchart LR
         BM[📦 box_mapping]
         ST[🎭 styles]
         BN[🔤 banner]
+        TH[🎨 theme]
+        GR[📐 group]
+        PR[⏳ progress]
     end
 
     subgraph effects["✨ effects"]
@@ -260,6 +288,7 @@ flowchart LR
         VAL[✅ validation]
         ES[😀 emoji_support]
         CD[🎨 color_data]
+        ICD[🎭 icon_data]
     end
 
     subgraph presets["🎁 presets"]
@@ -271,16 +300,22 @@ flowchart LR
     CON --> RE
     CON --> EM
     CON --> TM
+    CON --> POL
     RE --> BM
     RE --> ST
     RE --> BN
+    RE --> TH
+    RE --> GR
     RE --> ENG
     ENG --> STR
     TXT --> ES
     CLR --> CD
+    ICO --> ICD
+    EMO --> EREG
     STA --> CON
     SUM --> CON
     DSH --> CON
+    PR --> TH
 
     style styledconsole fill:#E8F5E9,stroke:#4CAF50,stroke-width:2px
     style core fill:#E3F2FD,stroke:#2196F3,stroke-width:2px
@@ -289,6 +324,9 @@ flowchart LR
     style presets fill:#FCE4EC,stroke:#E91E63,stroke-width:2px
 
     style CON fill:#4CAF50,color:#fff,stroke:#2E7D32,stroke-width:3px
+    style POL fill:#4CAF50,color:#fff,stroke:#2E7D32,stroke-width:2px
+    style ICO fill:#4CAF50,color:#fff,stroke:#2E7D32,stroke-width:2px
+    style EREG fill:#4CAF50,color:#fff,stroke:#2E7D32,stroke-width:2px
     style RE fill:#2196F3,color:#fff,stroke:#1565C0,stroke-width:2px
     style ENG fill:#FF9800,color:#fff,stroke:#F57C00,stroke-width:2px
     style EM fill:#2196F3,color:#fff,stroke:#1565C0
@@ -296,11 +334,15 @@ flowchart LR
     style BM fill:#64B5F6,color:#1565C0,stroke:#2196F3
     style ST fill:#64B5F6,color:#1565C0,stroke:#2196F3
     style BN fill:#64B5F6,color:#1565C0,stroke:#2196F3
+    style TH fill:#64B5F6,color:#1565C0,stroke:#2196F3
+    style GR fill:#64B5F6,color:#1565C0,stroke:#2196F3
+    style PR fill:#64B5F6,color:#1565C0,stroke:#2196F3
     style STR fill:#FFB74D,color:#E65100,stroke:#FF9800
     style TXT fill:#4DD0E1,color:#006064,stroke:#00BCD4
     style CLR fill:#4DD0E1,color:#006064,stroke:#00BCD4
     style ES fill:#80DEEA,color:#006064,stroke:#00BCD4
     style CD fill:#80DEEA,color:#006064,stroke:#00BCD4
+    style ICD fill:#80DEEA,color:#006064,stroke:#00BCD4
     style STA fill:#F48FB1,color:#880E4F,stroke:#E91E63
     style SUM fill:#F48FB1,color:#880E4F,stroke:#E91E63
     style DSH fill:#F48FB1,color:#880E4F,stroke:#E91E63
@@ -312,7 +354,10 @@ flowchart LR
 src/styledconsole/
 ├── __init__.py                   # Public exports
 ├── console.py                    # Console facade (main API)
-├── emojis.py                     # EMOJI constants (100+)
+├── policy.py                     # RenderPolicy (environment-aware rendering)
+├── icons.py                      # IconProvider (224 icons, ASCII fallback)
+├── emoji_registry.py             # EmojiRegistry singleton (emoji package DRY)
+├── emojis.py                     # Emoji facade (EMOJI, E, CuratedEmojis)
 ├── types.py                      # Type aliases
 ├── animation.py                  # Animation runner
 │
@@ -321,6 +366,9 @@ src/styledconsole/
 │   ├── rendering_engine.py       # Rich Panel coordinator
 │   ├── banner.py                 # ASCII art (pyfiglet)
 │   ├── styles.py                 # Border style definitions
+│   ├── theme.py                  # Theme system (semantic colors)
+│   ├── group.py                  # Frame group context manager
+│   ├── progress.py               # Styled progress bars
 │   ├── export_manager.py         # HTML export
 │   └── terminal_manager.py       # Terminal detection
 │
@@ -335,7 +383,8 @@ src/styledconsole/
 │
 └── utils/                        # Utilities
     ├── text.py                   # Emoji-safe width calculation
-    ├── emoji_support.py          # emoji package wrapper (4000+ emojis)
+    ├── emoji_support.py          # Low-level emoji utilities (PyPI emoji)
+    ├── icon_data.py              # Icon → ASCII+color mappings (224 icons)
     ├── color.py                  # Color parsing & gradients
     ├── color_data.py             # CSS4 color definitions
     ├── terminal.py               # Terminal capabilities
@@ -346,6 +395,160 @@ src/styledconsole/
 ______________________________________________________________________
 
 ## Core Components
+
+### Emoji Architecture (v0.9.1+)
+
+StyledConsole v0.9.1 introduces a DRY emoji architecture built on top of the
+[`emoji` PyPI package](https://pypi.org/project/emoji/). Emoji data is no
+longer duplicated across modules – there is a single source of truth:
+
+- `emoji_registry.py` – owns all emoji metadata and names
+- `emojis.py` – thin facade that re-exports `EMOJI`, `E`, and `CuratedEmojis`
+- `utils/emoji_support.py` – low-level helpers around the `emoji` package
+
+High-level API (what library code and examples should use):
+
+```python
+from styledconsole import EMOJI, E, CuratedEmojis
+
+# Canonical CLDR names (from emoji package)
+EMOJI.CHECK_MARK_BUTTON  # ✅ (not EMOJI.CHECK)
+EMOJI.CROSS_MARK         # ❌ (not EMOJI.CROSS)
+
+# Search by keyword
+EMOJI.search("rocket")   # [("ROCKET", "🚀"), ...]
+
+# Safe lookup with default
+EMOJI.get("ROCKET", default="*")  # "🚀" or "*"
+
+# Curated name lists for common use cases
+CuratedEmojis.STATUS  # ["CHECK_MARK_BUTTON", "CROSS_MARK", ...]
+CuratedEmojis.DEV     # ["ROCKET", "FIRE", "STAR", ...]
+```
+
+Implementation overview:
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#E8F5E9', 'lineColor': '#78909C'}}}%%
+flowchart LR
+    subgraph emoji_pkg["📦 emoji (PyPI)"]
+        ED[(🗄️ EMOJI_DATA)]
+    end
+
+    subgraph registry["📚 emoji_registry.py"]
+        REG["🔁 EmojiRegistry (singleton)"]
+        EMO["EMOJI facade"]
+        CUR["CuratedEmojis"]
+    end
+
+    subgraph facade["🎯 emojis.py"]
+        EXP["from emoji_registry import EMOJI, E, CuratedEmojis"]
+    end
+
+    APP["📱 Application / Library Code"]
+
+    APP --> EMO
+    APP --> CUR
+    EMO --> REG
+    CUR --> REG
+    REG --> ED
+
+    style emoji_pkg fill:#E8F5E9,stroke:#4CAF50,stroke-width:2px
+    style registry fill:#E3F2FD,stroke:#2196F3,stroke-width:2px
+    style facade fill:#FFF3E0,stroke:#FF9800,stroke-width:2px
+    style APP fill:#FCE4EC,stroke:#E91E63,stroke-width:2px
+
+    style REG fill:#2196F3,color:#fff,stroke:#1565C0,stroke-width:2px
+    style EMO fill:#64B5F6,color:#1565C0,stroke:#2196F3
+    style CUR fill:#64B5F6,color:#1565C0,stroke:#2196F3
+    style EXP fill:#FFB74D,color:#E65100,stroke:#FF9800
+    style ED fill:#4CAF50,color:#fff,stroke:#2E7D32
+```
+
+#### EmojiConstants Deprecation
+
+Historically, `EmojiConstants` exposed a static set of ~100 emoji names. This
+type alias is now deprecated:
+
+- Accessing `EmojiConstants` triggers a `DeprecationWarning`
+- Use `EMOJI` directly (or `type(EMOJI)` for type hints)
+- `EmojiConstants` will be removed in **v1.0.0**
+
+Contributor guidance:
+
+- **Do use:** `EMOJI.SOME_NAME`, `CuratedEmojis.STATUS`, `EMOJI.search()`
+- **Do not use:** hardcoded Unicode literals in examples or presets
+- **Do not use:** the old `EmojiConstants` alias in new code
+
+### Icon Provider (v0.9.0+)
+
+The `icons` module provides 224 icons in 16 categories with automatic
+emoji/ASCII fallback based on terminal capabilities:
+
+```python
+from styledconsole import icons, set_icon_mode
+
+# Access icons directly (auto-detects terminal)
+icons.CHECK_MARK_BUTTON  # ✅ or [OK] (green)
+icons.CROSS_MARK         # ❌ or [FAIL] (red)
+icons.WARNING            # ⚠️ or [WARN] (yellow)
+icons.ROCKET             # 🚀 or [>] (cyan)
+
+# Force specific mode globally
+set_icon_mode("ascii")   # Force ASCII everywhere
+set_icon_mode("emoji")   # Force emoji everywhere
+set_icon_mode("auto")    # Auto-detect (default)
+```
+
+Implementation overview:
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#E8F5E9', 'lineColor': '#78909C'}}}%%
+flowchart LR
+    subgraph icon_data["🛠️ utils/icon_data.py"]
+        IMAP[(🗄️ ICON_MAP<br/>224 mappings)]
+    end
+
+    subgraph icons_mod["🎭 icons.py"]
+        IP["IconProvider (singleton)"]
+        MODE["_icon_mode: auto|emoji|ascii"]
+    end
+
+    APP["📱 Application"]
+
+    APP --> IP
+    IP --> MODE
+    IP --> IMAP
+
+    style icon_data fill:#E0F7FA,stroke:#00BCD4,stroke-width:2px
+    style icons_mod fill:#E3F2FD,stroke:#2196F3,stroke-width:2px
+    style APP fill:#FCE4EC,stroke:#E91E63,stroke-width:2px
+    style IP fill:#2196F3,color:#fff,stroke:#1565C0,stroke-width:2px
+    style IMAP fill:#4DD0E1,color:#006064,stroke:#00BCD4
+```
+
+#### Icon Categories
+
+| Category   | Count | Examples                                     |
+| ---------- | ----- | -------------------------------------------- |
+| Status     | 12    | `CHECK_MARK_BUTTON`, `CROSS_MARK`, `WARNING` |
+| Objects    | 24    | `PACKAGE`, `GEAR`, `WRENCH`, `KEY`           |
+| Symbols    | 18    | `SPARKLES`, `FIRE`, `HIGH_VOLTAGE`           |
+| Activities | 16    | `ROCKET`, `TROPHY`, `BULLSEYE`               |
+| Faces      | 20    | `SMILING_FACE`, `THINKING_FACE`              |
+| ...        | ...   | See `utils/icon_data.py` for full list       |
+
+#### ASCII Fallback with Colors
+
+When emoji mode is unavailable, icons render as colored ASCII:
+
+| Icon Name           | Emoji | ASCII Fallback    |
+| ------------------- | ----- | ----------------- |
+| `CHECK_MARK_BUTTON` | ✅    | `[OK]` (green)    |
+| `CROSS_MARK`        | ❌    | `[FAIL]` (red)    |
+| `WARNING`           | ⚠️    | `[WARN]` (yellow) |
+| `INFORMATION`       | ℹ️    | `[INFO]` (blue)   |
+| `ROCKET`            | 🚀    | `[>]` (cyan)      |
 
 ### Console (Facade)
 
@@ -1076,14 +1279,44 @@ ______________________________________________________________________
 
 ## Appendix: EMOJI Constants
 
-100+ constants in `src/styledconsole/emojis.py`:
+4000+ emoji constants via the [`emoji` PyPI package](https://pypi.org/project/emoji/).
+Access through `src/styledconsole/emojis.py` using CLDR canonical names:
 
-| Category   | Examples                                    |
-| ---------- | ------------------------------------------- |
-| Status     | `CHECK`, `CROSS`, `WARNING`, `INFO`         |
-| Circles    | `RED_CIRCLE`, `GREEN_CIRCLE`, `BLUE_CIRCLE` |
-| Stars      | `STAR`, `SPARKLES`, `FIRE`, `LIGHTNING`     |
-| Tech       | `LAPTOP`, `GEAR`, `WRENCH`, `PACKAGE`       |
-| Activities | `ROCKET`, `TARGET`, `TROPHY`, `PARTY`       |
+| Category   | Examples (CLDR Names)                                           |
+| ---------- | --------------------------------------------------------------- |
+| Status     | `CHECK_MARK_BUTTON`, `CROSS_MARK`, `WARNING`, `INFORMATION`     |
+| Circles    | `RED_CIRCLE`, `GREEN_CIRCLE`, `BLUE_CIRCLE`, `ORANGE_CIRCLE`    |
+| Stars      | `STAR`, `GLOWING_STAR`, `SPARKLES`, `FIRE`, `HIGH_VOLTAGE`      |
+| Tech       | `LAPTOP`, `GEAR`, `WRENCH`, `PACKAGE`, `HAMMER_AND_WRENCH`      |
+| Activities | `ROCKET`, `BULLSEYE`, `TROPHY`, `PARTY_POPPER`, `CONFETTI_BALL` |
 
-Full list: See `src/styledconsole/emojis.py`
+### Curated Categories
+
+`CuratedEmojis` provides organized name lists for common use cases:
+
+```python
+from styledconsole import CuratedEmojis
+
+CuratedEmojis.STATUS   # ["CHECK_MARK_BUTTON", "CROSS_MARK", "WARNING", ...]
+CuratedEmojis.DEV      # ["ROCKET", "FIRE", "STAR", "BUG", ...]
+CuratedEmojis.WEATHER  # ["SUN", "CLOUD", "UMBRELLA", ...]
+CuratedEmojis.ANIMALS  # ["DOG_FACE", "CAT_FACE", ...]
+```
+
+### Usage Examples
+
+```python
+from styledconsole import EMOJI, E
+
+# Direct attribute access
+print(f"{EMOJI.CHECK_MARK_BUTTON} Tests passed")  # ✅ Tests passed
+print(f"{E.ROCKET} Deploying...")                 # 🚀 Deploying...
+
+# Search by keyword
+EMOJI.search("fire")  # [("FIRE", "🔥"), ...]
+
+# Safe lookup with default
+EMOJI.get("ROCKET", default="*")  # "🚀" or "*" if not found
+```
+
+Full documentation: See `src/styledconsole/emoji_registry.py`
