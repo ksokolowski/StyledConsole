@@ -1,7 +1,7 @@
 # Documentation Policy
 
 **Version:** 2.0
-**Last Updated:** November 30, 2025
+**Last Updated:** December 7, 2025
 
 ______________________________________________________________________
 

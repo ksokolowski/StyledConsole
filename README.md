@@ -2,9 +2,10 @@
 
 [![Python >=3.10](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-0.9.0-brightgreen.svg)](https://github.com/yourusername/styledconsole/releases/tag/v0.9.0)
-[![Tests](https://img.shields.io/badge/tests-700%2B%20passing-success.svg)](https://github.com/yourusername/styledconsole)
-[![Coverage](https://img.shields.io/badge/coverage-95%25%2B-brightgreen.svg)](https://github.com/yourusername/styledconsole)
+[![Version](https://img.shields.io/badge/version-0.9.1-brightgreen.svg)](https://github.com/yourusername/styledconsole/releases/tag/v0.9.1)
+[![Tests](https://img.shields.io/badge/tests-898%20passing-success.svg)](https://github.com/yourusername/styledconsole)
+[![Coverage](https://img.shields.io/badge/coverage-89%25-brightgreen.svg)](https://github.com/yourusername/styledconsole)
+[![MyPy](https://img.shields.io/badge/mypy-passing-success.svg)](https://github.com/yourusername/styledconsole)
 
 > **🎨 Transform your boring terminal into a visual masterpiece!**
 
@@ -13,8 +14,9 @@
 ┃                                                             ┃
 ┃ ╭────────────────────── ✨ Features ──────────────────────╮ ┃
 ┃ │  🌈 Rainbow Gradients    │  🎭 Nested Frames            │ ┃
-┃ │  🔤 500+ ASCII Fonts     │  😀 4000+ Emojis            │ ┃
+┃ │  🔤 500+ ASCII Fonts     │  😀 4000+ Emojis             │ ┃
 ┃ │  🎨 148 CSS4 Colors      │  💾 HTML Export              │ ┃
+┃ │  🚀 Icon Provider        │  🔧 Render Policy            │ ┃
 ┃ ╰─────────────────────────────────────────────────────────╯ ┃
 ┃                                                             ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
@@ -84,9 +86,9 @@ from styledconsole.effects.strategies import RainbowSpectrum, DiagonalPosition
 Animation.run(gradient_frames, fps=20, duration=10)
 ```
 
-### 😀 100+ Built-in Emojis with Perfect Alignment
+### 😀 4000+ Emojis with Perfect Alignment
 
-No more broken layouts from emoji width issues:
+No more broken layouts from emoji width issues! Direct integration with the `emoji` package:
 
 ```python
 from styledconsole import Console, EMOJI
@@ -95,19 +97,37 @@ console = Console()
 
 console.frame([
     f"{EMOJI.ROCKET} Deploy to production",
-    f"{EMOJI.CHECK} All tests passing",
+    f"{EMOJI.CHECK_MARK_BUTTON} All tests passing",
     f"{EMOJI.FIRE} Performance optimized",
     f"{EMOJI.SPARKLES} Ready to ship!",
 ], title=f"{EMOJI.PACKAGE} Release v2.0", border="rounded")
 ```
 
-Available emoji categories:
+**New in v0.9.1:** DRY architecture using `emoji` package as single source of truth:
 
-- **Status:** ✅ ❌ ⚠️ ℹ️ ❓ 🔄
-- **Symbols:** ⭐ ✨ 💫 🌟 💎 🔮
-- **Objects:** 📦 📁 📊 📈 🔧 ⚙️
-- **Nature:** 🔥 💧 🌊 🌈 ⚡ ❄️
-- **And 80+ more!**
+```python
+from styledconsole import EMOJI, CuratedEmojis
+
+# 4000+ emojis with CLDR canonical names
+print(EMOJI.CHECK_MARK_BUTTON)  # ✅
+print(EMOJI.CROSS_MARK)         # ❌
+
+# Search for emojis
+results = EMOJI.search("rocket")  # [('ROCKET', '🚀'), ...]
+
+# Curated categories for quick discovery
+CuratedEmojis.STATUS  # ['CHECK_MARK_BUTTON', 'CROSS_MARK', 'WARNING', ...]
+CuratedEmojis.DEV     # ['ROCKET', 'FIRE', 'STAR', 'SPARKLES', ...]
+CuratedEmojis.NATURE  # ['FIRE', 'WATER_WAVE', 'RAINBOW', ...]
+```
+
+Available curated categories:
+
+- **STATUS:** ✅ ❌ ⚠️ ℹ️ ❓ 🔄
+- **DEV:** 🚀 🔥 ⭐ ✨ 💻 🔧
+- **NATURE:** 🌊 🌈 ⚡ 🌸 🌳
+- **UI:** 📦 📁 📊 📈 🔔 ⚙️
+- **And 10+ more curated sets!**
 
 ### 🔤 Massive ASCII Art Banners
 
@@ -141,6 +161,45 @@ console.frame("Ocean", border_gradient_start="cyan", border_gradient_end="navy")
 console.frame("Forest", border_gradient_start="lime", border_gradient_end="darkgreen")
 ```
 
+### 🚀 Icon Provider (Colored ASCII Fallback)
+
+**New in v0.9.0:** Automatic emoji→ASCII conversion with ANSI colors for CI/CD compatibility:
+
+```python
+from styledconsole import icons, set_icon_mode
+
+# Auto-detects terminal capability (default)
+print(f"{icons.CHECK_MARK_BUTTON} Tests passed")  # ✅ or (OK) in green
+print(f"{icons.CROSS_MARK} Build failed")         # ❌ or (FAIL) in red
+print(f"{icons.WARNING} Deprecation")             # ⚠️ or (WARN) in yellow
+
+# Force specific mode globally
+set_icon_mode("ascii")   # Force ASCII everywhere
+set_icon_mode("emoji")   # Force emoji everywhere
+set_icon_mode("auto")    # Auto-detect (default)
+```
+
+**224 icons in 16 categories:** Status, Stars, Documents, Books, Tech, Tools, Activity, Transport, Weather, Plants, Food, People, Arrows, Symbols, Hearts, and more!
+
+### 🔧 Render Policy (Environment-Aware Rendering)
+
+**New in v0.9.0:** Automatically adapts output based on terminal capabilities:
+
+```python
+from styledconsole import Console, RenderPolicy
+
+# Auto-detect from environment (NO_COLOR, CI, TERM=dumb)
+console = Console()  # Uses RenderPolicy.from_env() by default
+
+# CI-friendly: colors but no emoji
+console = Console(policy=RenderPolicy.ci_friendly())
+
+# ASCII-only for logs/pipes
+console = Console(policy=RenderPolicy(unicode=False, color=False, emoji=False))
+```
+
+**Detects:** `NO_COLOR`, `FORCE_COLOR`, `TERM=dumb`, `CI`, `GITHUB_ACTIONS`, `GITLAB_CI`
+
 ### 📦 8 Beautiful Border Styles
 
 ```python
@@ -172,7 +231,7 @@ console = Console()
 
 # Your first beautiful frame
 console.frame(
-    f"{EMOJI.CHECK} Build successful\n"
+    f"{EMOJI.CHECK_MARK_BUTTON} Build successful\n"
     f"{EMOJI.ROCKET} Deployed to production",
     title=f"{EMOJI.SPARKLES} Status",
     border="rounded",
@@ -191,23 +250,23 @@ ______________________________________________________________________
 console.banner("BUILD", font="standard", start_color="blue", end_color="purple")
 
 console.frame([
-    f"{EMOJI.CHECK} Lint checks passed",
-    f"{EMOJI.CHECK} Unit tests: 427/427",
-    f"{EMOJI.CHECK} Integration tests: 52/52",
+    f"{EMOJI.CHECK_MARK_BUTTON} Lint checks passed",
+    f"{EMOJI.CHECK_MARK_BUTTON} Unit tests: 427/427",
+    f"{EMOJI.CHECK_MARK_BUTTON} Integration tests: 52/52",
     f"{EMOJI.WARNING} Coverage: 94% (target: 95%)",
     f"{EMOJI.ROCKET} Deploying to staging...",
-], title=f"{EMOJI.CHART_BAR} Pipeline Status", border="heavy", border_color="green")
+], title=f"{EMOJI.BAR_CHART} Pipeline Status", border="heavy", border_color="green")
 ```
 
 ### Error Reporting with Style
 
 ```python
 console.frame(
-    f"{EMOJI.CROSS} Connection refused\n\n"
+    f"{EMOJI.CROSS_MARK} Connection refused\n\n"
     f"   Host: database.example.com:5432\n"
     f"   Error: ETIMEDOUT after 30s\n"
     f"   Retry: 3/3 attempts failed\n\n"
-    f"{EMOJI.LIGHTBULB} Check firewall settings",
+    f"{EMOJI.LIGHT_BULB} Check firewall settings",
     title=f"{EMOJI.WARNING} Database Error",
     border="heavy",
     border_gradient_start="red",
@@ -246,7 +305,7 @@ ______________________________________________________________________
 
 ## 📚 Gallery & Examples
 
-27 working examples organized in 4 categories:
+38 working examples organized in 4 categories:
 
 | Category         | Description                                           |
 | ---------------- | ----------------------------------------------------- |
@@ -258,7 +317,11 @@ ______________________________________________________________________
 Run them all:
 
 ```bash
-uv run python examples/run_examples.py --all
+# Run all examples with auto-advance
+uv run python examples/run_examples.py --auto
+
+# Run specific category
+uv run python examples/run_examples.py --category gallery
 ```
 
 ______________________________________________________________________
@@ -284,14 +347,26 @@ ______________________________________________________________________
 
 ## 🛠️ Project Status
 
-**v0.5.0** — Production Ready ✅
+**v0.9.1** — Production Ready ✅
 
-|             |              |
-| ----------- | ------------ |
-| 🧪 Tests    | 700+ passing |
-| 📊 Coverage | 95%+         |
-| 📚 Examples | 27 working   |
-| 🐍 Python   | 3.10 - 3.13  |
+|             |             |
+| ----------- | ----------- |
+| 🧪 Tests    | 898 passing |
+| 📊 Coverage | 89%         |
+| 🔍 MyPy     | 0 errors    |
+| 📚 Examples | 38 working  |
+| 🐍 Python   | 3.10 - 3.13 |
+
+**Recent Improvements (v0.9.0 - v0.9.1):**
+
+- ✅ Full mypy type checking with 0 errors
+- ✅ DRY emoji architecture (4000+ emojis from `emoji` package)
+- ✅ Icon Provider with colored ASCII fallback (224 icons)
+- ✅ Render Policy for environment-aware output
+- ✅ Advanced progress theming
+- ✅ Gradient engine consolidation (Strategy Pattern)
+- ✅ Windows compatibility fixes
+- ✅ Enhanced pre-commit hooks
 
 ______________________________________________________________________
 
@@ -307,8 +382,8 @@ Apache License 2.0
 
 ______________________________________________________________________
 
-<p align="center">
-  <b>🎨 Make your terminal beautiful. ✨ Make your output memorable. 🚀</b>
-  <br><br>
-  <code>pip install styledconsole</code>
-</p>
+**🎨 Make your terminal beautiful. ✨ Make your output memorable. 🚀**
+
+```bash
+pip install styledconsole
+```

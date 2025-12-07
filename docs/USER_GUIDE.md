@@ -1,7 +1,7 @@
 # StyledConsole User Guide
 
-**Version:** 0.9.0
-**Last Updated:** December 3, 2025
+**Version:** 0.9.1
+**Last Updated:** December 7, 2025
 
 ______________________________________________________________________
 
