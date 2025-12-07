@@ -92,12 +92,14 @@ sequences correctly, so it is intentionally excluded from modern terminal detect
 
 | Terminal         | Detection Method                   | VS16 | ZWJ | Tested |
 | ---------------- | ---------------------------------- | ---- | --- | ------ |
-| Kitty            | `KITTY_WINDOW_ID`, `TERM=*kitty*`  | ✅   | ⚠️  | Yes    |
+| Kitty            | `KITTY_WINDOW_ID`, `TERM=*kitty*`  | ✅   | ✅  | Yes    |
 | WezTerm          | `WEZTERM_PANE`, `TERM_PROGRAM`     | ✅   | ✅  | No     |
 | iTerm2           | `ITERM_SESSION_ID`, `TERM_PROGRAM` | ✅   | ✅  | No     |
 | Ghostty          | `TERM_PROGRAM=ghostty`             | ✅   | ✅  | No     |
 | Alacritty        | `TERM_PROGRAM=Alacritty`           | ✅   | ✅  | No     |
 | Windows Terminal | `WT_SESSION`                       | ✅   | ✅  | No     |
+
+**Note:** ZWJ width calculation counts component emojis (e.g., 👨‍👩‍👧 = 3 parts × 2 = width 6).
 
 ### Excluded Terminals (Tested - Issues Found)
 
