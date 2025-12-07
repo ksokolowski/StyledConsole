@@ -39,11 +39,13 @@ from styledconsole.effects import (
     rainbow_frame,
 )
 
-# Import emoji constants (DRY: from emoji package)
+# Import emoji data layer (4000+ emojis from emoji package)
+# NOTE: For terminal output, prefer `icons` module which provides ASCII fallback
 from styledconsole.emoji_registry import EMOJI, CuratedEmojis, E
 
 # Note: EmojiConstants is deprecated and available via __getattr__ below
-# Import icon system (v0.9.0+)
+# Icon system - PRIMARY FACADE for terminal symbol output (v0.9.5+)
+# Provides 204 icons with automatic ASCII fallback for non-emoji terminals
 from styledconsole.icons import (
     Icon,
     IconMode,
@@ -156,7 +158,7 @@ __all__ = [
     "DEFAULT_THEME",
     "DOTS",
     "DOUBLE",
-    # Emoji constants
+    # Emoji data layer (for raw emoji access, advanced use)
     "EMOJI",
     "EMOJI_PACKAGE_AVAILABLE",
     "HEAVY",
@@ -227,7 +229,7 @@ __all__ = [
     # Special effects
     "gradient_frame",
     "hex_to_rgb",
-    # Icon system (terminal-adaptive)
+    # Icon system - PRIMARY FACADE for terminal output
     "icons",
     "interpolate_color",
     "interpolate_rgb",

@@ -491,6 +491,12 @@ ______________________________________________________________________
 
 ## Emojis
 
+> [!TIP]
+> **For terminal output, use [`icons`](#icons--terminal-fallback) instead of `EMOJI`.**
+> The `icons` module provides automatic fallback to colored ASCII in environments
+> that don't support emoji (CI/CD, SSH, Windows cmd). Use `EMOJI` for raw emoji
+> access in special cases (HTML export, custom rendering).
+
 StyledConsole uses the [`emoji`](https://pypi.org/project/emoji/) package as its emoji backend, providing access to **4000+ emojis** with CLDR standard names.
 
 ### Quick Reference
@@ -602,7 +608,12 @@ ______________________________________________________________________
 
 ## Icons & Terminal Fallback
 
-While `EMOJI` provides raw Unicode emojis, the `icons` module provides **policy-aware icons** that automatically fall back to colored ASCII in terminals that don't support emoji.
+> [!IMPORTANT]
+> **The `icons` module is the recommended way to display symbols in terminal output.**
+> It provides 204 icons with automatic fallback to colored ASCII in environments
+> that don't support emoji.
+
+The `icons` module provides **policy-aware icons** that automatically choose between Unicode emojis and colored ASCII based on terminal capabilities. Internally, it uses the `EMOJI` registry as its data source.
 
 ### Why Use Icons?
 
@@ -656,6 +667,58 @@ print(icon.color)       # "green"
 print(icon.as_emoji())  # Always returns emoji
 print(icon.as_ascii())  # Always returns colored ASCII
 ```
+
+### Migrating from EMOJI to icons (v0.9.5+)
+
+> [!NOTE]
+> **Existing code using `EMOJI` continues to work.** This migration is recommended
+> but not required. The `icons` module provides the same emojis with added terminal
+> compatibility.
+
+**Why migrate?** The `icons` module automatically falls back to colored ASCII in
+environments that don't support emoji (CI/CD, SSH, Windows cmd, piped output).
+
+#### Quick Migration
+
+| Before (EMOJI)                    | After (icons)                     |
+| --------------------------------- | --------------------------------- |
+| `from styledconsole import EMOJI` | `from styledconsole import icons` |
+| `EMOJI.CHECK_MARK_BUTTON`         | `icons.CHECK_MARK_BUTTON`         |
+| `EMOJI.ROCKET`                    | `icons.ROCKET`                    |
+| `f"{EMOJI.STAR} Done"`            | `f"{icons.STAR} Done"`            |
+
+#### Name Differences
+
+Most names are identical. A few icons use shorter names:
+
+| EMOJI Name      | icons Name |
+| --------------- | ---------- |
+| `FLEXED_BICEPS` | `MUSCLE`   |
+| `OPTICAL_DISK`  | `CD`       |
+| `CRESCENT_MOON` | `MOON`     |
+| `HAMBURGER`     | `BURGER`   |
+
+#### Icon Multiplication
+
+Icons are objects, not strings. To repeat them:
+
+```python
+# Before (EMOJI - string)
+stars = EMOJI.STAR * 5  # "⭐⭐⭐⭐⭐"
+
+# After (icons - object)
+stars = str(icons.STAR) * 5  # "⭐⭐⭐⭐⭐"
+# Or use icons.STAR.as_emoji() * 5
+```
+
+#### When to Keep Using EMOJI
+
+Use `EMOJI` directly for:
+
+- HTML export (raw emoji access)
+- Custom rendering pipelines
+- Emoji search/discovery (`EMOJI.search()`)
+- Accessing emojis not in the icons facade
 
 ______________________________________________________________________
 

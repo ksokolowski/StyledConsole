@@ -14,14 +14,14 @@ Design Philosophy:
 Run: python examples/gallery/banners_showcase.py
 """
 
-from styledconsole import EMOJI, Console
+from styledconsole import Console, icons
 
 console = Console(record=True)
 
 
 def demo_standard_fonts():
     """Classic banner fonts for everyday use."""
-    console.rule(f"{EMOJI.PERFORMING_ARTS} STANDARD FONTS", color="cyan")
+    console.rule(f"{icons.PERFORMING_ARTS} STANDARD FONTS", color="cyan")
     console.newline()
 
     console.text(
@@ -54,7 +54,7 @@ def demo_standard_fonts():
 
 def demo_decorative_fonts():
     """Artistic and decorative banner fonts."""
-    console.rule(f"{EMOJI.SPARKLES} DECORATIVE FONTS", color="magenta")
+    console.rule(f"{icons.SPARKLES} DECORATIVE FONTS", color="magenta")
     console.newline()
 
     console.text(
@@ -87,7 +87,7 @@ def demo_decorative_fonts():
 
 def demo_gradient_banners():
     """Banners with color gradients."""
-    console.rule(f"{EMOJI.RAINBOW} GRADIENT BANNERS", color="yellow")
+    console.rule(f"{icons.RAINBOW} GRADIENT BANNERS", color="yellow")
     console.newline()
 
     console.text(
@@ -99,33 +99,33 @@ def demo_gradient_banners():
 
     # Fire gradient
     console.banner("FIRE", font="banner", start_color="red", end_color="yellow")
-    console.text(f"{EMOJI.FIRE} From ember to flame - burning bright", color="white", dim=True)
+    console.text(f"{icons.FIRE} From ember to flame - burning bright", color="white", dim=True)
     console.newline(2)
 
     # Ocean gradient
     console.banner("OCEAN", font="slant", start_color="cyan", end_color="blue")
-    console.text(f"{EMOJI.WATER_WAVE} Deep sea to shallow waters", color="white", dim=True)
+    console.text(f"{icons.WATER_WAVE} Deep sea to shallow waters", color="white", dim=True)
     console.newline(2)
 
     # Forest gradient
     console.banner("FOREST", font="standard", start_color="green", end_color="lime")
-    console.text(f"{EMOJI.EVERGREEN_TREE} From shadow to sunlight", color="white", dim=True)
+    console.text(f"{icons.EVERGREEN_TREE} From shadow to sunlight", color="white", dim=True)
     console.newline(2)
 
     # Sunset gradient
     console.banner("SUNSET", font="big", start_color="orange", end_color="purple")
-    console.text(f"{EMOJI.SUNRISE} Day fading into night", color="white", dim=True)
+    console.text(f"{icons.SUNRISE} Day fading into night", color="white", dim=True)
     console.newline(2)
 
     # Galaxy gradient
     console.banner("GALAXY", font="banner", start_color="purple", end_color="cyan")
-    console.text(f"{EMOJI.MILKY_WAY} Cosmic color journey", color="white", dim=True)
+    console.text(f"{icons.MILKY_WAY} Cosmic color journey", color="white", dim=True)
     console.newline(2)
 
 
 def demo_rainbow_banners():
     """Full spectrum rainbow banners."""
-    console.rule(f"{EMOJI.RAINBOW} RAINBOW SPECTRUM", color="magenta")
+    console.rule(f"{icons.RAINBOW} RAINBOW SPECTRUM", color="magenta")
     console.newline()
 
     console.text(
@@ -137,26 +137,26 @@ def demo_rainbow_banners():
 
     # Classic rainbow
     console.banner("RAINBOW", font="banner", start_color="red", end_color="violet")
-    console.text(f"{EMOJI.SPARKLES} All colors in perfect harmony", color="white", dim=True)
+    console.text(f"{icons.SPARKLES} All colors in perfect harmony", color="white", dim=True)
     console.newline(2)
 
     # Rainbow with different fonts
     console.banner("SPECTRUM", font="slant", start_color="orange", end_color="blue")
-    console.text(f"{EMOJI.ARTIST_PALETTE} Full chromatic range", color="white", dim=True)
+    console.text(f"{icons.ARTIST_PALETTE} Full chromatic range", color="white", dim=True)
     console.newline(2)
 
     console.banner("COLORS", font="block", start_color="yellow", end_color="green")
-    console.text(f"{EMOJI.GLOWING_STAR} Visual celebration", color="white", dim=True)
+    console.text(f"{icons.GLOWING_STAR} Visual celebration", color="white", dim=True)
     console.newline(2)
 
     console.banner("PRISM", font="standard", start_color="cyan", end_color="magenta")
-    console.text(f"{EMOJI.GEM_STONE} Light refracted into beauty", color="white", dim=True)
+    console.text(f"{icons.GEM_STONE} Light refracted into beauty", color="white", dim=True)
     console.newline(2)
 
 
 def demo_diagonal_banners():
     """Diagonal gradient banners for dynamic energy."""
-    console.rule(f"{EMOJI.HIGH_VOLTAGE} DIAGONAL GRADIENTS", color="yellow")
+    console.rule(f"{icons.HIGH_VOLTAGE} DIAGONAL GRADIENTS", color="yellow")
     console.newline()
 
     console.text(
@@ -169,52 +169,52 @@ def demo_diagonal_banners():
     # Note: Diagonal gradients on banners would require special handling
     # For now, we demonstrate the concept with horizontal gradients
     console.banner("ENERGY", font="banner", start_color="yellow", end_color="red")
-    console.text(f"{EMOJI.HIGH_VOLTAGE} Power flowing through letters", color="white", dim=True)
+    console.text(f"{icons.HIGH_VOLTAGE} Power flowing through letters", color="white", dim=True)
     console.newline(2)
 
     console.banner("DYNAMIC", font="slant", start_color="cyan", end_color="magenta")
-    console.text(f"{EMOJI.DIZZY} Cutting across the frame", color="white", dim=True)
+    console.text(f"{icons.DIZZY} Cutting across the frame", color="white", dim=True)
     console.newline(2)
 
     console.banner("MOTION", font="big", start_color="blue", end_color="red")
-    console.text(f"{EMOJI.ROCKET} Typography in flux", color="white", dim=True)
+    console.text(f"{icons.ROCKET} Typography in flux", color="white", dim=True)
     console.newline(2)
 
 
 def demo_themed_banners():
     """Banners designed for specific themes."""
-    console.rule(f"{EMOJI.ARTIST_PALETTE} THEMED BANNERS", color="cyan")
+    console.rule(f"{icons.ARTIST_PALETTE} THEMED BANNERS", color="cyan")
     console.newline()
 
     # Success theme
     console.banner("SUCCESS", font="banner", start_color="lime", end_color="green")
-    console.text(f"{EMOJI.CHECK_MARK_BUTTON} Celebrate achievements", color="green", bold=True)
+    console.text(f"{icons.CHECK_MARK_BUTTON} Celebrate achievements", color="green", bold=True)
     console.newline(2)
 
     # Warning theme
     console.banner("WARNING", font="standard", start_color="yellow", end_color="orange")
-    console.text(f"{EMOJI.WARNING}  Proceed with caution", color="orange", bold=True)
+    console.text(f"{icons.WARNING}  Proceed with caution", color="orange", bold=True)
     console.newline(2)
 
     # Error theme
     console.banner("ERROR", font="banner", start_color="orange", end_color="red")
-    console.text(f"{EMOJI.CROSS_MARK} Critical attention required", color="red", bold=True)
+    console.text(f"{icons.CROSS_MARK} Critical attention required", color="red", bold=True)
     console.newline(2)
 
     # Info theme
     console.banner("INFO", font="standard", start_color="cyan", end_color="blue")
-    console.text(f"{EMOJI.INFORMATION}  Information available", color="cyan", bold=True)
+    console.text(f"{icons.INFORMATION}  Information available", color="cyan", bold=True)
     console.newline(2)
 
     # Tech theme
     console.banner("TECH", font="digital", start_color="cyan", end_color="purple")
-    console.text(f"{EMOJI.LAPTOP} Digital excellence", color="magenta", bold=True)
+    console.text(f"{icons.LAPTOP} Digital excellence", color="magenta", bold=True)
     console.newline(2)
 
 
 def demo_welcome_banners():
     """Application welcome screens."""
-    console.rule(f"{EMOJI.WAVING_HAND} WELCOME SCREENS", color="magenta")
+    console.rule(f"{icons.WAVING_HAND} WELCOME SCREENS", color="magenta")
     console.newline()
 
     # Simple welcome
@@ -231,8 +231,8 @@ def demo_welcome_banners():
         "Version: 1.0.0\n"
         "Environment: Production\n"
         "Started: 2025-11-12 10:30:45\n\n"
-        f"{EMOJI.CHECK_MARK_BUTTON} All systems operational",
-        title=f"{EMOJI.ROCKET} Launch Status",
+        f"{icons.CHECK_MARK_BUTTON} All systems operational",
+        title=f"{icons.ROCKET} Launch Status",
         border="rounded",
         border_color="cyan",
         content_color="white",
@@ -243,26 +243,26 @@ def demo_welcome_banners():
 
     # Startup banner
     console.banner("SYSTEM", font="standard", start_color="green", end_color="cyan")
-    console.text(f"{EMOJI.LAPTOP}  Initializing...", color="cyan", bold=True)
+    console.text(f"{icons.LAPTOP}  Initializing...", color="cyan", bold=True)
     console.newline(2)
 
 
 def demo_creative_compositions():
     """Creative banner arrangements."""
-    console.rule(f"{EMOJI.CIRCUS_TENT} CREATIVE COMPOSITIONS", color="yellow")
+    console.rule(f"{icons.CIRCUS_TENT} CREATIVE COMPOSITIONS", color="yellow")
     console.newline()
 
     # Stacked banners
     console.banner("STYLED", font="banner", start_color="red", end_color="orange")
     console.banner("CONSOLE", font="banner", start_color="orange", end_color="yellow")
-    console.text(f"{EMOJI.ARTIST_PALETTE} Stacked for visual impact", color="white", dim=True)
+    console.text(f"{icons.ARTIST_PALETTE} Stacked for visual impact", color="white", dim=True)
     console.newline(2)
 
     # Contrasting styles
     console.banner("BIG", font="big", start_color="cyan", end_color="cyan")
     console.banner("small", font="mini", start_color="magenta", end_color="magenta")
     console.text(
-        f"{EMOJI.TRIANGULAR_RULER} Size contrast creates hierarchy", color="white", dim=True
+        f"{icons.TRIANGULAR_RULER} Size contrast creates hierarchy", color="white", dim=True
     )
     console.newline(2)
 
@@ -271,13 +271,13 @@ def demo_creative_compositions():
     console.banner("ORANGE", font="standard", start_color="orange", end_color="orange")
     console.banner("YELLOW", font="standard", start_color="yellow", end_color="yellow")
     console.banner("GREEN", font="standard", start_color="green", end_color="green")
-    console.text(f"{EMOJI.RAINBOW} Color progression tells a story", color="white", dim=True)
+    console.text(f"{icons.RAINBOW} Color progression tells a story", color="white", dim=True)
     console.newline(2)
 
 
 def demo_banner_typography_art():
     """Banners as pure visual art."""
-    console.rule(f"{EMOJI.ARTIST_PALETTE}  TYPOGRAPHY AS ART", color="magenta")
+    console.rule(f"{icons.ARTIST_PALETTE}  TYPOGRAPHY AS ART", color="magenta")
     console.newline()
 
     # Art piece 1: The Elements
@@ -310,40 +310,40 @@ def demo_banner_typography_art():
 
 def demo_banner_best_practices():
     """Guidelines for effective banner usage."""
-    console.rule(f"{EMOJI.BOOKS} BEST PRACTICES", color="cyan")
+    console.rule(f"{icons.BOOKS} BEST PRACTICES", color="cyan")
     console.newline()
 
     practices = [
         {
-            "do": f"{EMOJI.CHECK_MARK_BUTTON} DO: Match Font to Context",
+            "do": f"{icons.CHECK_MARK_BUTTON} DO: Match Font to Context",
             "text": "• Standard/Banner for professional apps\n"
             "• Slant/Big for dynamic, modern apps\n"
             "• Digital for retro/tech themes\n"
             "• Block for bold statements",
         },
         {
-            "do": f"{EMOJI.CHECK_MARK_BUTTON} DO: Use Color Purposefully",
+            "do": f"{icons.CHECK_MARK_BUTTON} DO: Use Color Purposefully",
             "text": "• Green gradients for success\n"
             "• Red gradients for errors\n"
             "• Blue gradients for information\n"
             "• Rainbow for celebrations",
         },
         {
-            "do": f"{EMOJI.CHECK_MARK_BUTTON} DO: Consider Scale",
+            "do": f"{icons.CHECK_MARK_BUTTON} DO: Consider Scale",
             "text": "• Big fonts for splash screens\n"
             "• Standard fonts for section headers\n"
             "• Mini fonts for subtle dividers\n"
             "• Match font size to importance",
         },
         {
-            "do": f"{EMOJI.CROSS_MARK} DON'T: Overuse Banners",
+            "do": f"{icons.CROSS_MARK} DON'T: Overuse Banners",
             "text": "• One banner per section maximum\n"
             "• Too many banners = visual noise\n"
             "• Use for emphasis, not decoration\n"
             "• Reserve for important moments",
         },
         {
-            "do": f"{EMOJI.CHECK_MARK_BUTTON} DO: Test Readability",
+            "do": f"{icons.CHECK_MARK_BUTTON} DO: Test Readability",
             "text": "• Some fonts work better than others\n"
             "• Test on different terminal sizes\n"
             "• Ensure sufficient contrast\n"
@@ -369,7 +369,7 @@ def demo_banner_best_practices():
 def main():
     """Run the complete banners showcase."""
     console.banner("BANNERS", font="banner", start_color="red", end_color="violet")
-    console.rule(f"{EMOJI.CIRCUS_TENT} TYPOGRAPHY SHOWCASE", color="magenta")
+    console.rule(f"{icons.CIRCUS_TENT} TYPOGRAPHY SHOWCASE", color="magenta")
     console.newline()
 
     console.text(
@@ -398,23 +398,23 @@ def main():
     demo_banner_best_practices()
 
     # Grand finale
-    console.rule(f"{EMOJI.SPARKLES}", color="magenta")
+    console.rule(f"{icons.SPARKLES}", color="magenta")
     console.newline()
     console.banner("MASTERY", font="banner", start_color="red", end_color="violet")
     console.newline()
     console.frame(
-        f"{EMOJI.PERFORMING_ARTS} TYPOGRAPHY MASTERY ACHIEVED\n\n"
+        f"{icons.PERFORMING_ARTS} TYPOGRAPHY MASTERY ACHIEVED\n\n"
         "You've explored:\n\n"
-        f"{EMOJI.CHECK_MARK_BUTTON} 8+ font styles\n"
-        f"{EMOJI.CHECK_MARK_BUTTON} Solid, gradient, and rainbow effects\n"
-        f"{EMOJI.CHECK_MARK_BUTTON} Themed applications\n"
-        f"{EMOJI.CHECK_MARK_BUTTON} Creative compositions\n"
-        f"{EMOJI.CHECK_MARK_BUTTON} Typography as art form\n\n"
+        f"{icons.CHECK_MARK_BUTTON} 8+ font styles\n"
+        f"{icons.CHECK_MARK_BUTTON} Solid, gradient, and rainbow effects\n"
+        f"{icons.CHECK_MARK_BUTTON} Themed applications\n"
+        f"{icons.CHECK_MARK_BUTTON} Creative compositions\n"
+        f"{icons.CHECK_MARK_BUTTON} Typography as art form\n\n"
         "Banners are more than large text—\n"
         "They're the headlines of terminal interfaces,\n"
         "The first impressions that set the tone.\n\n"
-        f"Now go forth and craft beautiful headers! {EMOJI.ROCKET}{EMOJI.SPARKLES}",
-        title=f"{EMOJI.TROPHY} Gallery Complete",
+        f"Now go forth and craft beautiful headers! {icons.ROCKET}{icons.SPARKLES}",
+        title=f"{icons.TROPHY} Gallery Complete",
         border="double",
         border_gradient_start="red",
         border_gradient_end="purple",

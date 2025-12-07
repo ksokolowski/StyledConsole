@@ -11,7 +11,7 @@ The context manager is recommended for most use cases as it:
 - Automatically handles frame capture and rendering
 """
 
-from styledconsole import EMOJI, Console
+from styledconsole import Console, icons
 
 
 def demo_context_manager_basic():
@@ -22,7 +22,7 @@ def demo_context_manager_basic():
     console.newline()
 
     # Simple group with context manager
-    with console.group(title=f"{EMOJI.BAR_CHART} Dashboard", border="double", border_color="cyan"):
+    with console.group(title=f"{icons.BAR_CHART} Dashboard", border="double", border_color="cyan"):
         console.frame("System status: Online", title="Status")
         console.frame("CPU: 45%\nMemory: 2.1GB\nDisk: 120GB", title="Resources")
         console.frame("Last backup: 2 hours ago", title="Backup")
@@ -37,13 +37,13 @@ def demo_context_manager_nested():
     console.text("Nested Context Managers:", bold=True, color="yellow")
     console.newline()
 
-    with console.group(title=f"{EMOJI.FILE_FOLDER} Project Overview", border="heavy"):
+    with console.group(title=f"{icons.FILE_FOLDER} Project Overview", border="heavy"):
         console.frame("Main application ready", title="App Status")
 
         with console.group(title="Services", border="rounded", border_color="cyan"):
-            console.frame(f"{EMOJI.CHECK_MARK_BUTTON} Database connected", border_color="green")
-            console.frame(f"{EMOJI.CHECK_MARK_BUTTON} Cache active", border_color="green")
-            console.frame(f"{EMOJI.WARNING} Queue slow", border_color="yellow")
+            console.frame(f"{icons.CHECK_MARK_BUTTON} Database connected", border_color="green")
+            console.frame(f"{icons.CHECK_MARK_BUTTON} Cache active", border_color="green")
+            console.frame(f"{icons.WARNING} Queue slow", border_color="yellow")
 
         console.frame("All tests passing", title="CI/CD")
 
@@ -58,17 +58,17 @@ def demo_context_manager_align_widths():
     console.newline()
 
     # align_widths=True makes all inner frames the same width
-    with console.group(title=f"{EMOJI.CLIPBOARD} System Report", align_widths=True):
+    with console.group(title=f"{icons.CLIPBOARD} System Report", align_widths=True):
         console.frame(
-            f"{EMOJI.CHECK_MARK_BUTTON} All systems operational",
+            f"{icons.CHECK_MARK_BUTTON} All systems operational",
             title="Success",
             border_color="green",
         )
         console.frame(
-            f"{EMOJI.WARNING} High memory usage detected", title="Warning", border_color="yellow"
+            f"{icons.WARNING} High memory usage detected", title="Warning", border_color="yellow"
         )
         console.frame(
-            f"{EMOJI.CROSS_MARK} Database connection failed", title="Error", border_color="red"
+            f"{icons.CROSS_MARK} Database connection failed", title="Error", border_color="red"
         )
 
     console.newline(2)
@@ -87,7 +87,7 @@ def demo_frame_group_basic():
             {"content": "System status: Online", "title": "Status"},
             {"content": "CPU: 45%\nMemory: 2.1GB", "title": "Resources"},
         ],
-        title=f"{EMOJI.BAR_CHART} Quick Stats",
+        title=f"{icons.BAR_CHART} Quick Stats",
         border="rounded",
         border_color="cyan",
         gap=1,
@@ -128,13 +128,13 @@ def demo_nested_render_frame():
 
     console.frame(
         [
-            f"{EMOJI.RAINBOW} GRADIENT ARCHITECTURE",
+            f"{icons.RAINBOW} GRADIENT ARCHITECTURE",
             "",
             growth_frame,
             "",
             "Three gradient layers: Growth → Depth → Soul",
         ],
-        title=f"{EMOJI.CLASSICAL_BUILDING} Nested Gradients",
+        title=f"{icons.CLASSICAL_BUILDING} Nested Gradients",
         border="heavy",
         border_gradient_start="red",
         border_gradient_end="magenta",
@@ -151,10 +151,10 @@ def demo_comparison():
     console.text("When to Use Each Approach:", bold=True, color="white")
     console.newline()
 
-    with console.group(title=f"{EMOJI.LIGHT_BULB} Choosing the Right API", border="rounded"):
+    with console.group(title=f"{icons.LIGHT_BULB} Choosing the Right API", border="rounded"):
         console.frame(
             [
-                f"{EMOJI.CHECK_MARK_BUTTON} console.group() context manager:",
+                f"{icons.CHECK_MARK_BUTTON} console.group() context manager:",
                 "  • Most Pythonic approach",
                 "  • Arbitrary nesting depth",
                 "  • Dynamic content during context",
@@ -165,7 +165,7 @@ def demo_comparison():
         )
         console.frame(
             [
-                f"{EMOJI.WRENCH} frame_group() dictionary API:",
+                f"{icons.WRENCH} frame_group() dictionary API:",
                 "  • Simple, known structure",
                 "  • Good for data-driven layouts",
                 "  • Compact one-liner possible",
@@ -175,7 +175,7 @@ def demo_comparison():
         )
         console.frame(
             [
-                f"{EMOJI.GEAR} render_frame() manual nesting:",
+                f"{icons.GEAR} render_frame() manual nesting:",
                 "  • Complex gradient compositions",
                 "  • Per-frame width control",
                 "  • Maximum flexibility",
