@@ -58,15 +58,19 @@ ______________________________________________________________________
 ### Summary
 
 This release adds automatic detection of modern terminals (Kitty, WezTerm,
-iTerm2, Ghostty, Alacritty, Windows Terminal, VS Code) that correctly handle
+iTerm2, Ghostty, Alacritty, Windows Terminal) that correctly handle
 VS16 width and ZWJ emoji sequences. The library now automatically adjusts
 width calculations based on terminal capabilities.
+
+**Note:** VS Code's integrated terminal was tested and found to NOT render ZWJ
+sequences correctly, so it is intentionally excluded from modern terminal detection.
 
 ### Key Features
 
 #### Modern Terminal Detection ✅
 
-- Auto-detect: Kitty, WezTerm, iTerm2, Ghostty, Alacritty, Windows Terminal, VS Code
+- Auto-detect: Kitty, WezTerm, iTerm2, Ghostty, Alacritty, Windows Terminal
+- VS Code intentionally excluded (tested: ZWJ rendering issues)
 - New `TerminalProfile` fields: `terminal_name`, `modern_emoji`
 - New helper function: `is_modern_terminal()`
 - Environment variable support for Kitty, WezTerm, iTerm, Windows Terminal
@@ -86,15 +90,24 @@ width calculations based on terminal capabilities.
 
 ### Supported Modern Terminals
 
-| Terminal         | Detection Method                   | VS16 | ZWJ |
-| ---------------- | ---------------------------------- | ---- | --- |
-| Kitty            | `KITTY_WINDOW_ID`, `TERM=*kitty*`  | ✅   | ✅  |
-| WezTerm          | `WEZTERM_PANE`, `TERM_PROGRAM`     | ✅   | ✅  |
-| iTerm2           | `ITERM_SESSION_ID`, `TERM_PROGRAM` | ✅   | ✅  |
-| Ghostty          | `TERM_PROGRAM=ghostty`             | ✅   | ✅  |
-| Alacritty        | `TERM_PROGRAM=Alacritty`           | ✅   | ✅  |
-| Windows Terminal | `WT_SESSION`                       | ✅   | ✅  |
-| VS Code          | `TERM_PROGRAM=vscode`              | ✅   | ✅  |
+| Terminal         | Detection Method                   | VS16 | ZWJ | Tested |
+| ---------------- | ---------------------------------- | ---- | --- | ------ |
+| Kitty            | `KITTY_WINDOW_ID`, `TERM=*kitty*`  | ✅   | ⚠️  | Yes    |
+| WezTerm          | `WEZTERM_PANE`, `TERM_PROGRAM`     | ✅   | ✅  | No     |
+| iTerm2           | `ITERM_SESSION_ID`, `TERM_PROGRAM` | ✅   | ✅  | No     |
+| Ghostty          | `TERM_PROGRAM=ghostty`             | ✅   | ✅  | No     |
+| Alacritty        | `TERM_PROGRAM=Alacritty`           | ✅   | ✅  | No     |
+| Windows Terminal | `WT_SESSION`                       | ✅   | ✅  | No     |
+
+### Excluded Terminals (Tested - Issues Found)
+
+| Terminal | Issue                                        | Status   |
+| -------- | -------------------------------------------- | -------- |
+| VS Code  | ZWJ sequences don't render at expected width | Excluded |
+
+**Kitty ZWJ Note:** Testing in Kitty shows ZWJ sequences render correctly
+as single glyphs, but width calculation still shows minor alignment issues.
+This is a known limitation being investigated.
 
 ### API Usage
 
@@ -126,11 +139,13 @@ export STYLEDCONSOLE_LEGACY_EMOJI=1
 
 ### Success Metrics
 
-- [x] Detection for 7 modern terminals implemented
+- [x] Detection for 6 modern terminals implemented
+- [x] VS Code tested and excluded (ZWJ issues)
 - [x] 16 new unit tests for modern terminal detection
 - [x] Width calculation adapts to terminal type
 - [x] Environment variable overrides working
 - [x] 914 tests passing, 89% coverage
+- [ ] ZWJ width alignment in Kitty (minor issue, investigating)
 
 ______________________________________________________________________
 
