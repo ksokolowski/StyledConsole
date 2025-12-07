@@ -1,6 +1,6 @@
 # StyledConsole Documentation
 
-**Version:** 0.9.1
+**Version:** 0.9.5
 **Last Updated:** December 7, 2025
 
 ______________________________________________________________________

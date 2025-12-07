@@ -25,6 +25,82 @@ This update consolidates all gradient logic into a single unified engine using t
 
 ______________________________________________________________________
 
+## [0.9.5] - 2025-12-07
+
+### 🎯 Symbol Facade Unification
+
+This release establishes `icons` as the **primary facade** for terminal output,
+with `EMOJI` serving as the underlying **data layer**. This creates a clear
+hierarchy that reduces user confusion and ensures policy-aware rendering by default.
+
+### Changed
+
+#### Internal Refactoring
+
+- **`icon_data.py`**: Now uses `EMOJI.*` references instead of hardcoded emoji literals
+- **Single source of truth**: `emoji` package → `emoji_registry.py` → `icons.py`
+- **Export reordering**: `__init__.py` now lists `icons` before `EMOJI` to signal primary API
+
+#### Documentation Updates
+
+- **USER_GUIDE.md**: Added "Choosing Between icons and EMOJI" section
+- **DEVELOPER_GUIDE.md**: Updated Symbol Facade section with hierarchy explanation
+- **Examples**: Now recommend `icons` as the primary API
+
+#### Example Migration
+
+- **22 example files** updated to use `icons` for terminal output
+- Examples demonstrate policy-aware rendering best practices
+
+### API (Unchanged - Backward Compatible)
+
+```python
+from styledconsole import icons
+
+# Primary API - policy-aware, terminal-safe
+print(f"{icons.CHECK_MARK_BUTTON} Done")    # ✅ or (OK) based on terminal
+
+# Advanced: raw emoji access (still available)
+from styledconsole import EMOJI
+print(f"{EMOJI.CHECK_MARK_BUTTON}")         # Always ✅
+```
+
+### Files Modified
+
+| File                                   | Changes                                      |
+| -------------------------------------- | -------------------------------------------- |
+| `src/styledconsole/utils/icon_data.py` | 224 icons now use `EMOJI.*` references       |
+| `src/styledconsole/__init__.py`        | Export order: icons primary, EMOJI secondary |
+| `docs/USER_GUIDE.md`                   | Added icons-first guidance                   |
+| `docs/DEVELOPER_GUIDE.md`              | Updated Symbol Facade architecture           |
+| `examples/**/*.py` (22 files)          | Migrated to use `icons` for terminal output  |
+
+______________________________________________________________________
+
+## [0.9.1] - 2025-12-07
+
+### 🧹 Emoji DRY Refactoring
+
+This release introduces a DRY (Don't Repeat Yourself) architecture for emoji handling,
+using the `emoji` package as the single source of truth for all emoji constants.
+
+### Added
+
+- **`emoji_registry.py`**: New central module with `EMOJI` namespace containing 4000+ emojis
+- **CLDR naming convention**: Standardized names from Unicode CLDR (e.g., `CHECK_MARK_BUTTON`)
+- **Emoji helper functions**: `get_emoji_by_name()`, `search_emoji()`, `list_all_emojis()`
+
+### Changed
+
+- **`icon_data.py`**: Internal emoji literals prepared for EMOJI references
+- **Documentation**: Updated guides with CLDR naming conventions
+
+### Deprecated
+
+- **Direct emoji literals**: Use `EMOJI.*` constants instead of hardcoded emojis
+
+______________________________________________________________________
+
 ## [0.9.0] - 2025-12-03
 
 ### 🎨 Icon Provider & Runtime Policy

@@ -1,6 +1,6 @@
 # StyledConsole Project Status
 
-**Version:** 0.9.1
+**Version:** 0.9.5
 **Status:** Released
 **Last Updated:** December 7, 2025
 
@@ -10,7 +10,7 @@ ______________________________________________________________________
 
 | Metric        | Value       |
 | ------------- | ----------- |
-| Current       | v0.9.1      |
+| Current       | v0.9.5      |
 | Lines of Code | ~6,500      |
 | Tests         | 898 passing |
 | Coverage      | 89%         |
@@ -33,12 +33,12 @@ ______________________________________________________________________
 | v0.8.0  | Nov 2025 | Theme System & Gradients      |
 | v0.9.0  | Dec 2025 | Icon Provider (Colored ASCII) |
 | v0.9.1  | Dec 2025 | Emoji DRY Refactoring         |
+| v0.9.5  | Dec 2025 | Symbol Facade Unification     |
 
 ### Planned
 
 | Version | Target  | Theme                                     | Status  |
 | ------- | ------- | ----------------------------------------- | ------- |
-| v0.9.5  | Q1 2026 | Symbol Facade Unification                 | PLANNED |
 | v0.10.0 | Q1 2026 | Test Automation Presets - Core            | PLANNED |
 | v0.11.0 | Q1 2026 | Test Automation Presets - Assertions      | PLANNED |
 | v0.12.0 | Q2 2026 | Test Automation Presets - Data & API      | PLANNED |
@@ -48,85 +48,73 @@ ______________________________________________________________________
 
 ______________________________________________________________________
 
-## v0.9.5: Symbol Facade Unification (PLANNED)
+## v0.9.5: Symbol Facade Unification
 
-**Target:** Q1 2026
-**Status:** SPECIFICATION COMPLETE
+**Released:** December 7, 2025
+**Status:** RELEASED
 **Theme:** Simplify top-level API by establishing clear hierarchy between `icons` and `EMOJI`
 
-### Problem Statement
+### Summary
 
-StyledConsole currently exposes two parallel systems for symbol handling at the
-top-level API, creating architectural tension and user confusion:
+This release establishes `icons` as the **primary facade** for terminal output,
+with `EMOJI` serving as the underlying **data layer**. This creates a clear
+hierarchy that reduces user confusion and ensures policy-aware rendering by default.
 
-| System  | Module              | Purpose                       | Scale         |
-| ------- | ------------------- | ----------------------------- | ------------- |
-| `EMOJI` | `emoji_registry.py` | 4000+ emoji characters        | Pure data     |
-| `icons` | `icons.py`          | 224 icons with ASCII fallback | Smart service |
+### Key Changes
 
-**Conceptual overlap:** Same names exist in both systems with different behavior:
+#### Phase 1: Internal Refactoring ✅
 
-- `EMOJI.CHECK_MARK_BUTTON` → `✅` (always emoji)
-- `icons.CHECK_MARK_BUTTON` → `✅` or `[OK]` (policy-aware)
+- `icon_data.py` now uses `EMOJI.*` references instead of hardcoded emoji literals
+- Single source of truth: `emoji` package → `emoji_registry.py` → `icons.py`
+- No more duplicated emoji characters across the codebase
 
-**User confusion:** When should a user choose `EMOJI.ROCKET` vs `icons.ROCKET`?
-The answer requires understanding internals.
+#### Phase 2: Documentation Hierarchy ✅
 
-### Solution: Hierarchical Relationship (Option B)
+- USER_GUIDE.md: Added "Choosing Between icons and EMOJI" section
+- DEVELOPER_GUIDE.md: Updated Symbol Facade section with hierarchy explanation
+- Examples now recommend `icons` as the primary API
 
-Establish `icons` as the **primary** facade for terminal output, with `EMOJI` as
-the **data layer** for advanced use cases and internal consumption.
+#### Phase 3: Export Reordering ✅
 
-**Key principles:**
+- `__init__.py` exports reordered: `icons` listed before `EMOJI`
+- Signals to users that `icons` is the recommended API
 
-1. `icons` becomes the recommended API for all terminal output
-1. `icons` internally uses `EMOJI` as its emoji data source
-1. `EMOJI` remains available for raw emoji access (special cases)
-1. No breaking changes - full backward compatibility
+#### Phase 4: Example Migration ✅
 
-### Implementation Phases
+- All 22 example files updated to use `icons` for terminal output
+- Examples demonstrate policy-aware rendering
 
-| Phase | Task                                       | Files Affected             |
-| ----- | ------------------------------------------ | -------------------------- |
-| 1     | Refactor `icons.py` to use `EMOJI` data    | `icons.py`, `icon_data.py` |
-| 2     | Update documentation hierarchy             | All docs, examples         |
-| 3     | Demote `EMOJI` in exports (keep available) | `__init__.py`              |
-| 4     | Update all examples to use `icons`         | `examples/**/*.py`         |
-| 5     | Add migration guide                        | `USER_GUIDE.md`            |
+### Files Modified
 
-### API Changes
+| File                                   | Changes                                      |
+| -------------------------------------- | -------------------------------------------- |
+| `src/styledconsole/utils/icon_data.py` | 224 icons now use `EMOJI.*` references       |
+| `src/styledconsole/__init__.py`        | Export order: icons primary, EMOJI secondary |
+| `docs/USER_GUIDE.md`                   | Added icons-first guidance                   |
+| `docs/DEVELOPER_GUIDE.md`              | Updated Symbol Facade architecture           |
+| `examples/**/*.py` (22 files)          | Migrated to use `icons` for terminal output  |
 
-**Before (v0.9.1):**
-
-```python
-from styledconsole import EMOJI, icons
-
-# User must choose between two systems
-print(f"{EMOJI.CHECK_MARK_BUTTON} Done")    # Always ✅
-print(f"{icons.CHECK_MARK_BUTTON} Done")    # ✅ or [OK]
-```
-
-**After (v0.9.5):**
+### API (Unchanged - Backward Compatible)
 
 ```python
 from styledconsole import icons
 
-# Primary API - always correct for terminal
-print(f"{icons.CHECK_MARK_BUTTON} Done")    # ✅ or [OK] based on policy
+# Primary API - policy-aware, terminal-safe
+print(f"{icons.CHECK_MARK_BUTTON} Done")    # ✅ or (OK) based on terminal
 
-# Advanced: raw emoji access (rare use case)
-from styledconsole.emojis import EMOJI
+# Advanced: raw emoji access (still available)
+from styledconsole import EMOJI
 print(f"{EMOJI.CHECK_MARK_BUTTON}")         # Always ✅
 ```
 
-### Success Criteria
+### Success Metrics ✅
 
-- [ ] All 38 examples use `icons` for terminal output
-- [ ] `icons.py` has zero direct emoji literals (uses `EMOJI` internally)
-- [ ] USER_GUIDE.md recommends `icons` as primary API
-- [ ] DEVELOPER_GUIDE.md documents the hierarchy
-- [ ] No breaking changes (existing code continues to work)
-- [ ] Migration warnings for direct `EMOJI` use in terminal contexts
+- [x] All 38 examples use `icons` for terminal output
+- [x] `icon_data.py` has zero hardcoded emoji literals
+- [x] USER_GUIDE.md recommends `icons` as primary API
+- [x] DEVELOPER_GUIDE.md documents the hierarchy
+- [x] No breaking changes (existing code continues to work)
+- [x] 898 tests passing, 89% coverage
 
 ### Specification Document
 
