@@ -26,6 +26,33 @@ ______________________________________________________________________
 
 ## 🌟 What Can You Create?
 
+### 🎁 Built On Industry-Standard Emoji Package
+
+**New in v0.9.1:** Direct integration with the [`emoji` PyPI package](https://pypi.org/project/emoji/) for 4000+ officially-supported emojis:
+
+- **Single source of truth:** All emoji names follow CLDR canonical standard (e.g., `CHECK_MARK_BUTTON`, not `CHECK`)
+- **4000+ emojis:** Complete Unicode emoji database with search capabilities
+- **Type-safe access:** CLDR names via attribute access (not magic strings)
+- **Curated categories:** Pre-organized emoji sets for common use cases
+- **Zero maintenance:** Automatically stays in sync with official emoji releases
+
+```python
+from styledconsole import EMOJI, CuratedEmojis
+
+# Direct access to 4000+ emojis
+print(EMOJI.ROCKET)           # 🚀
+print(EMOJI.CHECK_MARK_BUTTON)  # ✅
+print(EMOJI.CROSS_MARK)        # ❌
+
+# Search by keyword
+results = EMOJI.search("party")  # [('PARTY_POPPER', '🎉'), ...]
+
+# Curated quick-pick sets
+CuratedEmojis.DEV     # Pre-selected dev icons
+CuratedEmojis.STATUS  # Status indicators
+CuratedEmojis.NATURE  # Nature emojis
+```
+
 ### 🏛️ Nested Multi-Frame Architectures
 
 Build complex, layered UI components with independent gradient borders:
@@ -330,6 +357,7 @@ ______________________________________________________________________
 
 | Library                                              | What it brings                              |
 | ---------------------------------------------------- | ------------------------------------------- |
+| [emoji](https://pypi.org/project/emoji/)             | 🎁 4000+ official Unicode emojis (CLDR)     |
 | [Rich](https://github.com/Textualize/rich)           | 💪 The powerful rendering engine underneath |
 | [PyFiglet](https://github.com/pwaller/pyfiglet)      | 🔤 500+ ASCII art fonts                     |
 | [wcwidth](https://github.com/jquast/wcwidth)         | 📏 Correct Unicode width calculation        |
