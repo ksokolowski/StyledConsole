@@ -118,16 +118,39 @@ def _grapheme_width_legacy(grapheme: str) -> int:
     return g_width
 
 
+def _count_emoji_codepoints(grapheme: str) -> int:
+    """Count emoji codepoints in a grapheme (excluding ZWJ and VS16)."""
+    count = 0
+    for c in grapheme:
+        cp = ord(c)
+        # Skip ZWJ (U+200D), VS16 (U+FE0F), and skin tone modifiers
+        if cp == 0x200D or cp == 0xFE0F:
+            continue
+        if 0x1F3FB <= cp <= 0x1F3FF:  # Skin tone modifiers
+            continue
+        # Count wide emoji characters
+        if (
+            cp >= 0x1F000 or 0x2600 <= cp <= 0x27BF or 0x2300 <= cp <= 0x23FF
+        ):  # Most emoji are above this
+            count += 1
+    return count
+
+
 def _grapheme_width_modern(grapheme: str) -> int:
     """Calculate width in modern terminal mode.
 
-    Modern terminals correctly render:
-    - VS16 emojis at width 2 (not 1)
-    - ZWJ sequences as single width-2 glyphs
-    - Skin tone modifiers merged with base emoji
+    Modern terminals (Kitty, etc.) render ZWJ sequences where each
+    component emoji takes 2 cells, merged into a single glyph.
+
+    For example:
+    - 👨‍💻 (Man + ZWJ + Laptop) = 2 emoji components = 4 cells
+    - 👨‍👩‍👧 (Man + ZWJ + Woman + ZWJ + Girl) = 3 emoji = 6 cells
+    - 👨‍👩‍👧‍👦 (4 people) = 4 emoji = 8 cells
     """
     if "\u200d" in grapheme:
-        return 2  # ZWJ sequences render as single width-2 glyph
+        # Count actual emoji components and multiply by 2
+        emoji_count = _count_emoji_codepoints(grapheme)
+        return emoji_count * 2 if emoji_count > 0 else 2
     if VARIATION_SELECTOR_16 in grapheme:
         return 2  # VS16 emojis render at width 2 in modern terminals
     # For emojis, use wcwidth which returns 2 for wide characters
