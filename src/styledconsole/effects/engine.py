@@ -42,8 +42,10 @@ def apply_gradient(
     from rich.text import Text
 
     # Use a temporary console for rendering Text objects back to ANSI strings
+    # Must specify color_system="truecolor" to preserve exact RGB colors,
+    # otherwise Rich may downgrade to 256 or 16 colors based on environment
     buffer = StringIO()
-    console = RichConsole(file=buffer, force_terminal=True, width=10000)
+    console = RichConsole(file=buffer, force_terminal=True, width=10000, color_system="truecolor")
 
     # Calculate max width for normalization using one pass over plain text
     # We can't use strip_ansi here because we want to use the Rich Text plain property later

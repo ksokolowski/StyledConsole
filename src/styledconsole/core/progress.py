@@ -224,7 +224,7 @@ class StyledProgress:
             bar = "#" * filled + "." * (bar_width - filled)
 
             # Estimate remaining time
-            if task.completed > 0:
+            if task.completed > 0 and elapsed > 0:
                 rate = task.completed / elapsed
                 remaining = (task.total - task.completed) / rate if rate > 0 else 0
                 remaining_str = self._format_time(remaining)
