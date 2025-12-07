@@ -121,20 +121,15 @@ def _grapheme_width_legacy(grapheme: str) -> int:
 def _grapheme_width_modern(grapheme: str) -> int:
     """Calculate width in modern terminal mode.
 
-    Modern terminals (Kitty, WezTerm, etc.) correctly render:
+    Modern terminals correctly render:
+    - VS16 emojis at width 2 (not 1)
     - ZWJ sequences as single width-2 glyphs
     - Skin tone modifiers merged with base emoji
-    - VS16 emojis at proper emoji style, but still width based on base char
-
-    Note: Kitty follows Unicode standard strictly - VS16 doesn't change width,
-    it only changes presentation style. The base character width is used.
     """
     if "\u200d" in grapheme:
         return 2  # ZWJ sequences render as single width-2 glyph
     if VARIATION_SELECTOR_16 in grapheme:
-        # VS16 only changes presentation, not width. Use width 1 for text-style base chars.
-        # This matches Kitty's behavior which follows Unicode strictly.
-        return 1
+        return 2  # VS16 emojis render at width 2 in modern terminals
     # For emojis, use wcwidth which returns 2 for wide characters
     w = wcwidth.wcswidth(grapheme)
     return w if w >= 0 else 1
@@ -157,13 +152,9 @@ def visual_width(text: str, markup: bool = False) -> int:
     1. Strips ANSI escape sequences
     2. Splits text into graphemes using robust logic
     3. Calculates width for each grapheme based on terminal mode:
-       - Modern mode (Kitty, WezTerm, etc.): ZWJ = 2, VS16 = 1
+       - Modern mode (Kitty, WezTerm, etc.): VS16 = 2, ZWJ = 2
        - Standard mode: VS16 = 1, ZWJ = 2
        - Legacy mode: Sum of parts for complex sequences
-
-    Note on VS16: The Variation Selector 16 (U+FE0F) only changes emoji
-    presentation style, not width. Modern terminals like Kitty follow
-    Unicode strictly - the base character width is preserved.
 
     Terminal mode is auto-detected or can be controlled via:
     - STYLEDCONSOLE_MODERN_TERMINAL=1 (force modern mode)
