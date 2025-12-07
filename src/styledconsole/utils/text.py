@@ -617,7 +617,12 @@ def get_emoji_spacing_adjustment(emoji_char: str) -> int:
     if not emoji.is_emoji(emoji_char):
         raise ValueError(f"Invalid emoji: {emoji_char!r}")
 
-    # VS16 emojis need adjustment: terminals render them as width 1
+    # In modern terminals (Kitty, etc.), VS16 emojis render correctly at width 2
+    # No adjustment needed
+    if _is_modern_terminal_mode():
+        return 0
+
+    # VS16 emojis need adjustment in standard terminals: they render as width 1
     # despite wcwidth reporting width 2.
     if VARIATION_SELECTOR_16 in emoji_char:
         return 1
