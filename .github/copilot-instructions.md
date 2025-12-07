@@ -1,7 +1,7 @@
 # AI Coding Agent Instructions for StyledConsole
 
-**Project:** StyledConsole v0.5.0
-**Last Updated:** November 30, 2025
+**Project:** StyledConsole v0.9.0
+**Last Updated:** December 7, 2025
 **Python:** ≥3.10 | **License:** Apache-2.0
 
 ______________________________________________________________________
@@ -44,7 +44,7 @@ uv run pre-commit run --all-files
 
 ```bash
 # Full test suite with coverage
-uv run pytest                    # 651+ tests, 95%+ coverage
+uv run pytest                    # 700+ tests, 95%+ coverage
 
 # Quick targeted test
 uv run pytest tests/unit/test_frame.py -v
@@ -69,10 +69,10 @@ ______________________________________________________________________
 
 ### Tool Usage
 
-- **NEVER use sed/grep for code modifications** - Use `read_file()`, `replace_string_in_file()`, `grep_search()` tools
+- **NEVER use sed/grep for code modifications** - Use `read_file()`, `replace_string_in_file()`, `grep_search()` tools. Mass edits with terminal tools (sed, awk, perl -i) have corrupted complex code in this project.
+- **NEVER pipe output through head/tail/grep** - Commands like `uv run pytest | head`, `uv run pytest 2>&1 | tail -20`, or `grep -v` hide valuable output and mask errors. Always capture full output.
 - **Always run pre-commit before suggesting commits** - `uv run pre-commit run --all-files`
 - **Prefer uv over pip** - All commands should use `uv run` prefix
-- **Show full output** - NEVER pipe test/command output through `| head`, `| tail`, `| grep` or other redirections unless explicitly requested. Full output is essential for debugging.
 - **Non-interactive example runs** - Use `--auto` flag: `uv run python examples/run_examples.py --auto`
 
 ### Console API Usage
@@ -89,25 +89,29 @@ ______________________________________________________________________
 - ❌ Running `pip install` instead of `uv sync`
 - ❌ Skipping pre-commit hooks
 - ❌ Committing without running tests
+- ❌ Piping command output through `| head`, `| tail`, `| grep` (hides errors)
+- ❌ Using `sed`, `awk`, `perl -i` for code edits (corrupts complex code)
 
 ______________________________________________________________________
 
-## 📁 Project Structure (v0.5.0)
+## 📁 Project Structure (v0.9.0)
 
 ```
 styledconsole/
 ├── src/styledconsole/           # Library source
 │   ├── console.py               # Main facade API
-│   ├── emojis.py                # EMOJI constants (100+)
-│   ├── effects.py               # Gradient effects
+│   ├── policy.py                # RenderPolicy (environment-aware rendering)
+│   ├── icons.py                 # IconProvider (emoji/ASCII auto-switching)
+│   ├── emoji_registry.py        # EMOJI constants (4000+ from emoji package)
+│   ├── emojis.py                # Re-exports from emoji_registry (backward compat)
 │   ├── core/                    # Rendering engine
-│   │   ├── rendering_engine.py  # Rich-native coordinator
+│   │   ├── rendering_engine.py  # Rich-native coordinator (policy-aware)
 │   │   ├── box_mapping.py       # Border → Rich Box
-│   │   ├── gradient_utils.py    # Gradient logic
+│   │   ├── theme.py             # Theme system (semantic colors, gradients)
 │   │   └── styles.py            # Border definitions
 │   ├── effects/                 # Strategy-based gradients
 │   │   ├── engine.py            # apply_gradient()
-│   │   └── strategies.py        # Position/Color strategies
+│   │   └── strategies.py        # Position/Color/Target strategies
 │   ├── presets/                 # High-level components
 │   │   ├── status.py            # status_frame()
 │   │   ├── summary.py           # test_summary()
@@ -115,19 +119,19 @@ styledconsole/
 │   └── utils/                   # Utilities
 │       ├── text.py              # Emoji-safe width (CRITICAL)
 │       ├── color.py             # CSS4 colors, gradients
-│       └── wrap.py              # Text wrapping
-├── tests/                       # 651+ tests
+│       └── icon_data.py         # Icon registry data
+├── tests/                       # 700+ tests
 │   ├── unit/                    # Component tests
 │   ├── integration/             # Cross-component tests
 │   └── snapshots/               # Visual regression
-├── examples/                    # 27 examples
+├── examples/                    # Visual examples
 │   ├── gallery/                 # Visual showcases
 │   ├── usecases/                # Real-world scenarios
 │   ├── demos/                   # Feature demos
 │   ├── validation/              # Testing scripts
 │   └── run_examples.py          # Unified runner
-├── docs/                        # 4 master documents
-│   ├── USER_GUIDE.md            # User documentation
+├── docs/                        # Documentation
+│   ├── USER_GUIDE.md            # API usage, examples, troubleshooting
 │   ├── DEVELOPER_GUIDE.md       # Architecture guide
 │   ├── PROJECT_STATUS.md        # Roadmap & status
 │   └── DOCUMENTATION_POLICY.md  # Doc standards
@@ -144,7 +148,7 @@ ______________________________________________________________________
 ### Console Facade Pattern
 
 ```python
-from styledconsole import Console, EMOJI
+from styledconsole import Console, EMOJI, icons
 
 console = Console()
 console.frame("Content", title="Title", border="rounded")
@@ -155,11 +159,70 @@ console.text("Status: OK", color="lime", bold=True)
 ### Data Flow
 
 ```
-Console.frame(...)
-  → RenderingEngine.print_frame()
-  → box_mapping.get_box_style() → Rich Box
+Console(policy=..., theme=...)
+  → RenderingEngine (policy-aware rendering)
+  → box_mapping.get_box_style_for_policy() → Rich Box
   → Rich Panel → rich_console.print()
   → ExportManager.export_html() (if record=True)
+```
+
+### RenderPolicy (Environment-Aware Rendering)
+
+RenderPolicy controls output based on terminal capabilities and environment variables:
+
+```python
+from styledconsole import Console, RenderPolicy
+
+# Auto-detect from environment (NO_COLOR, CI, TERM=dumb)
+console = Console()  # Uses RenderPolicy.from_env() by default
+
+# CI-friendly: colors but no emoji
+console = Console(policy=RenderPolicy.ci_friendly())
+
+# ASCII-only for logs/pipes
+console = Console(policy=RenderPolicy(unicode=False, color=False, emoji=False))
+
+# Check policy settings
+if console.policy.emoji:
+    print("Emoji enabled")
+```
+
+**Environment Variables Detected:**
+
+- `NO_COLOR` → Disables color output
+- `FORCE_COLOR` → Forces color output
+- `TERM=dumb` → Disables unicode, emoji, color
+- `CI`, `GITHUB_ACTIONS`, `GITLAB_CI` → Conservative mode (no emoji)
+
+### IconProvider (Emoji/ASCII Auto-Switching)
+
+Icons automatically render as emoji or colored ASCII based on terminal capabilities:
+
+```python
+from styledconsole import icons, set_icon_mode
+
+# Auto-detects terminal capability (default)
+print(f"{icons.CHECK_MARK_BUTTON} Tests passed")  # ✅ or [OK] (green)
+print(f"{icons.CROSS_MARK} Build failed")         # ❌ or [FAIL] (red)
+print(f"{icons.WARNING} Deprecation")             # ⚠️ or [WARN] (yellow)
+
+# Force specific mode globally
+set_icon_mode("ascii")   # Force ASCII everywhere
+set_icon_mode("emoji")   # Force emoji everywhere
+set_icon_mode("auto")    # Auto-detect (default)
+```
+
+### Themes (Semantic Colors)
+
+```python
+from styledconsole import Console, THEMES
+
+# Use built-in theme
+console = Console(theme="monokai")  # or THEMES.MONOKAI
+
+# Semantic colors resolve through theme
+console.frame("OK!", border_color="success")   # Uses theme.success color
+console.frame("Oops", border_color="error")    # Uses theme.error color
 ```
 
 ### Emoji Handling (CRITICAL)
@@ -170,9 +233,13 @@ from styledconsole.utils.text import visual_width, pad_to_width
 # ALWAYS use visual_width, NEVER len()
 width = visual_width("🚀 Title")  # Returns 9, not 8
 
-# Use EMOJI constants in examples
+# Use EMOJI constants in examples (4000+ available from emoji package)
 from styledconsole import EMOJI
-console.frame(f"{EMOJI.CHECK} Done", title=f"{EMOJI.ROCKET} Status")
+console.frame(f"{EMOJI.CHECK_MARK_BUTTON} Done", title=f"{EMOJI.ROCKET} Status")
+
+# Common emoji names (CLDR standard from emoji package):
+# EMOJI.CHECK_MARK_BUTTON (✅), EMOJI.CROSS_MARK (❌), EMOJI.WARNING (⚠️)
+# EMOJI.ROCKET (🚀), EMOJI.FIRE (🔥), EMOJI.SPARKLES (✨), EMOJI.PARTY_POPPER (🎉)
 ```
 
 ### API Signatures
@@ -207,7 +274,7 @@ ______________________________________________________________________
 ### Before Every Commit
 
 1. **Pre-commit hooks**: `uv run pre-commit run --all-files`
-1. **Tests**: `uv run pytest` (must pass 651+ tests)
+1. **Tests**: `uv run pytest` (must pass 700+ tests)
 1. **Examples**: `uv run python examples/run_examples.py --all`
 
 ### Complexity Thresholds
