@@ -26,23 +26,36 @@ ______________________________________________________________________
 
 ## 🌟 What Can You Create?
 
-### 🎁 Built On Industry-Standard Emoji Package
+### 🎯 Smart Icon System (Primary API)
 
-**New in v0.9.1:** Direct integration with the [`emoji` PyPI package](https://pypi.org/project/emoji/) for 4000+ officially-supported emojis:
+**New in v0.9.5:** Use `icons` for terminal output - policy-aware with automatic ASCII fallback:
 
-- **Single source of truth:** All emoji names follow CLDR canonical standard (e.g., `CHECK_MARK_BUTTON`, not `CHECK`)
-- **4000+ emojis:** Complete Unicode emoji database with search capabilities
-- **Type-safe access:** CLDR names via attribute access (not magic strings)
-- **Curated categories:** Pre-organized emoji sets for common use cases
-- **Zero maintenance:** Automatically stays in sync with official emoji releases
+```python
+from styledconsole import icons, set_icon_mode
+
+# Primary API - auto-detects terminal capability
+print(f"{icons.ROCKET} Deploying...")        # 🚀 or >>> based on terminal
+print(f"{icons.CHECK_MARK_BUTTON} Done!")    # ✅ or (OK) in green
+print(f"{icons.CROSS_MARK} Failed")          # ❌ or (FAIL) in red
+
+# Force specific mode globally
+set_icon_mode("ascii")   # Force colored ASCII everywhere
+set_icon_mode("emoji")   # Force emoji everywhere
+set_icon_mode("auto")    # Auto-detect (default)
+```
+
+**224 icons in 16 categories:** Status, Stars, Documents, Tech, Tools, Weather, and more!
+
+### 🎁 4000+ Emoji Data Layer
+
+For advanced use cases, access raw emoji data via `EMOJI` (built on [`emoji` package](https://pypi.org/project/emoji/)):
 
 ```python
 from styledconsole import EMOJI, CuratedEmojis
 
-# Direct access to 4000+ emojis
-print(EMOJI.ROCKET)           # 🚀
-print(EMOJI.CHECK_MARK_BUTTON)  # ✅
-print(EMOJI.CROSS_MARK)        # ❌
+# Direct access to 4000+ emojis (raw, no ASCII fallback)
+print(EMOJI.ROCKET)             # Always 🚀
+print(EMOJI.CHECK_MARK_BUTTON)  # Always ✅
 
 # Search by keyword
 results = EMOJI.search("party")  # [('PARTY_POPPER', '🎉'), ...]
@@ -50,7 +63,6 @@ results = EMOJI.search("party")  # [('PARTY_POPPER', '🎉'), ...]
 # Curated quick-pick sets
 CuratedEmojis.DEV     # Pre-selected dev icons
 CuratedEmojis.STATUS  # Status indicators
-CuratedEmojis.NATURE  # Nature emojis
 ```
 
 ### 🏛️ Nested Multi-Frame Architectures
@@ -113,48 +125,29 @@ from styledconsole.effects.strategies import RainbowSpectrum, DiagonalPosition
 Animation.run(gradient_frames, fps=20, duration=10)
 ```
 
-### 😀 4000+ Emojis with Perfect Alignment
+### 😀 Icons with Perfect Alignment
 
-No more broken layouts from emoji width issues! Direct integration with the `emoji` package:
+No more broken layouts from emoji width issues! Use the `icons` API for terminal-safe output:
 
 ```python
-from styledconsole import Console, EMOJI
+from styledconsole import Console, icons
 
 console = Console()
 
 console.frame([
-    f"{EMOJI.ROCKET} Deploy to production",
-    f"{EMOJI.CHECK_MARK_BUTTON} All tests passing",
-    f"{EMOJI.FIRE} Performance optimized",
-    f"{EMOJI.SPARKLES} Ready to ship!",
-], title=f"{EMOJI.PACKAGE} Release v2.0", border="rounded")
+    f"{icons.ROCKET} Deploy to production",
+    f"{icons.CHECK_MARK_BUTTON} All tests passing",
+    f"{icons.FIRE} Performance optimized",
+    f"{icons.SPARKLES} Ready to ship!",
+], title=f"{icons.PACKAGE} Release v2.0", border="rounded")
 ```
 
-**New in v0.9.1:** DRY architecture using `emoji` package as single source of truth:
+**Why `icons` over `EMOJI`?**
 
-```python
-from styledconsole import EMOJI, CuratedEmojis
-
-# 4000+ emojis with CLDR canonical names
-print(EMOJI.CHECK_MARK_BUTTON)  # ✅
-print(EMOJI.CROSS_MARK)         # ❌
-
-# Search for emojis
-results = EMOJI.search("rocket")  # [('ROCKET', '🚀'), ...]
-
-# Curated categories for quick discovery
-CuratedEmojis.STATUS  # ['CHECK_MARK_BUTTON', 'CROSS_MARK', 'WARNING', ...]
-CuratedEmojis.DEV     # ['ROCKET', 'FIRE', 'STAR', 'SPARKLES', ...]
-CuratedEmojis.NATURE  # ['FIRE', 'WATER_WAVE', 'RAINBOW', ...]
-```
-
-Available curated categories:
-
-- **STATUS:** ✅ ❌ ⚠️ ℹ️ ❓ 🔄
-- **DEV:** 🚀 🔥 ⭐ ✨ 💻 🔧
-- **NATURE:** 🌊 🌈 ⚡ 🌸 🌳
-- **UI:** 📦 📁 📊 📈 🔔 ⚙️
-- **And 10+ more curated sets!**
+- ✅ **Policy-aware:** Respects `NO_COLOR`, `CI`, `TERM=dumb` environment
+- ✅ **ASCII fallback:** Colored ASCII on terminals without emoji support
+- ✅ **224 curated icons:** Most common symbols with sensible defaults
+- ✅ **Same names:** `icons.ROCKET` maps to `EMOJI.ROCKET` internally
 
 ### 🔤 Massive ASCII Art Banners
 
@@ -252,15 +245,15 @@ pip install styledconsole
 ```
 
 ```python
-from styledconsole import Console, EMOJI
+from styledconsole import Console, icons
 
 console = Console()
 
 # Your first beautiful frame
 console.frame(
-    f"{EMOJI.CHECK_MARK_BUTTON} Build successful\n"
-    f"{EMOJI.ROCKET} Deployed to production",
-    title=f"{EMOJI.SPARKLES} Status",
+    f"{icons.CHECK_MARK_BUTTON} Build successful\n"
+    f"{icons.ROCKET} Deployed to production",
+    title=f"{icons.SPARKLES} Status",
     border="rounded",
     border_gradient_start="green",
     border_gradient_end="cyan"
@@ -274,27 +267,30 @@ ______________________________________________________________________
 ### CI/CD Pipeline Dashboard
 
 ```python
+from styledconsole import Console, icons
+
+console = Console()
 console.banner("BUILD", font="standard", start_color="blue", end_color="purple")
 
 console.frame([
-    f"{EMOJI.CHECK_MARK_BUTTON} Lint checks passed",
-    f"{EMOJI.CHECK_MARK_BUTTON} Unit tests: 427/427",
-    f"{EMOJI.CHECK_MARK_BUTTON} Integration tests: 52/52",
-    f"{EMOJI.WARNING} Coverage: 94% (target: 95%)",
-    f"{EMOJI.ROCKET} Deploying to staging...",
-], title=f"{EMOJI.BAR_CHART} Pipeline Status", border="heavy", border_color="green")
+    f"{icons.CHECK_MARK_BUTTON} Lint checks passed",
+    f"{icons.CHECK_MARK_BUTTON} Unit tests: 427/427",
+    f"{icons.CHECK_MARK_BUTTON} Integration tests: 52/52",
+    f"{icons.WARNING} Coverage: 94% (target: 95%)",
+    f"{icons.ROCKET} Deploying to staging...",
+], title=f"{icons.BAR_CHART} Pipeline Status", border="heavy", border_color="green")
 ```
 
 ### Error Reporting with Style
 
 ```python
 console.frame(
-    f"{EMOJI.CROSS_MARK} Connection refused\n\n"
+    f"{icons.CROSS_MARK} Connection refused\n\n"
     f"   Host: database.example.com:5432\n"
     f"   Error: ETIMEDOUT after 30s\n"
     f"   Retry: 3/3 attempts failed\n\n"
-    f"{EMOJI.LIGHT_BULB} Check firewall settings",
-    title=f"{EMOJI.WARNING} Database Error",
+    f"{icons.LIGHT_BULB} Check firewall settings",
+    title=f"{icons.WARNING} Database Error",
     border="heavy",
     border_gradient_start="red",
     border_gradient_end="darkred"
@@ -375,7 +371,7 @@ ______________________________________________________________________
 
 ## 🛠️ Project Status
 
-**v0.9.1** — Production Ready ✅
+**v0.9.5** — Production Ready ✅
 
 |             |             |
 | ----------- | ----------- |
@@ -385,13 +381,13 @@ ______________________________________________________________________
 | 📚 Examples | 38 working  |
 | 🐍 Python   | 3.10 - 3.13 |
 
-**Recent Improvements (v0.9.0 - v0.9.1):**
+**Recent Improvements (v0.9.0 - v0.9.5):**
 
-- ✅ Full mypy type checking with 0 errors
+- ✅ Symbol Facade Unification (`icons` as primary API)
 - ✅ DRY emoji architecture (4000+ emojis from `emoji` package)
 - ✅ Icon Provider with colored ASCII fallback (224 icons)
 - ✅ Render Policy for environment-aware output
-- ✅ Advanced progress theming
+- ✅ Full mypy type checking with 0 errors
 - ✅ Gradient engine consolidation (Strategy Pattern)
 - ✅ Windows compatibility fixes
 - ✅ Enhanced pre-commit hooks
