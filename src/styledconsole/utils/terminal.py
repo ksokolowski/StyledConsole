@@ -18,6 +18,8 @@ from dataclasses import dataclass
 
 # Modern terminals with full emoji/Unicode support
 # These terminals correctly handle VS16 width and ZWJ sequences
+# NOTE: VS Code is intentionally excluded - its terminal does not render
+# ZWJ sequences at the expected width despite being a modern editor
 MODERN_TERMINALS: dict[str, tuple[str, ...]] = {
     "kitty": ("KITTY_WINDOW_ID",),
     "wezterm": ("WEZTERM_PANE", "WEZTERM_EXECUTABLE"),
@@ -25,7 +27,6 @@ MODERN_TERMINALS: dict[str, tuple[str, ...]] = {
     "ghostty": (),  # Uses TERM_PROGRAM detection
     "alacritty": (),  # Uses TERM_PROGRAM detection
     "windows_terminal": ("WT_SESSION",),
-    "vscode": ("VSCODE_PID", "TERM_PROGRAM=vscode"),  # VS Code integrated terminal
 }
 
 
@@ -68,8 +69,7 @@ def _detect_modern_terminal() -> str | None:
         return "ghostty"
     if term_program == "alacritty":
         return "alacritty"
-    if term_program == "vscode":
-        return "vscode"
+    # VS Code excluded - its terminal doesn't render ZWJ sequences correctly
     if term_program == "apple_terminal":
         return "apple_terminal"
 

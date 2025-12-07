@@ -492,11 +492,15 @@ class TestModernTerminalDetection:
         monkeypatch.setenv("TERM", "alacritty")
         assert is_modern_terminal() is True
 
-    def test_detect_vscode(self, monkeypatch):
-        """Test VS Code terminal detection."""
+    def test_vscode_not_modern(self, monkeypatch):
+        """Test VS Code terminal is NOT detected as modern.
+
+        VS Code's integrated terminal doesn't properly render ZWJ sequences
+        at the expected width, so it's excluded from modern terminal detection.
+        """
         monkeypatch.setenv("TERM_PROGRAM", "vscode")
         monkeypatch.setenv("TERM", "xterm-256color")
-        assert is_modern_terminal() is True
+        assert is_modern_terminal() is False
 
     def test_detect_windows_terminal(self, monkeypatch):
         """Test Windows Terminal detection via WT_SESSION."""
