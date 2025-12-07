@@ -480,19 +480,29 @@ Contributor guidance:
 - **Do not use:** hardcoded Unicode literals in examples or presets
 - **Do not use:** the old `EmojiConstants` alias in new code
 
-### Icon Provider (v0.9.0+)
+### Icon Provider (v0.9.5+)
 
-The `icons` module provides 224 icons in 16 categories with automatic
-emoji/ASCII fallback based on terminal capabilities:
+> [!IMPORTANT]
+> **The `icons` module is the recommended facade for terminal symbol output.**
+> It uses `EMOJI` as its data source but adds automatic ASCII fallback.
+
+The `icons` module provides 204 icons in 16 categories with automatic
+emoji/ASCII fallback based on terminal capabilities. It uses the `EMOJI`
+registry as its single source of truth for emoji characters.
+
+**Symbol Facade Hierarchy:**
+
+- **`icons`** – Primary facade for terminal output (policy-aware, ASCII fallback)
+- **`EMOJI`** – Data layer providing 4000+ emoji characters (raw access)
 
 ```python
 from styledconsole import icons, set_icon_mode
 
 # Access icons directly (auto-detects terminal)
-icons.CHECK_MARK_BUTTON  # ✅ or [OK] (green)
-icons.CROSS_MARK         # ❌ or [FAIL] (red)
-icons.WARNING            # ⚠️ or [WARN] (yellow)
-icons.ROCKET             # 🚀 or [>] (cyan)
+icons.CHECK_MARK_BUTTON  # ✅ or (OK) in green
+icons.CROSS_MARK         # ❌ or (FAIL) in red
+icons.WARNING            # ⚠️ or (WARN) in yellow
+icons.ROCKET             # 🚀 or >>> in cyan
 
 # Force specific mode globally
 set_icon_mode("ascii")   # Force ASCII everywhere
@@ -505,11 +515,15 @@ Implementation overview:
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#E8F5E9', 'lineColor': '#78909C'}}}%%
 flowchart LR
-    subgraph icon_data["🛠️ utils/icon_data.py"]
-        IMAP[(🗄️ ICON_MAP<br/>224 mappings)]
+    subgraph emoji_layer["📦 Emoji Data Layer"]
+        EREG[("🗄️ EMOJI Registry<br/>4000+ emojis")]
     end
 
-    subgraph icons_mod["🎭 icons.py"]
+    subgraph icon_data["🛠️ utils/icon_data.py"]
+        IMAP[("🗄️ ICON_MAP<br/>204 mappings")]
+    end
+
+    subgraph icons_mod["🎭 icons.py (Primary Facade)"]
         IP["IconProvider (singleton)"]
         MODE["_icon_mode: auto|emoji|ascii"]
     end
@@ -519,12 +533,15 @@ flowchart LR
     APP --> IP
     IP --> MODE
     IP --> IMAP
+    IMAP --> EREG
 
+    style emoji_layer fill:#E8F5E9,stroke:#4CAF50,stroke-width:2px
     style icon_data fill:#E0F7FA,stroke:#00BCD4,stroke-width:2px
-    style icons_mod fill:#E3F2FD,stroke:#2196F3,stroke-width:2px
+    style icons_mod fill:#E3F2FD,stroke:#2196F3,stroke-width:3px
     style APP fill:#FCE4EC,stroke:#E91E63,stroke-width:2px
     style IP fill:#2196F3,color:#fff,stroke:#1565C0,stroke-width:2px
     style IMAP fill:#4DD0E1,color:#006064,stroke:#00BCD4
+    style EREG fill:#4CAF50,color:#fff,stroke:#2E7D32
 ```
 
 #### Icon Categories

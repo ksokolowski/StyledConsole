@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>System Status Dashboard</title>
+<meta charset="UTF-8">
+<style>
+
+body {
+    color: #d9d9d9;
+    background-color: #0c0c0c;
+}
+
+    /* VS16 Emoji Alignment Fix */
+    .rich-emoji-vs16 {
+        display: inline-block;
+        width: 1ch;
+        overflow: visible;
+        white-space: nowrap;
+        vertical-align: text-bottom;
+        text-align: left;
+    }
+
+
+    body {
+        font-family: 'Fira Code', monospace;
+        background-color: #1a1a1a;
+        margin: 2rem;
+    }
+    .rich-terminal {
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        border-radius: 8px;
+        padding: 2rem;
+        background-color: #222;
+    }
+
+</style>
+</head>
+<body>
+    <pre style="font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><code style="font-family:inherit">            ╔═════════════════════════════════════════════════════════════════════════╗
+            ║ <span style="color: #1e90ff; text-decoration-color: #1e90ff"> ______   ______ _____ _____ __  __   ____ _____  _  _____ _   _ ____  </span> ║
+            ║ <span style="color: #18a6ff; text-decoration-color: #18a6ff">/ ___\ \ / / ___|_   _| ____|  \/  | / ___|_   _|/ \|_   _| | | / ___| </span> ║
+            ║ <span style="color: #12bcff; text-decoration-color: #12bcff">\___ \\ V /\___ \ | | |  _| | |\/| | \___ \ | | / _ \ | | | | | \___ \ </span> ║
+            ║ <span style="color: #0cd2ff; text-decoration-color: #0cd2ff"> ___) || |  ___) || | | |___| |  | |  ___) || |/ ___ \| | | |_| |___) |</span> ║
+            ║ <span style="color: #06e8ff; text-decoration-color: #06e8ff">|____/ |_| |____/ |_| |_____|_|  |_| |____/ |_/_/   \_\_|  \___/|____/ </span> ║
+            ║ <span style="color: #00ffff; text-decoration-color: #00ffff">                                                                       </span> ║
+            ╚═════════════════════════════════════════════════════════════════════════╝
+╭────────── Metrics ──────────╮
+│ CPU Load      42%        🟢 │
+│ Memory        1.2GB      🟢 │
+│ Disk          85%        <span class="rich-emoji-vs16">⚠️</span>  │
+│ Network       120ms      🔴 │
+╰─────────────────────────────╯
+<span style="color: #008000; text-decoration-color: #008000">System analysis complete. No critical errors found.</span>
+</code></pre>
+</body>
+</html>

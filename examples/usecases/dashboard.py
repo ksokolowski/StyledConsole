@@ -5,7 +5,7 @@ Dashboard Preset Demo
 Demonstrates the usage of the dashboard preset for creating grid-based layouts.
 """
 
-from styledconsole import EMOJI, Console
+from styledconsole import Console, icons
 from styledconsole.presets import DashboardWidget, dashboard
 
 
@@ -16,27 +16,27 @@ def main():
     # Define widgets
     widgets: list[DashboardWidget] = [
         {
-            "title": f"{EMOJI.CHART_INCREASING} System Load",
+            "title": f"{icons.CHART_INCREASING} System Load",
             "content": "CPU: 45%\nMemory: 2.4GB\nDisk: 85%",
         },
         {
-            "title": f"{EMOJI.GLOBE_WITH_MERIDIANS} Network",
+            "title": f"{icons.GLOBE_WITH_MERIDIANS} Network",
             "content": "In: 1.2 MB/s\nOut: 0.4 MB/s\nActive Connections: 124",
         },
         {
-            "title": f"{EMOJI.WARNING} Alerts",
-            "content": f"{EMOJI.WARNING} High Latency (us-east-1)\n"
-            f"{EMOJI.CHECK_MARK_BUTTON} Database Backup Complete",
+            "title": f"{icons.WARNING} Alerts",
+            "content": f"{icons.WARNING} High Latency (us-east-1)\n"
+            f"{icons.CHECK_MARK_BUTTON} Database Backup Complete",
         },
         {
-            "title": f"{EMOJI.CALENDAR} Schedule",
+            "title": f"{icons.CALENDAR} Schedule",
             "content": "12:00 - Deployment\n14:30 - Team Sync\n16:00 - Code Review",
         },
     ]
 
     # Render dashboard
     dashboard(
-        title=f"{EMOJI.ROCKET} Mission Control Center", widgets=widgets, columns=2, console=console
+        title=f"{icons.ROCKET} Mission Control Center", widgets=widgets, columns=2, console=console
     )
 
     console.newline(2)

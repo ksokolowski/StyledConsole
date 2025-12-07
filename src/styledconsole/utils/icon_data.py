@@ -20,6 +20,8 @@ Color Philosophy:
 
 from typing import Final, NamedTuple
 
+from styledconsole.emoji_registry import EMOJI
+
 
 class IconMapping(NamedTuple):
     """Mapping from emoji to ASCII with optional color.
@@ -45,31 +47,33 @@ class IconMapping(NamedTuple):
 # -----------------------------------------------------------------------------
 STATUS_ICONS: Final[dict[str, IconMapping]] = {
     # Primary status - use parentheses or other symbols
-    "CHECK_MARK_BUTTON": IconMapping("✅", "(OK)", "green"),
-    "CROSS_MARK": IconMapping("❌", "(FAIL)", "red"),
-    "WARNING": IconMapping("⚠️", "(WARN)", "yellow"),
-    "INFORMATION": IconMapping("ℹ️", "(INFO)", "cyan"),
-    "RED_QUESTION_MARK": IconMapping("❓", "(?)", "magenta"),
-    "COUNTERCLOCKWISE_ARROWS_BUTTON": IconMapping("🔄", "(~)", "cyan"),
+    "CHECK_MARK_BUTTON": IconMapping(EMOJI.CHECK_MARK_BUTTON, "(OK)", "green"),
+    "CROSS_MARK": IconMapping(EMOJI.CROSS_MARK, "(FAIL)", "red"),
+    "WARNING": IconMapping(EMOJI.WARNING, "(WARN)", "yellow"),
+    "INFORMATION": IconMapping(EMOJI.INFORMATION, "(INFO)", "cyan"),
+    "RED_QUESTION_MARK": IconMapping(EMOJI.RED_QUESTION_MARK, "(?)", "magenta"),
+    "COUNTERCLOCKWISE_ARROWS_BUTTON": IconMapping(
+        EMOJI.COUNTERCLOCKWISE_ARROWS_BUTTON, "(~)", "cyan"
+    ),
     # Colored circles -> colored bullets
-    "RED_CIRCLE": IconMapping("🔴", "●", "red"),
-    "YELLOW_CIRCLE": IconMapping("🟡", "●", "yellow"),
-    "GREEN_CIRCLE": IconMapping("🟢", "●", "green"),
-    "BLUE_CIRCLE": IconMapping("🔵", "●", "blue"),
-    "PURPLE_CIRCLE": IconMapping("🟣", "●", "magenta"),
-    "ORANGE_CIRCLE": IconMapping("🟠", "●", "darkorange"),
-    "WHITE_CIRCLE": IconMapping("⚪", "○", None),
-    "BLACK_CIRCLE": IconMapping("⚫", "●", None),
+    "RED_CIRCLE": IconMapping(EMOJI.RED_CIRCLE, "●", "red"),
+    "YELLOW_CIRCLE": IconMapping(EMOJI.YELLOW_CIRCLE, "●", "yellow"),
+    "GREEN_CIRCLE": IconMapping(EMOJI.GREEN_CIRCLE, "●", "green"),
+    "BLUE_CIRCLE": IconMapping(EMOJI.BLUE_CIRCLE, "●", "blue"),
+    "PURPLE_CIRCLE": IconMapping(EMOJI.PURPLE_CIRCLE, "●", "magenta"),
+    "ORANGE_CIRCLE": IconMapping(EMOJI.ORANGE_CIRCLE, "●", "darkorange"),
+    "WHITE_CIRCLE": IconMapping(EMOJI.WHITE_CIRCLE, "○", None),
+    "BLACK_CIRCLE": IconMapping(EMOJI.BLACK_CIRCLE, "●", None),
 }
 
 # -----------------------------------------------------------------------------
 # Stars & Sparkles - Celebrations, highlights
 # -----------------------------------------------------------------------------
 STARS_ICONS: Final[dict[str, IconMapping]] = {
-    "STAR": IconMapping("⭐", "*", "yellow"),
-    "SPARKLES": IconMapping("✨", "**", "yellow"),
-    "DIZZY": IconMapping("💫", "*~", "yellow"),
-    "GLOWING_STAR": IconMapping("🌟", "(*)", "yellow"),
+    "STAR": IconMapping(EMOJI.STAR, "*", "yellow"),
+    "SPARKLES": IconMapping(EMOJI.SPARKLES, "**", "yellow"),
+    "DIZZY": IconMapping(EMOJI.DIZZY, "*~", "yellow"),
+    "GLOWING_STAR": IconMapping(EMOJI.GLOWING_STAR, "(*)", "yellow"),
 }
 
 # -----------------------------------------------------------------------------
@@ -77,171 +81,171 @@ STARS_ICONS: Final[dict[str, IconMapping]] = {
 # -----------------------------------------------------------------------------
 DOCUMENT_ICONS: Final[dict[str, IconMapping]] = {
     # Charts
-    "BAR_CHART": IconMapping("📊", "(#)", "blue"),
-    "CHART_INCREASING": IconMapping("📈", "(^)", "green"),
-    "CHART_DECREASING": IconMapping("📉", "(v)", "red"),
-    "PACKAGE": IconMapping("📦", "(P)", "saddlebrown"),
+    "BAR_CHART": IconMapping(EMOJI.BAR_CHART, "(#)", "blue"),
+    "CHART_INCREASING": IconMapping(EMOJI.CHART_INCREASING, "(^)", "green"),
+    "CHART_DECREASING": IconMapping(EMOJI.CHART_DECREASING, "(v)", "red"),
+    "PACKAGE": IconMapping(EMOJI.PACKAGE, "(P)", "saddlebrown"),
     # Folders
-    "FILE_FOLDER": IconMapping("📁", "(/)", "blue"),
-    "OPEN_FILE_FOLDER": IconMapping("📂", "(+)", "blue"),
-    "FILE_CABINET": IconMapping("🗄", "(=)", "gray"),
-    "CARD_FILE_BOX": IconMapping("🗃", "(=)", "gray"),
-    "WASTEBASKET": IconMapping("🗑", "(x)", "gray"),
+    "FILE_FOLDER": IconMapping(EMOJI.FILE_FOLDER, "(/)", "blue"),
+    "OPEN_FILE_FOLDER": IconMapping(EMOJI.OPEN_FILE_FOLDER, "(+)", "blue"),
+    "FILE_CABINET": IconMapping(EMOJI.FILE_CABINET, "(=)", "gray"),
+    "CARD_FILE_BOX": IconMapping(EMOJI.CARD_FILE_BOX, "(=)", "gray"),
+    "WASTEBASKET": IconMapping(EMOJI.WASTEBASKET, "(x)", "gray"),
     # Files
-    "PAGE_FACING_UP": IconMapping("📄", "(f)", None),
-    "PAGE_WITH_CURL": IconMapping("📃", "(d)", None),
-    "SCROLL": IconMapping("📜", "(s)", "goldenrod"),
-    "MEMO": IconMapping("📝", "(m)", None),
-    "CLIPBOARD": IconMapping("📋", "(c)", None),
-    "PUSHPIN": IconMapping("📌", "(*)", "red"),
-    "PAPERCLIP": IconMapping("📎", "(-)", "gray"),
-    "BOOKMARK": IconMapping("🔖", "(>)", "tomato"),
-    "LABEL": IconMapping("🏷", "(t)", None),
-    "CARD_INDEX": IconMapping("📇", "(i)", None),
-    "CONSTRUCTION": IconMapping("🚧", "(!!)", "yellow"),
+    "PAGE_FACING_UP": IconMapping(EMOJI.PAGE_FACING_UP, "(f)", None),
+    "PAGE_WITH_CURL": IconMapping(EMOJI.PAGE_WITH_CURL, "(d)", None),
+    "SCROLL": IconMapping(EMOJI.SCROLL, "(s)", "goldenrod"),
+    "MEMO": IconMapping(EMOJI.MEMO, "(m)", None),
+    "CLIPBOARD": IconMapping(EMOJI.CLIPBOARD, "(c)", None),
+    "PUSHPIN": IconMapping(EMOJI.PUSHPIN, "(*)", "red"),
+    "PAPERCLIP": IconMapping(EMOJI.PAPERCLIP, "(-)", "gray"),
+    "BOOKMARK": IconMapping(EMOJI.BOOKMARK, "(>)", "tomato"),
+    "LABEL": IconMapping(EMOJI.LABEL, "(t)", None),
+    "CARD_INDEX": IconMapping(EMOJI.CARD_INDEX, "(i)", None),
+    "CONSTRUCTION": IconMapping(EMOJI.CONSTRUCTION, "(!!)", "yellow"),
 }
 
 # -----------------------------------------------------------------------------
 # Books & Reading
 # -----------------------------------------------------------------------------
 BOOK_ICONS: Final[dict[str, IconMapping]] = {
-    "OPEN_BOOK": IconMapping("📖", "(B)", None),
-    "BOOKS": IconMapping("📚", "(BB)", None),
-    "NOTEBOOK": IconMapping("📓", "(N)", None),
-    "LEDGER": IconMapping("📒", "(L)", "yellow"),
-    "CLOSED_BOOK": IconMapping("📕", "(B)", "red"),
-    "GREEN_BOOK": IconMapping("📗", "(B)", "green"),
-    "BLUE_BOOK": IconMapping("📘", "(B)", "blue"),
-    "ORANGE_BOOK": IconMapping("📙", "(B)", "darkorange"),
-    "NEWSPAPER": IconMapping("📰", "(N)", None),
-    "ROLLED_UP_NEWSPAPER": IconMapping("🗞", "(N)", None),
+    "OPEN_BOOK": IconMapping(EMOJI.OPEN_BOOK, "(B)", None),
+    "BOOKS": IconMapping(EMOJI.BOOKS, "(BB)", None),
+    "NOTEBOOK": IconMapping(EMOJI.NOTEBOOK, "(N)", None),
+    "LEDGER": IconMapping(EMOJI.LEDGER, "(L)", "yellow"),
+    "CLOSED_BOOK": IconMapping(EMOJI.CLOSED_BOOK, "(B)", "red"),
+    "GREEN_BOOK": IconMapping(EMOJI.GREEN_BOOK, "(B)", "green"),
+    "BLUE_BOOK": IconMapping(EMOJI.BLUE_BOOK, "(B)", "blue"),
+    "ORANGE_BOOK": IconMapping(EMOJI.ORANGE_BOOK, "(B)", "darkorange"),
+    "NEWSPAPER": IconMapping(EMOJI.NEWSPAPER, "(N)", None),
+    "ROLLED_UP_NEWSPAPER": IconMapping(EMOJI.ROLLED_UP_NEWSPAPER, "(N)", None),
 }
 
 # -----------------------------------------------------------------------------
 # Technology - Computers, devices
 # -----------------------------------------------------------------------------
 TECH_ICONS: Final[dict[str, IconMapping]] = {
-    "LAPTOP": IconMapping("💻", "(PC)", None),
-    "DESKTOP": IconMapping("🖥", "(PC)", None),
-    "KEYBOARD": IconMapping("⌨", "(kb)", None),
-    "MOUSE": IconMapping("🖱", "(m)", None),
-    "FLOPPY_DISK": IconMapping("💾", "(D)", None),
-    "CD": IconMapping("💿", "(O)", None),
-    "DVD": IconMapping("📀", "(O)", "gold"),
-    "DESKTOP_COMPUTER": IconMapping("🖥", "(C)", None),
-    "SATELLITE_ANTENNA": IconMapping("📡", "(A)", None),
-    "GLOBE_WITH_MERIDIANS": IconMapping("🌐", "(@)", "blue"),
+    "LAPTOP": IconMapping(EMOJI.LAPTOP, "(PC)", None),
+    "DESKTOP": IconMapping(EMOJI.DESKTOP_COMPUTER, "(PC)", None),
+    "KEYBOARD": IconMapping(EMOJI.KEYBOARD, "(kb)", None),
+    "MOUSE": IconMapping(EMOJI.MOUSE, "(m)", None),
+    "FLOPPY_DISK": IconMapping(EMOJI.FLOPPY_DISK, "(D)", None),
+    "CD": IconMapping(EMOJI.OPTICAL_DISK, "(O)", None),
+    "DVD": IconMapping(EMOJI.DVD, "(O)", "gold"),
+    "DESKTOP_COMPUTER": IconMapping(EMOJI.DESKTOP_COMPUTER, "(C)", None),
+    "SATELLITE_ANTENNA": IconMapping(EMOJI.SATELLITE_ANTENNA, "(A)", None),
+    "GLOBE_WITH_MERIDIANS": IconMapping(EMOJI.GLOBE_WITH_MERIDIANS, "(@)", "blue"),
 }
 
 # -----------------------------------------------------------------------------
 # Tools & Science - Development, testing
 # -----------------------------------------------------------------------------
 TOOLS_ICONS: Final[dict[str, IconMapping]] = {
-    "TEST_TUBE": IconMapping("🧪", "(T)", "mediumpurple"),
-    "MICROSCOPE": IconMapping("🔬", "(M)", None),
-    "TRIANGULAR_RULER": IconMapping("📐", "(/)", None),
-    "WRENCH": IconMapping("🔧", "(w)", "gray"),
-    "HAMMER": IconMapping("🔨", "(h)", "gray"),
-    "GEAR": IconMapping("⚙️", "(*)", "gray"),
-    "NUT_BOLT": IconMapping("🔩", "(o)", "gray"),
+    "TEST_TUBE": IconMapping(EMOJI.TEST_TUBE, "(T)", "mediumpurple"),
+    "MICROSCOPE": IconMapping(EMOJI.MICROSCOPE, "(M)", None),
+    "TRIANGULAR_RULER": IconMapping(EMOJI.TRIANGULAR_RULER, "(/)", None),
+    "WRENCH": IconMapping(EMOJI.WRENCH, "(w)", "gray"),
+    "HAMMER": IconMapping(EMOJI.HAMMER, "(h)", "gray"),
+    "GEAR": IconMapping(EMOJI.GEAR, "(*)", "gray"),
+    "NUT_BOLT": IconMapping(EMOJI.NUT_AND_BOLT, "(o)", "gray"),
 }
 
 # -----------------------------------------------------------------------------
 # Activities & Celebrations
 # -----------------------------------------------------------------------------
 ACTIVITY_ICONS: Final[dict[str, IconMapping]] = {
-    "BULLSEYE": IconMapping("🎯", "(o)", "red"),
-    "ARTIST_PALETTE": IconMapping("🎨", "(~)", None),
-    "PAINTBRUSH": IconMapping("🖌️", "(/)", None),
-    "PARTY_POPPER": IconMapping("🎉", "(!)", "gold"),
-    "CONFETTI_BALL": IconMapping("🎊", "(!)", "gold"),
-    "WRAPPED_GIFT": IconMapping("🎁", "(G)", "red"),
-    "BALLOON": IconMapping("🎈", "o", "red"),
-    "TROPHY": IconMapping("🏆", "(#)", "gold"),
-    "MEDAL": IconMapping("🏅", "(m)", "gold"),
-    "FIREWORKS": IconMapping("🎆", "(*)", "gold"),
-    "CIRCUS_TENT": IconMapping("🎪", "(^)", "red"),
-    "PERFORMING_ARTS": IconMapping("🎭", "(:))", None),
+    "BULLSEYE": IconMapping(EMOJI.BULLSEYE, "(o)", "red"),
+    "ARTIST_PALETTE": IconMapping(EMOJI.ARTIST_PALETTE, "(~)", None),
+    "PAINTBRUSH": IconMapping(EMOJI.PAINTBRUSH, "(/)", None),
+    "PARTY_POPPER": IconMapping(EMOJI.PARTY_POPPER, "(!)", "gold"),
+    "CONFETTI_BALL": IconMapping(EMOJI.CONFETTI_BALL, "(!)", "gold"),
+    "WRAPPED_GIFT": IconMapping(EMOJI.WRAPPED_GIFT, "(G)", "red"),
+    "BALLOON": IconMapping(EMOJI.BALLOON, "o", "red"),
+    "TROPHY": IconMapping(EMOJI.TROPHY, "(#)", "gold"),
+    "MEDAL": IconMapping(EMOJI.SPORTS_MEDAL, "(m)", "gold"),
+    "FIREWORKS": IconMapping(EMOJI.FIREWORKS, "(*)", "gold"),
+    "CIRCUS_TENT": IconMapping(EMOJI.CIRCUS_TENT, "(^)", "red"),
+    "PERFORMING_ARTS": IconMapping(EMOJI.PERFORMING_ARTS, "(:))", None),
 }
 
 # -----------------------------------------------------------------------------
 # Transportation & Speed
 # -----------------------------------------------------------------------------
 TRANSPORT_ICONS: Final[dict[str, IconMapping]] = {
-    "ROCKET": IconMapping("🚀", ">>>", "cyan"),
-    "AIRPLANE": IconMapping("✈️", "->", None),
-    "AUTOMOBILE": IconMapping("🚗", "(>)", "red"),
-    "BIKE": IconMapping("🚲", "(o)", None),
-    "LOCOMOTIVE": IconMapping("🚂", "(=)", None),
-    "SHIP": IconMapping("🚢", "(~)", None),
+    "ROCKET": IconMapping(EMOJI.ROCKET, ">>>", "cyan"),
+    "AIRPLANE": IconMapping(EMOJI.AIRPLANE, "->", None),
+    "AUTOMOBILE": IconMapping(EMOJI.AUTOMOBILE, "(>)", "red"),
+    "BIKE": IconMapping(EMOJI.BICYCLE, "(o)", None),
+    "LOCOMOTIVE": IconMapping(EMOJI.LOCOMOTIVE, "(=)", None),
+    "SHIP": IconMapping(EMOJI.SHIP, "(~)", None),
 }
 
 # -----------------------------------------------------------------------------
 # Nature & Weather
 # -----------------------------------------------------------------------------
 WEATHER_ICONS: Final[dict[str, IconMapping]] = {
-    "RAINBOW": IconMapping("🌈", "(~)", None),  # No single color fits
-    "SUN": IconMapping("☀️", "(O)", "yellow"),
-    "SUNRISE": IconMapping("🌅", "(^)", "darkorange"),
-    "MOON": IconMapping("🌙", "(C)", "yellow"),
-    "DROPLET": IconMapping("💧", "o", "blue"),
-    "WATER_WAVE": IconMapping("🌊", "~~~", "blue"),
-    "FIRE": IconMapping("🔥", "~", "orangered"),
-    "SNOWFLAKE": IconMapping("❄️", "*", "cyan"),
-    "CLOUD": IconMapping("☁️", "(~)", None),
-    "HIGH_VOLTAGE": IconMapping("⚡", "/\\", "yellow"),
-    "TORNADO": IconMapping("🌪", "@", "gray"),
-    "MILKY_WAY": IconMapping("🌌", "(*)", "mediumpurple"),
-    "GLOBE_SHOWING_EUROPE_AFRICA": IconMapping("🌍", "(@)", "green"),
+    "RAINBOW": IconMapping(EMOJI.RAINBOW, "(~)", None),  # No single color fits
+    "SUN": IconMapping(EMOJI.SUN, "(O)", "yellow"),
+    "SUNRISE": IconMapping(EMOJI.SUNRISE, "(^)", "darkorange"),
+    "MOON": IconMapping(EMOJI.CRESCENT_MOON, "(C)", "yellow"),
+    "DROPLET": IconMapping(EMOJI.DROPLET, "o", "blue"),
+    "WATER_WAVE": IconMapping(EMOJI.WATER_WAVE, "~~~", "blue"),
+    "FIRE": IconMapping(EMOJI.FIRE, "~", "orangered"),
+    "SNOWFLAKE": IconMapping(EMOJI.SNOWFLAKE, "*", "cyan"),
+    "CLOUD": IconMapping(EMOJI.CLOUD, "(~)", None),
+    "HIGH_VOLTAGE": IconMapping(EMOJI.HIGH_VOLTAGE, "/\\", "yellow"),
+    "TORNADO": IconMapping(EMOJI.TORNADO, "@", "gray"),
+    "MILKY_WAY": IconMapping(EMOJI.MILKY_WAY, "(*)", "mediumpurple"),
+    "GLOBE_SHOWING_EUROPE_AFRICA": IconMapping(EMOJI.GLOBE_SHOWING_EUROPE_AFRICA, "(@)", "green"),
 }
 
 # -----------------------------------------------------------------------------
 # Plants
 # -----------------------------------------------------------------------------
 PLANT_ICONS: Final[dict[str, IconMapping]] = {
-    "EVERGREEN_TREE": IconMapping("🌲", "(T)", "green"),
-    "PALM": IconMapping("🌴", "(Y)", "green"),
-    "CACTUS": IconMapping("🌵", "(|)", "green"),
-    "SEEDLING": IconMapping("🌱", "(.)", "green"),
-    "HERB": IconMapping("🌿", "(~)", "green"),
-    "SHAMROCK": IconMapping("☘", "(*)", "green"),
-    "FOUR_LEAF_CLOVER": IconMapping("🍀", "(+)", "green"),
-    "CHERRY_BLOSSOM": IconMapping("🌸", "(*)", "lightpink"),
-    "LEAF_FLUTTERING_IN_WIND": IconMapping("🍃", "~~", "green"),
-    "MAPLE_LEAF": IconMapping("🍁", "(*)", "orangered"),  # autumn
+    "EVERGREEN_TREE": IconMapping(EMOJI.EVERGREEN_TREE, "(T)", "green"),
+    "PALM": IconMapping(EMOJI.PALM_TREE, "(Y)", "green"),
+    "CACTUS": IconMapping(EMOJI.CACTUS, "(|)", "green"),
+    "SEEDLING": IconMapping(EMOJI.SEEDLING, "(.)", "green"),
+    "HERB": IconMapping(EMOJI.HERB, "(~)", "green"),
+    "SHAMROCK": IconMapping(EMOJI.SHAMROCK, "(*)", "green"),
+    "FOUR_LEAF_CLOVER": IconMapping(EMOJI.FOUR_LEAF_CLOVER, "(+)", "green"),
+    "CHERRY_BLOSSOM": IconMapping(EMOJI.CHERRY_BLOSSOM, "(*)", "lightpink"),
+    "LEAF_FLUTTERING_IN_WIND": IconMapping(EMOJI.LEAF_FLUTTERING_IN_WIND, "~~", "green"),
+    "MAPLE_LEAF": IconMapping(EMOJI.MAPLE_LEAF, "(*)", "orangered"),  # autumn
 }
 
 # -----------------------------------------------------------------------------
 # Food & Drink
 # -----------------------------------------------------------------------------
 FOOD_ICONS: Final[dict[str, IconMapping]] = {
-    "PIZZA": IconMapping("🍕", "(>)", "darkorange"),
-    "BURGER": IconMapping("🍔", "(=)", "saddlebrown"),
-    "FRIES": IconMapping("🍟", "(|)", "yellow"),
-    "COFFEE": IconMapping("☕", "(c)", "saddlebrown"),
-    "BEER": IconMapping("🍺", "(U)", "gold"),
-    "WINE": IconMapping("🍷", "(Y)", "darkred"),
-    "COCKTAIL": IconMapping("🍹", "(Y)", None),
-    "CAKE": IconMapping("🍰", "(^)", "lightpink"),
-    "COOKIE": IconMapping("🍪", "(o)", "saddlebrown"),
-    "TANGERINE": IconMapping("🍊", "(o)", "darkorange"),
-    "GRAPES": IconMapping("🍇", "oo", "purple"),
-    "WATERMELON": IconMapping("🍉", "[>", "green"),
-    "CHESTNUT": IconMapping("🌰", "()", "saddlebrown"),
+    "PIZZA": IconMapping(EMOJI.PIZZA, "(>)", "darkorange"),
+    "BURGER": IconMapping(EMOJI.HAMBURGER, "(=)", "saddlebrown"),
+    "FRIES": IconMapping(EMOJI.FRENCH_FRIES, "(|)", "yellow"),
+    "COFFEE": IconMapping(EMOJI.HOT_BEVERAGE, "(c)", "saddlebrown"),
+    "BEER": IconMapping(EMOJI.BEER_MUG, "(U)", "gold"),
+    "WINE": IconMapping(EMOJI.WINE_GLASS, "(Y)", "darkred"),
+    "COCKTAIL": IconMapping(EMOJI.TROPICAL_DRINK, "(Y)", None),
+    "CAKE": IconMapping(EMOJI.SHORTCAKE, "(^)", "lightpink"),
+    "COOKIE": IconMapping(EMOJI.COOKIE, "(o)", "saddlebrown"),
+    "TANGERINE": IconMapping(EMOJI.TANGERINE, "(o)", "darkorange"),
+    "GRAPES": IconMapping(EMOJI.GRAPES, "oo", "purple"),
+    "WATERMELON": IconMapping(EMOJI.WATERMELON, "[>", "green"),
+    "CHESTNUT": IconMapping(EMOJI.CHESTNUT, "()", "saddlebrown"),
 }
 
 # -----------------------------------------------------------------------------
 # People & Gestures
 # -----------------------------------------------------------------------------
 PEOPLE_ICONS: Final[dict[str, IconMapping]] = {
-    "BUSTS_IN_SILHOUETTE": IconMapping("👥", "(PP)", None),
-    "PERSON": IconMapping("👤", "(P)", None),
-    "THUMBS_UP": IconMapping("👍", "(+)", "green"),
-    "THUMBS_DOWN": IconMapping("👎", "(-)", "red"),
-    "WAVING_HAND": IconMapping("👋", "(/)", None),
-    "HANDS_UP": IconMapping("🙌", "(^^)", None),
-    "CLAP": IconMapping("👏", "(*)", None),
-    "MUSCLE": IconMapping("💪", "(!)", None),
+    "BUSTS_IN_SILHOUETTE": IconMapping(EMOJI.BUSTS_IN_SILHOUETTE, "(PP)", None),
+    "PERSON": IconMapping(EMOJI.PERSON, "(P)", None),
+    "THUMBS_UP": IconMapping(EMOJI.THUMBS_UP, "(+)", "green"),
+    "THUMBS_DOWN": IconMapping(EMOJI.THUMBS_DOWN, "(-)", "red"),
+    "WAVING_HAND": IconMapping(EMOJI.WAVING_HAND, "(/)", None),
+    "HANDS_UP": IconMapping(EMOJI.RAISING_HANDS, "(^^)", None),
+    "CLAP": IconMapping(EMOJI.CLAPPING_HANDS, "(*)", None),
+    "MUSCLE": IconMapping(EMOJI.FLEXED_BICEPS, "(!)", None),
 }
 
 # -----------------------------------------------------------------------------
@@ -249,139 +253,140 @@ PEOPLE_ICONS: Final[dict[str, IconMapping]] = {
 # -----------------------------------------------------------------------------
 ARROW_ICONS: Final[dict[str, IconMapping]] = {
     # Basic arrows
-    "ARROW_RIGHT": IconMapping("→", "->", None),
-    "ARROW_LEFT": IconMapping("←", "<-", None),
-    "ARROW_UP": IconMapping("↑", "^", None),
-    "ARROW_DOWN": IconMapping("↓", "v", None),
-    "UP_RIGHT_ARROW": IconMapping("↗", "/^", None),
-    "ARROW_DOWN_RIGHT": IconMapping("↘", "\\v", None),
-    "ARROW_DOWN_LEFT": IconMapping("↙", "/v", None),
-    "ARROW_UP_LEFT": IconMapping("↖", "\\^", None),
+    "ARROW_RIGHT": IconMapping(EMOJI.ARROW_RIGHT, "->", None),
+    "ARROW_LEFT": IconMapping(EMOJI.ARROW_LEFT, "<-", None),
+    "ARROW_UP": IconMapping(EMOJI.ARROW_UP, "^", None),
+    "ARROW_DOWN": IconMapping(EMOJI.ARROW_DOWN, "v", None),
+    "UP_RIGHT_ARROW": IconMapping(EMOJI.UP_RIGHT_ARROW, "/^", None),
+    "ARROW_DOWN_RIGHT": IconMapping(EMOJI.DOWN_RIGHT_ARROW, "\\v", None),
+    "ARROW_DOWN_LEFT": IconMapping(EMOJI.DOWN_LEFT_ARROW, "/v", None),
+    "ARROW_UP_LEFT": IconMapping(EMOJI.UP_LEFT_ARROW, "\\^", None),
     # Heavy arrows
-    "HEAVY_RIGHT": IconMapping("➡", "==>", None),
-    "HEAVY_LEFT": IconMapping("⬅", "<==", None),
-    "HEAVY_UP": IconMapping("⬆", "^^", None),
-    "HEAVY_DOWN": IconMapping("⬇", "vv", None),
+    "HEAVY_RIGHT": IconMapping(EMOJI.RIGHT_ARROW, "==>", None),
+    "HEAVY_LEFT": IconMapping(EMOJI.LEFT_ARROW, "<==", None),
+    "HEAVY_UP": IconMapping(EMOJI.UP_ARROW, "^^", None),
+    "HEAVY_DOWN": IconMapping(EMOJI.DOWN_ARROW, "vv", None),
 }
 
 # -----------------------------------------------------------------------------
 # Symbols - Mixed utility icons
 # -----------------------------------------------------------------------------
 SYMBOL_ICONS: Final[dict[str, IconMapping]] = {
-    "LIGHT_BULB": IconMapping("💡", "(!)", "yellow"),
-    "BELL": IconMapping("🔔", "(b)", "yellow"),
-    "POLICE_CAR_LIGHT": IconMapping("🚨", "(!)", "red"),
-    "TRIANGULAR_RULER": IconMapping("📐", "(/)", None),
-    "LOCKED": IconMapping("🔒", "(L)", "gray"),
-    "UNLOCK": IconMapping("🔓", "(U)", "gray"),
-    "KEY": IconMapping("🔑", "(k)", "gold"),
-    "LINK": IconMapping("🔗", "(-)", "blue"),
-    "CHAIN": IconMapping("⛓", "(-)", "gray"),
-    "MAG": IconMapping("🔍", "(?)", None),
-    "SHIELD": IconMapping("🛡", "(#)", "gray"),
-    "CROWN": IconMapping("👑", "(^)", "gold"),
+    "LIGHT_BULB": IconMapping(EMOJI.LIGHT_BULB, "(!)", "yellow"),
+    "BELL": IconMapping(EMOJI.BELL, "(b)", "yellow"),
+    "POLICE_CAR_LIGHT": IconMapping(EMOJI.POLICE_CAR_LIGHT, "(!)", "red"),
+    "TRIANGULAR_RULER": IconMapping(EMOJI.TRIANGULAR_RULER, "(/)", None),
+    "LOCKED": IconMapping(EMOJI.LOCKED, "(L)", "gray"),
+    "UNLOCK": IconMapping(EMOJI.UNLOCKED, "(U)", "gray"),
+    "KEY": IconMapping(EMOJI.KEY, "(k)", "gold"),
+    "LINK": IconMapping(EMOJI.LINK, "(-)", "blue"),
+    "CHAIN": IconMapping(EMOJI.CHAINS, "(-)", "gray"),
+    "MAG": IconMapping(EMOJI.MAGNIFYING_GLASS_TILTED_LEFT, "(?)", None),
+    "SHIELD": IconMapping(EMOJI.SHIELD, "(#)", "gray"),
+    "CROWN": IconMapping(EMOJI.CROWN, "(^)", "gold"),
 }
 
 # -----------------------------------------------------------------------------
 # Math & Logic
 # -----------------------------------------------------------------------------
 MATH_ICONS: Final[dict[str, IconMapping]] = {
-    "PLUS": IconMapping("➕", "+", "green"),
-    "MINUS": IconMapping("➖", "-", "red"),
-    "MULTIPLY": IconMapping("✖️", "x", None),
-    "DIVIDE": IconMapping("➗", "/", None),
-    "EQUALS": IconMapping("🟰", "=", None),
+    "PLUS": IconMapping(EMOJI.PLUS, "+", "green"),
+    "MINUS": IconMapping(EMOJI.MINUS, "-", "red"),
+    "MULTIPLY": IconMapping(EMOJI.MULTIPLY, "x", None),
+    "DIVIDE": IconMapping(EMOJI.DIVIDE, "/", None),
+    "EQUALS": IconMapping(EMOJI.HEAVY_EQUALS_SIGN, "=", None),
 }
 
 # -----------------------------------------------------------------------------
 # Hearts - Use appropriate colors
 # -----------------------------------------------------------------------------
 HEART_ICONS: Final[dict[str, IconMapping]] = {
-    "RED_HEART": IconMapping("❤️", "<3", "red"),
-    "ORANGE_HEART": IconMapping("🧡", "<3", "darkorange"),
-    "YELLOW_HEART": IconMapping("💛", "<3", "yellow"),
-    "GREEN_HEART": IconMapping("💚", "<3", "green"),
-    "BLUE_HEART": IconMapping("💙", "<3", "blue"),
-    "PURPLE_HEART": IconMapping("💜", "<3", "magenta"),
-    "BROKEN_HEART": IconMapping("💔", "</3", "red"),
-    "SPARKLING_HEART": IconMapping("💖", "<*>", "hotpink"),
-    "GROWING_HEART": IconMapping("💗", "<3>", "hotpink"),
+    "RED_HEART": IconMapping(EMOJI.RED_HEART, "<3", "red"),
+    "ORANGE_HEART": IconMapping(EMOJI.ORANGE_HEART, "<3", "darkorange"),
+    "YELLOW_HEART": IconMapping(EMOJI.YELLOW_HEART, "<3", "yellow"),
+    "GREEN_HEART": IconMapping(EMOJI.GREEN_HEART, "<3", "green"),
+    "BLUE_HEART": IconMapping(EMOJI.BLUE_HEART, "<3", "blue"),
+    "PURPLE_HEART": IconMapping(EMOJI.PURPLE_HEART, "<3", "magenta"),
+    "BROKEN_HEART": IconMapping(EMOJI.BROKEN_HEART, "</3", "red"),
+    "SPARKLING_HEART": IconMapping(EMOJI.SPARKLING_HEART, "<*>", "hotpink"),
+    "GROWING_HEART": IconMapping(EMOJI.GROWING_HEART, "<3>", "hotpink"),
 }
 
 # -----------------------------------------------------------------------------
 # Currency & Money
 # -----------------------------------------------------------------------------
 MONEY_ICONS: Final[dict[str, IconMapping]] = {
-    "DOLLAR_BANKNOTE": IconMapping("💵", "($)", "green"),
-    "MONEY_BAG": IconMapping("💰", "($)", "gold"),
-    "COIN": IconMapping("🪙", "(o)", "gold"),
-    "CREDIT_CARD": IconMapping("💳", "(=)", None),
-    "GEM_STONE": IconMapping("💎", "<>", "cyan"),
+    "DOLLAR_BANKNOTE": IconMapping(EMOJI.DOLLAR_BANKNOTE, "($)", "green"),
+    "MONEY_BAG": IconMapping(EMOJI.MONEY_BAG, "($)", "gold"),
+    "COIN": IconMapping(EMOJI.COIN, "(o)", "gold"),
+    "CREDIT_CARD": IconMapping(EMOJI.CREDIT_CARD, "(=)", None),
+    "GEM_STONE": IconMapping(EMOJI.GEM_STONE, "<>", "cyan"),
 }
 
 # -----------------------------------------------------------------------------
 # Time & Calendar
 # -----------------------------------------------------------------------------
 TIME_ICONS: Final[dict[str, IconMapping]] = {
-    "ONE_OCLOCK": IconMapping("🕐", "(t)", None),
-    "ALARM_CLOCK": IconMapping("⏰", "(!)", "red"),
-    "STOPWATCH": IconMapping("⏱", "(t)", "cyan"),
-    "TIMER": IconMapping("⏲", "(t)", "cyan"),
-    "HOURGLASS_DONE": IconMapping("⌛", "(t)", None),
-    "CALENDAR": IconMapping("📅", "(#)", None),
+    "ONE_OCLOCK": IconMapping(EMOJI.ONE_OCLOCK, "(t)", None),
+    "ALARM_CLOCK": IconMapping(EMOJI.ALARM_CLOCK, "(!)", "red"),
+    "STOPWATCH": IconMapping(EMOJI.STOPWATCH, "(t)", "cyan"),
+    "TIMER": IconMapping(EMOJI.TIMER_CLOCK, "(t)", "cyan"),
+    "HOURGLASS_DONE": IconMapping(EMOJI.HOURGLASS_DONE, "(t)", None),
+    "HOURGLASS_NOT_DONE": IconMapping(EMOJI.HOURGLASS_NOT_DONE, "(...)", "cyan"),
+    "CALENDAR": IconMapping(EMOJI.CALENDAR, "(#)", None),
 }
 
 # -----------------------------------------------------------------------------
 # Communication & Media
 # -----------------------------------------------------------------------------
 COMM_ICONS: Final[dict[str, IconMapping]] = {
-    "MOBILE_PHONE": IconMapping("📱", "(p)", None),
-    "TELEPHONE": IconMapping("☎️", "(p)", None),
-    "E_MAIL": IconMapping("📧", "(@)", None),
-    "ENVELOPE": IconMapping("✉️", "(_)", None),
-    "MAILBOX": IconMapping("📬", "(M)", None),
-    "SPEAKER": IconMapping("🔊", "(>)", None),
-    "MEGAPHONE": IconMapping("📣", "(>)", None),
-    "LOUDSPEAKER": IconMapping("📢", "(>)", None),
-    "GLOBE_WITH_MERIDIANS": IconMapping("🌐", "(@)", "blue"),
+    "MOBILE_PHONE": IconMapping(EMOJI.MOBILE_PHONE, "(p)", None),
+    "TELEPHONE": IconMapping(EMOJI.TELEPHONE, "(p)", None),
+    "E_MAIL": IconMapping(EMOJI.E_MAIL, "(@)", None),
+    "ENVELOPE": IconMapping(EMOJI.ENVELOPE, "(_)", None),
+    "MAILBOX": IconMapping(EMOJI.OPEN_MAILBOX_WITH_RAISED_FLAG, "(M)", None),
+    "SPEAKER": IconMapping(EMOJI.SPEAKER_HIGH_VOLUME, "(>)", None),
+    "MEGAPHONE": IconMapping(EMOJI.MEGAPHONE, "(>)", None),
+    "LOUDSPEAKER": IconMapping(EMOJI.LOUDSPEAKER, "(>)", None),
+    "GLOBE_WITH_MERIDIANS": IconMapping(EMOJI.GLOBE_WITH_MERIDIANS, "(@)", "blue"),
 }
 
 # -----------------------------------------------------------------------------
 # Buildings & Places
 # -----------------------------------------------------------------------------
 BUILDING_ICONS: Final[dict[str, IconMapping]] = {
-    "HOME": IconMapping("🏠", "(H)", None),
-    "OFFICE": IconMapping("🏢", "(O)", None),
-    "FACTORY": IconMapping("🏭", "(F)", "gray"),
-    "HOSPITAL": IconMapping("🏥", "(+)", "red"),
-    "SCHOOL": IconMapping("🏫", "(S)", None),
-    "BANK": IconMapping("🏦", "($)", None),
-    "HOTEL": IconMapping("🏨", "(H)", None),
-    "CASTLE": IconMapping("🏰", "(M)", None),
-    "DESERT": IconMapping("🏜️", "(~)", "goldenrod"),
-    "CLASSICAL_BUILDING": IconMapping("🏛", "(|)", None),
-    "STADIUM": IconMapping("🏟", "(U)", None),
+    "HOME": IconMapping(EMOJI.HOUSE, "(H)", None),
+    "OFFICE": IconMapping(EMOJI.OFFICE_BUILDING, "(O)", None),
+    "FACTORY": IconMapping(EMOJI.FACTORY, "(F)", "gray"),
+    "HOSPITAL": IconMapping(EMOJI.HOSPITAL, "(+)", "red"),
+    "SCHOOL": IconMapping(EMOJI.SCHOOL, "(S)", None),
+    "BANK": IconMapping(EMOJI.BANK, "($)", None),
+    "HOTEL": IconMapping(EMOJI.HOTEL, "(H)", None),
+    "CASTLE": IconMapping(EMOJI.CASTLE, "(M)", None),
+    "DESERT": IconMapping(EMOJI.DESERT, "(~)", "goldenrod"),
+    "CLASSICAL_BUILDING": IconMapping(EMOJI.CLASSICAL_BUILDING, "(|)", None),
+    "STADIUM": IconMapping(EMOJI.STADIUM, "(U)", None),
 }
 
 # -----------------------------------------------------------------------------
 # Flags
 # -----------------------------------------------------------------------------
 FLAG_ICONS: Final[dict[str, IconMapping]] = {
-    "FLAG_CHECKERED": IconMapping("🏁", "(F)", None),
-    "FLAG_TRIANGULAR": IconMapping("🚩", "[>", "red"),
-    "WHITE_FLAG": IconMapping("🏳", "(F)", None),
+    "FLAG_CHECKERED": IconMapping(EMOJI.CHEQUERED_FLAG, "(F)", None),
+    "FLAG_TRIANGULAR": IconMapping(EMOJI.TRIANGULAR_FLAG, "[>", "red"),
+    "WHITE_FLAG": IconMapping(EMOJI.WHITE_FLAG, "(F)", None),
 }
 
 # -----------------------------------------------------------------------------
 # Animals & Insects
 # -----------------------------------------------------------------------------
 ANIMAL_ICONS: Final[dict[str, IconMapping]] = {
-    "BUTTERFLY": IconMapping("🦋", "(W)", "mediumpurple"),
-    "BUG": IconMapping("🐛", "(b)", "green"),
-    "BEE": IconMapping("🐝", "(b)", "yellow"),
-    "LADY_BEETLE": IconMapping("🐞", "(b)", "red"),
-    "SNAIL": IconMapping("🐌", "(@)", None),
-    "TURTLE": IconMapping("🐢", "(T)", "green"),
+    "BUTTERFLY": IconMapping(EMOJI.BUTTERFLY, "(W)", "mediumpurple"),
+    "BUG": IconMapping(EMOJI.BUG, "(b)", "green"),
+    "BEE": IconMapping(EMOJI.HONEYBEE, "(b)", "yellow"),
+    "LADY_BEETLE": IconMapping(EMOJI.LADY_BEETLE, "(b)", "red"),
+    "SNAIL": IconMapping(EMOJI.SNAIL, "(@)", None),
+    "TURTLE": IconMapping(EMOJI.TURTLE, "(T)", "green"),
 }
 
 

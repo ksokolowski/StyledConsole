@@ -14,8 +14,7 @@ Use cases:
 - Debug output
 """
 
-from styledconsole import Console
-from styledconsole.emojis import EMOJI
+from styledconsole import Console, icons
 
 console = Console()
 
@@ -29,18 +28,18 @@ console.newline()
 
 console.frame(
     f"""
-{EMOJI.INFORMATION} 2025-11-11 14:23:15.234  INFO     [HTTP] GET /api/users → 200 (23ms)
-{EMOJI.INFORMATION} 2025-11-11 14:23:15.456  INFO     [HTTP] GET /api/products → 200 (45ms)
-{EMOJI.CHECK_MARK_BUTTON} 2025-11-11 14:23:16.123  INFO     [AUTH] User login: alice@example.com
-{EMOJI.INFORMATION} 2025-11-11 14:23:16.789  INFO     [DB] Query executed in 12ms
-{EMOJI.WARNING} 2025-11-11 14:23:17.234  WARN     [CACHE] Cache miss for key: user:1234
-{EMOJI.INFORMATION} 2025-11-11 14:23:17.567  INFO     [HTTP] POST /api/orders → 201 (234ms)
-{EMOJI.CROSS_MARK} 2025-11-11 14:23:18.890  ERROR    [DB] Connection timeout after 5000ms
-{EMOJI.INFORMATION} 2025-11-11 14:23:19.123  INFO     [DB] Reconnection successful
-{EMOJI.INFORMATION} 2025-11-11 14:23:19.456  INFO     [HTTP] GET /api/analytics → 200 (567ms)
-{EMOJI.CHECK_MARK_BUTTON} 2025-11-11 14:23:20.789  INFO     [AUTH] Session renewed: alice
+{icons.INFORMATION} 2025-11-11 14:23:15.234  INFO     [HTTP] GET /api/users → 200 (23ms)
+{icons.INFORMATION} 2025-11-11 14:23:15.456  INFO     [HTTP] GET /api/products → 200 (45ms)
+{icons.CHECK_MARK_BUTTON} 2025-11-11 14:23:16.123  INFO     [AUTH] User login: alice@example.com
+{icons.INFORMATION} 2025-11-11 14:23:16.789  INFO     [DB] Query executed in 12ms
+{icons.WARNING} 2025-11-11 14:23:17.234  WARN     [CACHE] Cache miss for key: user:1234
+{icons.INFORMATION} 2025-11-11 14:23:17.567  INFO     [HTTP] POST /api/orders → 201 (234ms)
+{icons.CROSS_MARK} 2025-11-11 14:23:18.890  ERROR    [DB] Connection timeout after 5000ms
+{icons.INFORMATION} 2025-11-11 14:23:19.123  INFO     [DB] Reconnection successful
+{icons.INFORMATION} 2025-11-11 14:23:19.456  INFO     [HTTP] GET /api/analytics → 200 (567ms)
+{icons.CHECK_MARK_BUTTON} 2025-11-11 14:23:20.789  INFO     [AUTH] Session renewed: alice
 """,
-    title=f"{EMOJI.SCROLL} Application Logs (Last 10 entries)",
+    title=f"{icons.SCROLL} Application Logs (Last 10 entries)",
     border="rounded",
     border_color="cyan",
     width=90,
@@ -52,24 +51,24 @@ console.newline()
 # SYSTEM LOGS
 # ============================================================================
 
-console.rule(f"{EMOJI.LAPTOP} SYSTEM LOGS", style="blue")
+console.rule(f"{icons.LAPTOP} SYSTEM LOGS", style="blue")
 console.newline()
 
 console.frame(
     f"""
-{EMOJI.INFORMATION} Nov 11 14:20:15 prod-web-01 systemd[1]: Started nginx.service
-{EMOJI.CHECK_MARK_BUTTON} Nov 11 14:20:16 prod-web-01 nginx: config test successful
-{EMOJI.INFORMATION} Nov 11 14:20:16 prod-web-01 systemd[1]: Reloading nginx
-{EMOJI.CHECK_MARK_BUTTON} Nov 11 14:20:17 prod-web-01 nginx: signal process started
-{EMOJI.INFORMATION} Nov 11 14:21:34 prod-web-01 sshd[12847]: Accepted publickey for alice
-{EMOJI.INFORMATION} Nov 11 14:22:15 prod-web-01 sudo: alice : /usr/bin/systemctl status nginx
-{EMOJI.WARNING} Nov 11 14:23:42 prod-web-01 kernel: [12847.234] Out of memory
-{EMOJI.CROSS_MARK} Nov 11 14:23:43 prod-web-01 systemd[1]: node-app.service: Main process exited
-{EMOJI.WARNING} Nov 11 14:23:43 prod-web-01 systemd[1]: node-app.service: Failed with 'oom-kill'
-{EMOJI.INFORMATION} Nov 11 14:23:44 prod-web-01 systemd[1]: node-app.service: Scheduled restart
-{EMOJI.CHECK_MARK_BUTTON} Nov 11 14:23:45 prod-web-01 systemd[1]: Started node-app.service
+{icons.INFORMATION} Nov 11 14:20:15 prod-web-01 systemd[1]: Started nginx.service
+{icons.CHECK_MARK_BUTTON} Nov 11 14:20:16 prod-web-01 nginx: config test successful
+{icons.INFORMATION} Nov 11 14:20:16 prod-web-01 systemd[1]: Reloading nginx
+{icons.CHECK_MARK_BUTTON} Nov 11 14:20:17 prod-web-01 nginx: signal process started
+{icons.INFORMATION} Nov 11 14:21:34 prod-web-01 sshd[12847]: Accepted publickey for alice
+{icons.INFORMATION} Nov 11 14:22:15 prod-web-01 sudo: alice : /usr/bin/systemctl status nginx
+{icons.WARNING} Nov 11 14:23:42 prod-web-01 kernel: [12847.234] Out of memory
+{icons.CROSS_MARK} Nov 11 14:23:43 prod-web-01 systemd[1]: node-app.service: Main process exited
+{icons.WARNING} Nov 11 14:23:43 prod-web-01 systemd[1]: node-app.service: Failed with 'oom-kill'
+{icons.INFORMATION} Nov 11 14:23:44 prod-web-01 systemd[1]: node-app.service: Scheduled restart
+{icons.CHECK_MARK_BUTTON} Nov 11 14:23:45 prod-web-01 systemd[1]: Started node-app.service
 """,
-    title=f"{EMOJI.GEAR} System Logs (/var/log/syslog)",
+    title=f"{icons.GEAR} System Logs (/var/log/syslog)",
     border="solid",
     border_color="blue",
     width=95,
@@ -81,12 +80,12 @@ console.newline()
 # ERROR LOGS
 # ============================================================================
 
-console.rule(f"{EMOJI.CROSS_MARK} ERROR TRACKING", style="red")
+console.rule(f"{icons.CROSS_MARK} ERROR TRACKING", style="red")
 console.newline()
 
 console.frame(
     f"""
-{EMOJI.CROSS_MARK} 2025-11-11 14:23:18.890  ERROR
+{icons.CROSS_MARK} 2025-11-11 14:23:18.890  ERROR
   Component: Database
   Message: Connection timeout after 5000ms
   Query: SELECT * FROM users WHERE id = $1
@@ -96,7 +95,7 @@ console.frame(
     at UserService.findById (/app/services/user.js:45)
     at UserController.getUser (/app/controllers/user.js:23)
 
-{EMOJI.CROSS_MARK} 2025-11-11 14:25:32.123  ERROR
+{icons.CROSS_MARK} 2025-11-11 14:25:32.123  ERROR
   Component: Payment Processing
   Message: Payment gateway returned 503
   Transaction ID: txn_1234567890
@@ -104,7 +103,7 @@ console.frame(
   Retry: 3/3 attempts failed
   Next action: Manual review required
 
-{EMOJI.CROSS_MARK} 2025-11-11 14:27:45.678  ERROR
+{icons.CROSS_MARK} 2025-11-11 14:27:45.678  ERROR
   Component: Email Service
   Message: SMTP connection failed
   Recipient: customer@example.com
@@ -112,7 +111,7 @@ console.frame(
   Error code: ECONNREFUSED
   Action: Queued for retry in 5 minutes
 """,
-    title=f"{EMOJI.POLICE_CAR_LIGHT} Critical Errors (Last hour)",
+    title=f"{icons.POLICE_CAR_LIGHT} Critical Errors (Last hour)",
     border="double",
     border_color="red",
     width=80,
@@ -124,12 +123,12 @@ console.newline()
 # STRUCTURED LOGS (JSON-LIKE)
 # ============================================================================
 
-console.rule(f"{EMOJI.GEAR} STRUCTURED LOGGING", style="magenta")
+console.rule(f"{icons.GEAR} STRUCTURED LOGGING", style="magenta")
 console.newline()
 
 console.frame(
     f"""
-{EMOJI.INFORMATION} 2025-11-11 14:23:15.234
+{icons.INFORMATION} 2025-11-11 14:23:15.234
   level: info
   component: http
   method: GET
@@ -139,7 +138,7 @@ console.frame(
   user_id: 1234
   request_id: req_abc123def456
 
-{EMOJI.WARNING} 2025-11-11 14:23:17.234
+{icons.WARNING} 2025-11-11 14:23:17.234
   level: warn
   component: cache
   event: cache_miss
@@ -148,7 +147,7 @@ console.frame(
   action: fetch_from_db
   duration: 12ms
 
-{EMOJI.CROSS_MARK} 2025-11-11 14:23:18.890
+{icons.CROSS_MARK} 2025-11-11 14:23:18.890
   level: error
   component: database
   event: connection_timeout
@@ -157,7 +156,7 @@ console.frame(
   retry_count: 3
   last_error: ECONNREFUSED
 """,
-    title=f"{EMOJI.MEMO} Structured Log Format",
+    title=f"{icons.MEMO} Structured Log Format",
     border="rounded",
     border_color="magenta",
     width=80,
@@ -169,32 +168,32 @@ console.newline()
 # AUDIT TRAIL
 # ============================================================================
 
-console.rule(f"{EMOJI.SCROLL} AUDIT LOGS", style="yellow")
+console.rule(f"{icons.SCROLL} AUDIT LOGS", style="yellow")
 console.newline()
 
 console.frame(
     f"""
-{EMOJI.CHECK_MARK_BUTTON} 2025-11-11 14:20:00  USER_LOGIN
+{icons.CHECK_MARK_BUTTON} 2025-11-11 14:20:00  USER_LOGIN
   User: alice@example.com (ID: 1234)
   IP: 192.168.1.100
   Location: San Francisco, CA
   Device: Chrome 118.0 (macOS)
   Status: Success
 
-{EMOJI.GEAR} 2025-11-11 14:21:15  CONFIG_CHANGE
+{icons.GEAR} 2025-11-11 14:21:15  CONFIG_CHANGE
   User: alice@example.com (ID: 1234)
   Action: Updated database pool size
   Old value: 20
   New value: 30
   Reason: Performance optimization
 
-{EMOJI.CROSS_MARK} 2025-11-11 14:22:30  PERMISSION_DENIED
+{icons.CROSS_MARK} 2025-11-11 14:22:30  PERMISSION_DENIED
   User: bob@example.com (ID: 5678)
   Action: Attempted to delete user account
   Resource: User ID 9012
   Reason: Insufficient permissions (requires admin role)
 
-{EMOJI.CHECK_MARK_BUTTON} 2025-11-11 14:23:45  DATA_EXPORT
+{icons.CHECK_MARK_BUTTON} 2025-11-11 14:23:45  DATA_EXPORT
   User: charlie@example.com (ID: 9012)
   Resource: Customer database
   Records: 12,847
@@ -202,7 +201,7 @@ console.frame(
   Size: 4.2 MB
   Compliance: GDPR approved
 """,
-    title=f"{EMOJI.LOCKED} Security Audit Trail",
+    title=f"{icons.LOCKED} Security Audit Trail",
     border="thick",
     border_color="yellow",
     width=85,
@@ -214,27 +213,27 @@ console.newline()
 # DEBUG LOGS
 # ============================================================================
 
-console.rule(f"{EMOJI.TEST_TUBE} DEBUG OUTPUT", style="cyan")
+console.rule(f"{icons.TEST_TUBE} DEBUG OUTPUT", style="cyan")
 console.newline()
 
 console.frame(
     f"""
-{EMOJI.GEAR} 2025-11-11 14:23:15.123  DEBUG    [UserService] findById called
-{EMOJI.GEAR} 2025-11-11 14:23:15.125  DEBUG    [Database] Executing query
+{icons.GEAR} 2025-11-11 14:23:15.123  DEBUG    [UserService] findById called
+{icons.GEAR} 2025-11-11 14:23:15.125  DEBUG    [Database] Executing query
   SQL: SELECT * FROM users WHERE id = $1
   Params: [1234]
-{EMOJI.GEAR} 2025-11-11 14:23:15.137  DEBUG    [Database] Query returned 1 row
-{EMOJI.GEAR} 2025-11-11 14:23:15.139  DEBUG    [Cache] Storing result in cache
+{icons.GEAR} 2025-11-11 14:23:15.137  DEBUG    [Database] Query returned 1 row
+{icons.GEAR} 2025-11-11 14:23:15.139  DEBUG    [Cache] Storing result in cache
   Key: user:1234
   TTL: 3600s
-{EMOJI.CHECK_MARK_BUTTON} 2025-11-11 14:23:15.142  DEBUG    [UserService] User found and cached
-{EMOJI.GEAR} 2025-11-11 14:23:15.145  DEBUG    [HTTP] Building response
+{icons.CHECK_MARK_BUTTON} 2025-11-11 14:23:15.142  DEBUG    [UserService] User found and cached
+{icons.GEAR} 2025-11-11 14:23:15.145  DEBUG    [HTTP] Building response
   Status: 200
   Body size: 847 bytes
-{EMOJI.CHECK_MARK_BUTTON} 2025-11-11 14:23:15.148  DEBUG    [HTTP] Response sent successfully
+{icons.CHECK_MARK_BUTTON} 2025-11-11 14:23:15.148  DEBUG    [HTTP] Response sent successfully
   Total time: 25ms
 """,
-    title=f"{EMOJI.TEST_TUBE} Debug Log (Verbose Mode)",
+    title=f"{icons.TEST_TUBE} Debug Log (Verbose Mode)",
     border="solid",
     border_color="cyan",
     width=85,
@@ -246,18 +245,18 @@ console.newline()
 # LOG AGGREGATION VIEW
 # ============================================================================
 
-console.rule(f"{EMOJI.BAR_CHART} LOG STATISTICS", style="green")
+console.rule(f"{icons.BAR_CHART} LOG STATISTICS", style="green")
 console.newline()
 
 console.frame(
     f"""
-{EMOJI.BAR_CHART} Log Summary (Last hour)
+{icons.BAR_CHART} Log Summary (Last hour)
 
 SEVERITY BREAKDOWN:
-  {EMOJI.CROSS_MARK} ERROR      23 entries    (1.2%)
-  {EMOJI.WARNING} WARN       82 entries    (4.3%)
-  {EMOJI.INFORMATION} INFO      1,847 entries (96.5%)
-  {EMOJI.GEAR} DEBUG     12,234 entries (not shown by default)
+  {icons.CROSS_MARK} ERROR      23 entries    (1.2%)
+  {icons.WARNING} WARN       82 entries    (4.3%)
+  {icons.INFORMATION} INFO      1,847 entries (96.5%)
+  {icons.GEAR} DEBUG     12,234 entries (not shown by default)
 
 TOP ERROR SOURCES:
   1. Database connection: 8 errors
@@ -278,7 +277,7 @@ RESPONSE TIME TRENDS:
   P99: 1,234ms
   Max: 5,678ms (query timeout)
 """,
-    title=f"{EMOJI.CHART_INCREASING} Log Analytics",
+    title=f"{icons.CHART_INCREASING} Log Analytics",
     border="rounded",
     border_color="green",
     width=75,
@@ -290,27 +289,27 @@ console.newline()
 # REAL-TIME LOG TAIL
 # ============================================================================
 
-console.rule(f"{EMOJI.FIRE} LIVE LOG STREAM", style="blue")
+console.rule(f"{icons.FIRE} LIVE LOG STREAM", style="blue")
 console.newline()
 
 console.frame(
     f"""
-{EMOJI.FIRE} Following /var/log/app/production.log...
+{icons.FIRE} Following /var/log/app/production.log...
 
-{EMOJI.INFORMATION} 14:28:45.123  INFO   [HTTP] GET /api/users → 200 (23ms)
-{EMOJI.INFORMATION} 14:28:45.456  INFO   [HTTP] GET /api/products → 200 (45ms)
-{EMOJI.CHECK_MARK_BUTTON} 14:28:46.789  INFO   [AUTH] Token validated: user_1234
-{EMOJI.INFORMATION} 14:28:47.012  INFO   [CACHE] Hit rate: 94.2%
-{EMOJI.WARNING} 14:28:47.345  WARN   [DB] Slow query detected (2,345ms)
-{EMOJI.INFORMATION} 14:28:48.678  INFO   [HTTP] POST /api/orders → 201 (234ms)
-{EMOJI.INFORMATION} 14:28:49.901  INFO   [HTTP] GET /health → 200 (2ms)
-{EMOJI.INFORMATION} 14:28:50.234  INFO   [SCHEDULER] Running background job
-{EMOJI.CHECK_MARK_BUTTON} 14:28:51.567  INFO   [JOB] Processed 847 items in 1.2s
-{EMOJI.INFORMATION} 14:28:52.890  INFO   [HTTP] GET /api/analytics → 200 (567ms)
+{icons.INFORMATION} 14:28:45.123  INFO   [HTTP] GET /api/users → 200 (23ms)
+{icons.INFORMATION} 14:28:45.456  INFO   [HTTP] GET /api/products → 200 (45ms)
+{icons.CHECK_MARK_BUTTON} 14:28:46.789  INFO   [AUTH] Token validated: user_1234
+{icons.INFORMATION} 14:28:47.012  INFO   [CACHE] Hit rate: 94.2%
+{icons.WARNING} 14:28:47.345  WARN   [DB] Slow query detected (2,345ms)
+{icons.INFORMATION} 14:28:48.678  INFO   [HTTP] POST /api/orders → 201 (234ms)
+{icons.INFORMATION} 14:28:49.901  INFO   [HTTP] GET /health → 200 (2ms)
+{icons.INFORMATION} 14:28:50.234  INFO   [SCHEDULER] Running background job
+{icons.CHECK_MARK_BUTTON} 14:28:51.567  INFO   [JOB] Processed 847 items in 1.2s
+{icons.INFORMATION} 14:28:52.890  INFO   [HTTP] GET /api/analytics → 200 (567ms)
 
-{EMOJI.INFORMATION} Press Ctrl+C to stop following...
+{icons.INFORMATION} Press Ctrl+C to stop following...
 """,
-    title=f"{EMOJI.SCROLL} Live Log Tail (tail -f production.log)",
+    title=f"{icons.SCROLL} Live Log Tail (tail -f production.log)",
     border="solid",
     border_color="blue",
     width=85,
@@ -326,14 +325,14 @@ console.banner("LOG DISPLAY DESIGN")
 
 console.frame(
     f"""
-{EMOJI.BULLSEYE} LOG VIEWER PRINCIPLES
+{icons.BULLSEYE} LOG VIEWER PRINCIPLES
 
 1. SEVERITY HIERARCHY
-   {EMOJI.CROSS_MARK} ERROR: Red, immediate attention required
-   {EMOJI.WARNING} WARN: Yellow, should investigate
-   {EMOJI.INFORMATION} INFO: Cyan/blue, normal operations
-   {EMOJI.CHECK_MARK_BUTTON} SUCCESS: Green, positive confirmation
-   {EMOJI.GEAR} DEBUG: Gray/dim, verbose details
+   {icons.CROSS_MARK} ERROR: Red, immediate attention required
+   {icons.WARNING} WARN: Yellow, should investigate
+   {icons.INFORMATION} INFO: Cyan/blue, normal operations
+   {icons.CHECK_MARK_BUTTON} SUCCESS: Green, positive confirmation
+   {icons.GEAR} DEBUG: Gray/dim, verbose details
 
 2. TIMESTAMP FORMATTING
    • ISO 8601: 2025-11-11 14:23:15.234
@@ -360,7 +359,7 @@ console.frame(
    • Truncate long values: Or wrap intelligently
    • Group related entries: Blank lines between requests
 """,
-    title=f"{EMOJI.LIGHT_BULB} Best Practices",
+    title=f"{icons.LIGHT_BULB} Best Practices",
     border="rounded",
     border_color="cyan",
     width=75,
@@ -372,27 +371,27 @@ console.frame(
     f"""
 LOG LEVEL GUIDELINES:
 
-{EMOJI.CROSS_MARK} ERROR
+{icons.CROSS_MARK} ERROR
   System failures, exceptions, data loss
   Requires immediate investigation
   Example: Database connection failed, API error
 
-{EMOJI.WARNING} WARN
+{icons.WARNING} WARN
   Degraded performance, deprecated features, recoverable errors
   Should investigate but not urgent
   Example: Slow query, cache miss, retry succeeded
 
-{EMOJI.INFORMATION} INFO
+{icons.INFORMATION} INFO
   Normal operations, state changes, milestones
   Standard operational logging
   Example: HTTP requests, service start/stop, user login
 
-{EMOJI.CHECK_MARK_BUTTON} SUCCESS
+{icons.CHECK_MARK_BUTTON} SUCCESS
   Explicitly successful operations
   Useful for auditing and confirmation
   Example: Deployment complete, backup successful
 
-{EMOJI.GEAR} DEBUG
+{icons.GEAR} DEBUG
   Detailed diagnostics, variable values, call traces
   Only in development or troubleshooting
   Example: Function calls, query parameters
@@ -411,11 +410,11 @@ USE IN:
 • Performance analysis
 • Compliance and reporting
 """,
-    title=f"{EMOJI.BOOKMARK} Log Levels & Formats",
+    title=f"{icons.BOOKMARK} Log Levels & Formats",
     border="double",
     border_color="white",
     width=75,
 )
 
 console.rule()
-console.text(f"{EMOJI.SPARKLES} Clear log displays help diagnose issues quickly and accurately!")
+console.text(f"{icons.SPARKLES} Clear log displays help diagnose issues quickly and accurately!")

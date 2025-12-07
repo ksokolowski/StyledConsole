@@ -14,7 +14,7 @@ Design Philosophy:
 Run: python examples/gallery/gradients_showcase.py
 """
 
-from styledconsole import EMOJI, Console
+from styledconsole import Console, icons
 from styledconsole.effects import diagonal_gradient_frame, rainbow_frame
 
 console = Console(record=True)
@@ -32,11 +32,11 @@ def demo_horizontal_gradients():
 
     # Simple two-color gradients
     gradients = [
-        (("red", "orange"), f"{EMOJI.FIRE} Fire", "From ember to flame"),
-        (("blue", "cyan"), f"{EMOJI.WATER_WAVE} Ocean", "From deep sea to shallow waters"),
-        (("purple", "magenta"), f"{EMOJI.CROWN} Royalty", "From twilight to dawn"),
-        (("green", "lime"), f"{EMOJI.HERB} Forest", "From shadow to sunlight"),
-        (("yellow", "orange"), f"{EMOJI.SUNRISE} Sunset", "From noon to dusk"),
+        (("red", "orange"), f"{icons.FIRE} Fire", "From ember to flame"),
+        (("blue", "cyan"), f"{icons.WATER_WAVE} Ocean", "From deep sea to shallow waters"),
+        (("purple", "magenta"), f"{icons.CROWN} Royalty", "From twilight to dawn"),
+        (("green", "lime"), f"{icons.HERB} Forest", "From shadow to sunlight"),
+        (("yellow", "orange"), f"{icons.SUNRISE} Sunset", "From noon to dusk"),
     ]
 
     for colors, title, desc in gradients:
@@ -73,7 +73,7 @@ def demo_vertical_gradients():
     # Note: Current implementation uses horizontal gradients
     # This demonstrates the visual concept with border colors
     console.frame(
-        f"{EMOJI.DIZZY} DAWN TO DUSK\n\n"
+        f"{icons.DIZZY} DAWN TO DUSK\n\n"
         "Imagine colors flowing vertically:\n\n"
         "Top: Dark purple (midnight)\n"
         "↓\n"
@@ -82,7 +82,7 @@ def demo_vertical_gradients():
         "Bottom: Cyan (noon)\n\n"
         "Vertical gradients create\n"
         "The illusion of depth and elevation",
-        title=f"{EMOJI.MILKY_WAY} Vertical Flow",
+        title=f"{icons.MILKY_WAY} Vertical Flow",
         border="thick",
         border_gradient_start="purple",
         border_gradient_end="cyan",
@@ -107,12 +107,12 @@ def demo_diagonal_gradients():
 
     # Create diagonal gradient frames with effects module
     lines = diagonal_gradient_frame(
-        f"{EMOJI.HIGH_VOLTAGE} ELECTRIC ENERGY\n\n"
+        f"{icons.HIGH_VOLTAGE} ELECTRIC ENERGY\n\n"
         "From top-left cyan to bottom-right magenta,\n"
         "The gradient cuts across the frame\n"
         "Like lightning through a storm.\n\n"
         "Dynamic. Energetic. Unstoppable.",
-        title=f"{EMOJI.HIGH_VOLTAGE} Power Flow",
+        title=f"{icons.HIGH_VOLTAGE} Power Flow",
         start_color="cyan",
         end_color="magenta",
         border="thick",
@@ -124,13 +124,13 @@ def demo_diagonal_gradients():
     console.newline()
 
     lines = diagonal_gradient_frame(
-        f"{EMOJI.WATER_WAVE} OCEAN WAVES\n\n"
+        f"{icons.WATER_WAVE} OCEAN WAVES\n\n"
         "Blue depths in the corner\n"
         "Rising to cyan shallows\n"
         "Across the diagonal tide.\n\n"
         "Watch the waves flow\n"
         "From deep to light.",
-        title=f"{EMOJI.WATER_WAVE} Tidal Flow",
+        title=f"{icons.WATER_WAVE} Tidal Flow",
         start_color="darkblue",
         end_color="cyan",
         border="rounded",
@@ -142,13 +142,13 @@ def demo_diagonal_gradients():
     console.newline()
 
     lines = diagonal_gradient_frame(
-        f"{EMOJI.FIRE} SUNSET DIAGONAL\n\n"
+        f"{icons.FIRE} SUNSET DIAGONAL\n\n"
         "Red in the upper corner,\n"
         "Flowing through orange and yellow,\n"
         "To golden amber below.\n\n"
         "The sun sets diagonally\n"
         "Across the terminal sky.",
-        title=f"{EMOJI.SUNRISE} Diagonal Sunset",
+        title=f"{icons.SUNRISE} Diagonal Sunset",
         start_color="red",
         end_color="orange",
         border="double",
@@ -175,12 +175,12 @@ def demo_rainbow_effects():
 
     # Simple rainbow frame
     lines = rainbow_frame(
-        f"{EMOJI.RAINBOW} FULL SPECTRUM BEAUTY\n\n"
+        f"{icons.RAINBOW} FULL SPECTRUM BEAUTY\n\n"
         "Red → Orange → Yellow → Green → Blue → Indigo → Violet\n\n"
         "Seven colors, infinite variations.\n"
         "The rainbow is nature's gradient,\n"
         "Now available in your terminal!",
-        title=f"{EMOJI.SPARKLES} Rainbow Classic",
+        title=f"{icons.SPARKLES} Rainbow Classic",
         border="rounded",
         width=70,
         align="center",
@@ -191,13 +191,13 @@ def demo_rainbow_effects():
 
     # Rainbow with different content
     lines = rainbow_frame(
-        f"{EMOJI.ARTIST_PALETTE} CHROMATIC CELEBRATION\n\n"
+        f"{icons.ARTIST_PALETTE} CHROMATIC CELEBRATION\n\n"
         "Every wavelength of visible light\n"
         "Compressed into terminal art.\n\n"
         "From 650nm (red) to 450nm (blue),\n"
         "Science and beauty unite\n"
         "In prismatic perfection.",
-        title=f"{EMOJI.MICROSCOPE} Physics of Color",
+        title=f"{icons.MICROSCOPE} Physics of Color",
         border="thick",
         width=70,
         align="center",
@@ -216,7 +216,7 @@ def demo_rainbow_effects():
         "But visual poetry,\n"
         "Dancing across the screen\n"
         "In perfect chromatic harmony.",
-        title=f"{EMOJI.GLOWING_STAR} Rainbow Poetry",
+        title=f"{icons.GLOWING_STAR} Rainbow Poetry",
         border="double",
         width=70,
         align="center",
@@ -240,10 +240,10 @@ def demo_multicolor_gradients():
 
     # Three-color gradients (Simplified to 2-color for v0.3.0 API)
     three_color = [
-        ("red", "green", f"{EMOJI.RAINBOW} Warm to Cool", "Fire → Forest"),
-        ("purple", "red", f"{EMOJI.PURPLE_HEART} Royal Passion", "Twilight → Flame"),
-        ("cyan", "purple", f"{EMOJI.MILKY_WAY} Deep Space", "Sky → Cosmos"),
-        ("lime", "blue", f"{EMOJI.WATER_WAVE} Tropical Waters", "Shallows → Abyss"),
+        ("red", "green", f"{icons.RAINBOW} Warm to Cool", "Fire → Forest"),
+        ("purple", "red", f"{icons.PURPLE_HEART} Royal Passion", "Twilight → Flame"),
+        ("cyan", "purple", f"{icons.MILKY_WAY} Deep Space", "Sky → Cosmos"),
+        ("lime", "blue", f"{icons.WATER_WAVE} Tropical Waters", "Shallows → Abyss"),
     ]
 
     for start, end, title, desc in three_color:
@@ -280,12 +280,12 @@ def demo_content_gradients():
     console.newline()
 
     console.frame(
-        f"{EMOJI.LEAF_FLUTTERING_IN_WIND} NATURE'S GRADIENT\n\n"
+        f"{icons.LEAF_FLUTTERING_IN_WIND} NATURE'S GRADIENT\n\n"
         "This content has a direct gradient applied.\n"
         "From bright lime at the top\n"
         "To deep forest green at the bottom.\n\n"
         "No special effects helpers needed!",
-        title=f"{EMOJI.HERB} Direct API Support",
+        title=f"{icons.HERB} Direct API Support",
         border="rounded",
         start_color="lime",
         end_color="darkgreen",
@@ -303,7 +303,7 @@ def demo_gradient_poetry():
 
     poems = [
         {
-            "title": f"{EMOJI.SUNRISE} Dawn",
+            "title": f"{icons.SUNRISE} Dawn",
             "start": "darkblue",
             "end": "yellow",
             "text": "In the darkest blue of night,\n"
@@ -312,7 +312,7 @@ def demo_gradient_poetry():
             "Dawn breaks, and shadows take their flight.",
         },
         {
-            "title": f"{EMOJI.WATER_WAVE} Ocean Deep",
+            "title": f"{icons.WATER_WAVE} Ocean Deep",
             "start": "cyan",
             "end": "darkblue",
             "text": "Surface sparkles, cyan bright,\n"
@@ -321,7 +321,7 @@ def demo_gradient_poetry():
             "Ocean's secrets, hidden from sight.",
         },
         {
-            "title": f"{EMOJI.FIRE} Fire's Dance",
+            "title": f"{icons.FIRE} Fire's Dance",
             "start": "red",
             "end": "yellow",
             "text": "Red coals glow with ancient heat,\n"
@@ -330,7 +330,7 @@ def demo_gradient_poetry():
             "Dancing light, wild and sweet.",
         },
         {
-            "title": f"{EMOJI.CHERRY_BLOSSOM} Spring Bloom",
+            "title": f"{icons.CHERRY_BLOSSOM} Spring Bloom",
             "start": "green",
             "end": "yellow",
             "text": "Green shoots push through winter's hold,\n"
@@ -371,7 +371,7 @@ def demo_gradient_applications():
 
     applications = [
         {
-            "title": f"{EMOJI.CHECK_MARK_BUTTON} Success Indicators",
+            "title": f"{icons.CHECK_MARK_BUTTON} Success Indicators",
             "start": "lime",
             "end": "green",
             "text": "Use green gradients for success messages.\n"
@@ -379,7 +379,7 @@ def demo_gradient_applications():
             "Perfect for: Deployments, tests passed, operations complete",
         },
         {
-            "title": f"{EMOJI.WARNING}  Warning States",
+            "title": f"{icons.WARNING}  Warning States",
             "start": "yellow",
             "end": "orange",
             "text": "Yellow-to-orange gradients grab attention\n"
@@ -387,7 +387,7 @@ def demo_gradient_applications():
             "Perfect for: Deprecation notices, resource warnings, caution states",
         },
         {
-            "title": f"{EMOJI.CROSS_MARK} Error Messages",
+            "title": f"{icons.CROSS_MARK} Error Messages",
             "start": "orange",
             "end": "red",
             "text": "Red gradients signal critical issues.\n"
@@ -395,7 +395,7 @@ def demo_gradient_applications():
             "Perfect for: Build failures, critical errors, system alerts",
         },
         {
-            "title": f"{EMOJI.INFORMATION}  Information",
+            "title": f"{icons.INFORMATION}  Information",
             "start": "cyan",
             "end": "blue",
             "text": "Blue gradients convey trust and calm.\n"
@@ -403,7 +403,7 @@ def demo_gradient_applications():
             "Perfect for: Documentation, help text, status updates",
         },
         {
-            "title": f"{EMOJI.HIGH_VOLTAGE} Progress Indicators",
+            "title": f"{icons.HIGH_VOLTAGE} Progress Indicators",
             "start": "yellow",
             "end": "green",
             "text": "Multi-color gradients show progression.\n"
@@ -435,48 +435,48 @@ def demo_gradient_best_practices():
 
     practices = [
         {
-            "title": f"{EMOJI.SPARKLES} Rule 1: Keep It Smooth",
+            "title": f"{icons.SPARKLES} Rule 1: Keep It Smooth",
             "start": "blue",
             "end": "cyan",
-            "text": f"{EMOJI.CHECK_MARK_BUTTON} DO: Use adjacent colors on the spectrum.\n"
+            "text": f"{icons.CHECK_MARK_BUTTON} DO: Use adjacent colors on the spectrum.\n"
             "Blue → Cyan creates smooth transitions.\n\n"
-            f"{EMOJI.CROSS_MARK} DON'T: Jump across the spectrum randomly.\n"
+            f"{icons.CROSS_MARK} DON'T: Jump across the spectrum randomly.\n"
             "Red → Cyan can look muddy in the middle.",
         },
         {
-            "title": f"{EMOJI.ARTIST_PALETTE} Rule 2: Match the Mood",
+            "title": f"{icons.ARTIST_PALETTE} Rule 2: Match the Mood",
             "start": "darkblue",
             "end": "purple",
-            "text": f"{EMOJI.CHECK_MARK_BUTTON} DO: Choose colors that support your message.\n"
+            "text": f"{icons.CHECK_MARK_BUTTON} DO: Choose colors that support your message.\n"
             "Dark blue → Purple for serious, professional content.\n\n"
-            f"{EMOJI.CROSS_MARK} DON'T: Use cheerful colors for errors.\n"
+            f"{icons.CROSS_MARK} DON'T: Use cheerful colors for errors.\n"
             "Rainbow gradients on error messages confuse users.",
         },
         {
-            "title": f"{EMOJI.TRIANGULAR_RULER} Rule 3: Mind the Length",
+            "title": f"{icons.TRIANGULAR_RULER} Rule 3: Mind the Length",
             "start": "green",
             "end": "lime",
-            "text": f"{EMOJI.CHECK_MARK_BUTTON} DO: Use longer gradients for wide frames.\n"
+            "text": f"{icons.CHECK_MARK_BUTTON} DO: Use longer gradients for wide frames.\n"
             "Gives colors room to transition smoothly.\n\n"
-            f"{EMOJI.CROSS_MARK} DON'T: Cram many colors into tiny frames.\n"
+            f"{icons.CROSS_MARK} DON'T: Cram many colors into tiny frames.\n"
             "You'll lose the gradient effect entirely.",
         },
         {
             "title": "⚖️  Rule 4: Balance Saturation",
             "start": "cyan",
             "end": "blue",
-            "text": f"{EMOJI.CHECK_MARK_BUTTON} DO: Keep saturation levels similar.\n"
+            "text": f"{icons.CHECK_MARK_BUTTON} DO: Keep saturation levels similar.\n"
             "Cyan and blue have similar intensity.\n\n"
-            f"{EMOJI.CROSS_MARK} DON'T: Mix pale and vivid colors randomly.\n"
+            f"{icons.CROSS_MARK} DON'T: Mix pale and vivid colors randomly.\n"
             "Lavender → Hot Pink creates jarring transitions.",
         },
         {
-            "title": f"{EMOJI.BULLSEYE} Rule 5: Purpose Over Pretty",
+            "title": f"{icons.BULLSEYE} Rule 5: Purpose Over Pretty",
             "start": "lime",
             "end": "green",
-            "text": f"{EMOJI.CHECK_MARK_BUTTON} DO: Use gradients to enhance meaning.\n"
+            "text": f"{icons.CHECK_MARK_BUTTON} DO: Use gradients to enhance meaning.\n"
             "Green gradient reinforces success message.\n\n"
-            f"{EMOJI.CROSS_MARK} DON'T: Add gradients just because.\n"
+            f"{icons.CROSS_MARK} DON'T: Add gradients just because.\n"
             "Every visual choice should serve a purpose.",
         },
     ]
@@ -504,7 +504,7 @@ def demo_gradient_masterpiece():
 
     # Diagonal rainbow gradient frame
     diagonal_gradient_frame(
-        f"{EMOJI.ARTIST_PALETTE} THE ART OF GRADIENTS\n\n"
+        f"{icons.ARTIST_PALETTE} THE ART OF GRADIENTS\n\n"
         "You've journeyed through the spectrum:\n\n"
         "• Horizontal flows like rivers\n"
         "• Vertical rises like dawn\n"
@@ -516,8 +516,8 @@ def demo_gradient_masterpiece():
         "Visual narratives,\n"
         "Terminal poetry.\n\n"
         "Now you hold the spectrum's power.\n"
-        f"Paint your terminals with light! {EMOJI.SPARKLES}",
-        title=f"{EMOJI.RAINBOW} Gradient Mastery",
+        f"Paint your terminals with light! {icons.SPARKLES}",
+        title=f"{icons.RAINBOW} Gradient Mastery",
         start_color="purple",
         end_color="cyan",
         border="double",
@@ -569,7 +569,7 @@ def demo_gradient_masterpiece():
 
     # 5. Create the header frame
     header_frame = console.render_frame(
-        f"{EMOJI.RAINBOW} NESTED GRADIENT ARCHITECTURE\n(Native Implementation)",
+        f"{icons.RAINBOW} NESTED GRADIENT ARCHITECTURE\n(Native Implementation)",
         border="double",
         border_gradient_start="purple",
         border_gradient_end="blue",
@@ -589,7 +589,7 @@ def demo_gradient_masterpiece():
             "",
             "This is gradient architecture at its finest.",
         ],
-        title=f"{EMOJI.CLASSICAL_BUILDING}  Gradient Architecture",
+        title=f"{icons.CLASSICAL_BUILDING}  Gradient Architecture",
         border="heavy",
         border_gradient_start="red",
         border_gradient_end="magenta",
@@ -602,7 +602,7 @@ def demo_gradient_masterpiece():
 
 def main():
     """Run the complete gradients showcase."""
-    console.rule(f"{EMOJI.RAINBOW} GRADIENT EFFECTS MASTERCLASS", color="magenta")
+    console.rule(f"{icons.RAINBOW} GRADIENT EFFECTS MASTERCLASS", color="magenta")
     console.newline()
 
     console.text(
@@ -629,20 +629,20 @@ def main():
     demo_gradient_masterpiece()
 
     # Finale
-    console.rule(f"{EMOJI.SPARKLES}", color="magenta")
+    console.rule(f"{icons.SPARKLES}", color="magenta")
     console.newline()
     console.frame(
-        f"{EMOJI.ARTIST_PALETTE} GRADIENT MASTERY ACHIEVED\n\n"
+        f"{icons.ARTIST_PALETTE} GRADIENT MASTERY ACHIEVED\n\n"
         "You've explored:\n\n"
-        f"{EMOJI.CHECK_MARK_BUTTON} Horizontal, vertical, and diagonal gradients\n"
-        f"{EMOJI.CHECK_MARK_BUTTON} Rainbow and multi-color effects\n"
-        f"{EMOJI.CHECK_MARK_BUTTON} Gradient poetry and emotional expression\n"
-        f"{EMOJI.CHECK_MARK_BUTTON} Practical UI applications\n"
-        f"{EMOJI.CHECK_MARK_BUTTON} Design best practices\n\n"
+        f"{icons.CHECK_MARK_BUTTON} Horizontal, vertical, and diagonal gradients\n"
+        f"{icons.CHECK_MARK_BUTTON} Rainbow and multi-color effects\n"
+        f"{icons.CHECK_MARK_BUTTON} Gradient poetry and emotional expression\n"
+        f"{icons.CHECK_MARK_BUTTON} Practical UI applications\n"
+        f"{icons.CHECK_MARK_BUTTON} Design best practices\n\n"
         "Gradients transform flat interfaces\n"
         "Into dimensional experiences.\n\n"
-        f"Now go paint your terminal with light! {EMOJI.RAINBOW}{EMOJI.SPARKLES}",
-        title=f"{EMOJI.TROPHY} Gallery Complete",
+        f"Now go paint your terminal with light! {icons.RAINBOW}{icons.SPARKLES}",
+        title=f"{icons.TROPHY} Gallery Complete",
         border="double",
         border_gradient_start="red",
         border_gradient_end="purple",

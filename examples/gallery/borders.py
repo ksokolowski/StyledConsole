@@ -14,7 +14,7 @@ Design Philosophy:
 Run: python examples/gallery/borders_showcase.py
 """
 
-from styledconsole import EMOJI, Console
+from styledconsole import Console, icons
 
 # Initialize console with recording for potential HTML export
 console = Console(record=True)
@@ -29,7 +29,7 @@ def demo_solid_borders():
         "The foundation of terminal aesthetics.\n"
         "Clean lines. Professional presence.\n"
         "Perfect for business applications.",
-        title=f"{EMOJI.TRIANGULAR_RULER} The Classic",
+        title=f"{icons.TRIANGULAR_RULER} The Classic",
         border="solid",
         border_color="cyan",
         content_color="white",
@@ -41,7 +41,7 @@ def demo_solid_borders():
     # Gradient variation
     console.frame(
         "With gradient borders, even simplicity\ntransforms into visual poetry.",
-        title=f"{EMOJI.WATER_WAVE} Gradient Flow",
+        title=f"{icons.WATER_WAVE} Gradient Flow",
         border="solid",
         border_color="cyan",
         content_color="cyan",
@@ -60,7 +60,7 @@ def demo_rounded_borders():
         "Smooth curves welcome the eye,\n"
         "Like stones polished by gentle streams.\n"
         "Modern interfaces speak softly.",
-        title=f"{EMOJI.HERB} Gentle Curves",
+        title=f"{icons.HERB} Gentle Curves",
         border="rounded",
         border_color="lime",
         content_color="white",
@@ -74,7 +74,7 @@ def demo_rounded_borders():
         "When rainbows dance on rounded edges,\n"
         "The terminal becomes a canvas\n"
         "Where technology meets art.",
-        title=f"{EMOJI.RAINBOW} Rainbow Dreams",
+        title=f"{icons.RAINBOW} Rainbow Dreams",
         border="rounded",
         border_color="red",
         content_color="white",
@@ -94,7 +94,7 @@ def demo_double_borders():
         "Double lines command respect.\n"
         "They frame what matters most,\n"
         "Drawing focus with geometric precision.",
-        title=f"{EMOJI.HIGH_VOLTAGE} The Emphasis",
+        title=f"{icons.HIGH_VOLTAGE} The Emphasis",
         border="double",
         border_color="orange",
         content_color="yellow",
@@ -108,7 +108,7 @@ def demo_double_borders():
         "Critical systems demand clarity.\n"
         "Important messages deserve distinction.\n"
         "Double borders deliver both.",
-        title=f"{EMOJI.FIRE} High Priority",
+        title=f"{icons.FIRE} High Priority",
         border="double",
         border_color="orange",
         content_color="white",
@@ -124,11 +124,11 @@ def demo_thick_borders():
     console.newline()
 
     console.frame(
-        f"{EMOJI.FIREWORKS} BOLD STATEMENTS\n\n"
+        f"{icons.FIREWORKS} BOLD STATEMENTS\n\n"
         "Thick borders make bold statements.\n"
         "They don't whisper—they proclaim.\n"
         "Perfect for headlines that demand attention.",
-        title=f"{EMOJI.FLEXED_BICEPS} The Bold",
+        title=f"{icons.MUSCLE} The Bold",
         border="thick",
         border_color="magenta",
         content_color="white",
@@ -142,7 +142,7 @@ def demo_thick_borders():
         "Energy radiates from these borders,\n"
         "Pulsing with digital vitality.\n"
         "Your message becomes unmissable.",
-        title=f"{EMOJI.HIGH_VOLTAGE} Electric Energy",
+        title=f"{icons.HIGH_VOLTAGE} Electric Energy",
         border="thick",
         border_color="magenta",
         content_color="white",
@@ -158,11 +158,11 @@ def demo_heavy_borders():
     console.newline()
 
     console.frame(
-        f"{EMOJI.SHIELD} FORTIFIED\n\n"
+        f"{icons.SHIELD} FORTIFIED\n\n"
         "Heavy borders build fortresses.\n"
         "They protect and contain,\n"
         "Creating sanctuaries of information.",
-        title=f"{EMOJI.CASTLE} The Fortress",
+        title=f"{icons.CASTLE} The Fortress",
         border="heavy",
         border_color="blue",
         content_color="white",
@@ -174,13 +174,13 @@ def demo_heavy_borders():
     # Nested heavy frames - demonstrating content with security theme
     protected_content = f"""Security through layers:
 
-{EMOJI.LOCKED} Protected Zone
+{icons.LOCKED} Protected Zone
 Data encrypted
 Access controlled"""
 
     console.frame(
         protected_content,
-        title=f"{EMOJI.LOCKED} Secure Container",
+        title=f"{icons.LOCKED} Secure Container",
         border="heavy",
         border_color="blue",
         content_color="cyan",
@@ -199,7 +199,7 @@ def demo_minimal_borders():
         "Whispers on the terminal canvas,\n"
         "Light touches that organize without overwhelming.\n"
         "Minimalism is the ultimate sophistication.",
-        title=f"{EMOJI.CHERRY_BLOSSOM} Light Touch",
+        title=f"{icons.CHERRY_BLOSSOM} Light Touch",
         border="minimal",
         border_color="cyan",
         content_color="white",
@@ -213,7 +213,7 @@ def demo_minimal_borders():
         "Like morning mist on a meadow,\n"
         "These borders suggest rather than insist,\n"
         "Guiding the eye with gentle grace.",
-        title=f"{EMOJI.BUTTERFLY} Delicate Beauty",
+        title=f"{icons.BUTTERFLY} Delicate Beauty",
         border="minimal",
         border_color="cyan",
         content_color="cyan",
@@ -232,7 +232,7 @@ def demo_ascii_borders():
         "Where Unicode cannot tread,\n"
         "ASCII borders carry the torch.\n"
         "Universal compatibility, timeless simplicity.",
-        title=f"{EMOJI.GLOBE_SHOWING_EUROPE_AFRICA} Universal",
+        title=f"{icons.GLOBE_SHOWING_EUROPE_AFRICA} Universal",
         border="ascii",
         border_color="green",
         content_color="white",
@@ -245,7 +245,7 @@ def demo_ascii_borders():
         "From the earliest terminals to modern shells,\n"
         "These characters bridge generations.\n"
         "The lingua franca of text interfaces.",
-        title=f"{EMOJI.KEYBOARD} Retro Charm",
+        title=f"{icons.KEYBOARD} Retro Charm",
         border="ascii",
         border_color="green",
         content_color="lime",
@@ -264,7 +264,7 @@ def demo_dashed_borders():
         "Motion frozen in ASCII art,\n"
         "Dashed lines pulse with energy.\n"
         "Perfect for temporary states and transitions.",
-        title=f"{EMOJI.HIGH_VOLTAGE} Dynamic Flow",
+        title=f"{icons.HIGH_VOLTAGE} Dynamic Flow",
         border="dots",
         border_color="yellow",
         content_color="white",
@@ -278,7 +278,7 @@ def demo_dashed_borders():
         "Imagine electricity flowing through these lines,\n"
         "Each dash a spark in the digital void.\n"
         "Energy visualized, motion suggested.",
-        title=f"{EMOJI.GLOWING_STAR} Electric Dreams",
+        title=f"{icons.GLOWING_STAR} Electric Dreams",
         border="dots",
         border_color="yellow",
         content_color="orange",
@@ -294,7 +294,7 @@ def demo_nested_composition():
     console.newline()
 
     console.text(
-        f"{EMOJI.CLASSICAL_BUILDING} Simulating a system monitoring dashboard "
+        f"{icons.CLASSICAL_BUILDING} Simulating a system monitoring dashboard "
         "with nested information panels",
         color="cyan",
         bold=True,
@@ -302,7 +302,7 @@ def demo_nested_composition():
     console.newline()
 
     # CPU Metrics - Inner frame 1 (rounded border, green)
-    cpu_content = f"""{EMOJI.CHART_INCREASING} CPU METRICS
+    cpu_content = f"""{icons.CHART_INCREASING} CPU METRICS
 
 Usage: 67% (Normal)
 Temperature: 58°C
@@ -311,7 +311,7 @@ Threads: 16 running"""
 
     console.frame(
         cpu_content,
-        title=f"{EMOJI.DESKTOP_COMPUTER} CPU Status",
+        title=f"{icons.DESKTOP_COMPUTER} CPU Status",
         border="rounded",
         border_color="green",
         content_color="bright_green",
@@ -320,7 +320,7 @@ Threads: 16 running"""
     console.newline()
 
     # Memory Metrics - Inner frame 2 (rounded border, yellow)
-    memory_content = f"""{EMOJI.FLOPPY_DISK} MEMORY STATUS
+    memory_content = f"""{icons.FLOPPY_DISK} MEMORY STATUS
 
 RAM: 12.4 GB / 16 GB
 Swap: 2.1 GB / 8 GB
@@ -329,7 +329,7 @@ Available: 3.6 GB"""
 
     console.frame(
         memory_content,
-        title=f"{EMOJI.FLOPPY_DISK} Memory Status",
+        title=f"{icons.FLOPPY_DISK} Memory Status",
         border="rounded",
         border_color="yellow",
         content_color="bright_yellow",
@@ -338,7 +338,7 @@ Available: 3.6 GB"""
     console.newline()
 
     # Network Activity - Inner frame 3 (rounded border, cyan)
-    network_content = f"""{EMOJI.SATELLITE_ANTENNA} NETWORK ACTIVITY
+    network_content = f"""{icons.SATELLITE_ANTENNA} NETWORK ACTIVITY
 
 Download: 5.2 MB/s
 Upload: 1.8 MB/s
@@ -347,7 +347,7 @@ Packets: 45,231 sent"""
 
     console.frame(
         network_content,
-        title=f"{EMOJI.GLOBE_WITH_MERIDIANS} Network Status",
+        title=f"{icons.GLOBE_WITH_MERIDIANS} Network Status",
         border="rounded",
         border_color="cyan",
         content_color="bright_cyan",
@@ -356,11 +356,11 @@ Packets: 45,231 sent"""
 
     console.newline(2)
     console.text(
-        f"{EMOJI.LIGHT_BULB} Note: True nested frames (frames within frames) "
+        f"{icons.LIGHT_BULB} Note: True nested frames (frames within frames) "
         "require rich.Panel composition.\n"
         "This example shows multiple independent frames that could logically "
         "be grouped.\n"
-        f"{EMOJI.CONSTRUCTION} Future Console API improvement: console.group() "
+        f"{icons.CONSTRUCTION} Future Console API improvement: console.group() "
         "to visually nest frames.",
         color="yellow",
         italic=True,
@@ -387,10 +387,10 @@ def demo_rainbow_gallery():
 
     for border, color_pair in zip(borders, colors, strict=False):
         console.frame(
-            f"{EMOJI.RAINBOW} {border.upper()} in rainbow gradients\n"
+            f"{icons.RAINBOW} {border.upper()} in rainbow gradients\n"
             f"Where color meets structure,\n"
             f"Art emerges from code.",
-            title=f"{EMOJI.SPARKLES} {border.title()}",
+            title=f"{icons.SPARKLES} {border.title()}",
             border=border,
             border_color=color_pair[0],  # Use first color from tuple
             content_color="white",
@@ -425,7 +425,7 @@ def demo_comparison_grid():
     for border_name, border_color in border_styles:
         console.frame(
             f"This is the {border_name.upper()} border style",
-            title=f"{EMOJI.SPARKLES} {border_name.title()}",
+            title=f"{icons.SPARKLES} {border_name.title()}",
             border=border_name,
             border_color=border_color,
             content_color="white",
@@ -438,7 +438,7 @@ def demo_comparison_grid():
 
 def main():
     """Run the complete borders showcase."""
-    console.rule(f"{EMOJI.ARTIST_PALETTE} BORDER STYLES GALLERY", color="magenta")
+    console.rule(f"{icons.ARTIST_PALETTE} BORDER STYLES GALLERY", color="magenta")
     console.newline()
 
     console.text(
@@ -466,15 +466,15 @@ def main():
     demo_comparison_grid()
 
     # Finale
-    console.rule(f"{EMOJI.SPARKLES}", color="magenta")
+    console.rule(f"{icons.SPARKLES}", color="magenta")
     console.newline()
     console.frame(
-        f"{EMOJI.ARTIST_PALETTE} BORDER MASTERY ACHIEVED\n\n"
+        f"{icons.ARTIST_PALETTE} BORDER MASTERY ACHIEVED\n\n"
         "You've witnessed the full spectrum of border aesthetics.\n"
         "From solid foundations to dashed energy,\n"
         "From minimal whispers to heavy fortresses.\n\n"
         "Now go forth and frame your terminal with beauty!",
-        title=f"{EMOJI.TROPHY} Gallery Complete",
+        title=f"{icons.TROPHY} Gallery Complete",
         border="double",
         border_color="magenta",
         content_color="white",

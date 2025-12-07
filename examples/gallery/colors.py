@@ -14,7 +14,7 @@ Design Philosophy:
 Run: python examples/gallery/colors_showcase.py
 """
 
-from styledconsole import EMOJI, Console
+from styledconsole import Console, icons
 
 console = Console(record=True)
 
@@ -37,10 +37,10 @@ def demo_red_family():
     ]
 
     console.frame(
-        f"{EMOJI.FIRE} The color of fire and passion\n"
+        f"{icons.FIRE} The color of fire and passion\n"
         "From delicate coral to deep crimson\n"
         "Red commands attention and stirs emotion",
-        title=f"{EMOJI.RED_HEART}  Red Spectrum",
+        title=f"{icons.RED_HEART}  Red Spectrum",
         border="rounded",
         border_color="red",
         content_color="lightcoral",
@@ -81,10 +81,10 @@ def demo_orange_family():
     console.newline()
 
     console.frame(
-        f"{EMOJI.TANGERINE} The color of sunset and creativity\n"
+        f"{icons.TANGERINE} The color of sunset and creativity\n"
         "Warm, inviting, and energetic\n"
         "Orange bridges red passion and yellow joy",
-        title=f"{EMOJI.SUNRISE} Orange Spectrum",
+        title=f"{icons.SUNRISE} Orange Spectrum",
         border="rounded",
         border_color="orange",
         content_color="white",
@@ -129,10 +129,10 @@ def demo_yellow_family():
     ]
 
     console.frame(
-        f"{EMOJI.SUN}  The color of sunlight and joy\n"
+        f"{icons.SUN}  The color of sunlight and joy\n"
         "From pale lemon to deep gold\n"
         "Yellow illuminates and uplifts",
-        title=f"{EMOJI.GLOWING_STAR} Yellow Spectrum",
+        title=f"{icons.GLOWING_STAR} Yellow Spectrum",
         border="rounded",
         border_color="gold",
         content_color="yellow",
@@ -163,10 +163,10 @@ def demo_green_family():
     console.newline()
 
     console.frame(
-        f"{EMOJI.HERB} The color of nature and renewal\n"
+        f"{icons.HERB} The color of nature and renewal\n"
         "From electric lime to deep forest\n"
         "Green soothes, balances, and revitalizes",
-        title=f"{EMOJI.LEAF_FLUTTERING_IN_WIND} Green Spectrum",
+        title=f"{icons.LEAF_FLUTTERING_IN_WIND} Green Spectrum",
         border="rounded",
         border_color="lime",
         content_color="lightgreen",
@@ -178,8 +178,8 @@ def demo_green_family():
     # Gradient journey through greens
     console.frame(
         "A Walk Through the Forest:\n\n"
-        f"{EMOJI.SEEDLING} Lime ────→ Spring Green ────→ Forest Green ────→ "
-        f"Dark Green {EMOJI.EVERGREEN_TREE}\n\n"
+        f"{icons.SEEDLING} Lime ────→ Spring Green ────→ Forest Green ────→ "
+        f"Dark Green {icons.EVERGREEN_TREE}\n\n"
         "From new growth to ancient trees,\n"
         "The green spectrum encompasses\n"
         "The full cycle of natural life",
@@ -199,10 +199,10 @@ def demo_cyan_family():
     console.newline()
 
     console.frame(
-        f"{EMOJI.DROPLET} The color of water and sky\n"
+        f"{icons.DROPLET} The color of water and sky\n"
         "From pale aqua to deep ocean\n"
         "Cyan refreshes and clarifies",
-        title=f"{EMOJI.WATER_WAVE} Cyan Spectrum",
+        title=f"{icons.WATER_WAVE} Cyan Spectrum",
         border="rounded",
         border_color="cyan",
         content_color="lightcyan",
@@ -244,10 +244,10 @@ def demo_blue_family():
     ]
 
     console.frame(
-        f"{EMOJI.MILKY_WAY} The color of depth and infinity\n"
+        f"{icons.MILKY_WAY} The color of depth and infinity\n"
         "From bright royal blue to midnight navy\n"
         "Blue inspires trust and contemplation",
-        title=f"{EMOJI.BLUE_HEART} Blue Spectrum",
+        title=f"{icons.BLUE_HEART} Blue Spectrum",
         border="rounded",
         border_color="blue",
         content_color="cornflowerblue",
@@ -270,7 +270,7 @@ def demo_blue_family():
     for color, desc in zip(blues, descriptions, strict=False):
         console.frame(
             f"{desc}",
-            title=f"{EMOJI.GEM_STONE} {color.title()}",
+            title=f"{icons.GEM_STONE} {color.title()}",
             border="solid",
             border_color=color,
             content_color="white",
@@ -287,10 +287,10 @@ def demo_purple_family():
     console.newline()
 
     console.frame(
-        f"{EMOJI.CROWN} The color of royalty and mystery\n"
+        f"{icons.CROWN} The color of royalty and mystery\n"
         "From delicate lavender to deep indigo\n"
         "Purple bridges earthly red and celestial blue",
-        title=f"{EMOJI.PURPLE_HEART} Purple Spectrum",
+        title=f"{icons.PURPLE_HEART} Purple Spectrum",
         border="rounded",
         border_color="magenta",
         content_color="lavender",
@@ -333,10 +333,10 @@ def demo_pink_family():
     ]
 
     console.frame(
-        f"{EMOJI.CHERRY_BLOSSOM} The color of tenderness and joy\n"
+        f"{icons.CHERRY_BLOSSOM} The color of tenderness and joy\n"
         "From soft blush to vibrant hot pink\n"
         "Pink brings warmth and playfulness",
-        title=f"{EMOJI.GROWING_HEART} Pink Spectrum",
+        title=f"{icons.GROWING_HEART} Pink Spectrum",
         border="rounded",
         border_color="hotpink",
         content_color="lightpink",
@@ -367,10 +367,10 @@ def demo_brown_family():
     console.newline()
 
     console.frame(
-        f"{EMOJI.DESERT}  The color of earth and stability\n"
+        f"{icons.DESERT}  The color of earth and stability\n"
         "From pale cornsilk to deep brown\n"
         "Browns ground us in natural warmth",
-        title=f"{EMOJI.CHESTNUT} Brown Spectrum",
+        title=f"{icons.CHESTNUT} Brown Spectrum",
         border="rounded",
         border_color="tan",
         content_color="wheat",
@@ -404,10 +404,10 @@ def demo_white_gray_black():
     console.newline()
 
     console.frame(
-        f"{EMOJI.WHITE_CIRCLE} The spectrum from light to dark\n"
+        f"{icons.WHITE_CIRCLE} The spectrum from light to dark\n"
         "From pure white to absolute black\n"
         "Neutrals provide structure and balance",
-        title=f"{EMOJI.ARTIST_PALETTE} Neutral Spectrum",
+        title=f"{icons.ARTIST_PALETTE} Neutral Spectrum",
         border="rounded",
         border_color="white",
         content_color="lightgray",
@@ -444,13 +444,13 @@ def demo_rainbow_spectrum():
     console.newline()
 
     console.frame(
-        f"{EMOJI.RAINBOW} THE COMPLETE SPECTRUM\n\n"
+        f"{icons.RAINBOW} THE COMPLETE SPECTRUM\n\n"
         "Red → Orange → Yellow → Green → Cyan → Blue → Purple\n\n"
         "148 CSS4 colors organized into chromatic families.\n"
         "Each color a note in the visual symphony.\n"
         "Together, they form the palette\n"
         "Of infinite terminal possibilities.",
-        title=f"{EMOJI.SPARKLES} Color Theory in Action",
+        title=f"{icons.SPARKLES} Color Theory in Action",
         border="double",
         border_gradient_start="red",
         border_gradient_end="magenta",
@@ -480,7 +480,7 @@ def demo_color_gradients():
             f"{'═' * 50}\n\n"
             "Watch as one color melts into another,\n"
             "Creating infinite intermediate shades.",
-            title=f"{EMOJI.ARTIST_PALETTE} {name}",
+            title=f"{icons.ARTIST_PALETTE} {name}",
             border="thick",
             border_gradient_start=start,
             border_gradient_end=end,
@@ -495,7 +495,7 @@ def demo_color_gradients():
 
 def main():
     """Run the complete colors showcase."""
-    console.rule(f"{EMOJI.RAINBOW} CSS4 COLOR PALETTE SHOWCASE", color="magenta")
+    console.rule(f"{icons.RAINBOW} CSS4 COLOR PALETTE SHOWCASE", color="magenta")
     console.newline()
 
     console.text(
@@ -524,18 +524,18 @@ def main():
     demo_color_gradients()
 
     # Finale
-    console.rule(f"{EMOJI.SPARKLES}", color="magenta")
+    console.rule(f"{icons.SPARKLES}", color="magenta")
     console.newline()
     console.frame(
-        f"{EMOJI.ARTIST_PALETTE} COLOR MASTERY ACHIEVED\n\n"
+        f"{icons.ARTIST_PALETTE} COLOR MASTERY ACHIEVED\n\n"
         "You've explored the complete CSS4 color palette:\n\n"
         "• 148 named colors\n"
         "• 9 chromatic families\n"
         "• Infinite gradient possibilities\n\n"
         "Now you hold the full spectrum\n"
         "In the palm of your terminal!\n\n"
-        f"Go forth and paint with pixels! {EMOJI.PAINTBRUSH}",
-        title=f"{EMOJI.TROPHY} Gallery Complete",
+        f"Go forth and paint with pixels! {icons.PAINTBRUSH}",
+        title=f"{icons.TROPHY} Gallery Complete",
         border="double",
         border_gradient_start="red",
         border_gradient_end="purple",

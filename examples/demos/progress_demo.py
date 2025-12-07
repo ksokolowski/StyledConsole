@@ -7,7 +7,7 @@ with theme integration.
 
 import time
 
-from styledconsole import EMOJI, THEMES, Console
+from styledconsole import THEMES, Console, icons
 
 
 def main() -> None:
@@ -17,16 +17,16 @@ def main() -> None:
     console.text("")
 
     # Basic progress bar
-    console.text(f"{EMOJI.ROCKET} Basic Progress Bar:", bold=True)
+    console.text(f"{icons.ROCKET} Basic Progress Bar:", bold=True)
     with console.progress() as progress:
         task = progress.add_task("Downloading files", total=100)
         for _ in range(100):
             time.sleep(0.02)
             progress.update(task, advance=1)
-    console.text(f"  {EMOJI.CHECK_MARK_BUTTON} Complete!\n")
+    console.text(f"  {icons.CHECK_MARK_BUTTON} Complete!\n")
 
     # Multiple tasks
-    console.text(f"{EMOJI.SPARKLES} Multiple Tasks:", bold=True)
+    console.text(f"{icons.SPARKLES} Multiple Tasks:", bold=True)
     with console.progress() as progress:
         task1 = progress.add_task("Task 1: Fetching data", total=50)
         task2 = progress.add_task("Task 2: Processing", total=75)
@@ -38,10 +38,10 @@ def main() -> None:
                 progress.update(task1, advance=0.5)
                 progress.update(task2, advance=0.75)
                 progress.update(task3, advance=1)
-    console.text(f"  {EMOJI.CHECK_MARK_BUTTON} All tasks complete!\n")
+    console.text(f"  {icons.CHECK_MARK_BUTTON} All tasks complete!\n")
 
     # Indeterminate progress (spinner)
-    console.text(f"{EMOJI.WHITE_CIRCLE} Indeterminate Progress:", bold=True)
+    console.text(f"{icons.WHITE_CIRCLE} Indeterminate Progress:", bold=True)
     with console.progress() as progress:
         task = progress.add_task("Connecting...", total=None)
         for i in range(30):
@@ -50,10 +50,10 @@ def main() -> None:
                 progress.update(task, description="Authenticating...")
             if i == 25:
                 progress.update(task, description="Almost done...")
-    console.text(f"  {EMOJI.CHECK_MARK_BUTTON} Connected!\n")
+    console.text(f"  {icons.CHECK_MARK_BUTTON} Connected!\n")
 
     # Theme-aware progress
-    console.text(f"{EMOJI.ARTIST_PALETTE} Themed Progress Bars:", bold=True)
+    console.text(f"{icons.ARTIST_PALETTE} Themed Progress Bars:", bold=True)
     for theme_name in ["DARK", "MONOKAI", "NORD", "FIRE", "SUNNY"]:
         theme = THEMES.get_theme(theme_name)
         themed_console = Console(theme=theme)
@@ -65,7 +65,7 @@ def main() -> None:
                 time.sleep(0.01)
                 progress.update(task, advance=1)
 
-    console.text(f"\n{EMOJI.PARTY_POPPER} All progress demos complete!")
+    console.text(f"\n{icons.PARTY_POPPER} All progress demos complete!")
 
 
 if __name__ == "__main__":
