@@ -25,6 +25,42 @@ This update consolidates all gradient logic into a single unified engine using t
 
 ______________________________________________________________________
 
+## [0.9.6] - 2025-12-07
+
+### 🖥️ Modern Terminal Detection
+
+This release adds automatic detection of modern terminals (Kitty, WezTerm, iTerm2,
+Ghostty, Alacritty, Windows Terminal, VS Code) with full Unicode/emoji support.
+
+### Added
+
+- **Modern terminal detection**: Auto-detect terminals with correct VS16/ZWJ support
+- **`is_modern_terminal()`**: New helper function for terminal capability check
+- **`TerminalProfile.terminal_name`**: Detected terminal name (kitty, wezterm, etc.)
+- **`TerminalProfile.modern_emoji`**: Boolean for full emoji support
+- **`_grapheme_width_modern()`**: Correct width calculation for modern terminals
+- **`STYLEDCONSOLE_MODERN_TERMINAL`**: Environment variable override
+
+### Changed
+
+- **`visual_width()`**: Now uses modern width calculation when in modern terminal
+- **`emoji_safe`**: Automatically `True` for modern terminals
+- **Width calculation**: VS16 emojis now correctly width 2 in modern terminals
+
+### Supported Terminals
+
+| Terminal         | Detection Method                   |
+| ---------------- | ---------------------------------- |
+| Kitty            | `KITTY_WINDOW_ID`, `TERM=*kitty*`  |
+| WezTerm          | `WEZTERM_PANE`, `TERM_PROGRAM`     |
+| iTerm2           | `ITERM_SESSION_ID`, `TERM_PROGRAM` |
+| Ghostty          | `TERM_PROGRAM=ghostty`             |
+| Alacritty        | `TERM_PROGRAM=Alacritty`           |
+| Windows Terminal | `WT_SESSION`                       |
+| VS Code          | `TERM_PROGRAM=vscode`              |
+
+______________________________________________________________________
+
 ## [0.9.5] - 2025-12-07
 
 ### 🎯 Symbol Facade Unification

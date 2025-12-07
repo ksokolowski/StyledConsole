@@ -3,11 +3,13 @@
 from unittest.mock import MagicMock, patch
 
 from styledconsole.utils.terminal import (
+    MODERN_TERMINALS,
     TerminalProfile,
     _detect_color_depth,
     _detect_emoji_safety,
     _get_terminal_size,
     detect_terminal_capabilities,
+    is_modern_terminal,
 )
 
 
@@ -33,6 +35,26 @@ class TestTerminalProfile:
         assert profile.height == 40
         assert profile.term == "xterm-256color"
         assert profile.colorterm == "truecolor"
+        # Default values for new fields
+        assert profile.terminal_name is None
+        assert profile.modern_emoji is False
+
+    def test_profile_with_modern_terminal(self):
+        """Test profile with modern terminal fields."""
+        profile = TerminalProfile(
+            ansi_support=True,
+            color_depth=16777216,
+            emoji_safe=True,
+            width=120,
+            height=40,
+            term="xterm-kitty",
+            colorterm="truecolor",
+            terminal_name="kitty",
+            modern_emoji=True,
+        )
+
+        assert profile.terminal_name == "kitty"
+        assert profile.modern_emoji is True
 
     def test_profile_with_none_values(self):
         """Test profile with None values for env vars."""
@@ -48,6 +70,8 @@ class TestTerminalProfile:
 
         assert profile.term is None
         assert profile.colorterm is None
+        assert profile.terminal_name is None
+        assert profile.modern_emoji is False
 
 
 class TestDetectColorDepth:
@@ -260,6 +284,13 @@ class TestDetectTerminalCapabilities:
     def test_detect_dumb_terminal(self, monkeypatch):
         """Test detection of dumb terminal."""
         monkeypatch.setenv("TERM", "dumb")
+        # Clear modern terminal indicators
+        monkeypatch.delenv("TERM_PROGRAM", raising=False)
+        monkeypatch.delenv("KITTY_WINDOW_ID", raising=False)
+        monkeypatch.delenv("WEZTERM_PANE", raising=False)
+        monkeypatch.delenv("ITERM_SESSION_ID", raising=False)
+        monkeypatch.delenv("WT_SESSION", raising=False)
+        monkeypatch.delenv("VSCODE_PID", raising=False)
 
         with (
             patch("sys.stdout.isatty", return_value=True),
@@ -273,11 +304,19 @@ class TestDetectTerminalCapabilities:
             assert profile.color_depth == 0
             assert profile.emoji_safe is False
             assert profile.term == "dumb"
+            assert profile.modern_emoji is False
 
     def test_detect_no_tty(self, monkeypatch):
         """Test detection when output is not a TTY (pipe/redirect)."""
         monkeypatch.setenv("TERM", "xterm-256color")
         monkeypatch.setenv("COLORTERM", "truecolor")
+        # Clear modern terminal indicators
+        monkeypatch.delenv("TERM_PROGRAM", raising=False)
+        monkeypatch.delenv("KITTY_WINDOW_ID", raising=False)
+        monkeypatch.delenv("WEZTERM_PANE", raising=False)
+        monkeypatch.delenv("ITERM_SESSION_ID", raising=False)
+        monkeypatch.delenv("WT_SESSION", raising=False)
+        monkeypatch.delenv("VSCODE_PID", raising=False)
 
         with (
             patch("sys.stdout.isatty", return_value=False),
@@ -290,6 +329,7 @@ class TestDetectTerminalCapabilities:
             assert profile.ansi_support is False
             assert profile.color_depth == 0
             assert profile.emoji_safe is False
+            assert profile.modern_emoji is False
 
     def test_detect_with_no_color(self, monkeypatch):
         """Test detection when NO_COLOR is set."""
@@ -329,14 +369,22 @@ class TestDetectTerminalCapabilities:
         monkeypatch.setenv("COLORTERM", "truecolor")
         monkeypatch.setenv("LANG", "en_US.UTF-8")
         monkeypatch.setenv("CI", "true")
+        # Clear modern terminal indicators
+        monkeypatch.delenv("TERM_PROGRAM", raising=False)
+        monkeypatch.delenv("KITTY_WINDOW_ID", raising=False)
+        monkeypatch.delenv("WEZTERM_PANE", raising=False)
+        monkeypatch.delenv("ITERM_SESSION_ID", raising=False)
+        monkeypatch.delenv("WT_SESSION", raising=False)
+        monkeypatch.delenv("VSCODE_PID", raising=False)
 
         with patch("sys.stdout.isatty", return_value=True):
             profile = detect_terminal_capabilities()
 
             assert profile.ansi_support is True
             assert profile.color_depth == 16777216
-            # Emoji should be unsafe in CI even with UTF-8
+            # Emoji should be unsafe in CI even with UTF-8 (no modern terminal)
             assert profile.emoji_safe is False
+            assert profile.modern_emoji is False
 
 
 class TestEdgeCases:
@@ -371,3 +419,138 @@ class TestEdgeCases:
             width, height = _get_terminal_size()
             assert width == 300
             assert height == 100
+
+
+class TestModernTerminalDetection:
+    """Test modern terminal detection (v0.9.6+)."""
+
+    def test_modern_terminals_constant(self):
+        """Test MODERN_TERMINALS constant is defined."""
+        assert isinstance(MODERN_TERMINALS, dict)
+        assert "kitty" in MODERN_TERMINALS
+        assert "wezterm" in MODERN_TERMINALS
+        assert "iterm" in MODERN_TERMINALS
+        assert "ghostty" in MODERN_TERMINALS
+        assert "alacritty" in MODERN_TERMINALS
+
+    def test_detect_kitty_via_env(self, monkeypatch):
+        """Test Kitty detection via KITTY_WINDOW_ID."""
+        monkeypatch.setenv("KITTY_WINDOW_ID", "1")
+        monkeypatch.delenv("TERM_PROGRAM", raising=False)
+        monkeypatch.setenv("TERM", "xterm-256color")
+        assert is_modern_terminal() is True
+
+    def test_detect_kitty_via_term(self, monkeypatch):
+        """Test Kitty detection via TERM=xterm-kitty."""
+        monkeypatch.setenv("TERM", "xterm-kitty")
+        monkeypatch.delenv("KITTY_WINDOW_ID", raising=False)
+        assert is_modern_terminal() is True
+
+    def test_detect_kitty_via_term_program(self, monkeypatch):
+        """Test Kitty detection via TERM_PROGRAM=kitty."""
+        monkeypatch.setenv("TERM_PROGRAM", "kitty")
+        monkeypatch.setenv("TERM", "xterm-256color")
+        monkeypatch.delenv("KITTY_WINDOW_ID", raising=False)
+        assert is_modern_terminal() is True
+
+    def test_detect_wezterm_via_env(self, monkeypatch):
+        """Test WezTerm detection via WEZTERM_PANE."""
+        monkeypatch.setenv("WEZTERM_PANE", "0")
+        monkeypatch.delenv("TERM_PROGRAM", raising=False)
+        monkeypatch.setenv("TERM", "xterm-256color")
+        assert is_modern_terminal() is True
+
+    def test_detect_wezterm_via_term_program(self, monkeypatch):
+        """Test WezTerm detection via TERM_PROGRAM."""
+        monkeypatch.setenv("TERM_PROGRAM", "WezTerm")
+        monkeypatch.setenv("TERM", "wezterm")
+        assert is_modern_terminal() is True
+
+    def test_detect_iterm_via_env(self, monkeypatch):
+        """Test iTerm2 detection via ITERM_SESSION_ID."""
+        monkeypatch.setenv("ITERM_SESSION_ID", "session123")
+        monkeypatch.delenv("TERM_PROGRAM", raising=False)
+        monkeypatch.setenv("TERM", "xterm-256color")
+        assert is_modern_terminal() is True
+
+    def test_detect_iterm_via_term_program(self, monkeypatch):
+        """Test iTerm2 detection via TERM_PROGRAM."""
+        monkeypatch.setenv("TERM_PROGRAM", "iTerm.app")
+        monkeypatch.setenv("TERM", "xterm-256color")
+        monkeypatch.delenv("ITERM_SESSION_ID", raising=False)
+        assert is_modern_terminal() is True
+
+    def test_detect_ghostty(self, monkeypatch):
+        """Test Ghostty detection via TERM_PROGRAM."""
+        monkeypatch.setenv("TERM_PROGRAM", "ghostty")
+        monkeypatch.setenv("TERM", "xterm-256color")
+        assert is_modern_terminal() is True
+
+    def test_detect_alacritty(self, monkeypatch):
+        """Test Alacritty detection via TERM_PROGRAM."""
+        monkeypatch.setenv("TERM_PROGRAM", "Alacritty")
+        monkeypatch.setenv("TERM", "alacritty")
+        assert is_modern_terminal() is True
+
+    def test_detect_vscode(self, monkeypatch):
+        """Test VS Code terminal detection."""
+        monkeypatch.setenv("TERM_PROGRAM", "vscode")
+        monkeypatch.setenv("TERM", "xterm-256color")
+        assert is_modern_terminal() is True
+
+    def test_detect_windows_terminal(self, monkeypatch):
+        """Test Windows Terminal detection via WT_SESSION."""
+        monkeypatch.setenv("WT_SESSION", "abc123")
+        monkeypatch.delenv("TERM_PROGRAM", raising=False)
+        monkeypatch.setenv("TERM", "xterm-256color")
+        assert is_modern_terminal() is True
+
+    def test_no_modern_terminal(self, monkeypatch):
+        """Test basic xterm is not detected as modern."""
+        monkeypatch.setenv("TERM", "xterm-256color")
+        monkeypatch.delenv("TERM_PROGRAM", raising=False)
+        monkeypatch.delenv("KITTY_WINDOW_ID", raising=False)
+        monkeypatch.delenv("WEZTERM_PANE", raising=False)
+        monkeypatch.delenv("WEZTERM_EXECUTABLE", raising=False)
+        monkeypatch.delenv("ITERM_SESSION_ID", raising=False)
+        monkeypatch.delenv("WT_SESSION", raising=False)
+        monkeypatch.delenv("VSCODE_PID", raising=False)
+        assert is_modern_terminal() is False
+
+    def test_detect_capabilities_includes_modern_fields(self, monkeypatch):
+        """Test detect_terminal_capabilities includes modern terminal fields."""
+        monkeypatch.setenv("KITTY_WINDOW_ID", "1")
+        monkeypatch.setenv("TERM", "xterm-kitty")
+        monkeypatch.setenv("COLORTERM", "truecolor")
+        monkeypatch.setenv("LANG", "en_US.UTF-8")
+
+        with (
+            patch("sys.stdout.isatty", return_value=True),
+            patch("os.get_terminal_size") as mock_size,
+        ):
+            mock_size.return_value = MagicMock(columns=120, lines=40)
+            profile = detect_terminal_capabilities()
+
+            assert profile.terminal_name == "kitty"
+            assert profile.modern_emoji is True
+            assert profile.emoji_safe is True  # Modern terminals are always emoji-safe
+
+    def test_modern_terminal_forces_emoji_safe(self, monkeypatch):
+        """Test that modern terminal detection forces emoji_safe=True."""
+        monkeypatch.setenv("KITTY_WINDOW_ID", "1")
+        monkeypatch.setenv("TERM", "xterm-kitty")
+        monkeypatch.setenv("COLORTERM", "truecolor")
+        # Even without UTF-8 locale, modern terminal should be emoji-safe
+        monkeypatch.delenv("LANG", raising=False)
+        monkeypatch.delenv("LC_ALL", raising=False)
+        monkeypatch.delenv("LC_CTYPE", raising=False)
+
+        with (
+            patch("sys.stdout.isatty", return_value=True),
+            patch("os.get_terminal_size") as mock_size,
+        ):
+            mock_size.return_value = MagicMock(columns=80, lines=24)
+            profile = detect_terminal_capabilities()
+
+            assert profile.modern_emoji is True
+            assert profile.emoji_safe is True  # Forced by modern terminal

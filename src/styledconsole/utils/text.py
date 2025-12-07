@@ -76,6 +76,29 @@ def _is_legacy_emoji_mode() -> bool:
     return val in ("1", "true", "yes", "on")
 
 
+def _is_modern_terminal_mode() -> bool:
+    """Check if running in a modern terminal with correct emoji width handling.
+
+    Modern terminals (Kitty, WezTerm, iTerm2, Ghostty, Alacritty) correctly
+    render VS16 emojis at width 2 and ZWJ sequences as single glyphs.
+
+    Can be forced via environment variable STYLEDCONSOLE_MODERN_TERMINAL=1.
+    """
+    import os
+
+    # Check for explicit override
+    val = os.getenv("STYLEDCONSOLE_MODERN_TERMINAL", "").lower()
+    if val in ("1", "true", "yes", "on"):
+        return True
+    if val in ("0", "false", "no", "off"):
+        return False
+
+    # Auto-detect modern terminal
+    from styledconsole.utils.terminal import is_modern_terminal
+
+    return is_modern_terminal()
+
+
 def _is_skin_tone_modifier(char: str) -> bool:
     """Check if character is a skin tone modifier (U+1F3FB to U+1F3FF)."""
     return 0x1F3FB <= ord(char) <= 0x1F3FF
@@ -95,12 +118,29 @@ def _grapheme_width_legacy(grapheme: str) -> int:
     return g_width
 
 
+def _grapheme_width_modern(grapheme: str) -> int:
+    """Calculate width in modern terminal mode.
+
+    Modern terminals correctly render:
+    - VS16 emojis at width 2 (not 1)
+    - ZWJ sequences as single width-2 glyphs
+    - Skin tone modifiers merged with base emoji
+    """
+    if "\u200d" in grapheme:
+        return 2  # ZWJ sequences render as single width-2 glyph
+    if VARIATION_SELECTOR_16 in grapheme:
+        return 2  # VS16 emojis render at width 2 in modern terminals
+    # For emojis, use wcwidth which returns 2 for wide characters
+    w = wcwidth.wcswidth(grapheme)
+    return w if w >= 0 else 1
+
+
 def _grapheme_width_standard(grapheme: str) -> int:
-    """Calculate width in standard mode."""
+    """Calculate width in standard mode (conservative for older terminals)."""
     if "\u200d" in grapheme:
         return 2  # ZWJ sequences are always width 2
     if VARIATION_SELECTOR_16 in grapheme:
-        return 1  # VS16 emojis render as width 1 in terminals
+        return 1  # VS16 emojis render as width 1 in older terminals
     w = wcwidth.wcswidth(grapheme)
     return w if w >= 0 else 1
 
@@ -111,10 +151,14 @@ def visual_width(text: str, markup: bool = False) -> int:
     This function:
     1. Strips ANSI escape sequences
     2. Splits text into graphemes using robust logic
-    3. Calculates width for each grapheme:
-       - ZWJ sequences -> Width 2 (or sum of parts in legacy mode)
-       - VS16 sequences -> Width 1 (Terminal renders as 1, not wcwidth's 2)
-       - Others -> wcwidth
+    3. Calculates width for each grapheme based on terminal mode:
+       - Modern mode (Kitty, WezTerm, etc.): VS16 = 2, ZWJ = 2
+       - Standard mode: VS16 = 1, ZWJ = 2
+       - Legacy mode: Sum of parts for complex sequences
+
+    Terminal mode is auto-detected or can be controlled via:
+    - STYLEDCONSOLE_MODERN_TERMINAL=1 (force modern mode)
+    - STYLEDCONSOLE_LEGACY_EMOJI=1 (force legacy mode)
     """
     # Strip ANSI codes first
     clean_text = strip_ansi(text)
@@ -130,11 +174,14 @@ def visual_width(text: str, markup: bool = False) -> int:
     # Split into graphemes to handle complex sequences correctly
     graphemes = split_graphemes(clean_text)
     legacy_mode = _is_legacy_emoji_mode()
+    modern_mode = _is_modern_terminal_mode() if not legacy_mode else False
 
     width = 0
     for g in graphemes:
         if legacy_mode and (len(g) > 1 or any(_is_skin_tone_modifier(c) for c in g)):
             width += _grapheme_width_legacy(g)
+        elif modern_mode:
+            width += _grapheme_width_modern(g)
         else:
             width += _grapheme_width_standard(g)
 

@@ -1,6 +1,6 @@
 # StyledConsole Project Status
 
-**Version:** 0.9.5
+**Version:** 0.9.6
 **Status:** Released
 **Last Updated:** December 7, 2025
 
@@ -10,9 +10,9 @@ ______________________________________________________________________
 
 | Metric        | Value       |
 | ------------- | ----------- |
-| Current       | v0.9.5      |
+| Current       | v0.9.6      |
 | Lines of Code | ~6,500      |
-| Tests         | 898 passing |
+| Tests         | 914 passing |
 | Coverage      | 89%         |
 | Examples      | 38          |
 
@@ -34,6 +34,7 @@ ______________________________________________________________________
 | v0.9.0  | Dec 2025 | Icon Provider (Colored ASCII) |
 | v0.9.1  | Dec 2025 | Emoji DRY Refactoring         |
 | v0.9.5  | Dec 2025 | Symbol Facade Unification     |
+| v0.9.6  | Dec 2025 | Modern Terminal Detection     |
 
 ### Planned
 
@@ -45,6 +46,91 @@ ______________________________________________________________________
 | v0.13.0 | Q2 2026 | Test Automation Presets - CI/CD           | PLANNED |
 | v0.14.0 | Q2 2026 | Test Automation Presets - Robot Framework | PLANNED |
 | v1.0.0  | Q3 2026 | API freeze & Production Hardening         | PLANNED |
+
+______________________________________________________________________
+
+## v0.9.6: Modern Terminal Detection
+
+**Released:** December 7, 2025
+**Status:** RELEASED
+**Theme:** Auto-detect modern terminals with full Unicode/emoji support
+
+### Summary
+
+This release adds automatic detection of modern terminals (Kitty, WezTerm,
+iTerm2, Ghostty, Alacritty, Windows Terminal, VS Code) that correctly handle
+VS16 width and ZWJ emoji sequences. The library now automatically adjusts
+width calculations based on terminal capabilities.
+
+### Key Features
+
+#### Modern Terminal Detection ✅
+
+- Auto-detect: Kitty, WezTerm, iTerm2, Ghostty, Alacritty, Windows Terminal, VS Code
+- New `TerminalProfile` fields: `terminal_name`, `modern_emoji`
+- New helper function: `is_modern_terminal()`
+- Environment variable support for Kitty, WezTerm, iTerm, Windows Terminal
+
+#### Correct Width Calculation ✅
+
+- Modern terminals: VS16 emojis render at width 2 (correct)
+- Standard terminals: VS16 emojis render at width 1 (conservative)
+- New `_grapheme_width_modern()` function for accurate width in modern terminals
+- Override via `STYLEDCONSOLE_MODERN_TERMINAL=1` environment variable
+
+#### Enhanced Emoji Safety ✅
+
+- Modern terminals automatically get `emoji_safe=True`
+- No more false negatives for UTF-8/locale detection in modern terminals
+- ZWJ sequences properly handled in modern terminals
+
+### Supported Modern Terminals
+
+| Terminal         | Detection Method                   | VS16 | ZWJ |
+| ---------------- | ---------------------------------- | ---- | --- |
+| Kitty            | `KITTY_WINDOW_ID`, `TERM=*kitty*`  | ✅   | ✅  |
+| WezTerm          | `WEZTERM_PANE`, `TERM_PROGRAM`     | ✅   | ✅  |
+| iTerm2           | `ITERM_SESSION_ID`, `TERM_PROGRAM` | ✅   | ✅  |
+| Ghostty          | `TERM_PROGRAM=ghostty`             | ✅   | ✅  |
+| Alacritty        | `TERM_PROGRAM=Alacritty`           | ✅   | ✅  |
+| Windows Terminal | `WT_SESSION`                       | ✅   | ✅  |
+| VS Code          | `TERM_PROGRAM=vscode`              | ✅   | ✅  |
+
+### API Usage
+
+```python
+from styledconsole.utils.terminal import (
+    is_modern_terminal,
+    detect_terminal_capabilities,
+)
+
+# Check if modern terminal
+if is_modern_terminal():
+    print("✅ Full emoji support!")
+
+# Get detailed profile
+profile = detect_terminal_capabilities()
+print(f"Terminal: {profile.terminal_name}")  # "kitty", "wezterm", etc.
+print(f"Modern emoji: {profile.modern_emoji}")  # True/False
+```
+
+### Environment Variable Overrides
+
+```bash
+# Force modern terminal mode (skip auto-detection)
+export STYLEDCONSOLE_MODERN_TERMINAL=1
+
+# Force legacy mode (conservative width calculation)
+export STYLEDCONSOLE_LEGACY_EMOJI=1
+```
+
+### Success Metrics
+
+- [x] Detection for 7 modern terminals implemented
+- [x] 16 new unit tests for modern terminal detection
+- [x] Width calculation adapts to terminal type
+- [x] Environment variable overrides working
+- [x] 914 tests passing, 89% coverage
 
 ______________________________________________________________________
 

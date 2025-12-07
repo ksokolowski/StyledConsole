@@ -2,11 +2,101 @@
 
 This module provides functions to detect terminal capabilities such as ANSI support,
 color depth, emoji safety, and terminal dimensions.
+
+Modern terminal detection (v0.9.6+):
+Detects terminals with full Unicode/emoji support including:
+- Correct VS16 width handling (no extra spaces needed)
+- Proper ZWJ sequence rendering (family emoji, skin tones)
+- Full truecolor support
+
+Supported modern terminals: Kitty, WezTerm, iTerm2, Ghostty, Alacritty, Windows Terminal
 """
 
 import os
 import sys
 from dataclasses import dataclass
+
+# Modern terminals with full emoji/Unicode support
+# These terminals correctly handle VS16 width and ZWJ sequences
+MODERN_TERMINALS: dict[str, tuple[str, ...]] = {
+    "kitty": ("KITTY_WINDOW_ID",),
+    "wezterm": ("WEZTERM_PANE", "WEZTERM_EXECUTABLE"),
+    "iterm": ("ITERM_SESSION_ID",),
+    "ghostty": (),  # Uses TERM_PROGRAM detection
+    "alacritty": (),  # Uses TERM_PROGRAM detection
+    "windows_terminal": ("WT_SESSION",),
+    "vscode": ("VSCODE_PID", "TERM_PROGRAM=vscode"),  # VS Code integrated terminal
+}
+
+
+def _detect_modern_terminal() -> str | None:
+    """Detect if running in a modern terminal with full Unicode support.
+
+    Modern terminals correctly handle:
+    - VS16 (Variation Selector 16) width
+    - ZWJ (Zero Width Joiner) sequences
+    - Full Unicode emoji rendering
+
+    Returns:
+        Terminal name (lowercase) if detected, None otherwise.
+
+    Example:
+        >>> # In Kitty terminal
+        >>> _detect_modern_terminal()
+        'kitty'
+        >>> # In basic xterm
+        >>> _detect_modern_terminal()
+        None
+    """
+    term = os.environ.get("TERM", "").lower()
+    term_program = os.environ.get("TERM_PROGRAM", "").lower()
+
+    # Check TERM value first (most reliable for some terminals)
+    if "kitty" in term:
+        return "kitty"
+    if "wezterm" in term:
+        return "wezterm"
+
+    # Check TERM_PROGRAM
+    if term_program == "kitty":
+        return "kitty"
+    if term_program == "wezterm":
+        return "wezterm"
+    if "iterm" in term_program:
+        return "iterm"
+    if term_program == "ghostty":
+        return "ghostty"
+    if term_program == "alacritty":
+        return "alacritty"
+    if term_program == "vscode":
+        return "vscode"
+    if term_program == "apple_terminal":
+        return "apple_terminal"
+
+    # Check environment variables for terminals that set them
+    if "KITTY_WINDOW_ID" in os.environ:
+        return "kitty"
+    if "WEZTERM_PANE" in os.environ or "WEZTERM_EXECUTABLE" in os.environ:
+        return "wezterm"
+    if "ITERM_SESSION_ID" in os.environ:
+        return "iterm"
+    if "WT_SESSION" in os.environ:
+        return "windows_terminal"
+
+    return None
+
+
+def is_modern_terminal() -> bool:
+    """Check if the current terminal has modern emoji support.
+
+    Returns:
+        True if running in a terminal with full VS16/ZWJ support.
+
+    Example:
+        >>> if is_modern_terminal():
+        ...     print("Full emoji support available!")
+    """
+    return _detect_modern_terminal() is not None
 
 
 @dataclass
@@ -21,6 +111,8 @@ class TerminalProfile:
         height: Terminal height in characters
         term: Value of the TERM environment variable
         colorterm: Value of the COLORTERM environment variable
+        terminal_name: Detected terminal name (kitty, wezterm, etc.) or None
+        modern_emoji: Whether terminal has full VS16/ZWJ emoji support
     """
 
     ansi_support: bool
@@ -30,6 +122,8 @@ class TerminalProfile:
     height: int
     term: str | None
     colorterm: str | None
+    terminal_name: str | None = None
+    modern_emoji: bool = False
 
 
 def detect_terminal_capabilities() -> TerminalProfile:
@@ -80,6 +174,14 @@ def detect_terminal_capabilities() -> TerminalProfile:
     # Get terminal dimensions
     width, height = _get_terminal_size()
 
+    # Detect modern terminal (v0.9.6+)
+    terminal_name = _detect_modern_terminal()
+    modern_emoji = terminal_name is not None
+
+    # Modern terminals are always emoji-safe
+    if modern_emoji:
+        emoji_safe = True
+
     return TerminalProfile(
         ansi_support=ansi_support,
         color_depth=color_depth,
@@ -88,6 +190,8 @@ def detect_terminal_capabilities() -> TerminalProfile:
         height=height,
         term=term if term else None,
         colorterm=colorterm if colorterm else None,
+        terminal_name=terminal_name,
+        modern_emoji=modern_emoji,
     )
 
 
@@ -174,6 +278,8 @@ def _get_terminal_size() -> tuple[int, int]:
 
 
 __all__ = [
+    "MODERN_TERMINALS",
     "TerminalProfile",
     "detect_terminal_capabilities",
+    "is_modern_terminal",
 ]
