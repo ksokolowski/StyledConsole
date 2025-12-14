@@ -254,29 +254,61 @@ class TestVariationSelector:
                 assert info.get("terminal_safe") is False, f"{e} should have terminal_safe=False"
 
 
-class TestTier2Tier3FutureWork:
-    """Document limitations for Tier 2/3 (future work)."""
+class TestModernTerminalZwjSupport:
+    """Test ZWJ sequence handling in modern terminals (v0.9.6+)."""
 
-    def test_tier2_skin_tones_known_limitation(self):
-        """Tier 2: Modified emojis with skin tones - future work.
+    def test_zwj_sequence_width_modern(self, monkeypatch):
+        """ZWJ sequences should have width 2 in modern terminal mode.
 
-        These may have alignment issues in v0.1 as they use
-        multiple codepoints (emoji + modifier).
+        In modern terminals (Kitty, etc.), a sequence like 👨‍👩‍👧 renders
+        as a single glyph (width 2), not as the sum of its parts.
         """
-        # Example: 👍🏽 (thumbs up + medium skin tone)
-        # This is composed of 2 codepoints
-        # Current implementation may not handle perfectly
-        pass
+        # Force modern terminal mode
+        monkeypatch.setenv("STYLEDCONSOLE_MODERN_TERMINAL", "1")
 
-    def test_tier3_zwj_sequences_known_limitation(self):
-        """Tier 3: ZWJ sequences - future work.
+        # Family: Man + ZWJ + Woman + ZWJ + Girl (3 components)
+        # Hybrid Heuristic: >2 components -> Legacy width (Safe)
+        # Legacy width: 6 (2 + 2 + 2)
+        assert visual_width("👨‍👩‍👧") == 6
 
-        Complex multi-codepoint emojis like 👨‍👩‍👧‍👦 (family)
-        or 👨‍💻 (man technologist) will be addressed in v0.3+.
+        # Technologist: Man + ZWJ + Laptop (2 components)
+        # Hybrid Heuristic: <=2 components -> Modern width (Tight)
+        assert visual_width("👨‍💻") == 2
+
+        # Scientist: Woman + ZWJ + Microscope (2 components)
+        assert visual_width("👩‍🔬") == 2
+
+        # Rainbow Flag: Flag (1) + ZWJ + Rainbow (2) = Legacy Width 3
+        # Hybrid Heuristic: odd width (3) -> fallback to Legacy (Safe)
+        assert visual_width("🏳️‍🌈") == 3
+
+    def test_vs16_sequence_width_modern(self, monkeypatch):
+        """VS16 sequences should have width 2 in modern terminal mode.
+
+        VS16 (Emoji Presentation) forces emojis to display as wide glyphs
+        in modern terminals (Kitty).
         """
-        # These use Zero-Width Joiners to combine multiple emojis
-        # Example: 👨‍💻 = 👨 (man) + ZWJ + 💻 (laptop)
-        pass
+        monkeypatch.setenv("STYLEDCONSOLE_MODERN_TERMINAL", "1")
+
+        # Warning (U+26A0 + VS16)
+        # wcwidth report: 2
+        # Actual render: 2 (in Kitty)
+        assert visual_width("⚠️\ufe0f") == 2
+
+        # Information (U+2139 + VS16)
+        assert visual_width("ℹ️\ufe0f") == 2
+
+    def test_vs16_sequence_width_standard(self, monkeypatch):
+        """VS16 sequences should have width 1 in standard terminal mode (legacy behavior)."""
+        monkeypatch.setenv("STYLEDCONSOLE_MODERN_TERMINAL", "0")
+        monkeypatch.setenv("STYLEDCONSOLE_LEGACY_EMOJI", "0")
+
+        # Warning (U+26A0 + VS16)
+        # Standard mode forces width 1 for compatibility with older terminals
+        assert visual_width("⚠️\ufe0f") == 1
+
+        # Information (U+2139 + VS16)
+        assert visual_width("ℹ️\ufe0f") == 1
 
 
 class TestEdgeCases:

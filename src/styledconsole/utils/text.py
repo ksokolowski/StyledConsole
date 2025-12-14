@@ -17,7 +17,8 @@ from styledconsole.types import AlignType
 VARIATION_SELECTOR_16 = "\ufe0f"
 
 # ANSI escape sequence pattern (CSI sequences)
-ANSI_PATTERN = re.compile(r"\x1b\[[0-9;]*m")
+# Matches CSI sequences (Control Sequence Introducer)
+ANSI_PATTERN = re.compile(r"\x1b\[[0-9;?]*[a-zA-Z]")
 
 
 def strip_ansi(text: str) -> str:
@@ -148,11 +149,18 @@ def _grapheme_width_modern(grapheme: str) -> int:
     - 👨‍👩‍👧‍👦 (4 people) = 4 emoji = 8 cells
     """
     if "\u200d" in grapheme:
-        # Count actual emoji components and multiply by 2
-        emoji_count = _count_emoji_codepoints(grapheme)
-        return emoji_count * 2 if emoji_count > 0 else 2
-    if VARIATION_SELECTOR_16 in grapheme:
-        return 2  # VS16 emojis render at width 2 in modern terminals
+        # Common ZWJ sequences (2 components) usually render correctly (Width 2).
+        # Complex sequences (>2 components) like Family often fail font support (Width > 2).
+        # Also, some 2-component sequences (Rainbow Flag) have a legacy width of 3
+        # (Width 1 + Width 2) and often render as 3 chars if unjoined.
+        # We compromise: Use Modern (2) for strict 2-component even-width, Legacy (Safe) otherwise.
+        leg_w = _grapheme_width_legacy(grapheme)
+        if _count_emoji_codepoints(grapheme) > 2 or leg_w == 3:
+            return leg_w
+        return 2
+    # VS16 (Emoji Presentation) usually forces width 2 (Emoji style)
+    # We let wcwidth handle it, or default to 1 if wcwidth returns -1
+
     # For emojis, use wcwidth which returns 2 for wide characters
     w = wcwidth.wcswidth(grapheme)
     return w if w >= 0 else 1
@@ -163,7 +171,11 @@ def _grapheme_width_standard(grapheme: str) -> int:
     if "\u200d" in grapheme:
         return 2  # ZWJ sequences are always width 2
     if VARIATION_SELECTOR_16 in grapheme:
-        return 1  # VS16 emojis render as width 1 in older terminals
+        # Older terminals (Gnome, VSCode default) often treat ZWJ/VS16 sequences as text (Width 1)
+        # We force Width 1 here to maintain compatibility with legacy behavior
+        return 1
+
+    # For others, trust wcwidth or default to 1
     w = wcwidth.wcswidth(grapheme)
     return w if w >= 0 else 1
 
