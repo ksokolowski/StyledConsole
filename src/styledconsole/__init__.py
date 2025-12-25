@@ -13,6 +13,7 @@ Example:
 
 from styledconsole.console import Console
 from styledconsole.core.banner import Banner
+from styledconsole.core.context import StyleContext
 from styledconsole.core.progress import StyledProgress
 from styledconsole.core.styles import (
     ASCII,
@@ -63,6 +64,14 @@ from styledconsole.policy import (
     get_default_policy,
     reset_default_policy,
     set_default_policy,
+)
+from styledconsole.presets.styles import (
+    ERROR_STYLE,
+    INFO_STYLE,
+    MINIMAL_STYLE,
+    PANEL_STYLE,
+    SUCCESS_STYLE,
+    WARNING_STYLE,
 )
 
 # Import type aliases
@@ -161,14 +170,21 @@ __all__ = [
     # Emoji data layer (for raw emoji access, advanced use)
     "EMOJI",
     "EMOJI_PACKAGE_AVAILABLE",
+    # Presets
+    "ERROR_STYLE",
     "HEAVY",
+    "INFO_STYLE",
     "MINIMAL",
+    "MINIMAL_STYLE",
+    "PANEL_STYLE",
     "RICH_TO_CSS4_MAPPING",
     "ROUNDED",
     "ROUNDED_THICK",
     "SOLID",
+    "SUCCESS_STYLE",
     "THEMES",
     "THICK",
+    "WARNING_STYLE",
     # Type aliases
     "AlignType",
     # Banner rendering
@@ -192,6 +208,7 @@ __all__ = [
     # Policy system (environment-aware rendering)
     "RenderPolicy",
     "Renderer",
+    "StyleContext",
     # Core types and exceptions
     "StyledConsoleError",
     # Progress tracking

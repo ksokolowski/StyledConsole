@@ -147,7 +147,7 @@ export STYLEDCONSOLE_LEGACY_EMOJI=1
 - [x] Width calculation adapts to terminal type
 - [x] Environment variable overrides working
 - [x] 914 tests passing, 89% coverage
-- [ ] ZWJ width alignment in Kitty (minor issue, investigating)
+- [x] ZWJ & VS16 width alignment in Kitty (fixed: ZWJ=2, VS16=1)
 
 ______________________________________________________________________
 

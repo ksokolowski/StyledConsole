@@ -15,6 +15,7 @@ from typing import TYPE_CHECKING, Any, TextIO
 
 from rich.console import Console as RichConsole
 
+from styledconsole.core.context import StyleContext
 from styledconsole.core.export_manager import ExportManager
 from styledconsole.core.progress import StyledProgress
 from styledconsole.core.rendering_engine import RenderingEngine
@@ -205,6 +206,8 @@ class Console:
         width: int | None = None,
         padding: int = 1,
         align: AlignType = "left",
+        frame_align: AlignType | None = None,
+        margin: int | tuple[int, int, int, int] = 0,
         content_color: str | None = None,
         border_color: str | None = None,
         title_color: str | None = None,
@@ -226,6 +229,7 @@ class Console:
             Rendered frame as a string containing ANSI escape codes.
         """
         # Resolve semantic colors through theme and normalize for Rich
+        from styledconsole.core.context import StyleContext
         from styledconsole.utils.color import normalize_color_for_rich
 
         resolved_content_color = normalize_color_for_rich(self._theme.resolve_color(content_color))
@@ -262,32 +266,200 @@ class Console:
             self._theme.resolve_color(effective_border_gradient_end)
         )
 
-        return self._renderer.render_frame_to_string(
-            content,
-            title=title,
-            border=border,
+        # Create Context
+        context = StyleContext(
             width=width,
             padding=padding,
             align=align,
-            content_color=resolved_content_color,
+            frame_align=frame_align,
+            margin=margin,
+            border_style=border,
             border_color=resolved_border_color,
-            title_color=resolved_title_color,
-            start_color=resolved_start_color,
-            end_color=resolved_end_color,
             border_gradient_start=resolved_border_gradient_start,
             border_gradient_end=resolved_border_gradient_end,
             border_gradient_direction=effective_direction,
+            content_color=resolved_content_color,
+            start_color=resolved_start_color,
+            end_color=resolved_end_color,
+            title=title,
+            title_color=resolved_title_color,
+        )
+
+        return self._renderer.render_frame_to_string(content, context=context)
+
+    def _resolve_color(
+        self,
+        arg_val: str | None,
+        style_val: str | None,
+    ) -> str | None:
+        """Resolve a color with precedence: arg > style > None."""
+        from styledconsole.utils.color import normalize_color_for_rich
+
+        res_fn = self._theme.resolve_color
+        if arg_val is not None:
+            return normalize_color_for_rich(res_fn(arg_val))
+        if style_val is not None:
+            return normalize_color_for_rich(res_fn(style_val))
+        return None
+
+    def _resolve_gradient_colors(
+        self,
+        arg_start: str | None,
+        arg_end: str | None,
+        style_start: str | None,
+        style_end: str | None,
+        theme_gradient: Any,
+    ) -> tuple[str | None, str | None]:
+        """Resolve gradient colors with precedence: arg > style > theme."""
+        from styledconsole.utils.color import normalize_color_for_rich
+
+        res_fn = self._theme.resolve_color
+
+        final_start = arg_start if arg_start is not None else style_start
+        final_end = arg_end if arg_end is not None else style_end
+
+        if final_start is None and theme_gradient is not None:
+            final_start = theme_gradient.start
+            final_end = theme_gradient.end
+
+        return (
+            normalize_color_for_rich(res_fn(final_start)),
+            normalize_color_for_rich(res_fn(final_end)),
+        )
+
+    def _resolve_simple_attrs(
+        self,
+        style: StyleContext | None,
+        title: str | None,
+        border: str | None,
+        width: int | None,
+        padding: int | None,
+        align: AlignType | None,
+        frame_align: AlignType | None,
+        margin: int | tuple[int, int, int, int] | None,
+        border_gradient_direction: str,
+    ) -> dict[str, Any]:
+        """Resolve simple attributes with arg > style > default precedence."""
+        return {
+            "border_style": border
+            if border is not None
+            else (style.border_style if style else "solid"),
+            "padding": padding if padding is not None else (style.padding if style else 1),
+            "align": align if align is not None else (style.align if style else "left"),
+            "frame_align": frame_align
+            if frame_align is not None
+            else (style.frame_align if style else None),
+            "margin": margin if margin is not None else (style.margin if style else 0),
+            "width": width if width is not None else (style.width if style else None),
+            "title": title if title is not None else (style.title if style else None),
+            "border_gradient_direction": (
+                border_gradient_direction
+                if border_gradient_direction != "vertical"
+                else (style.border_gradient_direction if style else "vertical")
+            ),
+        }
+
+    def _resolve_frame_style(
+        self,
+        style: StyleContext | None,
+        title: str | None,
+        border: str | None,
+        width: int | None,
+        padding: int | None,
+        align: AlignType | None,
+        frame_align: AlignType | None,
+        margin: int | tuple[int, int, int, int] | None,
+        content_color: str | None,
+        border_color: str | None,
+        title_color: str | None,
+        start_color: str | None,
+        end_color: str | None,
+        border_gradient_start: str | None,
+        border_gradient_end: str | None,
+        border_gradient_direction: str,
+    ) -> StyleContext:
+        """Resolve effective style parameters from arguments and style object."""
+        # Resolve simple attributes
+        attrs = self._resolve_simple_attrs(
+            style,
+            title,
+            border,
+            width,
+            padding,
+            align,
+            frame_align,
+            margin,
+            border_gradient_direction,
+        )
+
+        # Resolve colors
+        resolved_content_color = self._resolve_color(
+            content_color, style.content_color if style else None
+        )
+        resolved_border_color = self._resolve_color(
+            border_color, style.border_color if style else None
+        )
+        resolved_title_color = self._resolve_color(
+            title_color, style.title_color if style else None
+        )
+
+        # Resolve content gradient
+        resolved_start, resolved_end = self._resolve_gradient_colors(
+            start_color,
+            end_color,
+            style.start_color if style else None,
+            style.end_color if style else None,
+            self._theme.text_gradient,
+        )
+
+        # Resolve border gradient
+        bg_start, bg_end = self._resolve_gradient_colors(
+            border_gradient_start,
+            border_gradient_end,
+            style.border_gradient_start if style else None,
+            style.border_gradient_end if style else None,
+            self._theme.border_gradient,
+        )
+        # Override direction from theme if applicable
+        eff_bg_dir = attrs["border_gradient_direction"]
+        if (
+            border_gradient_start is None
+            and (style is None or style.border_gradient_start is None)
+            and self._theme.border_gradient is not None
+            and eff_bg_dir == "vertical"
+        ):
+            eff_bg_dir = self._theme.border_gradient.direction
+
+        return StyleContext(
+            width=attrs["width"],
+            padding=attrs["padding"],
+            align=attrs["align"],
+            frame_align=attrs["frame_align"],
+            margin=attrs["margin"],
+            border_style=attrs["border_style"],
+            border_color=resolved_border_color,
+            border_gradient_start=bg_start,
+            border_gradient_end=bg_end,
+            border_gradient_direction=eff_bg_dir,
+            content_color=resolved_content_color,
+            start_color=resolved_start,
+            end_color=resolved_end,
+            title=attrs["title"],
+            title_color=resolved_title_color,
         )
 
     def frame(
         self,
         content: str | list[str],
+        style: StyleContext | None = None,
         *,
         title: str | None = None,
-        border: str = "solid",
+        border: str | None = None,
         width: int | None = None,
-        padding: int = 1,
-        align: AlignType = "left",
+        padding: int | None = None,
+        align: AlignType | None = None,
+        frame_align: AlignType | None = None,
+        margin: int | tuple[int, int, int, int] | None = None,
         content_color: str | None = None,
         border_color: str | None = None,
         title_color: str | None = None,
@@ -299,108 +471,50 @@ class Console:
     ) -> None:
         """Render and print a framed content box.
 
-        Creates a bordered frame around text content with optional title,
-        colors, and gradients. Supports all border styles and extensive
-        customization.
+        This is the primary method for displaying content in a box.
 
         Args:
-            content: Text content to frame. Can be a single string or list of strings
-                (one per line).
-            title: Optional title displayed in the top border. Defaults to None.
-            border: Border style name. One of: "solid", "double", "rounded", "heavy",
-                "thick", "ascii", "minimal", "dots". Defaults to "solid".
-            width: Frame width in characters. If None, auto-calculated from content.
-                Defaults to None.
-            padding: Horizontal padding (spaces) on each side of content. Defaults to 1.
-            align: Content alignment within frame. One of: "left", "center", "right".
-                Defaults to "left". Note: This aligns the content *inside* the frame box,
-                not the frame itself.
-            content_color: Color for frame content. Accepts hex codes (#ff0000),
-                RGB tuples (255, 0, 0), or CSS4 color names ("red"). Defaults to None.
-            border_color: Color for frame border characters. Defaults to None.
-            title_color: Color for frame title. If None and border_color is set,
-                title uses border_color. Defaults to None.
-            start_color: Starting color for per-line gradient effect. Overrides
-                content_color when set. Defaults to None.
-            end_color: Ending color for per-line gradient effect. Required when
-                start_color is set. Defaults to None.
-            border_gradient_start: Starting color for border gradient.
-                Defaults to None.
-            border_gradient_end: Ending color for border gradient.
-                Defaults to None.
-            border_gradient_direction: Direction for border gradient.
-                Currently only "vertical" is supported. Defaults to "vertical".
-
-        Example:
-            >>> console = Console()
-            >>> console.frame("Hello World", title="Greeting", border="double")
-
-            >>> # With colors
-            >>> console.frame(
-            ...     ["Line 1", "Line 2"],
-            ...     title="Status",
-            ...     border="solid",
-            ...     content_color="lime",
-            ...     border_color="cyan"
-            ... )
-
-            >>> # With semantic theme colors
-            >>> console = Console(theme="dark")
-            >>> console.frame("OK!", border_color="success")  # Uses theme.success
-            >>> console.frame("Oops", border_color="error")   # Uses theme.error
-
-            >>> # With gradient
-            >>> console.frame(
-            ...     "Test",
-            ...     start_color="red",
-            ...     end_color="blue"
-            ... )
-
-            >>> # With border gradient
-            >>> console.frame(
-            ...     "Gradient Border",
-            ...     border_gradient_start="cyan",
-            ...     border_gradient_end="magenta"
-            ... )
-
-            >>> # With gradient theme (auto-applies gradients)
-            >>> console = Console(theme="rainbow")
-            >>> console.frame("Colorful!")  # Uses theme's border_gradient
+            content: The text or list of strings to display inside the frame.
+            style: Optional StyleContext object containing styling parameters.
+                If provided, it serves as the base configuration.
+            title: Optional title to display in the top border.
+            border: Border style (\"solid\", \"rounded\", \"double\", etc.).
+                Supported: \"heavy\", \"thick\", \"ascii\", \"minimal\".
+                Defaults to "solid" if not specified in style.
+            width: Explicit width of the frame. If None, fits to content.
+            padding: Padding between border and content. Defaults to 1 if not specified in style.
+            align: Content alignment within the frame ("left", "center", "right").
+                Defaults to "left" if not specified in style.
+            frame_align: Alignment of the frame itself on the screen ("left", "center", "right").
+            margin: Margin around the frame. Defaults to 0 if not specified in style.
+            content_color: Color of the content text.
+            border_color: Color of the border.
+            title_color: Color of the title text.
+            start_color: Start color for content gradient.
+            end_color: End color for content gradient.
+            border_gradient_start: Start color for border gradient.
+            border_gradient_end: End color for border gradient.
+            border_gradient_direction: Direction of border gradient ("vertical", "horizontal").
         """
-        # Resolve semantic colors from theme, then normalize for Rich
-        from styledconsole.utils.color import normalize_color_for_rich
 
-        resolved_content_color = normalize_color_for_rich(self._theme.resolve_color(content_color))
-        resolved_border_color = normalize_color_for_rich(self._theme.resolve_color(border_color))
-        resolved_title_color = normalize_color_for_rich(self._theme.resolve_color(title_color))
-
-        # Apply theme text gradient if no explicit content gradient provided
-        effective_start_color = start_color
-        effective_end_color = end_color
-        if start_color is None and self._theme.text_gradient is not None:
-            effective_start_color = self._theme.text_gradient.start
-            effective_end_color = self._theme.text_gradient.end
-
-        resolved_start_color = normalize_color_for_rich(
-            self._theme.resolve_color(effective_start_color)
-        )
-        resolved_end_color = normalize_color_for_rich(
-            self._theme.resolve_color(effective_end_color)
-        )
-
-        # Apply theme border gradient if no explicit gradient provided
-        effective_border_gradient_start = border_gradient_start
-        effective_border_gradient_end = border_gradient_end
-        if border_gradient_start is None and self._theme.border_gradient is not None:
-            effective_border_gradient_start = self._theme.border_gradient.start
-            effective_border_gradient_end = self._theme.border_gradient.end
-            border_gradient_direction = self._theme.border_gradient.direction
-
-        resolved_border_gradient_start = normalize_color_for_rich(
-            self._theme.resolve_color(effective_border_gradient_start)
-        )
-        resolved_border_gradient_end = normalize_color_for_rich(
-            self._theme.resolve_color(effective_border_gradient_end)
+        # Resolve style using helper
+        resolved_context = self._resolve_frame_style(
+            style=style,
+            title=title,
+            border=border,
+            width=width,
+            padding=padding,
+            align=align,
+            frame_align=frame_align,
+            margin=margin,
+            content_color=content_color,
+            border_color=border_color,
+            title_color=title_color,
+            start_color=start_color,
+            end_color=end_color,
+            border_gradient_start=border_gradient_start,
+            border_gradient_end=border_gradient_end,
+            border_gradient_direction=border_gradient_direction,
         )
 
         # Check if we're inside a group context
@@ -408,42 +522,29 @@ class Console:
 
         active_group = get_active_group()
         if active_group is not None:
-            # Capture the frame instead of printing
+            # Capture using resolved values
             active_group.capture_frame(
                 content,
-                title=title,
-                border=border,
-                width=width,
-                padding=padding,
-                align=align,
-                content_color=resolved_content_color,
-                border_color=resolved_border_color,
-                title_color=resolved_title_color,
-                start_color=resolved_start_color,
-                end_color=resolved_end_color,
-                border_gradient_start=resolved_border_gradient_start,
-                border_gradient_end=resolved_border_gradient_end,
-                border_gradient_direction=border_gradient_direction,
+                title=resolved_context.title,
+                border=resolved_context.border_style,
+                width=resolved_context.width,
+                padding=resolved_context.padding,
+                align=resolved_context.align,
+                frame_align=resolved_context.frame_align,
+                margin=resolved_context.margin,
+                content_color=resolved_context.content_color,
+                border_color=resolved_context.border_color,
+                title_color=resolved_context.title_color,
+                start_color=resolved_context.start_color,
+                end_color=resolved_context.end_color,
+                border_gradient_start=resolved_context.border_gradient_start,
+                border_gradient_end=resolved_context.border_gradient_end,
+                border_gradient_direction=resolved_context.border_gradient_direction,
             )
             return
 
-        # Normal print behavior
-        self._renderer.print_frame(
-            content,
-            title=title,
-            border=border,
-            width=width,
-            padding=padding,
-            align=align,
-            content_color=resolved_content_color,
-            border_color=resolved_border_color,
-            title_color=resolved_title_color,
-            start_color=resolved_start_color,
-            end_color=resolved_end_color,
-            border_gradient_start=resolved_border_gradient_start,
-            border_gradient_end=resolved_border_gradient_end,
-            border_gradient_direction=border_gradient_direction,
-        )
+        # Normal print behavior (using context)
+        self._renderer.print_frame(content, context=resolved_context)
 
     def render_frame_group(
         self,
@@ -539,6 +640,8 @@ class Console:
         layout: LayoutType = "vertical",
         gap: int = 1,
         inherit_style: bool = False,
+        margin: int | tuple[int, int, int, int] = 0,
+        frame_align: AlignType | None = None,
     ) -> None:
         """Render and print a group of frames.
 
@@ -572,6 +675,8 @@ class Console:
             gap: Number of blank lines between inner frames. Defaults to 1.
             inherit_style: If True, inner frames inherit outer border style
                 when not explicitly specified. Defaults to False.
+            margin: Margin around the outer frame.
+            frame_align: Alignment of the outer frame on screen.
 
         Example:
             >>> console = Console()
@@ -616,6 +721,8 @@ class Console:
             layout=layout,
             gap=gap,
             inherit_style=inherit_style,
+            margin=margin,
+            frame_align=frame_align,
         )
 
     def group(
@@ -633,44 +740,25 @@ class Console:
         gap: int = 1,
         inherit_style: bool = False,
         align_widths: bool = False,
+        margin: int | tuple[int, int, int, int] = 0,
+        frame_align: AlignType | None = None,
     ) -> FrameGroupContext:
         """Create a context manager for grouping frames.
 
-        When used as a context manager, captures all frame() calls made within
-        the context and renders them together when the context exits. This
-        provides a more Pythonic way to create nested frame layouts.
+        When used as a context manager, any calls to frame() within the block
+        are captured and rendered together as a single group when the block exits.
 
         Args:
-            title: Optional title for the outer container frame.
-            border: Border style for outer frame. Defaults to "rounded".
-            border_color: Color for outer frame border.
-            title_color: Color for outer frame title.
-            border_gradient_start: Starting color for outer border gradient.
-            border_gradient_end: Ending color for outer border gradient.
+            title: Optional title for the outer frame.
+            border: Border style for the outer frame.
+            border_color: Color for the outer frame border.
+            title_color: Color for the outer frame title.
+            border_gradient_start: Gradient start for outer border.
+            border_gradient_end: Gradient end for outer border.
             padding: Padding inside outer frame. Defaults to 1.
-            width: Fixed width for outer frame. None for auto.
-            align: Content alignment. Defaults to "left".
+            width: Fixed width for outer frame. Defaults to None (auto).
+            align: Content alignment within outer frame.
             gap: Lines between captured frames. Defaults to 1.
-            inherit_style: If True, inner frames inherit outer border style.
-            align_widths: If True, align all inner frame widths uniformly.
-
-        Returns:
-            A context manager that captures frame() calls.
-
-        Example:
-            >>> console = Console()
-            >>> # Basic usage
-            >>> with console.group(title="Dashboard", border="double") as group:
-            ...     console.frame("Section A", title="A")
-            ...     console.frame("Section B", title="B")
-
-            >>> # Nested groups
-            >>> with console.group(title="Outer") as outer:
-            ...     console.frame("Top")
-            ...     with console.group(title="Inner") as inner:
-            ...         console.frame("Nested A")
-            ...         console.frame("Nested B")
-
             >>> # Aligned widths for status-style layouts
             >>> with console.group(align_widths=True) as group:
             ...     console.frame("Short", title="A")
@@ -692,6 +780,8 @@ class Console:
             gap=gap,
             inherit_style=inherit_style,
             align_widths=align_widths,
+            margin=margin,
+            frame_align=frame_align,
         )
 
     def _print_ansi_output(self, output: str, align: str = "left") -> None:

@@ -11,7 +11,7 @@ The context manager is recommended for most use cases as it:
 - Automatically handles frame capture and rendering
 """
 
-from styledconsole import Console, icons
+from styledconsole import Console, StyleContext, icons
 
 
 def demo_context_manager_basic():
@@ -23,9 +23,9 @@ def demo_context_manager_basic():
 
     # Simple group with context manager
     with console.group(title=f"{icons.BAR_CHART} Dashboard", border="double", border_color="cyan"):
-        console.frame("System status: Online", title="Status")
-        console.frame("CPU: 45%\nMemory: 2.1GB\nDisk: 120GB", title="Resources")
-        console.frame("Last backup: 2 hours ago", title="Backup")
+        console.frame("System status: Online", style=StyleContext(title="Status"))
+        console.frame("CPU: 45%\nMemory: 2.1GB\nDisk: 120GB", style=StyleContext(title="Resources"))
+        console.frame("Last backup: 2 hours ago", style=StyleContext(title="Backup"))
 
     console.newline(2)
 
@@ -41,11 +41,16 @@ def demo_context_manager_nested():
         console.frame("Main application ready", title="App Status")
 
         with console.group(title="Services", border="rounded", border_color="cyan"):
-            console.frame(f"{icons.CHECK_MARK_BUTTON} Database connected", border_color="green")
-            console.frame(f"{icons.CHECK_MARK_BUTTON} Cache active", border_color="green")
-            console.frame(f"{icons.WARNING} Queue slow", border_color="yellow")
+            console.frame(
+                f"{icons.CHECK_MARK_BUTTON} Database connected",
+                style=StyleContext(border_color="green"),
+            )
+            console.frame(
+                f"{icons.CHECK_MARK_BUTTON} Cache active", style=StyleContext(border_color="green")
+            )
+            console.frame(f"{icons.WARNING} Queue slow", style=StyleContext(border_color="yellow"))
 
-        console.frame("All tests passing", title="CI/CD")
+        console.frame("All tests passing", style=StyleContext(title="CI/CD"))
 
     console.newline(2)
 
@@ -61,14 +66,15 @@ def demo_context_manager_align_widths():
     with console.group(title=f"{icons.CLIPBOARD} System Report", align_widths=True):
         console.frame(
             f"{icons.CHECK_MARK_BUTTON} All systems operational",
-            title="Success",
-            border_color="green",
+            style=StyleContext(title="Success", border_color="green"),
         )
         console.frame(
-            f"{icons.WARNING} High memory usage detected", title="Warning", border_color="yellow"
+            f"{icons.WARNING} High memory usage detected",
+            style=StyleContext(title="Warning", border_color="yellow"),
         )
         console.frame(
-            f"{icons.CROSS_MARK} Database connection failed", title="Error", border_color="red"
+            f"{icons.CROSS_MARK} Database connection failed",
+            style=StyleContext(title="Error", border_color="red"),
         )
 
     console.newline(2)
@@ -134,12 +140,14 @@ def demo_nested_render_frame():
             "",
             "Three gradient layers: Growth → Depth → Soul",
         ],
-        title=f"{icons.CLASSICAL_BUILDING} Nested Gradients",
-        border="heavy",
-        border_gradient_start="red",
-        border_gradient_end="magenta",
-        align="center",
-        width=60,
+        style=StyleContext(
+            title=f"{icons.CLASSICAL_BUILDING} Nested Gradients",
+            border_style="heavy",
+            border_gradient_start="red",
+            border_gradient_end="magenta",
+            align="center",
+            width=60,
+        ),
     )
     console.newline(2)
 
@@ -160,8 +168,7 @@ def demo_comparison():
                 "  • Dynamic content during context",
                 "  • Automatic width alignment option",
             ],
-            title="Recommended",
-            border_color="green",
+            style=StyleContext(title="Recommended", border_color="green"),
         )
         console.frame(
             [
@@ -170,8 +177,7 @@ def demo_comparison():
                 "  • Good for data-driven layouts",
                 "  • Compact one-liner possible",
             ],
-            title="Alternative",
-            border_color="cyan",
+            style=StyleContext(title="Alternative", border_color="cyan"),
         )
         console.frame(
             [
@@ -180,8 +186,7 @@ def demo_comparison():
                 "  • Per-frame width control",
                 "  • Maximum flexibility",
             ],
-            title="Advanced",
-            border_color="yellow",
+            style=StyleContext(title="Advanced", border_color="yellow"),
         )
 
     console.newline()

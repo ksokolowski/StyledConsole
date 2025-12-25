@@ -3,7 +3,7 @@
 
 from io import StringIO
 
-from styledconsole import Console
+from styledconsole import Console, StyleContext
 from styledconsole.animation import Animation
 from styledconsole.core.styles import get_border_style
 from styledconsole.effects.engine import apply_gradient
@@ -31,9 +31,13 @@ def create_animated_frame_generator():
         "Press Ctrl+C to stop",
     ]
 
-    temp_console.frame(
-        content, title="🚀 Animation Demo", border="double", width=40, align="center", padding=1
+    style = StyleContext(
+        border_style="double",
+        width=40,
+        align="center",
+        padding=1,
     )
+    temp_console.frame(content, title="🚀 Animation Demo", style=style)
     base_lines = buffer.getvalue().splitlines()
 
     # Setup strategies

@@ -1,10 +1,11 @@
 """Text width calculation and grapheme handling utilities.
 
-This module provides emoji-safe text width calculation and grapheme manipulation.
-MVP (v0.1) focuses on Tier 1 emoji support (single-codepoint basic icons).
+This module provides emoji-safe text width calculation and grapheme manipulation,
+including support for ZWJ sequences and skin tone modifiers in modern terminals.
 """
 
 import re
+from functools import lru_cache
 
 import emoji
 import wcwidth
@@ -180,6 +181,7 @@ def _grapheme_width_standard(grapheme: str) -> int:
     return w if w >= 0 else 1
 
 
+@lru_cache(maxsize=1024)
 def visual_width(text: str, markup: bool = False) -> int:
     """Calculate the visual display width of text.
 
@@ -520,22 +522,20 @@ def validate_emoji(emoji_char: str) -> dict:
     recommendation = "✅ Safe to use"
 
     if is_zwj:
-        terminal_safe = False
-        result["recommendation"] = (
-            "❌ ZWJ sequence detected. These are not supported in v0.1. "
-            "Use simple single-codepoint emojis instead."
+        terminal_safe = _is_modern_terminal_mode()
+        recommendation = (
+            "⚠️ ZWJ sequence detected. Supported in modern terminals (Kitty, etc.); "
+            "may degrade to legacy rendering in older environments."
         )
-        # We consider ZWJ unsafe for now in this validation
-        safe = False
+        safe = True
 
     elif has_skin_tone:
-        terminal_safe = False
-        result["recommendation"] = (
-            "❌ Skin tone modifier detected. "
-            "Tier 2 emojis are not supported in v0.1. "
-            "Use base emoji without skin tone."
+        terminal_safe = _is_modern_terminal_mode()
+        recommendation = (
+            "⚠️ Skin tone modifier detected. Supported in modern terminals; "
+            "may degrade to legacy rendering in older environments."
         )
-        safe = False
+        safe = True
 
     elif has_vs16:
         terminal_safe = False  # VS16 often renders width 1

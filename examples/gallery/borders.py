@@ -14,7 +14,16 @@ Design Philosophy:
 Run: python examples/gallery/borders_showcase.py
 """
 
-from styledconsole import Console, icons
+from dataclasses import replace
+
+from styledconsole import Console, StyleContext, icons
+
+# Shared base style for consistent gallery look
+BASE_STYLE = StyleContext(
+    align="center",
+    width=60,
+    content_color="white",
+)
 
 # Initialize console with recording for potential HTML export
 console = Console(record=True)
@@ -30,11 +39,7 @@ def demo_solid_borders():
         "Clean lines. Professional presence.\n"
         "Perfect for business applications.",
         title=f"{icons.TRIANGULAR_RULER} The Classic",
-        border="solid",
-        border_color="cyan",
-        content_color="white",
-        align="center",
-        width=60,
+        style=replace(BASE_STYLE, border_style="solid", border_color="cyan"),
     )
     console.newline()
 
@@ -42,11 +47,7 @@ def demo_solid_borders():
     console.frame(
         "With gradient borders, even simplicity\ntransforms into visual poetry.",
         title=f"{icons.WATER_WAVE} Gradient Flow",
-        border="solid",
-        border_color="cyan",
-        content_color="cyan",
-        align="center",
-        width=60,
+        style=replace(BASE_STYLE, border_style="solid", border_color="cyan", content_color="cyan"),
     )
     console.newline(2)
 
@@ -61,11 +62,7 @@ def demo_rounded_borders():
         "Like stones polished by gentle streams.\n"
         "Modern interfaces speak softly.",
         title=f"{icons.HERB} Gentle Curves",
-        border="rounded",
-        border_color="lime",
-        content_color="white",
-        align="center",
-        width=60,
+        style=replace(BASE_STYLE, border_style="rounded", border_color="lime"),
     )
     console.newline()
 
@@ -75,11 +72,7 @@ def demo_rounded_borders():
         "The terminal becomes a canvas\n"
         "Where technology meets art.",
         title=f"{icons.RAINBOW} Rainbow Dreams",
-        border="rounded",
-        border_color="red",
-        content_color="white",
-        align="center",
-        width=60,
+        style=replace(BASE_STYLE, border_style="rounded", border_color="red"),
     )
     console.newline(2)
 
@@ -95,11 +88,9 @@ def demo_double_borders():
         "They frame what matters most,\n"
         "Drawing focus with geometric precision.",
         title=f"{icons.HIGH_VOLTAGE} The Emphasis",
-        border="double",
-        border_color="orange",
-        content_color="yellow",
-        align="center",
-        width=60,
+        style=replace(
+            BASE_STYLE, border_style="double", border_color="orange", content_color="yellow"
+        ),
     )
     console.newline()
 
@@ -109,11 +100,7 @@ def demo_double_borders():
         "Important messages deserve distinction.\n"
         "Double borders deliver both.",
         title=f"{icons.FIRE} High Priority",
-        border="double",
-        border_color="orange",
-        content_color="white",
-        align="center",
-        width=60,
+        style=replace(BASE_STYLE, border_style="double", border_color="orange"),
     )
     console.newline(2)
 
@@ -129,11 +116,7 @@ def demo_thick_borders():
         "They don't whisper—they proclaim.\n"
         "Perfect for headlines that demand attention.",
         title=f"{icons.MUSCLE} The Bold",
-        border="thick",
-        border_color="magenta",
-        content_color="white",
-        align="center",
-        width=60,
+        style=replace(BASE_STYLE, border_style="thick", border_color="magenta"),
     )
     console.newline()
 
@@ -143,11 +126,7 @@ def demo_thick_borders():
         "Pulsing with digital vitality.\n"
         "Your message becomes unmissable.",
         title=f"{icons.HIGH_VOLTAGE} Electric Energy",
-        border="thick",
-        border_color="magenta",
-        content_color="white",
-        align="center",
-        width=60,
+        style=replace(BASE_STYLE, border_style="thick", border_color="magenta"),
     )
     console.newline(2)
 
@@ -163,11 +142,7 @@ def demo_heavy_borders():
         "They protect and contain,\n"
         "Creating sanctuaries of information.",
         title=f"{icons.CASTLE} The Fortress",
-        border="heavy",
-        border_color="blue",
-        content_color="white",
-        align="center",
-        width=60,
+        style=replace(BASE_STYLE, border_style="heavy", border_color="blue"),
     )
     console.newline()
 
@@ -181,11 +156,7 @@ Access controlled"""
     console.frame(
         protected_content,
         title=f"{icons.LOCKED} Secure Container",
-        border="heavy",
-        border_color="blue",
-        content_color="cyan",
-        align="center",
-        width=60,
+        style=replace(BASE_STYLE, border_style="heavy", border_color="blue", content_color="cyan"),
     )
     console.newline(2)
 
@@ -200,11 +171,7 @@ def demo_minimal_borders():
         "Light touches that organize without overwhelming.\n"
         "Minimalism is the ultimate sophistication.",
         title=f"{icons.CHERRY_BLOSSOM} Light Touch",
-        border="minimal",
-        border_color="cyan",
-        content_color="white",
-        align="center",
-        width=60,
+        style=replace(BASE_STYLE, border_style="minimal", border_color="cyan"),
     )
     console.newline()
 
@@ -214,11 +181,9 @@ def demo_minimal_borders():
         "These borders suggest rather than insist,\n"
         "Guiding the eye with gentle grace.",
         title=f"{icons.BUTTERFLY} Delicate Beauty",
-        border="minimal",
-        border_color="cyan",
-        content_color="cyan",
-        align="center",
-        width=60,
+        style=replace(
+            BASE_STYLE, border_style="minimal", border_color="cyan", content_color="cyan"
+        ),
     )
     console.newline(2)
 
@@ -233,11 +198,7 @@ def demo_ascii_borders():
         "ASCII borders carry the torch.\n"
         "Universal compatibility, timeless simplicity.",
         title=f"{icons.GLOBE_SHOWING_EUROPE_AFRICA} Universal",
-        border="ascii",
-        border_color="green",
-        content_color="white",
-        align="center",
-        width=60,
+        style=replace(BASE_STYLE, border_style="ascii", border_color="green"),
     )
     console.newline()
 
@@ -246,11 +207,7 @@ def demo_ascii_borders():
         "These characters bridge generations.\n"
         "The lingua franca of text interfaces.",
         title=f"{icons.KEYBOARD} Retro Charm",
-        border="ascii",
-        border_color="green",
-        content_color="lime",
-        align="center",
-        width=60,
+        style=replace(BASE_STYLE, border_style="ascii", border_color="green", content_color="lime"),
     )
     console.newline(2)
 
@@ -265,11 +222,7 @@ def demo_dashed_borders():
         "Dashed lines pulse with energy.\n"
         "Perfect for temporary states and transitions.",
         title=f"{icons.HIGH_VOLTAGE} Dynamic Flow",
-        border="dots",
-        border_color="yellow",
-        content_color="white",
-        align="center",
-        width=60,
+        style=replace(BASE_STYLE, border_style="dots", border_color="yellow"),
     )
     console.newline()
 
@@ -279,11 +232,9 @@ def demo_dashed_borders():
         "Each dash a spark in the digital void.\n"
         "Energy visualized, motion suggested.",
         title=f"{icons.GLOWING_STAR} Electric Dreams",
-        border="dots",
-        border_color="yellow",
-        content_color="orange",
-        align="center",
-        width=60,
+        style=replace(
+            BASE_STYLE, border_style="dots", border_color="yellow", content_color="orange"
+        ),
     )
     console.newline(2)
 
@@ -312,10 +263,12 @@ Threads: 16 running"""
     console.frame(
         cpu_content,
         title=f"{icons.DESKTOP_COMPUTER} CPU Status",
-        border="rounded",
-        border_color="green",
-        content_color="bright_green",
-        width=35,
+        style=StyleContext(
+            border_style="rounded",
+            border_color="green",
+            content_color="bright_green",
+            width=35,
+        ),
     )
     console.newline()
 
@@ -330,10 +283,12 @@ Available: 3.6 GB"""
     console.frame(
         memory_content,
         title=f"{icons.FLOPPY_DISK} Memory Status",
-        border="rounded",
-        border_color="yellow",
-        content_color="bright_yellow",
-        width=35,
+        style=StyleContext(
+            border_style="rounded",
+            border_color="yellow",
+            content_color="bright_yellow",
+            width=35,
+        ),
     )
     console.newline()
 
@@ -348,10 +303,12 @@ Packets: 45,231 sent"""
     console.frame(
         network_content,
         title=f"{icons.GLOBE_WITH_MERIDIANS} Network Status",
-        border="rounded",
-        border_color="cyan",
-        content_color="bright_cyan",
-        width=35,
+        style=StyleContext(
+            border_style="rounded",
+            border_color="cyan",
+            content_color="bright_cyan",
+            width=35,
+        ),
     )
 
     console.newline(2)
@@ -391,11 +348,7 @@ def demo_rainbow_gallery():
             f"Where color meets structure,\n"
             f"Art emerges from code.",
             title=f"{icons.SPARKLES} {border.title()}",
-            border=border,
-            border_color=color_pair[0],  # Use first color from tuple
-            content_color="white",
-            align="center",
-            width=50,
+            style=replace(BASE_STYLE, border_style=border, border_color=color_pair[0], width=50),
         )
         console.newline()
 
@@ -426,10 +379,12 @@ def demo_comparison_grid():
         console.frame(
             f"This is the {border_name.upper()} border style",
             title=f"{icons.SPARKLES} {border_name.title()}",
-            border=border_name,
-            border_color=border_color,
-            content_color="white",
-            width=45,
+            style=StyleContext(
+                border_style=border_name,
+                border_color=border_color,
+                content_color="white",
+                width=45,
+            ),
         )
         console.newline()
 
@@ -475,11 +430,7 @@ def main():
         "From minimal whispers to heavy fortresses.\n\n"
         "Now go forth and frame your terminal with beauty!",
         title=f"{icons.TROPHY} Gallery Complete",
-        border="double",
-        border_color="magenta",
-        content_color="white",
-        align="center",
-        width=70,
+        style=replace(BASE_STYLE, border_style="double", border_color="magenta", width=70),
     )
     console.newline()
 

@@ -22,6 +22,7 @@ from rich.text import Text as RichText
 
 from styledconsole.core.banner import Banner
 from styledconsole.core.box_mapping import get_box_style_for_policy
+from styledconsole.core.context import StyleContext
 from styledconsole.core.styles import get_border_chars, get_border_style
 from styledconsole.effects.engine import apply_gradient
 from styledconsole.effects.strategies import (
@@ -94,6 +95,7 @@ class RenderingEngine:
         self,
         content: str | list[str],
         *,
+        # Legacy/Shortcut arguments (will be folded into context)
         title: str | None = None,
         border: str = "rounded",
         width: int | None = None,
@@ -102,11 +104,15 @@ class RenderingEngine:
         content_color: str | None = None,
         border_color: str | None = None,
         title_color: str | None = None,
-        start_color: str | None = None,
-        end_color: str | None = None,
         border_gradient_start: str | None = None,
         border_gradient_end: str | None = None,
         border_gradient_direction: str = "vertical",
+        start_color: str | None = None,
+        end_color: str | None = None,
+        margin: int | tuple[int, int, int, int] = 0,
+        frame_align: AlignType | None = None,
+        # New Context Argument
+        context: StyleContext | None = None,
     ) -> str:
         """Render a frame to a string with all effects applied.
 
@@ -125,41 +131,62 @@ class RenderingEngine:
             border_gradient_start: Border gradient start.
             border_gradient_end: Border gradient end.
             border_gradient_direction: Border gradient direction.
+            context: StyleContext object. If provided, overrides individual arguments.
+            margin: Margin around the frame.
+            frame_align: Alignment of the frame.
 
         Returns:
             Rendered frame as a string containing ANSI escape codes.
         """
+        import warnings
+
+        from styledconsole.core.context import StyleContext
+
+        # Resolve context: Use provided context or build from arguments
+        if context is None:
+            warnings.warn(
+                "Passing explicit styling arguments to 'render_frame_to_string' is "
+                "deprecated. Please pass a 'StyleContext' object instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            context = StyleContext(
+                width=width,
+                padding=padding,
+                align=align,
+                border_style=border,
+                border_color=border_color,
+                border_gradient_start=border_gradient_start,
+                border_gradient_end=border_gradient_end,
+                border_gradient_direction=border_gradient_direction,
+                content_color=content_color,
+                start_color=start_color,
+                end_color=end_color,
+                title=title,
+                title_color=title_color,
+                margin=margin,
+                frame_align=frame_align,
+            )
+
         # Use custom renderer to ensure correct emoji width calculation
-        output = self._render_custom_frame(
-            content,
-            title=title,
-            border=border,
-            width=width,
-            padding=padding,
-            align=align,
-            content_color=content_color,
-            border_color=border_color,
-            title_color=title_color,
-            start_color=start_color,
-            end_color=end_color,
-        )
+        output = self._render_custom_frame(content, context)
 
         # Apply border gradient if needed (skip if color disabled)
-        if border_gradient_start and border_gradient_end:
+        if context.border_gradient_start and context.border_gradient_end:
             # Skip gradient if policy disables color
             if self._policy is not None and not self._policy.color:
                 return output
 
             # Normalize border gradient colors
-            border_gradient_start_norm = normalize_color_for_rich(border_gradient_start)
-            border_gradient_end_norm = normalize_color_for_rich(border_gradient_end)
+            border_gradient_start_norm = normalize_color_for_rich(context.border_gradient_start)
+            border_gradient_end_norm = normalize_color_for_rich(context.border_gradient_end)
 
             # Guard for type checker - normalize returns str for non-None input
             if border_gradient_start_norm is None or border_gradient_end_norm is None:
                 return output
 
             lines = output.splitlines()
-            if border_gradient_direction == "vertical":
+            if context.border_gradient_direction == "vertical":
                 colored_lines = apply_gradient(
                     lines,
                     position_strategy=VerticalPosition(),
@@ -167,7 +194,7 @@ class RenderingEngine:
                         border_gradient_start_norm, border_gradient_end_norm
                     ),
                     target_filter=BorderOnly(),
-                    border_chars=get_border_chars(get_border_style(border)),
+                    border_chars=get_border_chars(get_border_style(context.border_style)),
                 )
                 return "\n".join(colored_lines)
             else:
@@ -178,17 +205,7 @@ class RenderingEngine:
     def _render_custom_frame(
         self,
         content: str | list[str],
-        *,
-        title: str | None = None,
-        border: str = "rounded",
-        width: int | None = None,
-        padding: int = 1,
-        align: AlignType = "left",
-        content_color: str | None = None,
-        border_color: str | None = None,
-        title_color: str | None = None,
-        start_color: str | None = None,
-        end_color: str | None = None,
+        context: StyleContext,
     ) -> str:
         """Render frame manually to bypass Rich's incorrect VS16 width calculation."""
         from styledconsole.utils.text import (
@@ -200,7 +217,11 @@ class RenderingEngine:
 
         # Normalize colors
         content_color, border_color, title_color, start_color, end_color = self._normalize_colors(
-            content_color, border_color, title_color, start_color, end_color
+            context.content_color,
+            context.border_color,
+            context.title_color,
+            context.start_color,
+            context.end_color,
         )
 
         # Prepare content lines
@@ -211,15 +232,15 @@ class RenderingEngine:
         max_content_width = max(content_widths) if content_widths else 0
 
         # Prepare title
-        adj_title, title_width = self._prepare_title(title)
+        adj_title, title_width = self._prepare_title(context.title)
 
         # Calculate dimensions
         _frame_width, inner_width, content_area_width = self._calculate_frame_dimensions(
-            width, padding, max_content_width, title_width, title
+            context.width, context.padding, max_content_width, title_width, context.title
         )
 
         # Get box style (policy-aware: falls back to ASCII when unicode disabled)
-        box_style = get_box_style_for_policy(border, self._policy)
+        box_style = get_box_style_for_policy(context.border_style, self._policy)
 
         # Build borders
         top_line = self._build_top_border(
@@ -234,16 +255,36 @@ class RenderingEngine:
                 lines,
                 box_style,
                 content_area_width,
-                padding,
-                align,
+                context.padding,
+                context.align,
                 start_color,
                 end_color,
                 content_color,
                 border_color,
-                width,
+                context.width,
             )
         )
         rendered_lines.append(bottom_line)
+
+        # Apply margins if present
+        # context.margin is normalized to tuple (top, right, bottom, left) in StyleContext
+        if context.margin:
+            # Ensure we have a tuple (it should be normalized by StyleContext)
+            margins = context.margin if isinstance(context.margin, tuple) else (context.margin,) * 4
+            top, _right, bottom, left = margins
+
+            # Apply left margin
+            if left > 0:
+                pad = " " * left
+                rendered_lines = [f"{pad}{line}" for line in rendered_lines]
+
+            # Apply top margin
+            if top > 0:
+                rendered_lines = ([""] * top) + rendered_lines
+
+            # Apply bottom margin
+            if bottom > 0:
+                rendered_lines = rendered_lines + ([""] * bottom)
 
         return "\n".join(rendered_lines)
 
@@ -384,11 +425,14 @@ class RenderingEngine:
         self,
         content: str | list[str],
         *,
+        # Legacy/Shortcut arguments
         title: str | None = None,
         border: str = "rounded",
         width: int | None = None,
         padding: int = 1,
         align: AlignType = "left",
+        frame_align: AlignType | None = None,
+        margin: int | tuple[int, int, int, int] = 0,
         content_color: str | None = None,
         border_color: str | None = None,
         title_color: str | None = None,
@@ -397,33 +441,49 @@ class RenderingEngine:
         border_gradient_start: str | None = None,
         border_gradient_end: str | None = None,
         border_gradient_direction: str = "vertical",
+        # New Context Argument
+        context: StyleContext | None = None,
     ) -> None:
         """Render and print a frame using Rich Panel.
 
         See render_frame_to_string for argument details.
         """
-        if self._debug:
-            self._logger.debug(
-                f"Rendering frame: title='{title}', border='{border}', "
-                f"width={width}, padding={padding}"
+        import warnings
+
+        # Resolve context: Use provided context or build from arguments
+        # We need this resolved here to check alignment later
+        if context is None:
+            warnings.warn(
+                "Passing explicit styling arguments to 'print_frame' is deprecated. "
+                "Please pass a 'StyleContext' object instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            context = StyleContext(
+                width=width,
+                padding=padding,
+                align=align,
+                border_style=border,
+                border_color=border_color,
+                border_gradient_start=border_gradient_start,
+                border_gradient_end=border_gradient_end,
+                border_gradient_direction=border_gradient_direction,
+                content_color=content_color,
+                start_color=start_color,
+                end_color=end_color,
+                title=title,
+                title_color=title_color,
+                margin=margin,
+                frame_align=frame_align,
             )
 
-        output = self.render_frame_to_string(
-            content,
-            title=title,
-            border=border,
-            width=width,
-            padding=padding,
-            align=align,
-            content_color=content_color,
-            border_color=border_color,
-            title_color=title_color,
-            start_color=start_color,
-            end_color=end_color,
-            border_gradient_start=border_gradient_start,
-            border_gradient_end=border_gradient_end,
-            border_gradient_direction=border_gradient_direction,
-        )
+        if self._debug:
+            self._logger.debug(
+                f"Rendering frame: title='{context.title}', border='{context.border_style}', "
+                f"width={context.width}, padding={context.padding}"
+            )
+
+        output = self.render_frame_to_string(content, context=context)
 
         # Print the output, handling alignment of the frame itself
         # We align the entire block to avoid per-line centering issues with emojis
@@ -433,9 +493,12 @@ class RenderingEngine:
             text_obj = RichText.from_markup(output)
             text_obj.no_wrap = True
 
-        if align == "center":
+        # Use frame_align if specified, otherwise fallback to align (for backward compat)
+        effective_align = context.frame_align if context.frame_align is not None else context.align
+
+        if effective_align == "center":
             self._rich_console.print(Align.center(text_obj), highlight=False, soft_wrap=True)
-        elif align == "right":
+        elif effective_align == "right":
             self._rich_console.print(Align.right(text_obj), highlight=False, soft_wrap=True)
         else:
             self._rich_console.print(text_obj, highlight=False, soft_wrap=True)
@@ -785,6 +848,8 @@ class RenderingEngine:
         layout: str = "vertical",
         gap: int = 1,
         inherit_style: bool = False,
+        margin: int | tuple[int, int, int, int] = 0,
+        frame_align: AlignType | None = None,
     ) -> str:
         """Render a group of frames to a string.
 
@@ -807,6 +872,8 @@ class RenderingEngine:
             gap: Number of blank lines between inner frames. Defaults to 1.
             inherit_style: If True, inner frames inherit outer border style
                 when not explicitly specified. Defaults to False.
+            margin: Margin around the outer frame.
+            frame_align: Alignment of the outer frame on screen.
 
         Returns:
             Rendered frame group as a string with ANSI codes.
@@ -859,6 +926,9 @@ class RenderingEngine:
             title_color=title_color,
             border_gradient_start=border_gradient_start,
             border_gradient_end=border_gradient_end,
+            margin=margin,
+            # Note: frame_align is handled by print_frame for the outer frame
+            frame_align=frame_align,
         )
 
     def print_frame_group(
@@ -877,6 +947,8 @@ class RenderingEngine:
         layout: str = "vertical",
         gap: int = 1,
         inherit_style: bool = False,
+        margin: int | tuple[int, int, int, int] = 0,
+        frame_align: AlignType | None = None,
     ) -> None:
         """Render and print a group of frames.
 
@@ -896,6 +968,8 @@ class RenderingEngine:
             layout=layout,
             gap=gap,
             inherit_style=inherit_style,
+            margin=margin,
+            frame_align=frame_align,
         )
 
         # Print with proper ANSI handling
@@ -905,9 +979,14 @@ class RenderingEngine:
             text_obj = RichText.from_markup(output)
             text_obj.no_wrap = True
 
-        if align == "center":
+        # Resolve alignment: frame_align takes precedence over frame content alignment (align)
+        # BUT print_frame_group creates an OUTER frame. The frame_align on RenderFrameToString
+        # applies to THAT outer frame relative to the screen.
+        effective_align = frame_align if frame_align is not None else align
+
+        if effective_align == "center":
             self._rich_console.print(Align.center(text_obj), highlight=False, soft_wrap=True)
-        elif align == "right":
+        elif effective_align == "right":
             self._rich_console.print(Align.right(text_obj), highlight=False, soft_wrap=True)
         else:
             self._rich_console.print(text_obj, highlight=False, soft_wrap=True)

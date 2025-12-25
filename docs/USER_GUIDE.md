@@ -89,9 +89,31 @@ console.frame(
     width=60,                   # Frame width
     padding=1,                  # Internal padding
     align="center",             # Content alignment: left|center|right
+    frame_align="center",       # Frame alignment on screen
+    margin=(1, 2, 1, 2),        # Margin: (top, right, bottom, left)
     content_color="white",      # Content text color
     border_color="blue",        # Border color
     title_color="cyan",         # Title color
+)
+```
+
+### Margins & Alignment
+
+> **New in v0.9.7**
+
+You can control the positioning of the frame itself using `frame_align` and `margin`:
+
+- `align`: Controls content *inside* the frame.
+- `frame_align`: Controls the frame's position on the screen.
+- `margin`: Adds space *outside* the border. Accepts `int` (all sides) or `tuple` (top, right, bottom, left).
+
+```python
+# Centered frame with 2 lines of vertical margin
+console.frame(
+    "Centered content",
+    align="center",
+    frame_align="center",
+    margin=(2, 0, 2, 0)
 )
 ```
 
@@ -594,15 +616,38 @@ EMOJI.ARROW_LEFT    # ←
 EMOJI.ARROW_RIGHT   # →
 ```
 
-### Unsupported: ZWJ Sequences
+### Modern Terminal Support: ZWJ Sequences
 
-ZWJ (Zero Width Joiner) sequences break alignment:
+> **New in v0.9.6**
 
-| Don't Use         | Use Instead  | Constant                    |
-| ----------------- | ------------ | --------------------------- |
-| 👨‍👩‍👧 (Family)       | 👥 (People)  | `EMOJI.BUSTS_IN_SILHOUETTE` |
-| 👩‍💻 (Technologist) | 💻 (Laptop)  | `EMOJI.LAPTOP`              |
-| 🏳️‍🌈 (Rainbow Flag) | 🌈 (Rainbow) | `EMOJI.RAINBOW`             |
+StyledConsole now supports **ZWJ (Zero Width Joiner)** sequences and **Skin Tone Modifiers** in modern terminals. These are rendered as single glyphs with correct width calculation.
+
+| Emoji Type    | Modern Terminals¹ | Standard Terminals² | Example |
+| ------------- | ----------------- | ------------------- | ------- |
+| ZWJ Sequences | ✅ Supported      | ⚠️ Degraded         | 👨‍💻 👨‍👩‍👧   |
+| Skin Tones    | ✅ Supported      | ⚠️ Degraded         | 👍🏽 👋🏻   |
+| Rainbow Flag  | ✅ Supported³     | ⚠️ Degraded         | 🏳️‍🌈      |
+
+1. **Modern Terminals:** Kitty, WezTerm, Ghostty, iTerm2, Alacritty.
+1. **Standard Terminals:** Gnome Terminal, VSCode built-in, Windows Terminal.
+1. **Rainbow Flag:** Specifically tuned for modern width (3) vs legacy (3) to ensure alignment.
+
+#### Using ZWJ Sequences
+
+```python
+from styledconsole import Console, EMOJI
+
+console = Console()
+# These now align perfectly in modern terminals!
+console.frame([
+    f"{EMOJI.MAN_TECHNOLOGIST} Developer at work",
+    f"{EMOJI.RAINBOW_FLAG} Pride in terminal",
+], title="ZWJ Support")
+```
+
+#### Degraded Mode
+
+In terminals that do not support ZWJ ligation, StyledConsole automatically falls back to **Legacy Width** (sum of parts). This prevents your borders from "exploding" or misaligning, even if the emoji itself renders as multiple characters.
 
 ______________________________________________________________________
 

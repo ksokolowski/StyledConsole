@@ -265,6 +265,7 @@ class TestModernTerminalZwjSupport:
         """
         # Force modern terminal mode
         monkeypatch.setenv("STYLEDCONSOLE_MODERN_TERMINAL", "1")
+        visual_width.cache_clear()
 
         # Family: Man + ZWJ + Woman + ZWJ + Girl (3 components)
         # Hybrid Heuristic: >2 components -> Legacy width (Safe)
@@ -289,6 +290,7 @@ class TestModernTerminalZwjSupport:
         in modern terminals (Kitty).
         """
         monkeypatch.setenv("STYLEDCONSOLE_MODERN_TERMINAL", "1")
+        visual_width.cache_clear()
 
         # Warning (U+26A0 + VS16)
         # wcwidth report: 2
@@ -302,6 +304,7 @@ class TestModernTerminalZwjSupport:
         """VS16 sequences should have width 1 in standard terminal mode (legacy behavior)."""
         monkeypatch.setenv("STYLEDCONSOLE_MODERN_TERMINAL", "0")
         monkeypatch.setenv("STYLEDCONSOLE_LEGACY_EMOJI", "0")
+        visual_width.cache_clear()
 
         # Warning (U+26A0 + VS16)
         # Standard mode forces width 1 for compatibility with older terminals

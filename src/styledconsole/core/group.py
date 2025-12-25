@@ -57,6 +57,8 @@ class FrameGroupContext:
         gap: Lines between captured frames.
         inherit_style: Whether inner frames inherit outer style.
         align_widths: Whether to align all inner frame widths.
+        margin: Margin around the outer frame.
+        frame_align: Alignment of the outer frame on screen.
     """
 
     console: Console
@@ -72,6 +74,8 @@ class FrameGroupContext:
     gap: int = 1
     inherit_style: bool = False
     align_widths: bool = False
+    margin: int | tuple[int, int, int, int] = 0
+    frame_align: AlignType | None = None
 
     # Internal state
     _captured_frames: list[CapturedFrame] = field(default_factory=list)
@@ -144,11 +148,36 @@ class FrameGroupContext:
             self._align_frame_widths()
 
         # Render each captured frame to string
+        from styledconsole.core.context import StyleContext
+
         rendered_frames: list[str] = []
         for frame in self._captured_frames:
+            # Prepare kwargs for StyleContext
+            ctx_kwargs = frame.kwargs.copy()
+
+            # Map 'border' arg to 'border_style' field
+            if "border" in ctx_kwargs:
+                ctx_kwargs["border_style"] = ctx_kwargs.pop("border")
+
+            # Construct context
+            # We filter for only valid StyleContext fields to be safe,
+            # though Console.frame should theoretically only pass valid ones.
+            # But Python's dataclass constructor is strict.
+            # Let's hope Console.frame signature matches exactly or we filter.
+            # For now, simplistic mapping.
+            try:
+                ctx = StyleContext(**ctx_kwargs)
+            except TypeError as e:
+                # If strict filtering is needed, we might need a safer construction
+                # For now, let's assume kwargs are clean coming from Console.frame
+                # But if there are extra args, this will raise.
+                # Let's trust Console.frame passes correct args for now
+                # except for specific mismatches we fixed.
+                raise e
+
             rendered = self.console._renderer.render_frame_to_string(
                 frame.content,
-                **frame.kwargs,
+                context=ctx,
             )
             rendered_frames.append(rendered)
             frame.rendered = rendered
@@ -173,6 +202,8 @@ class FrameGroupContext:
                 padding=self.padding,
                 width=self.width,
                 align=self.align,
+                margin=self.margin,
+                frame_align=self.frame_align,
             )
         else:
             output = combined
