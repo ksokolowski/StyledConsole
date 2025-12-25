@@ -95,79 +95,17 @@ class RenderingEngine:
         self,
         content: str | list[str],
         *,
-        # Legacy/Shortcut arguments (will be folded into context)
-        title: str | None = None,
-        border: str = "rounded",
-        width: int | None = None,
-        padding: int = 1,
-        align: AlignType = "left",
-        content_color: str | None = None,
-        border_color: str | None = None,
-        title_color: str | None = None,
-        border_gradient_start: str | None = None,
-        border_gradient_end: str | None = None,
-        border_gradient_direction: str = "vertical",
-        start_color: str | None = None,
-        end_color: str | None = None,
-        margin: int | tuple[int, int, int, int] = 0,
-        frame_align: AlignType | None = None,
-        # New Context Argument
-        context: StyleContext | None = None,
+        context: StyleContext,
     ) -> str:
         """Render a frame to a string with all effects applied.
 
         Args:
-            content: Frame content.
-            title: Optional title.
-            border: Border style.
-            width: Frame width.
-            padding: Content padding.
-            align: Content alignment.
-            content_color: Content color.
-            border_color: Border color.
-            title_color: Title color.
-            start_color: Content gradient start.
-            end_color: Content gradient end.
-            border_gradient_start: Border gradient start.
-            border_gradient_end: Border gradient end.
-            border_gradient_direction: Border gradient direction.
-            context: StyleContext object. If provided, overrides individual arguments.
-            margin: Margin around the frame.
-            frame_align: Alignment of the frame.
+            content: Frame content (string or list of strings).
+            context: StyleContext object containing all styling parameters.
 
         Returns:
             Rendered frame as a string containing ANSI escape codes.
         """
-        import warnings
-
-        from styledconsole.core.context import StyleContext
-
-        # Resolve context: Use provided context or build from arguments
-        if context is None:
-            warnings.warn(
-                "Passing explicit styling arguments to 'render_frame_to_string' is "
-                "deprecated. Please pass a 'StyleContext' object instead.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-            context = StyleContext(
-                width=width,
-                padding=padding,
-                align=align,
-                border_style=border,
-                border_color=border_color,
-                border_gradient_start=border_gradient_start,
-                border_gradient_end=border_gradient_end,
-                border_gradient_direction=border_gradient_direction,
-                content_color=content_color,
-                start_color=start_color,
-                end_color=end_color,
-                title=title,
-                title_color=title_color,
-                margin=margin,
-                frame_align=frame_align,
-            )
-
         # Use custom renderer to ensure correct emoji width calculation
         output = self._render_custom_frame(content, context)
 
@@ -425,58 +363,14 @@ class RenderingEngine:
         self,
         content: str | list[str],
         *,
-        # Legacy/Shortcut arguments
-        title: str | None = None,
-        border: str = "rounded",
-        width: int | None = None,
-        padding: int = 1,
-        align: AlignType = "left",
-        frame_align: AlignType | None = None,
-        margin: int | tuple[int, int, int, int] = 0,
-        content_color: str | None = None,
-        border_color: str | None = None,
-        title_color: str | None = None,
-        start_color: str | None = None,
-        end_color: str | None = None,
-        border_gradient_start: str | None = None,
-        border_gradient_end: str | None = None,
-        border_gradient_direction: str = "vertical",
-        # New Context Argument
-        context: StyleContext | None = None,
+        context: StyleContext,
     ) -> None:
         """Render and print a frame using Rich Panel.
 
-        See render_frame_to_string for argument details.
+        Args:
+            content: Frame content (string or list of strings).
+            context: StyleContext object containing all styling parameters.
         """
-        import warnings
-
-        # Resolve context: Use provided context or build from arguments
-        # We need this resolved here to check alignment later
-        if context is None:
-            warnings.warn(
-                "Passing explicit styling arguments to 'print_frame' is deprecated. "
-                "Please pass a 'StyleContext' object instead.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-            context = StyleContext(
-                width=width,
-                padding=padding,
-                align=align,
-                border_style=border,
-                border_color=border_color,
-                border_gradient_start=border_gradient_start,
-                border_gradient_end=border_gradient_end,
-                border_gradient_direction=border_gradient_direction,
-                content_color=content_color,
-                start_color=start_color,
-                end_color=end_color,
-                title=title,
-                title_color=title_color,
-                margin=margin,
-                frame_align=frame_align,
-            )
-
         if self._debug:
             self._logger.debug(
                 f"Rendering frame: title='{context.title}', border='{context.border_style}', "
@@ -670,14 +564,15 @@ class RenderingEngine:
         # The banner alignment on screen is handled by print_banner
         align = banner.align if banner.width else "left"
 
-        frame_str = self.render_frame_to_string(
-            content=ascii_lines,
-            border=border_name,
+        frame_ctx = StyleContext(
+            border_style=border_name,
             width=banner.width,
             align=align,
             padding=banner.padding,
-            # We don't pass colors here as they are applied to content lines already
-            # or handled by frame parameters if we wanted border colors
+        )
+        frame_str = self.render_frame_to_string(
+            content=ascii_lines,
+            context=frame_ctx,
         )
 
         return frame_str.splitlines()
@@ -895,13 +790,16 @@ class RenderingEngine:
             item_title_color = item.get("title_color")
 
             # Render inner frame to string
-            inner_frame = self.render_frame_to_string(
-                content,
+            inner_ctx = StyleContext(
                 title=item_title,
-                border=item_border,
+                border_style=item_border,
                 border_color=item_border_color,
                 title_color=item_title_color,
                 content_color=item_content_color,
+            )
+            inner_frame = self.render_frame_to_string(
+                content,
+                context=inner_ctx,
             )
 
             # Add to content
@@ -915,10 +813,9 @@ class RenderingEngine:
         combined_content = "\n".join(inner_content_lines) if inner_content_lines else ""
 
         # Wrap in outer frame
-        return self.render_frame_to_string(
-            combined_content,
+        outer_ctx = StyleContext(
             title=title,
-            border=border,
+            border_style=border,
             width=width,
             padding=padding,
             align=align,
@@ -927,8 +824,11 @@ class RenderingEngine:
             border_gradient_start=border_gradient_start,
             border_gradient_end=border_gradient_end,
             margin=margin,
-            # Note: frame_align is handled by print_frame for the outer frame
             frame_align=frame_align,
+        )
+        return self.render_frame_to_string(
+            combined_content,
+            context=outer_ctx,
         )
 
     def print_frame_group(

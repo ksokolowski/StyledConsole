@@ -59,7 +59,7 @@ class TestGroupMargins:
         # Our group has no title, no frames. So it might return early.
 
     def test_group_context_renders_with_margin(self, console):
-        """Verify group rendering passes margin to outer frame."""
+        """Verify group rendering passes margin to outer frame via StyleContext."""
         # Mock connection to return a string, otherwise join() fails
         console._renderer.render_frame_to_string.return_value = "RenderedFrame"
 
@@ -77,7 +77,9 @@ class TestGroupMargins:
         # It's likely the last one
         _args, kwargs = console._renderer.render_frame_to_string.call_args
 
-        # Verify arguments passed to outer frame rendering
-        assert kwargs["margin"] == 5
-        assert kwargs["frame_align"] == "right"
-        assert kwargs["title"] == "Group"
+        # Now we pass a StyleContext instead of individual kwargs
+        # Verify the context contains the expected values
+        ctx = kwargs["context"]
+        assert ctx.margin == (5, 5, 5, 5)  # StyleContext normalizes int to tuple
+        assert ctx.frame_align == "right"
+        assert ctx.title == "Group"

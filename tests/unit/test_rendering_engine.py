@@ -6,6 +6,7 @@ from unittest.mock import patch
 import pytest
 from rich.console import Console as RichConsole
 
+from styledconsole.core.context import StyleContext
 from styledconsole.core.rendering_engine import RenderingEngine
 
 
@@ -47,7 +48,7 @@ class TestRenderingEngineFrame:
         rich_console = RichConsole(file=buffer, width=40, legacy_windows=False)
         engine = RenderingEngine(rich_console)
 
-        engine.print_frame("Test content")
+        engine.print_frame("Test content", context=StyleContext())
 
         output = buffer.getvalue()
         assert "Test content" in output
@@ -59,7 +60,7 @@ class TestRenderingEngineFrame:
         rich_console = RichConsole(file=buffer, width=40, legacy_windows=False)
         engine = RenderingEngine(rich_console)
 
-        engine.print_frame("Content", title="My Title")
+        engine.print_frame("Content", context=StyleContext(title="My Title"))
 
         output = buffer.getvalue()
         assert "My Title" in output
@@ -71,7 +72,7 @@ class TestRenderingEngineFrame:
         rich_console = RichConsole(file=buffer, width=40, legacy_windows=False)
         engine = RenderingEngine(rich_console)
 
-        engine.print_frame(["Line 1", "Line 2", "Line 3"])
+        engine.print_frame(["Line 1", "Line 2", "Line 3"], context=StyleContext())
 
         output = buffer.getvalue()
         assert "Line 1" in output
@@ -84,7 +85,7 @@ class TestRenderingEngineFrame:
         engine = RenderingEngine(rich_console, debug=True)
 
         with patch.object(engine._logger, "debug") as mock_debug:
-            engine.print_frame("Test", title="Title", border="solid")
+            engine.print_frame("Test", context=StyleContext(title="Title", border_style="solid"))
 
             # Check debug calls
             calls = [str(call) for call in mock_debug.call_args_list]
@@ -336,7 +337,7 @@ class TestRenderingEngineIntegration:
         # Content frame
         engine.print_frame(
             ["This is line 1", "This is line 2"],
-            title="Important Info",
+            context=StyleContext(title="Important Info"),
         )
 
         # Text paragraph
@@ -364,7 +365,7 @@ class TestRenderingEngineIntegration:
             debug_calls.append(msg)
 
         with patch.object(engine._logger, "debug", side_effect=capture_debug):
-            engine.print_frame("Frame test")
+            engine.print_frame("Frame test", context=StyleContext())
 
             with patch.object(engine, "_render_banner_lines", return_value=["line"]):
                 engine.print_banner("Banner test")

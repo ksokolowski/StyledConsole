@@ -191,10 +191,9 @@ class FrameGroupContext:
 
         # Wrap in outer frame if we have any outer styling
         if self.title or self.border_color or self.border_gradient_start:
-            output = self.console._renderer.render_frame_to_string(
-                combined,
+            outer_ctx = StyleContext(
                 title=self.title,
-                border=self.border,
+                border_style=self.border,
                 border_color=self.border_color,
                 title_color=self.title_color,
                 border_gradient_start=self.border_gradient_start,
@@ -204,6 +203,10 @@ class FrameGroupContext:
                 align=self.align,
                 margin=self.margin,
                 frame_align=self.frame_align,
+            )
+            output = self.console._renderer.render_frame_to_string(
+                combined,
+                context=outer_ctx,
             )
         else:
             output = combined
