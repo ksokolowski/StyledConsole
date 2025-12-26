@@ -1,6 +1,28 @@
-"""Unit tests for StyleContext."""
-
 from styledconsole.core.context import StyleContext
+
+
+def test_margin_normalization_int():
+    ctx = StyleContext(margin=2)
+    assert ctx.margin == (2, 2, 2, 2)
+
+
+def test_margin_invalid_tuple_length_raises():
+    try:
+        StyleContext(margin=(1, 2, 3))
+        raise AssertionError("Expected ValueError for invalid margin tuple length")
+    except ValueError:
+        pass
+
+
+def test_gradient_pair_validation():
+    try:
+        StyleContext(start_color="red")
+        raise AssertionError("Expected ValueError when only start_color is provided")
+    except ValueError:
+        pass
+
+
+"""Unit tests for StyleContext."""
 
 
 def test_style_context_defaults():

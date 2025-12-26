@@ -1,20 +1,21 @@
 # Documentation Policy
 
-**Version:** 2.0
-**Last Updated:** December 7, 2025
+**Version:** 2.1
+**Last Updated:** December 26, 2025
 
 ______________________________________________________________________
 
 ## Master Documents
 
-All documentation lives in **4 files**:
+All documentation lives in **exactly five master documents**:
 
-| Document             | Purpose                         |
-| -------------------- | ------------------------------- |
-| `USER_GUIDE.md`      | All user-facing documentation   |
-| `DEVELOPER_GUIDE.md` | Architecture, API, contributing |
-| `PROJECT_STATUS.md`  | Roadmap, tasks, changelog       |
-| `archive/`           | Historical reference            |
+| Document             | Purpose                       | Source of Truth For...       |
+| -------------------- | ----------------------------- | ---------------------------- |
+| `USER_GUIDE.md`      | Tutorials & visual galleries  | Library usage & examples     |
+| `DEVELOPER_GUIDE.md` | Architecture & internal logic | Design decisions & internals |
+| `CHANGELOG.md`       | Release history               | Project history & versions   |
+| `PROJECT_STATUS.md`  | Roadmap & metrics             | Current health & future      |
+| `CONTRIBUTING.md`    | Dev workflow & PR standards   | Contribution process         |
 
 ______________________________________________________________________
 
@@ -35,7 +36,7 @@ ______________________________________________________________________
 
 ## Core Principles
 
-1. **Less is More** - 4 great docs > 30 scattered files
+1. **The 5-Doc Rule** - Maintain exactly 5 core documents to prevent information rot.
 1. **DRY** - One source of truth per topic
 1. **Living Docs** - Update when code changes
 1. **Archive Aggressively** - Move completed work to `archive/`
@@ -102,13 +103,26 @@ ______________________________________________________________________
 
 ## When to Update
 
-| Event            | Action                    |
-| ---------------- | ------------------------- |
-| New feature      | Update USER_GUIDE.md      |
-| API change       | Update DEVELOPER_GUIDE.md |
-| Version release  | Update PROJECT_STATUS.md  |
-| Task complete    | Update PROJECT_STATUS.md  |
-| Old doc obsolete | Move to archive/          |
+| Event               | Action                                      |
+| ------------------- | ------------------------------------------- |
+| New feature         | Update `USER_GUIDE.md`                      |
+| Architecture change | Update `DEVELOPER_GUIDE.md`                 |
+| Version release     | Update `CHANGELOG.md` & `PROJECT_STATUS.md` |
+| Task complete       | Update `PROJECT_STATUS.md`                  |
+| Workflow change     | Update `CONTRIBUTING.md`                    |
+| Doc obsolete        | Move to `archive/`                          |
+
+______________________________________________________________________
+
+## The 5-Doc Architecture
+
+Each document has a strictly defined boundary to prevent redundancy:
+
+- **[`USER_GUIDE.md`](USER_GUIDE.md)**: The "How-To". Contains tutorials, copy-paste examples, and the visual gallery. If it doesn't help a user *use* the library, it doesn't belong here.
+- **[`DEVELOPER_GUIDE.md`](DEVELOPER_GUIDE.md)**: The "How-it-Works". Contains architecture diagrams, module relationships, and internal logic explanations.
+- **[`CHANGELOG.md`](../CHANGELOG.md)**: The "What-Changed". Chronological history of all releases. No roadmap or usage info here.
+- **[`PROJECT_STATUS.md`](PROJECT_STATUS.md)**: The "Where-We-Are". Current metrics, roadmap, and active task lists.
+- **[`CONTRIBUTING.md`](../CONTRIBUTING.md)**: The "How-to-Help". Dev environment setup, `make` commands, and PR standards.
 
 ______________________________________________________________________
 
@@ -230,16 +244,6 @@ ______________________________________________________________________
 | Code without language tag | Always specify language   |
 | Dense paragraphs          | Break into lists/tables   |
 | Undated documents         | Include actual date       |
-
-______________________________________________________________________
-
-## Commit Messages
-
-```text
-docs: Update USER_GUIDE with new feature
-docs: Archive completed task
-docs: Fix code example in DEVELOPER_GUIDE
-```
 
 ______________________________________________________________________
 

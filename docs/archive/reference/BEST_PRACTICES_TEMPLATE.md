@@ -90,13 +90,14 @@ If your library handles text, respect visual width.
 
 ______________________________________________________________________
 
-## 📚 Documentation Strategy (The "4-Doc" Rule)
+## 📚 Documentation Strategy (The "5-Doc" Rule)
 
-Don't scatter information. Maintain exactly four core documents:
+Don't scatter information. Maintain exactly five core documents:
 
 1. **`USER_GUIDE.md`**: Tutorials and high-level API usage with runnable examples.
 1. **`DEVELOPER_GUIDE.md`**: Architecture, Mermaid diagrams, and internal module structure.
-1. **`PROJECT_STATUS.md`**: The living roadmap, current task list, and `CHANGELOG`.
+1. **`PROJECT_STATUS.md`**: The living roadmap, current task list, and metrics.
+1. **`CHANGELOG.md`**: Human-readable history of changes (Keep A Changelog format).
 1. **`CONTRIBUTING.md`**: Onboarding instructions and PR standards.
 
 ### Core Doc Principles:

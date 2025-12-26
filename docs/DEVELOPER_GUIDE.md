@@ -1,7 +1,7 @@
 # StyledConsole Developer Guide
 
-**Version:** 0.9.6
-**Last Updated:** December 7, 2025
+**Version:** 0.9.7
+**Last Updated:** December 26, 2025
 **Audience:** Contributors and advanced users
 
 ______________________________________________________________________
@@ -237,11 +237,17 @@ classDiagram
     style RainbowSpectrum fill:#F48FB1,color:#880E4F,stroke:#E91E63
 ```
 
-| Pattern      | Usage                                     |
-| ------------ | ----------------------------------------- |
-| **Facade**   | `Console` class wraps managers            |
-| **Strategy** | Gradient engine (position, color, target) |
-| **Adapter**  | `box_mapping.py` adapts borders to Rich   |
+| Pattern      | Usage                                                                                                                       |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| **Facade**   | `Console` class wraps managers. **Goal:** Single intuitive entry point. Users don't need to know about internal subsystems. |
+| **Strategy** | Gradient engine (position, color, target). **Goal:** Extensibility and isolated testability.                                |
+| **Adapter**  | `box_mapping.py` adapts borders to Rich.                                                                                    |
+
+### Design Principles
+
+1. **Graceful Degradation (Policy-Awareness)**: Use `RenderPolicy` to detect environments. Always provide a functional ASCII fallback for visual features.
+1. **Strict Static Analysis**: Use `ruff` with modern rules (`UP`, `SIM`, `C4`) and `mypy` with strict typing.
+1. **Visual Integrity**: respect visual width for all terminal output using `wcwidth` and grapheme splitting.
 
 ______________________________________________________________________
 
@@ -397,6 +403,46 @@ ______________________________________________________________________
 ## Core Components
 
 ### Emoji Architecture (v0.9.1+)
+
+## Context Object Pattern (v0.9.7)
+
+### `StyleContext`
+
+v0.9.7 introduces `StyleContext`, an immutable dataclass in
+`src/styledconsole/core/context.py` that centralizes styling parameters
+for frame/banner rendering (width, padding, align, margin, border styles,
+gradients, and title metadata). The pattern reduces long argument lists
+across the rendering stack and improves maintainability.
+
+Key points for contributors:
+
+- `StyleContext` is frozen (immutable) — create modified instances via
+  `dataclasses.replace()` when necessary.
+- Validation is performed in `__post_init__`: `margin` must be an `int` or
+  4-tuple; gradient pairs (`start_color`/`end_color` and
+  `border_gradient_start`/`border_gradient_end`) must be provided together.
+- Public-facing APIs like `Console.frame()` still accept legacy kwargs such
+  as `border`; internal code maps `border` → `border_style` before constructing
+  `StyleContext`.
+
+### Defensive Construction in `FrameGroupContext`
+
+`FrameGroupContext` (grouping context) captures `frame()` calls and builds
+`StyleContext` instances from captured kwargs. To avoid runtime `TypeError`
+when extra or legacy keys are present, `FrameGroupContext` now filters the
+captured kwargs to only those fields declared on `StyleContext`.
+
+Contributors should ensure that any new frame-related keyword args are
+added to `StyleContext` or are explicitly mapped prior to context construction.
+
+### Emoji Validation Updates
+
+Emoji validation was tightened: ZWJ sequences and skin-tone modified emojis
+are now reported as unsafe (`safe=False`) for general terminal output. The
+library still records whether such emojis are `terminal_safe` when running in
+modern terminals (Kitty, WezTerm, Alacritty, etc.). See
+`src/styledconsole/utils/text.py` for `validate_emoji()` logic and
+`src/styledconsole/utils/emoji_support.py` for ZWJ detection utilities.
 
 StyledConsole v0.9.1 introduces a DRY emoji architecture built on top of the
 [`emoji` PyPI package](https://pypi.org/project/emoji/). Emoji data is no
@@ -1246,34 +1292,14 @@ def test_frame_visual(snapshot):
 
 ______________________________________________________________________
 
-## Code Style
+### Static Analysis & CI
 
-### Principles
+We enforce strict quality gates to maintain a professional codebase:
 
-1. **Type hints everywhere** - All public APIs fully typed
-1. **Docstrings with examples** - Every public function documented
-1. **Single Responsibility** - Keep modules under 200 lines
-1. **Test everything** - Maintain 95%+ coverage
-
-### Formatting
-
-```bash
-# Lint
-uv run ruff check src/ tests/
-
-# Format
-uv run ruff format src/ tests/
-```
-
-### Commit Messages
-
-```text
-feat(frame): Add gradient border support
-fix(emoji): Correct VS16 width calculation
-docs: Update USER_GUIDE with examples
-test: Add snapshot tests for banners
-refactor(engine): Extract color normalization
-```
+- **Strict Typing**: Mandatory type hints with `from __future__ import annotations`.
+- **Toolchain Strategy**: We use `uv` for development to ensure lightning-fast, reproducible environments. However, the library must remain a standard Python package fully installable via `pip`.
+- **Locking**: `uv.lock` is committed to ensure deterministic environments for all developers.
+- **Library Marker**: Package includes `py.typed` to support type-checking in consumer projects.
 
 ______________________________________________________________________
 

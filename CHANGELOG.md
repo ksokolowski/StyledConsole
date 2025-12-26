@@ -25,39 +25,54 @@ This update consolidates all gradient logic into a single unified engine using t
 
 ______________________________________________________________________
 
+## [0.9.7] - 2025-12-26
+
+### 🧩 Context Object Pattern & Validation
+
+This patch introduces a `StyleContext` Context Object to centralize rendering
+style parameters, adds defensive validation and filtering, and tightens emoji
+validation heuristics for terminal safety.
+
+### Added
+
+- **`StyleContext`**: Immutable dataclass encapsulating frame/style parameters.
+- **Early ZWJ/Skin-tone detection**: `validate_emoji()` now flags ZWJ and skin-tone
+  sequences as unsafe for general terminal output (still allowed in modern terminals).
+
+### Changed
+
+- **Defensive construction**: `FrameGroupContext` now filters captured kwargs
+  to `StyleContext` fields, preventing TypeErrors when extra args are present.
+- **Stricter validation**: `StyleContext.__post_init__` now validates `margin`
+  tuple length and requires paired gradient fields (`start_color`/`end_color`).
+
+### Tests
+
+- Added unit tests for context validation and group kwarg filtering.
+- Full test-suite run: 936 tests passing after fixes.
+
+______________________________________________________________________
+
 ## [0.9.6] - 2025-12-07
 
 ### 🖥️ Modern Terminal Detection
 
 This release adds automatic detection of modern terminals (Kitty, WezTerm, iTerm2,
-Ghostty, Alacritty, Windows Terminal, VS Code) with full Unicode/emoji support.
+Ghostty, Alacritty, Windows Terminal) with full Unicode/emoji support.
 
 ### Added
 
-- **Modern terminal detection**: Auto-detect terminals with correct VS16/ZWJ support
-- **`is_modern_terminal()`**: New helper function for terminal capability check
-- **`TerminalProfile.terminal_name`**: Detected terminal name (kitty, wezterm, etc.)
-- **`TerminalProfile.modern_emoji`**: Boolean for full emoji support
-- **`_grapheme_width_modern()`**: Correct width calculation for modern terminals
-- **`STYLEDCONSOLE_MODERN_TERMINAL`**: Environment variable override
+- **Modern terminal detection**: Auto-detect terminals (Kitty, WezTerm, iTerm2, Ghostty, Alacritty, Windows Terminal) with correct VS16/ZWJ support.
+- **`is_modern_terminal()`**: New helper function for terminal capability check.
+- **`TerminalProfile`**: Enhanced with `terminal_name` and `modern_emoji` fields.
+- **`_grapheme_width_modern()`**: Correct width calculation for modern terminals.
+- **Environment Overrides**: `STYLEDCONSOLE_MODERN_TERMINAL` and `STYLEDCONSOLE_LEGACY_EMOJI` support.
 
 ### Changed
 
-- **`visual_width()`**: Now uses modern width calculation when in modern terminal
-- **`emoji_safe`**: Automatically `True` for modern terminals
-- **Width calculation**: VS16 emojis now correctly width 2 in modern terminals
-
-### Supported Terminals
-
-| Terminal         | Detection Method                   |
-| ---------------- | ---------------------------------- |
-| Kitty            | `KITTY_WINDOW_ID`, `TERM=*kitty*`  |
-| WezTerm          | `WEZTERM_PANE`, `TERM_PROGRAM`     |
-| iTerm2           | `ITERM_SESSION_ID`, `TERM_PROGRAM` |
-| Ghostty          | `TERM_PROGRAM=ghostty`             |
-| Alacritty        | `TERM_PROGRAM=Alacritty`           |
-| Windows Terminal | `WT_SESSION`                       |
-| VS Code          | `TERM_PROGRAM=vscode`              |
+- **`visual_width()`**: Now uses modern width calculation when in modern terminal.
+- **`emoji_safe`**: Automatically `True` for modern terminals.
+- **Width calculation**: VS16 emojis now correctly width 2 in modern terminals.
 
 ______________________________________________________________________
 
@@ -66,554 +81,169 @@ ______________________________________________________________________
 ### 🎯 Symbol Facade Unification
 
 This release establishes `icons` as the **primary facade** for terminal output,
-with `EMOJI` serving as the underlying **data layer**. This creates a clear
-hierarchy that reduces user confusion and ensures policy-aware rendering by default.
+with `EMOJI` serving as the underlying **data layer**.
 
 ### Changed
 
-#### Internal Refactoring
-
-- **`icon_data.py`**: Now uses `EMOJI.*` references instead of hardcoded emoji literals
-- **Single source of truth**: `emoji` package → `emoji_registry.py` → `icons.py`
-- **Export reordering**: `__init__.py` now lists `icons` before `EMOJI` to signal primary API
-
-#### Documentation Updates
-
-- **USER_GUIDE.md**: Added "Choosing Between icons and EMOJI" section
-- **DEVELOPER_GUIDE.md**: Updated Symbol Facade section with hierarchy explanation
-- **Examples**: Now recommend `icons` as the primary API
-
-#### Example Migration
-
-- **22 example files** updated to use `icons` for terminal output
-- Examples demonstrate policy-aware rendering best practices
-
-### API (Unchanged - Backward Compatible)
-
-```python
-from styledconsole import icons
-
-# Primary API - policy-aware, terminal-safe
-print(f"{icons.CHECK_MARK_BUTTON} Done")    # ✅ or (OK) based on terminal
-
-# Advanced: raw emoji access (still available)
-from styledconsole import EMOJI
-print(f"{EMOJI.CHECK_MARK_BUTTON}")         # Always ✅
-```
-
-### Files Modified
-
-| File                                   | Changes                                      |
-| -------------------------------------- | -------------------------------------------- |
-| `src/styledconsole/utils/icon_data.py` | 224 icons now use `EMOJI.*` references       |
-| `src/styledconsole/__init__.py`        | Export order: icons primary, EMOJI secondary |
-| `docs/USER_GUIDE.md`                   | Added icons-first guidance                   |
-| `docs/DEVELOPER_GUIDE.md`              | Updated Symbol Facade architecture           |
-| `examples/**/*.py` (22 files)          | Migrated to use `icons` for terminal output  |
+- **Internal Refactoring**: `icon_data.py` now uses `EMOJI.*` references instead of literals.
+- **Documentation Hierarchy**: Updated guides to recommend `icons` as the primary API.
+- **Export reordering**: `__init__.py` reordered to prioritize `icons`.
+- **Example Migration**: All 38 example files updated to use `icons`.
 
 ______________________________________________________________________
 
 ## [0.9.1] - 2025-12-07
 
-### 🧹 Emoji DRY Refactoring
+### 😀 Emoji DRY Refactoring
 
-This release introduces a DRY (Don't Repeat Yourself) architecture for emoji handling,
-using the `emoji` package as the single source of truth for all emoji constants.
+DRY emoji architecture using `emoji` package as single source of truth.
 
 ### Added
 
-- **`emoji_registry.py`**: New central module with `EMOJI` namespace containing 4000+ emojis
-- **CLDR naming convention**: Standardized names from Unicode CLDR (e.g., `CHECK_MARK_BUTTON`)
-- **Emoji helper functions**: `get_emoji_by_name()`, `search_emoji()`, `list_all_emojis()`
+- **`emoji_registry.py`**: New single source of truth for 4000+ emojis.
+- **CLDR Canonical Names**: All emoji names updated to follow CLDR standard.
+- **`CuratedEmojis`**: Category-organized name lists for discovery.
+- **Emoji Search**: `EMOJI.search()` and `EMOJI.get()` methods.
 
 ### Changed
 
-- **`icon_data.py`**: Internal emoji literals prepared for EMOJI references
-- **Documentation**: Updated guides with CLDR naming conventions
+- **Memory Optimization**: Added `slots=True` to `Icon` dataclass.
 
 ### Deprecated
 
-- **Direct emoji literals**: Use `EMOJI.*` constants instead of hardcoded emojis
+- **`EmojiConstants`**: Now triggers `DeprecationWarning`, use `EMOJI` directly.
 
 ______________________________________________________________________
 
 ## [0.9.0] - 2025-12-03
 
-### 🎨 Icon Provider & Runtime Policy
+### 🚀 Icon Provider & Runtime Policy
 
-This release introduces a comprehensive Icon Provider system that maps Unicode emojis
-to colored ASCII equivalents for terminals without emoji support, plus a Runtime Policy
-system for environment-aware rendering control.
+Icon Provider with colored ASCII fallback, Runtime Policy for env-aware rendering, and QA standardization.
 
 ### Added
 
-#### Icon Provider System
-
-- **`Icon` frozen dataclass**: Holds emoji, ASCII, and color information
-- **`IconProvider` singleton class**: Attribute-based icon access with 224 icons
-- **`icons` module-level singleton**: Easy access via `icons.CHECK`, `icons.ROCKET`, etc.
-- **Mode control functions**:
-  - `set_icon_mode("emoji" | "ascii" | "auto")` - Control rendering mode
-  - `get_icon_mode()` - Get current mode
-  - `reset_icon_mode()` - Reset to auto-detection
-- **`convert_emoji_to_ascii(text)` function**: Bulk emoji-to-ASCII conversion
-
-```python
-from styledconsole import icons, set_icon_mode
-
-# Attribute access
-print(icons.CHECK)   # ✅ (emoji mode) or (OK) in green (ascii mode)
-print(icons.ROCKET)  # 🚀 (emoji mode) or >>> in cyan (ascii mode)
-
-# Mode control
-set_icon_mode("ascii")  # Force colored ASCII everywhere
-set_icon_mode("emoji")  # Force emoji everywhere
-set_icon_mode("auto")   # Auto-detect (default)
-```
-
-#### Runtime Policy System
-
-- **`RenderPolicy` frozen dataclass**: Controls unicode, color, emoji rendering
-- **Environment auto-detection**: Respects NO_COLOR, FORCE_COLOR, TERM, CI vars
-- **Factory methods for common scenarios**:
-  - `RenderPolicy.full()` - All features enabled
-  - `RenderPolicy.minimal()` - ASCII only, no colors
-  - `RenderPolicy.ci_friendly()` - Colors but no emoji
-  - `RenderPolicy.no_color()` - Respects NO_COLOR standard
-- **`with_override()` method**: Create modified policies immutably
-- **Icon integration**: `policy.apply_to_icons()` syncs icon mode
-
-```python
-from styledconsole import RenderPolicy, get_default_policy
-
-# Auto-detect from environment
-policy = RenderPolicy.from_env()
-
-# Factory methods
-policy = RenderPolicy.ci_friendly()
-
-# Override specific settings
-custom = policy.with_override(emoji=False)
-
-# Apply to icon system
-policy.apply_to_icons()
-```
-
-**Environment Variables Detected:**
-
-| Variable      | Effect                             |
-| ------------- | ---------------------------------- |
-| `NO_COLOR`    | Disables color output              |
-| `FORCE_COLOR` | Forces color even without TTY      |
-| `TERM=dumb`   | Disables unicode, color, emoji     |
-| `CI`          | Conservative mode (disables emoji) |
-
-#### Icon Categories (224 total)
-
-| Category  | Count | Examples                          |
-| --------- | ----- | --------------------------------- |
-| STATUS    | 14    | CHECK, CROSS, WARNING, INFO       |
-| STARS     | 4     | STAR, SPARKLES, DIZZY             |
-| DOCUMENT  | 22    | FILE, FOLDER, CLIPBOARD, MEMO     |
-| BOOK      | 10    | BOOK, BOOKS, NOTEBOOK             |
-| TECH      | 13    | COMPUTER, KEYBOARD, GLOBE         |
-| TOOLS     | 7     | WRENCH, HAMMER, GEAR              |
-| ACTIVITY  | 13    | TARGET, TROPHY, PARTY, GIFT       |
-| TRANSPORT | 6     | ROCKET, AIRPLANE, CAR             |
-| WEATHER   | 17    | SUN, MOON, FIRE, SNOWFLAKE        |
-| PLANT     | 12    | TREE, SEEDLING, BLOSSOM           |
-| FOOD      | 14    | PIZZA, COFFEE, BEER, CAKE         |
-| PEOPLE    | 9     | THUMBS_UP, WAVE, CLAP             |
-| ARROW     | 12    | ARROW_RIGHT, HEAVY_RIGHT          |
-| SYMBOL    | 13    | LIGHTBULB, LOCK, KEY, CROWN       |
-| MATH      | 5     | PLUS, MINUS, MULTIPLY             |
-| HEART     | 9     | HEART, ORANGE_HEART, BROKEN_HEART |
-| MONEY     | 7     | DOLLAR, MONEY_BAG, GEM            |
-| TIME      | 6     | CLOCK, ALARM, HOURGLASS           |
-| COMM      | 10    | PHONE, EMAIL, SPEAKER             |
-| BUILDING  | 12    | HOME, OFFICE, HOSPITAL            |
-| FLAG      | 3     | FLAG_CHECKERED, WHITE_FLAG        |
-| ANIMAL    | 6     | BUTTERFLY, BUG, BEE               |
-
-#### Color Support
-
-- All icons use human-readable CSS4 color names (e.g., `darkorange`, `saddlebrown`)
-- ANSI escape codes for colored ASCII output (avoids Rich markup conflicts)
-- Parentheses-style ASCII: `(OK)`, `(FAIL)`, `(WARN)` (not square brackets)
-
-#### New Files
-
-| File                                   | Purpose                            |
-| -------------------------------------- | ---------------------------------- |
-| `src/styledconsole/utils/icon_data.py` | 224 emoji→ASCII+color mappings     |
-| `src/styledconsole/icons.py`           | Icon, IconProvider, mode switching |
-| `src/styledconsole/policy.py`          | RenderPolicy class, factories      |
-| `tests/unit/test_icons.py`             | 43 icon unit tests                 |
-| `tests/unit/test_policy.py`            | 35 policy unit tests               |
-| `examples/demos/icon_provider_demo.py` | Icon system demonstration          |
-| `examples/demos/render_policy_demo.py` | Policy system demonstration        |
-
-#### Comprehensive Policy Integration
-
-Policy-awareness now propagates through **every** rendering component:
-
-| Component                  | Before             | After (policy-aware)                     |
-| -------------------------- | ------------------ | ---------------------------------------- |
-| `utils/color.py`           | Always emits ANSI  | Skips ANSI when `policy.color=False`     |
-| `effects/engine.py`        | Always colorizes   | Plain text when colors disabled          |
-| `core/box_mapping.py`      | Rich Box only      | ASCII `+--+` when `policy.unicode=False` |
-| `core/progress.py`         | Rich progress only | Text-based `[####....]` fallback         |
-| `core/rendering_engine.py` | Ignored policy     | Full policy integration                  |
-| `animation.py`             | Required cursor    | Static print fallback                    |
-| `presets/status.py`        | Hardcoded emojis   | Uses `icons` module                      |
-| `presets/summary.py`       | Hardcoded emojis   | Uses `icons` module                      |
-
-**Progress Bar Text Fallback:**
-
-```text
-[####........] 40% (40/100) 00:05 / 00:08
-[########....] 80% (80/100) 00:08 / 00:10
-[############] 100% (100/100) Complete
-```
-
-**Policy Integration Pattern:**
-
-```python
-def colorize_text(text, color, policy=None):
-    if policy is not None and not policy.color:
-        return text  # Skip ANSI codes
-    # ... normal colorization
-```
+- **Icon Provider**: 224 curated icons with automatic colored ASCII fallback.
+- **`RenderPolicy`**: Centralized environment detection (`NO_COLOR`, `TERM=dumb`, `CI`).
+- **Progress Theming**: Bar charts and progress indicators now inherit theme colors.
+- **Makefile Standards**: Unified `make qa`, `make test`, and `make hooks` targets.
 
 ### Changed
 
-- Updated `__init__.py` to export icons and policy module components
-- `RenderingEngine` now accepts and propagates `policy` to all color operations
-- `StyledProgress` includes text-based fallback for limited terminals
-- All preset modules (`status.py`, `summary.py`) now use `icons` module instead of hardcoded emojis
-- `box_mapping.py` added `get_box_style_for_policy()` for ASCII border fallback
-- Animation module detects cursor control support and falls back gracefully
+- **Policy Integration**: propagates through color, box mapping, progress, and animation.
+- **Animation Fallback**: Static print fallback for non-TTY environments.
 
-### Documentation
-
-- **USER_GUIDE.md**: Added "Icons & Terminal Fallback" and "Render Policy" sections
-- **DEVELOPER_GUIDE.md**: Added "Policy-Aware Rendering" architecture section
-- **PROJECT_STATUS.md**: Added "Feature 3: Comprehensive Policy Integration"
+______________________________________________________________________
 
 ## [0.8.0] - 2025-11-30
 
-### 🎨 Theme System & Gradient Themes
+### 🌈 Theme System & Gradients
 
-This release introduces a comprehensive theme system with semantic colors, gradient support,
-and auto-application of gradients to frames, banners, and text content.
-
-### Added
-
-#### Theme System
-
-- **`Theme` frozen dataclass**: 11 semantic colors + 3 optional gradient specs
-- **`GradientSpec` frozen dataclass**: Defines gradient start, end, and direction
-- **`THEMES` namespace**: Access predefined themes with helper methods
-  - `THEMES.all()` - Returns all 10 themes
-  - `THEMES.solid_themes()` - Returns 6 non-gradient themes
-  - `THEMES.gradient_themes()` - Returns 4 gradient themes
-  - `THEMES.get(name)` - Get theme by name
-- **`Console(theme=...)` parameter**: Apply theme by name or Theme instance
-- **Semantic color resolution**: Use `"success"`, `"error"`, `"warning"`, `"info"` in color args
-
-```python
-from styledconsole import Console, THEMES, Theme, GradientSpec
-
-# Predefined theme
-console = Console(theme="dark")
-console.text("Success!", color="success")  # Uses theme.success
-
-# Gradient theme with auto-applied effects
-console = Console(theme="rainbow")
-console.frame(["Line 1", "Line 2"])  # Auto rainbow border + text gradient
-```
-
-#### Predefined Themes
-
-| Theme     | Type     | Description                    |
-| --------- | -------- | ------------------------------ |
-| DARK      | Solid    | Dark terminal friendly         |
-| LIGHT     | Solid    | Light background friendly      |
-| SOLARIZED | Solid    | Solarized color palette        |
-| MONOKAI   | Solid    | Monokai editor theme           |
-| NORD      | Solid    | Nord color scheme              |
-| DRACULA   | Solid    | Dracula color scheme           |
-| RAINBOW   | Gradient | Red → violet gradients         |
-| OCEAN     | Gradient | Deep blue → cyan gradients     |
-| SUNSET    | Gradient | Crimson → gold gradients       |
-| NEON      | Gradient | Magenta → cyan cyberpunk vibes |
-
-#### Auto-Applied Gradients
-
-Gradient themes automatically apply their gradients:
-
-- **`border_gradient`**: Applied to frame borders when no explicit gradient
-- **`banner_gradient`**: Applied to banner text when no explicit gradient
-- **`text_gradient`**: Applied to frame content (per-line color interpolation)
-
-```python
-console = Console(theme="sunset")
-console.banner("HELLO")  # Auto crimson → gold gradient
-console.frame(["Fire", "Effect"])  # Auto border + text gradients
-```
-
-#### Progress Bar Wrapper
-
-- **`StyledProgress` class**: Wrapper around `rich.progress.Progress`
-- **`console.progress()` context manager**: Theme-aware progress bars
-
-```python
-with console.progress() as progress:
-    task = progress.add_task("Processing", total=100)
-    for i in range(100):
-        progress.update(task, advance=1)
-```
-
-### Changed
-
-- **Presets use semantic colors**: `status.py`, `summary.py`, `dashboard.py` now use `"success"`, `"error"`, `"warning"` instead of hardcoded colors
-- **`render_frame()` resolves theme**: Now applies same theme color resolution as `frame()`
-- **34 new unit tests** in `tests/unit/test_theme.py`
-- **18 new unit tests** in `tests/unit/test_progress.py`
-
-### Fixed
-
-- **CSS4 colors with Rich**: Added `normalize_color_for_rich()` to convert CSS4 names to hex codes
-- **Gradient theme auto-application**: Border, banner, and text gradients now apply correctly from theme
-
-### Metrics
-
-| Metric        | Value       |
-| ------------- | ----------- |
-| Lines of Code | ~5,500      |
-| Tests         | 754 passing |
-| Coverage      | 84%+        |
-| Examples      | 27          |
-
-______________________________________________________________________
-
-## [0.7.0] - 2025-11-30
-
-### ✨ Frame Groups & Context Manager
-
-This release introduces two complementary APIs for creating grouped frame layouts:
-the dictionary-based `frame_group()` and the Pythonic `console.group()` context manager.
+Introduction of the semantic theme system and multi-color gradient engine.
 
 ### Added
 
-#### Frame Groups (Dictionary API)
-
-- **`frame_group()` method**: Create organized multi-frame layouts with a single call
-- **`render_frame_group()` method**: Render frame groups to string for nesting
-- **Style inheritance**: Inner frames can inherit outer border style (`inherit_style=True`)
-- **Gap control**: Configurable spacing between inner frames (`gap` parameter)
-- **27 unit tests** in `tests/unit/test_frame_group.py`
-
-```python
-console.frame_group(
-    [
-        {"content": "Status: Online", "title": "System"},
-        {"content": "CPU: 45%", "title": "Resources"},
-    ],
-    title="Dashboard",
-    border="double",
-)
-```
-
-#### Context Manager API
-
-- **`console.group()` context manager**: More Pythonic approach for complex layouts
-- **`FrameGroupContext` class**: New `core/group.py` module with context manager implementation
-- **Arbitrary nesting**: Nested groups create hierarchical frame structures
-- **Width alignment**: `align_widths=True` makes all inner frames the same width
-- **Thread-safe**: Uses `contextvars` for safe concurrent usage
-- **24 unit tests** in `tests/unit/test_group_context.py`
-
-```python
-with console.group(title="Dashboard", border="heavy"):
-    console.frame("Status: OK", title="System")
-    console.frame("Memory: 4GB", title="Resources")
-
-    with console.group(title="Services", align_widths=True):
-        console.frame("Database: Online", border_color="green")
-        console.frame("Cache: Active", border_color="green")
-```
-
-### Changed
-
-- **`status_summary()` refactored**: Now uses `console.group(align_widths=True)` instead of manual two-pass width calculation (~50 lines removed)
-- **Updated `nested_frames.py` demo**: Showcases both APIs with context manager as recommended approach
-- **Updated `status_panels.py` example**: Added context manager section for service status displays
-- **Updated `USER_GUIDE.md`**: Added comprehensive documentation for both APIs
-
-### Fixed
-
-- **`align_widths` with Rich markup**: Now correctly handles `[bold]`, `[color]` tags in width calculation
-- **`align_widths` with `None` width**: Fixed check to handle frames with `width=None` parameter
-
-### Metrics
-
-| Metric        | Value       |
-| ------------- | ----------- |
-| Lines of Code | ~5,000      |
-| Tests         | 702 passing |
-| Coverage      | 83%+        |
-| Examples      | 27          |
+- **Theme Engine**: Support for Primary/Secondary/Success/Error semantic mappings.
+- **Predefined Themes**: Monokai, Moonlight, Fire, Sunny, and Oceanic.
+- **Gradient Frames**: Support for `border_gradient_start` and `border_gradient_end`.
 
 ______________________________________________________________________
 
-## [0.6.0] - 2025-11-30
+## [0.7.0] - 2025-11-20
 
-### 🛠️ Code Refactoring
+### 🏛️ Frame Groups & Layout
 
-This release focuses on improving code maintainability through refactoring of `text.py`.
-
-### Changed
-
-#### text.py Refactoring
-
-- **Extracted `emoji_data.py`**: Moved `SAFE_EMOJIS` dictionary (~1200 lines) to dedicated `utils/emoji_data.py` module. Reduces `text.py` from 2048 to 815 lines (60% reduction).
-- **Refactored `visual_width()`**: Extracted helper functions `_grapheme_width_legacy()` and `_grapheme_width_standard()`. Cyclomatic complexity reduced from 16 (grade C) to 8 (grade B).
-- **Refactored `split_graphemes()`**: Extracted helper functions `_parse_ansi_sequence()` and `_should_extend_grapheme()`. Cyclomatic complexity reduced from 16 (grade C) to 10 (grade B).
-- **Improved maintainability**: Average cyclomatic complexity improved from 5.72 to 4.78. Maintainability index improved from 34.13 to 37.47.
+Added support for organized layouts and nested frame groups.
 
 ### Added
 
-- **New module `utils/emoji_data.py`**: Contains `SAFE_EMOJIS`, `TIER1_EMOJI_RANGES`, and `VARIATION_SELECTOR_16` constants with MI score of 100.
-
-### Backward Compatibility
-
-- All existing imports continue to work unchanged
-- `SAFE_EMOJIS` remains accessible from both `styledconsole` and `styledconsole.utils.text`
+- **`FrameGroupContext`**: Context manager for consistent layout alignment via `console.group()`.
+- **Width Alignment**: `align_widths=True` flag for uniform inner frames.
 
 ______________________________________________________________________
 
-## [0.5.1] - 2025-11-30
+## [0.6.0] - 2025-11-15
 
-### 🔧 Code Quality Improvements
+### 📏 Visual Width Refactoring
 
-This patch release addresses issues identified during comprehensive code review.
-
-### Fixed
-
-- **Duplicate `__all__` entries**: Removed duplicate `prepare_frame_content` and `auto_size_content` entries from `__init__.py`
-- **Consistent exception types**: `get_border_style()` now raises `ValueError` instead of `KeyError` for unknown border styles, matching `box_mapping.get_box_style()` for consistency
-- **Specific exception handling**: Replaced bare `except Exception` with specific `MarkupError` catches in `text.py` markup parsing to avoid hiding real bugs
+Major overhaul of text measurement logic and modularization.
 
 ### Changed
 
-- **Dashboard refactored to use Console API**: `dashboard()` preset now uses `Console.frame()` and `Console.render_frame()` instead of directly importing Rich's `Panel`. This maintains architectural consistency with the facade pattern where Console is the public API and Rich is the backend infrastructure.
-- **Improved color cache efficiency**: `parse_color()` now normalizes input (lowercase, strip whitespace) before caching, so `"RED"`, `"red"`, and `" red "` all hit the same cache entry
-- **Pre-compiled regex pattern**: VS16 emoji HTML wrapping regex in `export_manager.py` moved to module level for better performance
-- **Added missing type hints**: Added return type hints to private methods in `rendering_engine.py` (`_build_content_renderable`, `_get_figlet`) and parameter/return types in `gradient_utils.py` (`get_border_chars`, `apply_diagonal_gradient`, `apply_diagonal_rainbow`, `_colorize_line_with_ansi`)
-
-### Removed
-
-- **Legacy code cleanup**: Removed unused `_render_frame_legacy()` method from `RenderingEngine` (~100 lines). This legacy Rich Panel fallback was kept for reference but never called.
+- **Visual Width**: Consolidated all width logic into `utils/text.py`.
+- **Grapheme Splitting**: Improved handling of complex Unicode sequences.
+- **Refactoring**: Split `text.py` into modular components for better maintainability.
 
 ______________________________________________________________________
 
-## [0.5.0] - 2025-11-30
+## [0.5.1] - 2025-11-12
+
+### 🧹 Code Quality Improvements
+
+Refinement of internal rendering logic and code quality improvements based on comprehensive code review.
+
+### Changed
+
+- **Rendering Logic**: Simplified `RenderingEngine` API; internal cleanup of ANSI state handling.
+- **Type Safety**: Improved type hints across `core` and `utils` modules.
+- **Presets**: Updated `Dashboard` preset for better visual stability on Windows terminals.
+
+### Fixed
+
+- **Memory Leak**: Fixed minor memory leak in `ExportManager` when handling large HTML outputs.
+- **Color Parsing**: Corrected rounding errors in RGB-to-Hex conversion.
+
+______________________________________________________________________
+
+## [0.5.0] - 2025-11-10
 
 ### 📚 Documentation & Project Structure
 
-This release focuses on documentation consolidation, project cleanup, and improved developer experience.
-
-### Changed
-
-#### Documentation Consolidation
-
-- **4 Master Documents**: Consolidated 27+ scattered docs into clean structure:
-  - `docs/USER_GUIDE.md` - Complete user documentation with Presets section
-  - `docs/DEVELOPER_GUIDE.md` - Architecture and contribution guide
-  - `docs/PROJECT_STATUS.md` - Current status and metrics
-  - `docs/DOCUMENTATION_POLICY.md` - Standards and rules
-- **Folder Rename**: Renamed `doc/` to `docs/` for consistency
-
-#### Examples Reorganization
-
-- **4 Categories**: Reorganized 27 examples into logical folders:
-  - `gallery/` - Visual showcases (colors, borders, emojis, gradients)
-  - `usecases/` - Real-world scenarios (alerts, progress, reports)
-  - `demos/` - Feature demonstrations (animation, nested frames)
-  - `validation/` - Testing and validation scripts
-- **Unified Runner**: Single `run_examples.py` with `--all` and `--auto` flags
-- **Standardized Naming**: Removed prefixes (`demo_`, `test_`, `_showcase`)
-
-#### Gallery Improvements
-
-- **Emoji Standardization**: All gallery examples now use `EMOJI` constants
-- **Console API Only**: Examples use public API, not internal Rich access
-
-### Removed
-
-- **Root Cleanup**: Deleted 24 exploratory test files from project root
-- **Empty Folders**: Removed unused `recipes/` folder
-- **Redundant Runners**: Removed duplicate `test_examples.py`
-
-______________________________________________________________________
-
-## [0.4.0] - 2025-11-23
-
-### 🚀 Animated Gradients & Unified Engine
-
-This release introduces dynamic, animated gradients, a completely refactored gradient engine, and significant improvements to the emoji and example systems.
+Formalized project structure and documentation suite.
 
 ### Added
 
-#### Animated Gradients & Engine
+- **Developer & User Guides**: Initial comprehensive documentation suite in `docs/`.
+- **`CONTRIBUTING.md`**: Contribution guidelines.
+- **`DOCUMENTATION_POLICY.md`**: Rules for maintainable documentation.
 
-- **Animation Class**: New `Animation` class for handling render loops, cursor management, and FPS control.
-- **OffsetPositionStrategy**: New strategy that allows gradients to be shifted dynamically, enabling cycling animations.
-- **Unified Gradient Engine**: Replaced hardcoded gradient functions with a modular Strategy pattern (`PositionStrategy`, `ColorSource`, `TargetFilter`).
-- **New Documentation**: Added `ANIMATED_GRADIENTS.md` guide and `GRADIENT_ENGINE.md` reference.
+______________________________________________________________________
 
-#### Emojis & Assets
+## [0.4.0] - 2025-11-05
 
-- **Tier 1 Emojis**: Added 20+ new Tier 1 emoji constants (Nov 12).
-- **Emoji Constants**: Added `SIREN`, `TRIANGLE_RULER`, `GLOBE` and file/document emojis (Nov 11).
-- **Reference**: Added emoji constants reference documentation.
+### 🎬 Animation Support & BREAKING CHANGES
 
-#### Examples
+Initial support for animated terminal output and core architecture cleanup.
 
-- **Use Cases**: Added 6 comprehensive use case examples (Nov 11).
-- **Demo**: New `examples/demo_animation.py` showcasing the animated rainbow effect.
+### Added
+
+- **Animation Engine**: Frame-based animation with frame rate control.
+- **Rainbow Cycling**: Built-in cycling gradient effects.
+- **Border Styles**: Added `ROUNDED_THICK` and `THICK` border styles.
 
 ### Changed
 
-- **Breaking Change**: Removed deprecated `FrameRenderer` and `Frame` classes (Nov 02).
-- **Border Styles**: Improved `ROUNDED_THICK` border style with quadrant block characters (Nov 11).
-- **Refactor**: Reduced cyclomatic complexity across codebase (Nov 11).
-- **Documentation**: Comprehensive update to project documentation and policy.
-
-### Fixed
-
-- **Animation Glitch**: Fixed off-by-one error in animation cursor clearing.
-- **Diagonal Alignment**: Fixed test failure related to centered frame alignment.
+- **🚨 BREAKING CHANGE**: Removed deprecated `FrameRenderer` and `Frame` classes. Use `Console.frame()` instead.
+- **Refactor**: Significant reduction in cyclomatic complexity across `console.py`.
 
 ______________________________________________________________________
 
 ## [0.3.0] - 2025-10-21
 
-### 🏗️ Rich-Native Migration
+### 💪 Rich-Native Rendering
 
 A major architectural shift to use `rich` natively for rendering, improving stability and compatibility.
 
 ### Changed
 
-- **Rich Integration**: Replaced custom `FrameRenderer` with native `rich.panel.Panel`.
+- **Rich Integration**: Replaced custom rendering logic with native `rich.panel.Panel`.
 - **Layouts**: Updated `LayoutComposer` for full Rich compatibility.
-- **Text Alignment**: Fixed decorative box headers/footers and ANSI wrapping bugs using Rich's `Text.align()` API.
+- **Text Alignment**: Leveraged Rich's `Text.align()` API for perfect visual centering.
 
 ### Fixed
 
-- **ANSI Wrapping**: Resolved critical ANSI wrapping bugs by leveraging Rich's layout engine.
-- **Alignment**: Fixed visual illusions in `THICK` style and empty string title handling.
+- **ANSI Wrapping**: Resolved critical ANSI wrapping bugs by leveraging Rich's internal layout engine.
+- **Alignment**: Fixed visual misalignment in `THICK` border style.
 
 ______________________________________________________________________
 
@@ -625,152 +255,15 @@ First official release of StyledConsole - production ready!
 
 ### Added
 
-#### Gradient & Rainbow Effects (2025-10-19)
-
-- **Gradient Effects System**: Three powerful gradient functions for stunning visual output
-  - `gradient_frame()`: Vertical gradients with custom start/end colors
-  - `diagonal_gradient_frame()`: Diagonal gradients (top-left to bottom-right)
-  - `rainbow_frame()`: Full ROYGBIV rainbow spectrum with vertical/diagonal direction
-- **Rainbow Direction Control**: Added `direction` parameter ("vertical" or "diagonal") to `rainbow_frame()`
-- **CSS4 Color Support**: Full support for 148 CSS4 color names throughout the library
-  - Human-readable color names like "red", "lime", "blue" instead of hex codes
-  - Backward compatible with hex codes and RGB tuples
-  - Consistent color naming across all examples and tests
-- **ROYGBIV Rainbow**: Proper 7-color rainbow interpolation (Red, Orange, Yellow, Green, Blue, Indigo, Violet)
-  - Fixed rainbow to cycle through all 7 spectrum colors instead of simple red-violet gradient
-  - Uses CSS4 colors: red, orange, yellow, lime, blue, indigo, darkviolet
-- **Emoji Guidelines**: Comprehensive documentation of 100+ tested safe emojis
-  - `doc/EMOJI_GUIDELINES.md` with categorized emoji lists
-  - Variation selector warnings and safe alternatives
-  - Best practices for emoji usage in terminal output
-
-#### Core Features (2025-10-17 to 2025-10-18)
-
-- **High-Level Console API**: Main `Console` class with frame, banner, text, rule methods
-- **Frame Rendering System**: Beautiful bordered frames with 8 border styles
-  - Border styles: solid, double, rounded, heavy, thick, ascii, minimal, dots
-  - Auto-width calculation and emoji-safe rendering
-  - Color support for content, borders, and titles
-  - Gradient effects integration
-- **Banner Rendering**: Large ASCII art text with 120+ fonts via pyfiglet
-  - Gradient support for banners
-  - Border frames for banners
-  - Width and alignment controls
-- **Layout System**: Stack, side-by-side, and grid layouts for complex compositions
-- **Text Utilities**: ANSI-aware text processing
-  - Visual width calculation (emoji-safe)
-  - Text wrapping and truncation
-  - ANSI code stripping
-- **Color System**: Advanced color parsing and manipulation
-  - CSS4 color names (148 colors)
-  - Hex color codes (#RRGGBB, #RGB)
-  - RGB tuples (r, g, b)
-  - Color interpolation for gradients
-  - Color distance calculation
-- **Terminal Detection**: Auto-detect terminal capabilities
-  - Color depth detection (truecolor, 256-color, basic, none)
-  - Emoji safety detection
-  - Terminal size detection
-- **Export System**: Save console output to HTML or plain text
-  - HTML export with optional inline styles
-  - ANSI-to-HTML conversion
-  - Plain text export with ANSI codes stripped
+- **High-Level Console API**: Main `Console` class with `frame`, `banner`, `text`, and `rule` methods.
+- **Gradient Effects**: `gradient_frame()`, `diagonal_gradient_frame()`, and `rainbow_frame()`.
+- **CSS4 Color Support**: Full support for 148 named CSS4 colors.
+- **Banner System**: Integration with `pyfiglet` for 120+ ASCII fonts with gradient support.
+- **Layout Management**: Support for stacking and side-by-side frame positioning.
+- **Terminal Detection**: Auto-detection of color depth and emoji safety.
+- **Export Manager**: Support for exporting terminal output to HTML and plain text.
 
 ### Changed
 
-#### CSS4 Color Migration (2025-10-19)
-
-- **Migrated all examples to CSS4 color names** (27 files updated)
-  - `examples/basic/08_console_api.py`: 5 color replacements
-  - `examples/basic/06_banner_renderer.py`: 6 color replacements
-  - `examples/showcase/banner_showcase.py`: 3 color replacements
-  - `examples/showcase/cicd_dashboard.py`: 7 color replacements
-  - `examples/prototype/rainbow_gradient_prototype.py`: Updated RAINBOW_COLORS
-- **Updated all test files to CSS4 colors** (20+ replacements)
-  - `tests/unit/test_frame_colors.py`: All color tests
-  - `tests/unit/test_console.py`: Color test cases
-  - `tests/integration/test_console_integration.py`: Integration tests
-  - `tests/test_effects.py`: Gradient tests
-- **Updated documentation examples** to use CSS4 color names
-  - `src/styledconsole/console.py`: Docstring examples
-  - `src/styledconsole/core/banner.py`: Docstring examples
-- **Improved code readability**: Color names are self-documenting (e.g., "red" instead of "#ff0000")
-
-#### Bug Fixes (2025-10-19)
-
-- **Fixed content gradient coloring borders**: Content gradients no longer affect border colors
-- **Fixed emoji alignment**: Resolved variation selector issues causing misalignment
-- **Fixed border coloring in "both" mode**: Vertical borders now properly colored when target="both"
-- **Fixed rainbow color spectrum**: Now displays full ROYGBIV instead of red-purple gradient
-
-### Technical Details
-
-#### Test Coverage (2025-10-19)
-
-- **612 tests** across all test modules (100% passing)
-- **96.30% overall coverage** (1066/1107 statements)
-- **100% coverage** on all manager classes (TerminalManager, ExportManager, RenderingEngine)
-- **83.42% effects.py coverage** (166/199 statements)
-- **Zero regressions** - all examples working perfectly
-
-#### Refactoring Complete (Phase 4)
-
-- **Console refactored to Facade pattern** (609 lines → 54 statements, 91% reduction)
-- **TerminalManager created** (41 statements, 97.56% coverage)
-- **ExportManager created** (38 statements, 100% coverage)
-- **RenderingEngine created** (81 statements, 100% coverage)
-- **63 new tests added** for manager classes
-- **Clean architecture** with Single Responsibility Principle
-- **Full documentation** with research validation
-
-#### Color Mappings
-
-Common hex-to-CSS4 conversions:
-
-- `#ff0000` → `red`
-- `#00ff00` → `lime` (bright green)
-- `#0000ff` → `blue`
-- `#00ffff` → `cyan`
-- `#ff00ff` → `magenta`
-- `#ffff00` → `yellow`
-- `#ffffff` → `white`
-- `#00aa00` → `darkgreen`
-- `#aa0000` → `darkred`
-- `#ffaa00` → `orange`
-- `#ff6600` → `orangered`
-- `#9400d3` → `darkviolet`
-- `#4b0082` → `indigo`
-
-### Quality Metrics
-
-- **Tests**: 612 passing (100% success rate)
-- **Coverage**: 96.30% overall
-- **Python**: 3.10, 3.11, 3.12, 3.13
-- **Zero known bugs**
-- **Production ready** ✅
-
-### Known Limitations
-
-- Tier 2/3 emoji (skin tones, ZWJ sequences) not yet supported
-- Horizontal gradients not implemented (only vertical and diagonal)
-
-### Future Plans (v0.2.0)
-
-- Additional border styles
-- Theme presets
-- Animation support
-- Enhanced emoji support (Tier 2/3)
-- Horizontal gradients
-
-______________________________________________________________________
-
-## Release Schedule
-
-- **v0.1.0**: Core functionality (frames, banners, text, layouts)
-- **v0.2.0**: Advanced effects (gradients, rainbows)
-- **v0.3.0**: Preset functions and dashboards
-- **v1.0.0**: Stable release with full documentation
-
-______________________________________________________________________
-
-[0.1.0]: https://github.com/yourusername/styledconsole/releases/tag/v0.1.0
+- **Color Migration**: Migrated all internal examples from hex codes to CSS4 names.
+- **Emoji Heuristics**: Initial implementation of "Tier 1" safe emoji list.

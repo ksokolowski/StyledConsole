@@ -2,9 +2,9 @@
 
 [![Python >=3.10](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-0.9.6-brightgreen.svg)](https://github.com/yourusername/styledconsole/releases/tag/v0.9.6)
-[![Tests](https://img.shields.io/badge/tests-914%20passing-success.svg)](https://github.com/yourusername/styledconsole)
-[![Coverage](https://img.shields.io/badge/coverage-89%25-brightgreen.svg)](https://github.com/yourusername/styledconsole)
+[![Version](https://img.shields.io/badge/version-0.9.7-brightgreen.svg)](https://github.com/yourusername/styledconsole/releases/tag/v0.9.7)
+[![Tests](https://img.shields.io/badge/tests-936%20passing-success.svg)](https://github.com/yourusername/styledconsole)
+[![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](https://github.com/yourusername/styledconsole)
 [![MyPy](https://img.shields.io/badge/mypy-passing-success.svg)](https://github.com/yourusername/styledconsole)
 
 > **🎨 Transform your boring terminal into a visual masterpiece!**
@@ -24,136 +24,91 @@
 
 ______________________________________________________________________
 
-## 🌟 What Can You Create?
+## 🌟 Major Features
 
-### 🎯 Smart Icon System (Primary API)
+### 🎯 Smart Icon System
 
-**New in v0.9.5:** Use `icons` for terminal output - policy-aware with automatic ASCII fallback:
+Use the `icons` facade for policy-aware symbols with automatic ASCII fallback and zero-width alignment fixes. Includes a data layer of 4000+ emojis.
 
 ```python
 from styledconsole import icons, set_icon_mode
 
-# Primary API - auto-detects terminal capability
-print(f"{icons.ROCKET} Deploying...")        # 🚀 or >>> based on terminal
-print(f"{icons.CHECK_MARK_BUTTON} Done!")    # ✅ or (OK) in green
-print(f"{icons.CROSS_MARK} Failed")          # ❌ or (FAIL) in red
-
-# Force specific mode globally
-set_icon_mode("ascii")   # Force colored ASCII everywhere
-set_icon_mode("emoji")   # Force emoji everywhere
-set_icon_mode("auto")    # Auto-detect (default)
+# Primary API - auto-detects terminal capability (🚀 or >>>)
+print(f"{icons.ROCKET} Deploying...")
 ```
 
-**224 icons in 16 categories:** Status, Stars, Documents, Tech, Tools, Weather, and more!
+| Environment          | Output | Symbol        |
+| -------------------- | ------ | ------------- |
+| Modern Terminal      | `🚀`   | Emoji         |
+| CI / Legacy Terminal | `>>>`  | Colored ASCII |
 
-### 🎁 4000+ Emoji Data Layer
+### 🏗️ Advanced Frame Engine
 
-For advanced use cases, access raw emoji data via `EMOJI` (built on [`emoji` package](https://pypi.org/project/emoji/)):
-
-```python
-from styledconsole import EMOJI, CuratedEmojis
-
-# Direct access to 4000+ emojis (raw, no ASCII fallback)
-print(EMOJI.ROCKET)             # Always 🚀
-print(EMOJI.CHECK_MARK_BUTTON)  # Always ✅
-
-# Search by keyword
-results = EMOJI.search("party")  # [('PARTY_POPPER', '🎉'), ...]
-
-# Curated quick-pick sets
-CuratedEmojis.DEV     # Pre-selected dev icons
-CuratedEmojis.STATUS  # Status indicators
-```
-
-### 🏛️ Nested Multi-Frame Architectures
-
-Build complex, layered UI components with independent gradient borders:
+Build complex, multi-layered UI architectures with 8 beautiful border styles and automatic width alignment for consistent layouts.
 
 ```python
 from styledconsole import Console
 
 console = Console()
-
-# Create nested frames with different gradient colors!
-inner = console.render_frame("🔮 Core", border="double", width=20,
-                              border_gradient_start="purple", border_gradient_end="magenta")
-middle = console.render_frame(["Growth Layer", inner], border="rounded", width=35,
-                               border_gradient_start="green", border_gradient_end="lime")
-outer = console.render_frame(["🔥 Fire Layer", middle], border="heavy", width=50,
-                              border_gradient_start="red", border_gradient_end="orange")
-console.print(outer)
+inner = console.render_frame("Core", border="double", width=20)
+outer = console.frame(["Application Shell", inner], border="heavy", width=40)
 ```
 
 ```text
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ 🔥 Fire Layer                                  ┃
-┃ ╭─────────────────────────────────╮            ┃
-┃ │ Growth Layer                    │            ┃
-┃ │ ╔══════════════════╗            │            ┃
-┃ │ ║ 🔮 Core          ║            │            ┃
-┃ │ ╚══════════════════╝            │            ┃
-┃ ╰─────────────────────────────────╯            ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+┏━━━━━━ Application Shell ━━━━━━┓
+┃                               ┃
+┃ ╔══════ Core ═══════╗         ┃
+┃ ║                   ║         ┃
+┃ ╚═══════════════════╝         ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ```
 
-### 🌈 Rainbow Gradient Effects
+#### 📦 8 Beautiful Border Styles
 
-Make your frames come alive with full-spectrum ROYGBIV rainbows:
+```text
+┌─solid──┐  ╭─rounded─╮  ╔═double══╗  ┏━heavy━━┓
+│        │  │         │  ║         ║  ┃        ┃
+└────────┘  ╰─────────╯  ╚═════════╝  ┗━━━━━━━━┛
+
+█▀thick▀▀█  +--ascii--+  ─minimal──   ┄┄dashed┄┄
+█        █  |         |               ┆        ┆
+█▄▄▄▄▄▄▄▄█  +---------+  ──────────   ┄┄┄┄┄┄┄┄┄┄
+```
+
+### 🌈 Dynamic Gradient Engine
+
+Apply smooth ROYGBIV rainbows, multi-color linear gradients, or custom interpolation to any frame, banner, or text element.
 
 ```python
 from styledconsole.effects import rainbow_frame
 
-rainbow_frame([
-    "🔴 Red - Passion and energy",
-    "🟠 Orange - Creativity and warmth",
-    "🟡 Yellow - Joy and optimism",
-    "🟢 Green - Growth and harmony",
-    "🔵 Blue - Trust and depth",
-    "🟣 Purple - Wisdom and magic",
-], title="🌈 Rainbow Poetry", direction="vertical")
+# Full spectrum vertical or diagonal rainbows
+rainbow_frame("Spectral Output", direction="diagonal")
 ```
 
-### 🎬 Animated Gradients
+### 🔄 Live Terminal Animations & Progress
 
-Yes, you can animate your terminal output!
+Create dynamic terminal experiences with a frame-based animation engine and themed progress bars that automatically adapt to your chosen color palette.
 
 ```python
+from styledconsole import StyledProgress
 from styledconsole.animation import Animation
-from styledconsole.effects.strategies import RainbowSpectrum, DiagonalPosition
 
-# Create cycling rainbow animations that flow across your frames!
-Animation.run(gradient_frames, fps=20, duration=10)
+# Themed progress bars with automatic color inheritance
+with StyledProgress(description="Downloading...") as progress:
+    task = progress.add_task("Assets", total=100)
+    progress.update(task, advance=50)
+
+# Frame-based animation engine for cycling gradients
+Animation.run(gradient_generator, fps=20, duration=5)
 ```
 
-### 😀 Icons with Perfect Alignment
+### 🔤 ASCII Art Banners
 
-No more broken layouts from emoji width issues! Use the `icons` API for terminal-safe output:
-
-```python
-from styledconsole import Console, icons
-
-console = Console()
-
-console.frame([
-    f"{icons.ROCKET} Deploy to production",
-    f"{icons.CHECK_MARK_BUTTON} All tests passing",
-    f"{icons.FIRE} Performance optimized",
-    f"{icons.SPARKLES} Ready to ship!",
-], title=f"{icons.PACKAGE} Release v2.0", border="rounded")
-```
-
-**Why `icons` over `EMOJI`?**
-
-- ✅ **Policy-aware:** Respects `NO_COLOR`, `CI`, `TERM=dumb` environment
-- ✅ **ASCII fallback:** Colored ASCII on terminals without emoji support
-- ✅ **224 curated icons:** Most common symbols with sensible defaults
-- ✅ **Same names:** `icons.ROCKET` maps to `EMOJI.ROCKET` internally
-
-### 🔤 Massive ASCII Art Banners
-
-500+ fonts to make your headers impossible to miss:
+Generate massive, high-impact headers using 500+ fonts with integrated gradient support and automatic centering.
 
 ```python
+# Slant font with custom gradient transition
 console.banner("DEPLOYED", font="slant", start_color="green", end_color="cyan")
 ```
 
@@ -165,75 +120,28 @@ console.banner("DEPLOYED", font="slant", start_color="green", end_color="cyan")
 /_____/_____/_/   /_____/\____/ /_/_____/_____/
 ```
 
-### 🎨 148 CSS4 Colors + Gradients
+### 🔧 Environment-Aware Rendering
 
-Use color names, hex codes, or RGB - your choice:
-
-```python
-# All these work!
-console.frame("Fire!", border_color="orangered")
-console.frame("Ocean!", border_color="#1E90FF")
-console.frame("Custom!", border_color=(255, 128, 0))
-
-# Gradient borders - smooth color transitions
-console.frame("Sunset", border_gradient_start="gold", border_gradient_end="crimson")
-console.frame("Ocean", border_gradient_start="cyan", border_gradient_end="navy")
-console.frame("Forest", border_gradient_start="lime", border_gradient_end="darkgreen")
-```
-
-### 🚀 Icon Provider (Colored ASCII Fallback)
-
-**New in v0.9.0:** Automatic emoji→ASCII conversion with ANSI colors for CI/CD compatibility:
-
-```python
-from styledconsole import icons, set_icon_mode
-
-# Auto-detects terminal capability (default)
-print(f"{icons.CHECK_MARK_BUTTON} Tests passed")  # ✅ or (OK) in green
-print(f"{icons.CROSS_MARK} Build failed")         # ❌ or (FAIL) in red
-print(f"{icons.WARNING} Deprecation")             # ⚠️ or (WARN) in yellow
-
-# Force specific mode globally
-set_icon_mode("ascii")   # Force ASCII everywhere
-set_icon_mode("emoji")   # Force emoji everywhere
-set_icon_mode("auto")    # Auto-detect (default)
-```
-
-**224 icons in 16 categories:** Status, Stars, Documents, Books, Tech, Tools, Activity, Transport, Weather, Plants, Food, People, Arrows, Symbols, Hearts, and more!
-
-### 🔧 Render Policy (Environment-Aware Rendering)
-
-**New in v0.9.0:** Automatically adapts output based on terminal capabilities:
+Automatically adapt output for CI/CD, `NO_COLOR`, or legacy terminals using a centralized `RenderPolicy`.
 
 ```python
 from styledconsole import Console, RenderPolicy
 
-# Auto-detect from environment (NO_COLOR, CI, TERM=dumb)
-console = Console()  # Uses RenderPolicy.from_env() by default
-
-# CI-friendly: colors but no emoji
+# CI-friendly mode: preserves colors but uses ASCII symbols
 console = Console(policy=RenderPolicy.ci_friendly())
 
-# ASCII-only for logs/pipes
-console = Console(policy=RenderPolicy(unicode=False, color=False, emoji=False))
+# Detects: NO_COLOR, FORCE_COLOR, TERM=dumb, CI, GITHUB_ACTIONS
 ```
 
-**Detects:** `NO_COLOR`, `FORCE_COLOR`, `TERM=dumb`, `CI`, `GITHUB_ACTIONS`, `GITLAB_CI`
+### 📤 Multi-Format Export
 
-### 📦 8 Beautiful Border Styles
+Record your terminal session and export the results to professional, full-color HTML or clean, ANSI-stripped plain text.
 
 ```python
-borders = ["solid", "rounded", "double", "heavy", "thick", "ascii", "minimal", "dashed"]
-```
-
-```text
-┌─solid──┐  ╭─rounded─╮  ╔═double══╗  ┏━heavy━━┓
-│        │  │         │  ║         ║  ┃        ┃
-└────────┘  ╰─────────╯  ╚═════════╝  ┗━━━━━━━━┛
-
-█▀thick▀▀█  +--ascii--+  ─minimal──   ┄┄dashed┄┄
-█        █  |         |               ┆        ┆
-█▄▄▄▄▄▄▄▄█  +---------+  ──────────   ┄┄┄┄┄┄┄┄┄┄
+console = Console(record=True)
+# ... render your UI ...
+html = console.export_html()
+text = console.export_text()
 ```
 
 ______________________________________________________________________
@@ -297,33 +205,6 @@ console.frame(
 )
 ```
 
-### Test Summary Preset
-
-```python
-from styledconsole.presets import test_summary
-
-test_summary(
-    total=150,
-    passed=145,
-    failed=3,
-    skipped=2,
-    duration=12.5
-)
-```
-
-### Export to HTML
-
-```python
-console = Console(record=True)  # Enable recording
-
-console.banner("REPORT", font="slant")
-console.frame("Generated metrics...", title="📊 Analytics")
-
-# Export everything as HTML!
-html = console.export_html()  # Full HTML with colors
-text = console.export_text()  # Plain text version
-```
-
 ______________________________________________________________________
 
 ## 📚 Gallery & Examples
@@ -342,47 +223,36 @@ Run them all:
 ```bash
 # Run all examples with auto-advance
 uv run python examples/run_examples.py --auto
-
-# Run specific category
-uv run python examples/run_examples.py --category gallery
 ```
 
 ______________________________________________________________________
 
 ## 🏗️ Built On Giants
 
-| Library                                              | What it brings                              |
-| ---------------------------------------------------- | ------------------------------------------- |
-| [emoji](https://pypi.org/project/emoji/)             | 🎁 4000+ official Unicode emojis (CLDR)     |
-| [Rich](https://github.com/Textualize/rich)           | 💪 The powerful rendering engine underneath |
-| [PyFiglet](https://github.com/pwaller/pyfiglet)      | 🔤 500+ ASCII art fonts                     |
-| [wcwidth](https://github.com/jquast/wcwidth)         | 📏 Correct Unicode width calculation        |
-| [ansi2html](https://github.com/pycontribs/ansi2html) | 💾 Terminal → HTML export                   |
-
-**Why StyledConsole instead of using Rich directly?**
-
-- ✅ **3 lines vs 15** — Simple API for common patterns
-- ✅ **Emoji handling** — Automatic width correction for terminal quirks
-- ✅ **Gradient borders** — Out of the box, no configuration
-- ✅ **Nested frames** — Just works™
-- ✅ **Animation support** — Built-in animation engine
+- [emoji](https://pypi.org/project/emoji/) — 🎁 4000+ official Unicode emojis
+- [Rich](https://github.com/Textualize/rich) — 💪 The powerful rendering engine
+- [PyFiglet](https://github.com/pwaller/pyfiglet) — 🔤 500+ ASCII art fonts
+- [wcwidth](https://github.com/jquast/wcwidth) — 📏 Correct Unicode width calculation
+- [ansi2html](https://github.com/pycontribs/ansi2html) — 💾 Terminal → HTML export
 
 ______________________________________________________________________
 
 ## 🛠️ Project Status
 
-**v0.9.5** — Production Ready ✅
+**v0.9.7** — Production Ready ✅
 
-|             |             |
+| Metric      | Value       |
 | ----------- | ----------- |
-| 🧪 Tests    | 898 passing |
-| 📊 Coverage | 89%         |
+| 🧪 Tests    | 936 passing |
+| 📊 Coverage | 90%         |
 | 🔍 MyPy     | 0 errors    |
 | 📚 Examples | 38 working  |
 | 🐍 Python   | 3.10 - 3.13 |
 
-**Recent Improvements (v0.9.0 - v0.9.5):**
+**Recent Improvements (v0.9.0–v0.9.7):**
 
+- ✅ Modern Terminal Detection (Kitty, WezTerm, Ghostty, etc.)
+- ✅ Context Object Pattern (`StyleContext`) & Validation
 - ✅ Symbol Facade Unification (`icons` as primary API)
 - ✅ DRY emoji architecture (4000+ emojis from `emoji` package)
 - ✅ Icon Provider with colored ASCII fallback (224 icons)
@@ -392,11 +262,23 @@ ______________________________________________________________________
 - ✅ Windows compatibility fixes
 - ✅ Enhanced pre-commit hooks
 
+**Full release history is available in [CHANGELOG.md](CHANGELOG.md).**
+
 ______________________________________________________________________
+
+## 📚 Documentation Architecture
+
+StyledConsole follows a strict **5-Doc Rule** to prevent information rot. All project knowledge is centralized in exactly five master documents:
+
+- 📖 **[User Guide](docs/USER_GUIDE.md)**: Tutorials, basic usage, and visual galleries.
+- 🏗️ **[Developer Guide](docs/DEVELOPER_GUIDE.md)**: Architecture details and internal logic.
+- 📅 **[Changelog](CHANGELOG.md)**: Full release history (v0.1.0 to present).
+- 📈 **[Project Status](docs/PROJECT_STATUS.md)**: Roadmap, tasks, and project metrics.
+- 🤝 **[Contributing](CONTRIBUTING.md)**: Dev workflow and PR standards.
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on our development workflow (`make qa`, `make test`, etc.).
+We welcome contributions! Please see the **[Contributing Guide](CONTRIBUTING.md)** for details on our development workflow (`make qa`, `make test`, etc.).
 
 ______________________________________________________________________
 

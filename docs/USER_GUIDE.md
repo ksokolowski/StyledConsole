@@ -1,7 +1,7 @@
 # StyledConsole User Guide
 
-**Version:** 0.9.6
-**Last Updated:** December 7, 2025
+**Version:** 0.9.7
+**Last Updated:** December 26, 2025
 
 ______________________________________________________________________
 
@@ -19,6 +19,7 @@ ______________________________________________________________________
 1. [HTML Export](#html-export)
 1. [Tips & Best Practices](#tips--best-practices)
 1. [API Conventions](#api-conventions)
+1. [Context Object Pattern](#context-object-pattern-advanced)
 1. [Migration Guide](#migration-guide)
 1. [Troubleshooting](#troubleshooting)
 
@@ -1108,6 +1109,30 @@ ______________________________________________________________________
 
 ```python
 console = Console(debug=True)  # Enable debug logging
+```
+
+______________________________________________________________________
+
+## Context Object Pattern (Advanced)
+
+**New in v0.9.7:** StyledConsole introduces the `StyleContext` object to encapsulate rendering parameters. While primarily an internal architectural improvement, it provides a cleaner way to handle complex style inheritance.
+
+### `StyleContext` Benefits
+
+- **Immutability:** Once created, a context cannot be modified, preventing side effects.
+- **Validation:** Built-in validation for margins, colors, and gradients.
+- **Filtering:** Prevents `TypeError` by automatically filtering out unsupported keyword arguments in nested structures.
+
+```python
+from styledconsole.core.context import StyleContext
+
+# Internal usage example
+ctx = StyleContext(
+    width=40,
+    border="rounded",
+    border_color="cyan",
+    padding=(1, 2)
+)
 ```
 
 ______________________________________________________________________

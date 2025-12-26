@@ -160,20 +160,17 @@ class FrameGroupContext:
                 ctx_kwargs["border_style"] = ctx_kwargs.pop("border")
 
             # Construct context
-            # We filter for only valid StyleContext fields to be safe,
-            # though Console.frame should theoretically only pass valid ones.
-            # But Python's dataclass constructor is strict.
-            # Let's hope Console.frame signature matches exactly or we filter.
-            # For now, simplistic mapping.
+            # Filter kwargs to only fields declared on StyleContext to avoid
+            # TypeError when extra keys are present (defensive programming).
+            # Map public 'border' arg to internal 'border_style' already done above.
+            allowed = set(StyleContext.__dataclass_fields__.keys())
+            filtered_kwargs = {k: v for k, v in ctx_kwargs.items() if k in allowed}
+
             try:
-                ctx = StyleContext(**ctx_kwargs)
-            except TypeError as e:
-                # If strict filtering is needed, we might need a safer construction
-                # For now, let's assume kwargs are clean coming from Console.frame
-                # But if there are extra args, this will raise.
-                # Let's trust Console.frame passes correct args for now
-                # except for specific mismatches we fixed.
-                raise e
+                ctx = StyleContext(**filtered_kwargs)
+            except TypeError:
+                # If something unexpected still slips through, raise a clearer error
+                raise TypeError("Failed to construct StyleContext from captured kwargs") from None
 
             rendered = self.console._renderer.render_frame_to_string(
                 frame.content,

@@ -58,17 +58,21 @@ class StyleContext:
         if isinstance(self.margin, int):
             m = self.margin
             object.__setattr__(self, "margin", (m, m, m, m))
-        elif isinstance(self.margin, (tuple, list)) and len(self.margin) != 4:
-            # Fallback for invalid tuple length -> treat as 0 or single value?
-            # Ideally raise error, but here we'll just force safe check
-            pass
+        elif isinstance(self.margin, (tuple, list)):
+            if len(self.margin) == 4:
+                object.__setattr__(self, "margin", tuple(self.margin))
+            else:
+                raise ValueError(
+                    "`margin` must be an int or a 4-tuple/list (top, right, bottom, left)"
+                )
 
-        # Validate content gradient pairs
-        if (self.start_color and not self.end_color) or (not self.start_color and self.end_color):
-            pass
+        # Validate content gradient pairs: both or none
+        if bool(self.start_color) ^ bool(self.end_color):
+            raise ValueError("`start_color` and `end_color` must both be provided or both be None")
 
-        # Validate border gradient pairs
-        if (self.border_gradient_start and not self.border_gradient_end) or (
-            not self.border_gradient_start and self.border_gradient_end
-        ):
-            pass
+        # Validate border gradient pairs: both or none
+        if bool(self.border_gradient_start) ^ bool(self.border_gradient_end):
+            raise ValueError(
+                "`border_gradient_start` and `border_gradient_end` "
+                "must both be provided or both be None"
+            )

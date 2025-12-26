@@ -502,6 +502,30 @@ def validate_emoji(emoji_char: str) -> dict:
         "recommendation": "Unknown emoji",
     }
 
+    # Early checks for ZWJ sequences and skin tone modifiers even if
+    # the emoji package does not recognize the whole sequence as a single emoji.
+    from styledconsole.utils.emoji_support import is_zwj_sequence
+
+    is_zwj = is_zwj_sequence(emoji_char)
+    # Check for skin tone modifiers
+    has_skin_tone = any(_is_skin_tone_modifier(c) for c in emoji_char)
+
+    if is_zwj:
+        result["recommendation"] = (
+            "⚠️ ZWJ sequence detected. Not supported in all terminals; "
+            "treat as Tier 3 emoji. Not recommended for general terminal output."
+        )
+        result.update({"safe": False, "terminal_safe": _is_modern_terminal_mode()})
+        return result
+
+    if has_skin_tone:
+        result["recommendation"] = (
+            "⚠️ Skin tone modifier detected (Tier 2). Not supported in all terminals; "
+            "may render inconsistently. Avoid for widest compatibility."
+        )
+        result.update({"safe": False, "terminal_safe": _is_modern_terminal_mode()})
+        return result
+
     if not emoji.is_emoji(emoji_char):
         result["recommendation"] = "❓ Unknown/Invalid emoji. Use at your own risk."
         return result
@@ -524,18 +548,18 @@ def validate_emoji(emoji_char: str) -> dict:
     if is_zwj:
         terminal_safe = _is_modern_terminal_mode()
         recommendation = (
-            "⚠️ ZWJ sequence detected. Supported in modern terminals (Kitty, etc.); "
-            "may degrade to legacy rendering in older environments."
+            "⚠️ ZWJ sequence detected. Not considered safe for all terminals; "
+            "supported in modern terminals (Kitty, etc.) but may degrade elsewhere."
         )
-        safe = True
+        safe = False
 
     elif has_skin_tone:
         terminal_safe = _is_modern_terminal_mode()
         recommendation = (
-            "⚠️ Skin tone modifier detected. Supported in modern terminals; "
-            "may degrade to legacy rendering in older environments."
+            "⚠️ Skin tone modifier detected. Not considered safe for all terminals; "
+            "supported in modern terminals but may degrade elsewhere."
         )
-        safe = True
+        safe = False
 
     elif has_vs16:
         terminal_safe = False  # VS16 often renders width 1
