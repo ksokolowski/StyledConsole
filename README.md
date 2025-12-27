@@ -8,6 +8,28 @@
 [![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole)
 [![MyPy](https://img.shields.io/badge/mypy-passing-success.svg)](https://github.com/ksokolowski/StyledConsole)
 
+______________________________________________________________________
+
+## 🚀 Introduction
+
+StyledConsole is a production-ready Python library for creating elegant and expressive terminal output.
+It provides ANSI-safe rendering with rich formatting, colors, emojis, gradients and more — making your console output both beautiful and practical.
+
+- 🎨 ANSI-safe styled output
+- 🌈 Colors and gradients support
+- 😄 Emoji and icon support
+- 🧱 Structured tables and layouts
+- 📄 Optional HTML export
+- 🛠️ Designed for developer experience and usability
+
+______________________________________________________________________
+
+**🎨 Make your terminal beautiful. ✨ Make your output memorable. 🚀**
+
+```bash
+pip install styledconsole
+```
+
 > **🎨 Transform your boring terminal into a visual masterpiece!**
 
 ```text
@@ -248,7 +270,7 @@ ______________________________________________________________________
 | 📊 Coverage | 90%         |
 | 🔍 MyPy     | 0 errors    |
 | 📚 Examples | 38 working  |
-| 🐍 Python   | 3.10 - 3.13 |
+| 🐍 Python   | 3.10 - 3.14 |
 
 **Recent Improvements (v0.9.0–v0.9.8):**
 
@@ -298,9 +320,3 @@ ______________________________________________________________________
 Apache License 2.0
 
 ______________________________________________________________________
-
-**🎨 Make your terminal beautiful. ✨ Make your output memorable. 🚀**
-
-```bash
-pip install styledconsole
-```
