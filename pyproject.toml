@@ -31,9 +31,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "http://192.168.0.169:3000/falcon/styledconsole"
-Repository = "http://192.168.0.169:3000/falcon/styledconsole"
-Documentation = "http://192.168.0.169:3000/falcon/styledconsole"
+Homepage = "https://github.com/ksokolowski/StyledConsole"
+Repository = "https://github.com/ksokolowski/StyledConsole"
+Documentation = "https://github.com/ksokolowski/StyledConsole"
 
 [dependency-groups]
 dev = [
@@ -52,6 +52,11 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/styledconsole"]
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    "/list",
+]
 
 [tool.ruff]
 line-length = 100

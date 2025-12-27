@@ -1,0 +1,35 @@
+name: Publish to PyPI
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-n-publish:
+    name: Build and publish Python 🐍 distributions 📦 to TestPyPI
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # MANDATORY for Trusted Publishing
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install
+
+      - name: Build distributions
+        run: uv build
+
+      - name: Publish package distributions to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          print-hash: true
+          # Note: No TOKEN is needed because we use Trusted Publishing (OIDC)
