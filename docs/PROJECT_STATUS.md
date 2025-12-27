@@ -1,8 +1,8 @@
 # StyledConsole Project Status
 
-**Version:** 0.9.7
+**Version:** 0.9.8
 **Status:** Released
-**Last Updated:** December 26, 2025
+**Last Updated:** December 27, 2025
 
 ______________________________________________________________________
 
@@ -10,7 +10,7 @@ ______________________________________________________________________
 
 | Metric        | Value       |
 | ------------- | ----------- |
-| Current       | v0.9.7      |
+| Current       | v0.9.8      |
 | Lines of Code | ~6,500      |
 | Tests         | 936 passing |
 | Coverage      | 90.07%      |
@@ -24,6 +24,7 @@ ______________________________________________________________________
 
 | Version | Date     | Theme                         | Status   |
 | ------- | -------- | ----------------------------- | -------- |
+| v0.9.8  | Dec 2025 | Registry Pattern Refactoring  | RELEASED |
 | v0.9.7  | Dec 2025 | Context Object & Validation   | RELEASED |
 | v0.9.6  | Dec 2025 | Modern Terminal Detection     | RELEASED |
 | v0.9.5  | Dec 2025 | Symbol Facade Unification     | RELEASED |

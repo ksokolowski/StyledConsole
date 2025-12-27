@@ -17,6 +17,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from styledconsole.core.registry import Registry
+
 
 @dataclass(frozen=True)
 class GradientSpec:
@@ -135,31 +137,58 @@ class Theme:
         return any([self.border_gradient, self.text_gradient, self.banner_gradient])
 
 
-class THEMES:
-    """Predefined theme collection.
+class ThemeRegistry(Registry[Theme]):
+    """Registry for color themes."""
 
-    Available themes:
-        - THEMES.DARK: Dark theme with cyan/lime accents
-        - THEMES.LIGHT: Light theme with blue/green accents
-        - THEMES.SOLARIZED: Solarized dark color scheme
-        - THEMES.MONOKAI: Monokai editor color scheme
-        - THEMES.NORD: Nord color scheme
-        - THEMES.DRACULA: Dracula color scheme
-        - THEMES.RAINBOW: Vibrant rainbow gradient theme
-        - THEMES.OCEAN: Ocean-inspired blue gradient theme
-        - THEMES.SUNSET: Warm sunset gradient theme
-        - THEMES.NEON: Cyberpunk neon gradient theme
+    def __init__(self) -> None:
+        super().__init__("theme")
 
-    Example:
-        >>> from styledconsole import Console, THEMES
-        >>> console = Console(theme=THEMES.MONOKAI)
+    def all(self) -> list[Theme]:
+        """Return the standard set of predefined themes."""
+        # Tests expect exactly 10 specific themes
+        standard_names = [
+            "dark",
+            "light",
+            "solarized",
+            "monokai",
+            "nord",
+            "dracula",
+            "rainbow",
+            "ocean",
+            "sunset",
+            "neon",
+        ]
+        return [super().get(name) for name in standard_names if name in self]
 
-        >>> # Gradient theme for eye-catching output
-        >>> console = Console(theme=THEMES.RAINBOW)
-        >>> console.banner("WELCOME")  # Rainbow gradient banner
-    """
+    def solid_themes(self) -> list[Theme]:
+        """Return only themes without gradients."""
+        return [t for t in self.all() if not t.has_gradients()]
 
-    DARK = Theme(
+    def gradient_themes(self) -> list[Theme]:
+        """Return only themes with gradients."""
+        return [t for t in self.all() if t.has_gradients()]
+
+    def get(self, name: str) -> Theme | None:  # type: ignore[override]
+        """Get a theme by name (case-insensitive)."""
+        try:
+            return super().get(name)
+        except KeyError:
+            return None
+
+    def get_theme(self, name: str) -> Theme | None:
+        """Alias for get()."""
+        return self.get(name)
+
+
+# Registry instance for predefined themes
+# This replaces the THEMES class while maintaining backward compatibility
+# through the Registry's attribute access.
+THEMES = ThemeRegistry()
+
+# Register all predefined themes
+THEMES.register(
+    "dark",
+    Theme(
         name="dark",
         primary="cyan",
         secondary="magenta",
@@ -171,9 +200,12 @@ class THEMES:
         text="white",
         muted="bright_black",
         background="black",
-    )
+    ),
+)
 
-    LIGHT = Theme(
+THEMES.register(
+    "light",
+    Theme(
         name="light",
         primary="blue",
         secondary="magenta",
@@ -185,9 +217,12 @@ class THEMES:
         text="black",
         muted="bright_black",
         background="white",
-    )
+    ),
+)
 
-    SOLARIZED = Theme(
+THEMES.register(
+    "solarized",
+    Theme(
         name="solarized",
         primary="cyan",
         secondary="green",
@@ -199,9 +234,12 @@ class THEMES:
         text="bright_cyan",
         muted="blue",
         background="black",  # simplified
-    )
+    ),
+)
 
-    MONOKAI = Theme(
+THEMES.register(
+    "monokai",
+    Theme(
         name="monokai",
         primary="magenta",
         secondary="bright_blue",
@@ -213,9 +251,12 @@ class THEMES:
         text="white",
         muted="bright_black",
         background="black",
-    )
+    ),
+)
 
-    NORD = Theme(
+THEMES.register(
+    "nord",
+    Theme(
         name="nord",
         primary="bright_blue",
         secondary="magenta",
@@ -227,9 +268,12 @@ class THEMES:
         text="white",
         muted="bright_black",
         background="black",
-    )
+    ),
+)
 
-    DRACULA = Theme(
+THEMES.register(
+    "dracula",
+    Theme(
         name="dracula",
         primary="bright_magenta",
         secondary="purple",
@@ -241,10 +285,12 @@ class THEMES:
         text="white",
         muted="blue",
         background="black",
-    )
+    ),
+)
 
-    # Gradient-enabled themes
-    RAINBOW = Theme(
+THEMES.register(
+    "rainbow",
+    Theme(
         name="rainbow",
         primary="magenta",
         secondary="cyan",
@@ -259,9 +305,12 @@ class THEMES:
         border_gradient=GradientSpec("red", "magenta"),
         text_gradient=GradientSpec("red", "magenta"),
         banner_gradient=GradientSpec("red", "magenta"),
-    )
+    ),
+)
 
-    OCEAN = Theme(
+THEMES.register(
+    "ocean",
+    Theme(
         name="ocean",
         primary="blue",
         secondary="cyan",
@@ -276,9 +325,12 @@ class THEMES:
         border_gradient=GradientSpec("blue", "cyan"),
         text_gradient=GradientSpec("blue", "cyan"),
         banner_gradient=GradientSpec("blue", "cyan"),
-    )
+    ),
+)
 
-    SUNSET = Theme(
+THEMES.register(
+    "sunset",
+    Theme(
         name="sunset",
         primary="red",
         secondary="magenta",
@@ -293,9 +345,12 @@ class THEMES:
         border_gradient=GradientSpec("red", "magenta"),
         text_gradient=GradientSpec("red", "magenta"),
         banner_gradient=GradientSpec("red", "magenta"),
-    )
+    ),
+)
 
-    NEON = Theme(
+THEMES.register(
+    "neon",
+    Theme(
         name="neon",
         primary="bright_green",
         secondary="bright_magenta",
@@ -310,9 +365,12 @@ class THEMES:
         border_gradient=GradientSpec("bright_green", "magenta"),
         text_gradient=GradientSpec("bright_green", "magenta"),
         banner_gradient=GradientSpec("bright_green", "magenta"),
-    )
+    ),
+)
 
-    FIRE = Theme(
+THEMES.register(
+    "fire",
+    Theme(
         name="fire",
         primary="red",
         secondary="orange3",
@@ -327,9 +385,12 @@ class THEMES:
         border_gradient=GradientSpec("red", "yellow"),
         text_gradient=GradientSpec("red", "yellow"),
         banner_gradient=GradientSpec("red", "yellow"),
-    )
+    ),
+)
 
-    SUNNY = Theme(
+THEMES.register(
+    "sunny",
+    Theme(
         name="sunny",
         primary="gold3",
         secondary="orange1",
@@ -344,60 +405,8 @@ class THEMES:
         border_gradient=GradientSpec("yellow", "orange1"),
         text_gradient=GradientSpec("yellow", "orange1"),
         banner_gradient=GradientSpec("yellow", "orange1"),
-    )
-
-    @classmethod
-    def all(cls) -> list[Theme]:
-        """Return all predefined themes."""
-        return [
-            cls.DARK,
-            cls.LIGHT,
-            cls.SOLARIZED,
-            cls.MONOKAI,
-            cls.NORD,
-            cls.DRACULA,
-            cls.RAINBOW,
-            cls.OCEAN,
-            cls.SUNSET,
-            cls.NEON,
-        ]
-
-    @classmethod
-    def solid_themes(cls) -> list[Theme]:
-        """Return only themes without gradients."""
-        return [t for t in cls.all() if not t.has_gradients()]
-
-    @classmethod
-    def gradient_themes(cls) -> list[Theme]:
-        """Return only themes with gradients."""
-        return [t for t in cls.all() if t.has_gradients()]
-
-    @classmethod
-    def get(cls, name: str) -> Theme | None:
-        """Get a theme by name (case-insensitive).
-
-        Args:
-            name: Theme name (dark, light, solarized, monokai, nord, dracula,
-                  rainbow, ocean, sunset, neon).
-
-        Returns:
-            The Theme instance, or None if not found.
-        """
-        name_upper = name.upper()
-        return getattr(cls, name_upper, None)
-
-    @classmethod
-    def get_theme(cls, name: str) -> Theme | None:
-        """Alias for get() - get a theme by name (case-insensitive).
-
-        Args:
-            name: Theme name (dark, light, solarized, monokai, nord, dracula,
-                  rainbow, ocean, sunset, neon).
-
-        Returns:
-            The Theme instance, or None if not found.
-        """
-        return cls.get(name)
+    ),
+)
 
 
 # Default theme (no theme = current behavior)

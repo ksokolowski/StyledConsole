@@ -5,23 +5,36 @@ All notable changes to StyledConsole will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.9.8] - 2025-12-27
 
-### 🔧 Unified Gradient Engine Consolidation
+### 🏛️ Registry Pattern Refactoring & Infrastructure
 
-This update consolidates all gradient logic into a single unified engine using the Strategy Pattern.
+This update introduces a unified Registry pattern for managing styles, icons, and themes, improving extensibility and maintainability.
+
+### Added
+
+- **`core/registry.py`**: Generic `Registry` base class with case-insensitive lookup and attribute-style access.
+- **`tests/unit/test_registry.py`**: Comprehensive unit tests for the registry system.
+- **Support Info**: Added Ko-fi support badges and section to README.md.
+- **Repository Funding**: Created `.github/FUNDING.yml` for Ko-fi sponsorship.
 
 ### Changed
 
-- **Gradient Engine Consolidation**: Removed `core/gradient_utils.py` (614 lines) in favor of unified `effects/engine.py`
-- **Rendering Engine**: Now uses `apply_gradient()` from `effects.engine` with strategy pattern
-- **Color Utilities**: Added `get_rainbow_color()`, `colorize` alias, and `RAINBOW_COLORS` constant to `utils/color.py`
-- **Styles Module**: Added `get_border_chars()` function for efficient border character lookup
-- **Nested Gradient Fix**: Fixed rendering issues with nested gradient frames
+- **Border Styles**: Migrated `styles.py` to use `BorderRegistry`.
+- **Box Mappings**: Migrated `box_mapping.py` to use `BoxRegistry`.
+- **Icon System**: Refactored `IconProvider` to use `IconRegistry` while maintaining full backward compatibility.
+- **Theme System**: Replaced `THEMES` class with `ThemeRegistry` instance and restored legacy filters.
+- **Gradient Engine**: Consolidated logic into `effects/engine.py` (migrated from `core/gradient_utils.py`).
+
+### Fixed
+
+- **Icon Alignment**: Fixed edge cases where icons would cause slight frame misalignments in certain terminals.
+- **Theme Filtering**: Restored `solid_themes()` and `gradient_themes()` methods in the new registry.
+- **Nested Gradients**: Fixed rendering issues with nested gradient frames.
 
 ### Removed
 
-- **`core/gradient_utils.py`**: All functionality migrated to `effects/engine.py` and `utils/color.py`
+- **`core/gradient_utils.py`**: All functionality migrated to `effects/engine.py` and `utils/color.py`.
 
 ______________________________________________________________________
 

@@ -35,6 +35,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal
 
+from styledconsole.core.registry import Registry
 from styledconsole.utils.icon_data import EMOJI_TO_ICON, ICON_REGISTRY
 from styledconsole.utils.terminal import detect_terminal_capabilities
 
@@ -133,6 +134,15 @@ class Icon:
         """Return plain ASCII without color markup."""
         return self.ascii
 
+        return self.ascii
+
+
+class IconRegistry(Registry[Icon]):
+    """Registry for terminal-adaptive icons."""
+
+    def __init__(self) -> None:
+        super().__init__("icon")
+
 
 # =============================================================================
 # IconProvider class
@@ -156,41 +166,49 @@ class IconProvider:
 
     def __init__(self) -> None:
         """Initialize the icon provider with all registered icons."""
-        self._icons: dict[str, Icon] = {}
+        self._registry = IconRegistry()
         self._load_icons()
 
     def _load_icons(self) -> None:
         """Load all icons from the registry."""
         for name, mapping in ICON_REGISTRY.items():
-            self._icons[name] = Icon(
-                name=name,
-                emoji=mapping.emoji,
-                ascii=mapping.ascii,
-                color=mapping.color,
+            self._registry.register(
+                name,
+                Icon(
+                    name=name,
+                    emoji=mapping.emoji,
+                    ascii=mapping.ascii,
+                    color=mapping.color,
+                ),
             )
 
-    def __getattr__(self, name: str) -> Icon:
-        """Get icon by attribute name.
+    @property
+    def _icons(self) -> dict[str, Icon]:
+        """Internal icons dict for backward compatibility.
 
-        Args:
-            name: Icon name (e.g., "CHECK", "WARNING", "ROCKET")
-
-        Returns:
-            Icon object for the requested name
-
-        Raises:
-            AttributeError: If icon name is not found
+        Note: This returns a copy of the registry's internal store.
         """
-        # Skip private attributes
+        return self._registry._items
+
+    def __getattr__(self, name: str) -> Icon:
+        """Get icon by attribute name (case-sensitive, uppercase only).
+
+        This maintains the standard API of icons.CHECK_MARK_BUTTON while
+        allowing the registry to store icons case-insensitively.
+        """
         if name.startswith("_"):
             raise AttributeError(f"'{type(self).__name__}' has no attribute '{name}'")
 
-        if name in self._icons:
-            return self._icons[name]
+        # Icons are conventionally uppercase attributes
+        if not name.isupper():
+            raise AttributeError(f"'{type(self).__name__}' has no attribute '{name}'")
+
+        if name in self._registry:
+            return self._registry.get(name)
 
         raise AttributeError(
             f"Icon '{name}' not found. "
-            f"Available icons: {', '.join(sorted(self._icons.keys())[:10])}..."
+            f"Available icons: {', '.join(self._registry.list_all()[:10])}..."
         )
 
     def get(self, name: str) -> Icon | None:
@@ -202,7 +220,10 @@ class IconProvider:
         Returns:
             Icon object or None if not found
         """
-        return self._icons.get(name)
+        try:
+            return self._registry.get(name)
+        except KeyError:
+            return None
 
     def get_by_emoji(self, emoji: str) -> Icon | None:
         """Get icon by its emoji character.
@@ -222,8 +243,8 @@ class IconProvider:
         return None
 
     def list_icons(self) -> list[str]:
-        """Return list of all available icon names."""
-        return sorted(self._icons.keys())
+        """Return sorted list of all available icon names in uppercase."""
+        return sorted([name.upper() for name in self._registry.list_all()])
 
     def list_by_category(self) -> dict[str, list[str]]:
         """Return icons organized by category.
@@ -278,21 +299,83 @@ class IconProvider:
             "time": list(TIME_ICONS.keys()),
             "communication": list(COMM_ICONS.keys()),
             "buildings": list(BUILDING_ICONS.keys()),
+            "animals": list(ANIMAL_ICONS.keys()),
+            "flags": list(FLAG_ICONS.keys()),
+        }
+        # Import category dicts to build the mapping
+        from styledconsole.utils.icon_data import (
+            ACTIVITY_ICONS,
+            ANIMAL_ICONS,
+            ARROW_ICONS,
+            BOOK_ICONS,
+            BUILDING_ICONS,
+            COMM_ICONS,
+            DOCUMENT_ICONS,
+            FLAG_ICONS,
+            FOOD_ICONS,
+            HEART_ICONS,
+            MATH_ICONS,
+            MONEY_ICONS,
+            PEOPLE_ICONS,
+            PLANT_ICONS,
+            STARS_ICONS,
+            STATUS_ICONS,
+            SYMBOL_ICONS,
+            TECH_ICONS,
+            TIME_ICONS,
+            TOOLS_ICONS,
+            TRANSPORT_ICONS,
+            WEATHER_ICONS,
+        )
+
+        return {
+            "status": list(STATUS_ICONS.keys()),
+            "stars": list(STARS_ICONS.keys()),
+            "documents": list(DOCUMENT_ICONS.keys()),
+            "books": list(BOOK_ICONS.keys()),
+            "technology": list(TECH_ICONS.keys()),
+            "tools": list(TOOLS_ICONS.keys()),
+            "activities": list(ACTIVITY_ICONS.keys()),
+            "transport": list(TRANSPORT_ICONS.keys()),
+            "weather": list(WEATHER_ICONS.keys()),
+            "plants": list(PLANT_ICONS.keys()),
+            "food": list(FOOD_ICONS.keys()),
+            "people": list(PEOPLE_ICONS.keys()),
+            "arrows": list(ARROW_ICONS.keys()),
+            "symbols": list(SYMBOL_ICONS.keys()),
+            "math": list(MATH_ICONS.keys()),
+            "hearts": list(HEART_ICONS.keys()),
+            "money": list(MONEY_ICONS.keys()),
+            "time": list(TIME_ICONS.keys()),
+            "communication": list(COMM_ICONS.keys()),
+            "buildings": list(BUILDING_ICONS.keys()),
             "flags": list(FLAG_ICONS.keys()),
             "animals": list(ANIMAL_ICONS.keys()),
         }
 
     def __len__(self) -> int:
         """Return number of available icons."""
-        return len(self._icons)
+        return len(self._registry)
 
     def __iter__(self):
-        """Iterate over icon names."""
-        return iter(self._icons)
+        """Iterate over icon names in uppercase."""
+        return iter(self.list_icons())
 
     def __contains__(self, name: str) -> bool:
         """Check if icon name exists."""
-        return name in self._icons
+        return name in self._registry
+
+    def keys(self):
+        """Return iterator over icon names."""
+        return self._registry.keys()
+
+    def values(self):
+        """Return iterator over icons."""
+        return self._registry.values()
+
+    def items(self):
+        """Return iterator over (name, icon) pairs."""
+        return self._registry.items()
 
 
 # =============================================================================

@@ -5,6 +5,7 @@ This module defines box-drawing characters for various border styles.
 
 from dataclasses import dataclass
 
+from styledconsole.core.registry import Registry
 from styledconsole.types import AlignType
 from styledconsole.utils.text import pad_to_width, truncate_to_width, visual_width
 
@@ -242,6 +243,13 @@ class BorderStyle:
         return self.vertical + inner + self.vertical
 
 
+class BorderRegistry(Registry[BorderStyle]):
+    """Registry for border styles."""
+
+    def __init__(self) -> None:
+        super().__init__("border style")
+
+
 # Predefined border styles
 SOLID = BorderStyle(
     name="solid",
@@ -378,18 +386,19 @@ DOTS = BorderStyle(
     cross="·",
 )
 
-# Dictionary of all predefined border styles
-BORDERS: dict[str, BorderStyle] = {
-    "solid": SOLID,
-    "double": DOUBLE,
-    "rounded": ROUNDED,
-    "heavy": HEAVY,
-    "thick": THICK,
-    "rounded_thick": ROUNDED_THICK,
-    "ascii": ASCII,
-    "minimal": MINIMAL,
-    "dots": DOTS,
-}
+# Registry instance for all predefined border styles
+BORDERS = BorderRegistry()
+
+# Register predefined styles
+BORDERS.register("solid", SOLID)
+BORDERS.register("double", DOUBLE)
+BORDERS.register("rounded", ROUNDED)
+BORDERS.register("heavy", HEAVY)
+BORDERS.register("thick", THICK)
+BORDERS.register("rounded_thick", ROUNDED_THICK)
+BORDERS.register("ascii", ASCII)
+BORDERS.register("minimal", MINIMAL)
+BORDERS.register("dots", DOTS)
 
 
 def get_border_style(name: str) -> BorderStyle:
@@ -412,11 +421,10 @@ def get_border_style(name: str) -> BorderStyle:
         >>> style.name
         'double'
     """
-    name_lower = name.lower()
-    if name_lower not in BORDERS:
-        available = ", ".join(sorted(BORDERS.keys()))
-        raise ValueError(f"Unknown border style: {name!r}. Available styles: {available}")
-    return BORDERS[name_lower]
+    try:
+        return BORDERS.get(name)
+    except KeyError as e:
+        raise ValueError(str(e)) from e
 
 
 def list_border_styles() -> list[str]:
@@ -430,7 +438,7 @@ def list_border_styles() -> list[str]:
         >>> print(styles)
         ['ascii', 'dots', 'double', 'heavy', 'minimal', 'rounded', 'solid', 'thick']
     """
-    return sorted(BORDERS.keys())
+    return BORDERS.list_all()
 
 
 def get_border_chars(style: BorderStyle) -> set[str]:

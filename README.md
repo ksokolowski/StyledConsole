@@ -2,7 +2,8 @@
 
 [![Python >=3.10](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-0.9.7-brightgreen.svg)](https://github.com/yourusername/styledconsole/releases/tag/v0.9.7)
+[![Version](https://img.shields.io/badge/version-0.9.8-brightgreen.svg)](https://github.com/yourusername/styledconsole/releases/tag/v0.9.8)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20the%20project-ff5e5b?logo=ko-fi&logoColor=white)](https://ko-fi.com/styledconsole)
 [![Tests](https://img.shields.io/badge/tests-936%20passing-success.svg)](https://github.com/yourusername/styledconsole)
 [![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](https://github.com/yourusername/styledconsole)
 [![MyPy](https://img.shields.io/badge/mypy-passing-success.svg)](https://github.com/yourusername/styledconsole)
@@ -239,7 +240,7 @@ ______________________________________________________________________
 
 ## 🛠️ Project Status
 
-**v0.9.7** — Production Ready ✅
+**v0.9.8** — Production Ready ✅
 
 | Metric      | Value       |
 | ----------- | ----------- |
@@ -249,7 +250,7 @@ ______________________________________________________________________
 | 📚 Examples | 38 working  |
 | 🐍 Python   | 3.10 - 3.13 |
 
-**Recent Improvements (v0.9.0–v0.9.7):**
+**Recent Improvements (v0.9.0–v0.9.8):**
 
 - ✅ Modern Terminal Detection (Kitty, WezTerm, Ghostty, etc.)
 - ✅ Context Object Pattern (`StyleContext`) & Validation
@@ -275,6 +276,16 @@ StyledConsole follows a strict **5-Doc Rule** to prevent information rot. All pr
 - 📅 **[Changelog](CHANGELOG.md)**: Full release history (v0.1.0 to present).
 - 📈 **[Project Status](docs/PROJECT_STATUS.md)**: Roadmap, tasks, and project metrics.
 - 🤝 **[Contributing](CONTRIBUTING.md)**: Dev workflow and PR standards.
+
+## 💙 Support StyledConsole
+
+If StyledConsole improves your developer experience, you can support the project here:
+
+☕ https://ko-fi.com/styledconsole
+
+Thank you for helping keep this project alive and evolving!
+
+______________________________________________________________________
 
 ## 🤝 Contributing
 

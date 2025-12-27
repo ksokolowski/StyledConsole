@@ -14,6 +14,8 @@ from typing import TYPE_CHECKING
 from rich import box
 from rich.box import Box
 
+from styledconsole.core.registry import Registry
+
 if TYPE_CHECKING:
     from styledconsole.policy import RenderPolicy
 
@@ -64,18 +66,27 @@ DOTS_BOX = Box(
     "....\n"  # bottom: . . . .
 )
 
-# Map our border style names to Rich box styles
-BORDER_TO_BOX = {
-    "solid": box.SQUARE,
-    "rounded": box.ROUNDED,
-    "double": box.DOUBLE,
-    "heavy": box.HEAVY,
-    "thick": THICK_BOX,  # Custom thick style with heavy box drawing
-    "rounded_thick": ROUNDED_THICK_BOX,  # Custom thick style with rounded corners
-    "ascii": box.ASCII,
-    "minimal": box.MINIMAL,
-    "dots": DOTS_BOX,  # Custom dotted style with periods
-}
+
+class BoxRegistry(Registry[Box]):
+    """Registry for Rich box styles."""
+
+    def __init__(self) -> None:
+        super().__init__("box style")
+
+
+# Registry mapping our border style names to Rich box styles
+BORDER_TO_BOX = BoxRegistry()
+
+# Register mappings
+BORDER_TO_BOX.register("solid", box.SQUARE)
+BORDER_TO_BOX.register("rounded", box.ROUNDED)
+BORDER_TO_BOX.register("double", box.DOUBLE)
+BORDER_TO_BOX.register("heavy", box.HEAVY)
+BORDER_TO_BOX.register("thick", THICK_BOX)
+BORDER_TO_BOX.register("rounded_thick", ROUNDED_THICK_BOX)
+BORDER_TO_BOX.register("ascii", box.ASCII)
+BORDER_TO_BOX.register("minimal", box.MINIMAL)
+BORDER_TO_BOX.register("dots", DOTS_BOX)
 
 
 def get_box_style(border_name: str) -> box.Box:
@@ -95,14 +106,10 @@ def get_box_style(border_name: str) -> box.Box:
         >>> # Use with Panel: Panel("content", box=box_style)
         >>> box_style = get_box_style("SOLID")  # Case insensitive
     """
-    # Normalize to lowercase for case-insensitive matching
-    border_name_lower = border_name.lower()
-
-    if border_name_lower not in BORDER_TO_BOX:
-        raise ValueError(
-            f"Unknown border style: {border_name}. Valid options: {', '.join(BORDER_TO_BOX.keys())}"
-        )
-    return BORDER_TO_BOX[border_name_lower]
+    try:
+        return BORDER_TO_BOX.get(border_name)
+    except KeyError as e:
+        raise ValueError(str(e)) from e
 
 
 def get_box_style_for_policy(
