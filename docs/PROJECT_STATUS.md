@@ -1,6 +1,6 @@
 # StyledConsole Project Status
 
-**Version:** 0.9.8
+**Version:** 0.9.8b1
 **Status:** Released
 **Last Updated:** December 27, 2025
 
@@ -10,9 +10,9 @@ ______________________________________________________________________
 
 | Metric        | Value       |
 | ------------- | ----------- |
-| Current       | v0.9.8      |
+| Current       | v0.9.8b1    |
 | Lines of Code | ~6,500      |
-| Tests         | 936 passing |
+| Tests         | 943 passing |
 | Coverage      | 90.07%      |
 | Examples      | 38          |
 
@@ -22,20 +22,20 @@ ______________________________________________________________________
 
 ### Released
 
-| Version | Date     | Theme                         | Status   |
-| ------- | -------- | ----------------------------- | -------- |
-| v0.9.8  | Dec 2025 | Registry Pattern Refactoring  | RELEASED |
-| v0.9.7  | Dec 2025 | Context Object & Validation   | RELEASED |
-| v0.9.6  | Dec 2025 | Modern Terminal Detection     | RELEASED |
-| v0.9.5  | Dec 2025 | Symbol Facade Unification     | RELEASED |
-| v0.9.1  | Dec 2025 | Emoji DRY Refactoring         | RELEASED |
-| v0.9.0  | Dec 2025 | Icon Provider (Colored ASCII) | RELEASED |
-| v0.8.0  | Nov 2025 | Theme System & Gradients      | RELEASED |
-| v0.7.0  | Nov 2025 | Frame Groups                  | RELEASED |
-| v0.6.0  | Nov 2025 | Visual Width Refactoring      | RELEASED |
-| v0.5.1  | Nov 2025 | Code Quality Improvements     | RELEASED |
-| v0.5.0  | Nov 2025 | Documentation & Structure     | RELEASED |
-| v0.1.0  | Oct 2025 | Foundation                    | RELEASED |
+| Version  | Date     | Theme                         | Status   |
+| -------- | -------- | ----------------------------- | -------- |
+| v0.9.8b1 | Dec 2025 | Registry Pattern Refactoring  | RELEASED |
+| v0.9.7   | Dec 2025 | Context Object & Validation   | RELEASED |
+| v0.9.6   | Dec 2025 | Modern Terminal Detection     | RELEASED |
+| v0.9.5   | Dec 2025 | Symbol Facade Unification     | RELEASED |
+| v0.9.1   | Dec 2025 | Emoji DRY Refactoring         | RELEASED |
+| v0.9.0   | Dec 2025 | Icon Provider (Colored ASCII) | RELEASED |
+| v0.8.0   | Nov 2025 | Theme System & Gradients      | RELEASED |
+| v0.7.0   | Nov 2025 | Frame Groups                  | RELEASED |
+| v0.6.0   | Nov 2025 | Visual Width Refactoring      | RELEASED |
+| v0.5.1   | Nov 2025 | Code Quality Improvements     | RELEASED |
+| v0.5.0   | Nov 2025 | Documentation & Structure     | RELEASED |
+| v0.1.0   | Oct 2025 | Foundation                    | RELEASED |
 
 > [!NOTE]
 > For full historical details and comprehensive release notes, see [CHANGELOG.md](../CHANGELOG.md).

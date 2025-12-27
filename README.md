@@ -2,11 +2,11 @@
 
 [![Python >=3.10](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-0.9.8-brightgreen.svg)](https://github.com/yourusername/styledconsole/releases/tag/v0.9.8)
+[![Version](https://img.shields.io/badge/version-0.9.8b1-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole/releases/tag/v0.9.8b1)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20the%20project-ff5e5b?logo=ko-fi&logoColor=white)](https://ko-fi.com/styledconsole)
-[![Tests](https://img.shields.io/badge/tests-936%20passing-success.svg)](https://github.com/yourusername/styledconsole)
-[![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](https://github.com/yourusername/styledconsole)
-[![MyPy](https://img.shields.io/badge/mypy-passing-success.svg)](https://github.com/yourusername/styledconsole)
+[![Tests](https://img.shields.io/badge/tests-943%20passing-success.svg)](https://github.com/ksokolowski/StyledConsole)
+[![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole)
+[![MyPy](https://img.shields.io/badge/mypy-passing-success.svg)](https://github.com/ksokolowski/StyledConsole)
 
 > **🎨 Transform your boring terminal into a visual masterpiece!**
 
@@ -52,7 +52,7 @@ from styledconsole import Console
 
 console = Console()
 inner = console.render_frame("Core", border="double", width=20)
-outer = console.frame(["Application Shell", inner], border="heavy", width=40)
+console.frame(["Application Shell", inner], border="heavy", width=40)
 ```
 
 ```text
@@ -96,7 +96,7 @@ from styledconsole import StyledProgress
 from styledconsole.animation import Animation
 
 # Themed progress bars with automatic color inheritance
-with StyledProgress(description="Downloading...") as progress:
+with StyledProgress() as progress:
     task = progress.add_task("Assets", total=100)
     progress.update(task, advance=50)
 
@@ -240,11 +240,11 @@ ______________________________________________________________________
 
 ## 🛠️ Project Status
 
-**v0.9.8** — Production Ready ✅
+**v0.9.8b1** — Production Ready ✅
 
 | Metric      | Value       |
 | ----------- | ----------- |
-| 🧪 Tests    | 936 passing |
+| 🧪 Tests    | 943 passing |
 | 📊 Coverage | 90%         |
 | 🔍 MyPy     | 0 errors    |
 | 📚 Examples | 38 working  |
