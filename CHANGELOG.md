@@ -5,6 +5,33 @@ All notable changes to StyledConsole will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.8.1] - 2025-12-28
+
+### 🧹 Test Release & Documentation Cleanup
+
+This is a test release to validate the TestPyPI publication workflow and prepare for the 0.9.9 release. Focus on infrastructure improvements and documentation organization.
+
+### Changed
+
+- **Examples Execution**: Examples now use `uv run` from main repository for correct package context.
+- **Documentation Structure**: Simplified public documentation (README, CONTRIBUTING) to focus on user-facing content.
+- **Version Badge**: Updated README version badge to reflect current release.
+
+### Fixed
+
+- **Examples Runner**: Fixed module import issues by detecting main repository and using `uv run python`.
+- **TTY Detection**: Added graceful degradation for terminal validation scripts running in non-interactive environments.
+- **Code Quality**: Fixed linting errors (line length, f-string usage, iterable unpacking).
+
+### Testing
+
+- ✅ All 37 examples passing
+- ✅ 943 tests passing (90% coverage)
+- ✅ Code quality checks passing (`make qa`)
+- ✅ No TODO/debug statements in codebase
+
+______________________________________________________________________
+
 ## [0.9.8] - 2025-12-27
 
 ### 🏛️ Registry Pattern Refactoring & Infrastructure

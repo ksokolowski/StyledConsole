@@ -2,7 +2,7 @@
 
 [![Python >=3.10](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-0.9.8b1-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole/releases/tag/v0.9.8b1)
+[![Version](https://img.shields.io/badge/version-0.9.8.1-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole/releases/tag/v0.9.8.1)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20the%20project-ff5e5b?logo=ko-fi&logoColor=white)](https://ko-fi.com/styledconsole)
 [![Tests](https://img.shields.io/badge/tests-943%20passing-success.svg)](https://github.com/ksokolowski/StyledConsole)
 [![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole)
@@ -230,22 +230,24 @@ console.frame(
 
 ______________________________________________________________________
 
-## 📚 Gallery & Examples
+## 📚 Visual Laboratory
 
-38 working examples organized in 4 categories:
+For a comprehensive gallery of **over 40 working examples**, visit our dedicated repository:
 
-| Category         | Description                                           |
-| ---------------- | ----------------------------------------------------- |
-| 🎨 `gallery/`    | Visual showcases - borders, colors, emojis, gradients |
-| 🎬 `demos/`      | Feature demos - animations, nested frames, rainbows   |
-| 💼 `usecases/`   | Real-world - dashboards, alerts, CI/CD, reports       |
-| 🔬 `validation/` | Testing - alignment checks, emoji verification        |
+👉 **[StyledConsole-Examples](https://github.com/ksokolowski/StyledConsole-Examples)**
 
-Run them all:
+The examples library includes:
+
+- 🎨 **Visual Showcases**: Gradient effects, layout stress tests, and emoji rendering.
+- 🎬 **Feature Demos**: Animations, nested frames, and progress bar policies.
+- 💼 **Real-World Components**: CLI menus, interactive dashboards, and log viewers.
+- 🔬 **Validation Utilities**: Terminal compatibility checks and color benchmarks.
+
+### Try it now:
 
 ```bash
-# Run all examples with auto-advance
-uv run python examples/run_examples.py --auto
+# Run the local quick start demo
+uv run examples/quick_start.py
 ```
 
 ______________________________________________________________________
@@ -262,42 +264,34 @@ ______________________________________________________________________
 
 ## 🛠️ Project Status
 
-**v0.9.8b1** — Production Ready ✅
+**v0.9.8.1** — Production Ready ✅
 
 | Metric      | Value       |
 | ----------- | ----------- |
 | 🧪 Tests    | 943 passing |
 | 📊 Coverage | 90%         |
 | 🔍 MyPy     | 0 errors    |
-| 📚 Examples | 38 working  |
+| 📚 Examples | 37 working  |
 | 🐍 Python   | 3.10 - 3.14 |
 
-**Recent Improvements (v0.9.0–v0.9.8):**
+**Recent Improvements:**
 
 - ✅ Modern Terminal Detection (Kitty, WezTerm, Ghostty, etc.)
-- ✅ Context Object Pattern (`StyleContext`) & Validation
 - ✅ Symbol Facade Unification (`icons` as primary API)
-- ✅ DRY emoji architecture (4000+ emojis from `emoji` package)
 - ✅ Icon Provider with colored ASCII fallback (224 icons)
 - ✅ Render Policy for environment-aware output
 - ✅ Full mypy type checking with 0 errors
-- ✅ Gradient engine consolidation (Strategy Pattern)
 - ✅ Windows compatibility fixes
-- ✅ Enhanced pre-commit hooks
 
-**Full release history is available in [CHANGELOG.md](CHANGELOG.md).**
+**See [CHANGELOG.md](CHANGELOG.md) for full release history.**
 
 ______________________________________________________________________
 
-## 📚 Documentation Architecture
+## 📚 Documentation
 
-StyledConsole follows a strict **5-Doc Rule** to prevent information rot. All project knowledge is centralized in exactly five master documents:
-
-- 📖 **[User Guide](docs/USER_GUIDE.md)**: Tutorials, basic usage, and visual galleries.
-- 🏗️ **[Developer Guide](docs/DEVELOPER_GUIDE.md)**: Architecture details and internal logic.
-- 📅 **[Changelog](CHANGELOG.md)**: Full release history (v0.1.0 to present).
-- 📈 **[Project Status](docs/PROJECT_STATUS.md)**: Roadmap, tasks, and project metrics.
-- 🤝 **[Contributing](CONTRIBUTING.md)**: Dev workflow and PR standards.
+- 📖 **[User Guide](docs/USER_GUIDE.md)**: Complete API reference with examples
+- 📅 **[Changelog](CHANGELOG.md)**: Version history and release notes
+- 🤝 **[Contributing](CONTRIBUTING.md)**: Development workflow and standards
 
 ## 💙 Support StyledConsole
 

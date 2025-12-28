@@ -47,6 +47,7 @@ uv.lock
 htmlcov/
 .tox/
 .hypothesis/
+/results/
 
 # Ruff
 .ruff_cache/

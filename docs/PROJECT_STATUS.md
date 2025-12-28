@@ -42,14 +42,19 @@ ______________________________________________________________________
 
 ### Planned
 
-| Version | Target  | Theme                                     | Status  |
-| ------- | ------- | ----------------------------------------- | ------- |
-| v0.10.0 | Q1 2026 | Test Automation Presets - Core            | PLANNED |
-| v0.11.0 | Q1 2026 | Test Automation Presets - Assertions      | PLANNED |
-| v0.12.0 | Q2 2026 | Test Automation Presets - Data & API      | PLANNED |
-| v0.13.0 | Q2 2026 | Test Automation Presets - CI/CD           | PLANNED |
-| v0.14.0 | Q2 2026 | Test Automation Presets - Robot Framework | PLANNED |
-| v1.0.0  | Q3 2026 | API freeze & Production Hardening         | PLANNED |
+| Version | Target  | Theme                          | Type           | Status  |
+| ------- | ------- | ------------------------------ | -------------- | ------- |
+| v0.9.9  | Q1 2026 | Documentation + VHS            | Infrastructure | PLANNED |
+| v0.10.0 | Q1 2026 | Enhanced Gradient System       | Feature        | PLANNED |
+| v0.11.0 | Q1 2026 | Table/Grid System              | Feature        | PLANNED |
+| v0.11.1 | Q1 2026 | Spinner/Loading Animations     | Feature        | PLANNED |
+| v0.12.0 | Q2 2026 | Interactive Prompts            | Feature        | PLANNED |
+| v0.13.0 | Q2 2026 | Markdown Rendering             | Feature        | PLANNED |
+| v0.14.0 | Q2 2026 | Test Automation Presets - Core | Feature        | PLANNED |
+| v1.0.0  | Q4 2026 | API freeze & Production        | Milestone      | PLANNED |
+
+> [!NOTE]
+> See [STRATEGIC_PLAN.md](STRATEGIC_PLAN.md) for comprehensive feature backlog and detailed version roadmap.
 
 ______________________________________________________________________
 
@@ -61,7 +66,7 @@ ______________________________________________________________________
 | --------- | ---------------------------------------------------------------------------------------------------------------------- |
 | Emojis    | Full emoji package support (4000+ emojis via `emoji` package). ZWJ sequences may have inconsistent terminal rendering. |
 | Terminals | Some emulators have limited emoji support                                                                              |
-| Gradients | Horizontal not yet implemented                                                                                         |
+| Gradients | Only vertical direction supported. Horizontal, diagonal, and rainbow presets planned for v0.10.0                       |
 
 ### Not Planned
 
@@ -86,9 +91,38 @@ ______________________________________________________________________
 
 ______________________________________________________________________
 
+## Ecosystem Status
+
+### Repository Matrix
+
+| Repository                       | Status      | Purpose             | Version         |
+| -------------------------------- | ----------- | ------------------- | --------------- |
+| **StyledConsole**                | ✅ Active   | Core library        | v0.9.8b1        |
+| **StyledConsole-Examples**       | ✅ Active   | Educational content | v0.1.0          |
+| **RobotFramework-StyledConsole** | 📋 Planned  | RF keyword library  | Alpha (Q1 2026) |
+| **StyledConsole-VisualTests**    | 📋 Research | Visual regression   | Q2 2026         |
+
+**Legend:**
+
+- ✅ Active: Currently maintained
+- 📋 Planned: Documented, scheduled for implementation
+- 🔬 Research: Investigation phase
+
+______________________________________________________________________
+
+## Strategic Focus
+
+**Current Phase:** Foundation Cleanup (v0.9.9 → v0.10.0)
+**Emphasis:** Infrastructure, documentation, and visibility
+
+See [STRATEGIC_PLAN.md](STRATEGIC_PLAN.md) for detailed ecosystem roadmap.
+
+______________________________________________________________________
+
 ## References
 
 - **User Guide:** `docs/USER_GUIDE.md`
 - **Developer Guide:** `docs/DEVELOPER_GUIDE.md`
 - **Changelog:** `CHANGELOG.md`
+- **Strategic Plan:** `docs/STRATEGIC_PLAN.md`
 - **Best Practices:** `docs/BEST_PRACTICES.md`

@@ -1255,8 +1255,8 @@ uv run pytest --cov=src/styledconsole --cov-report=html
 # Specific file
 uv run pytest tests/unit/test_frame.py -v
 
-# Run examples
-uv run python examples/run_all.py
+# Run local demo
+uv run python examples/quick_start.py
 ```
 
 ### Test Structure

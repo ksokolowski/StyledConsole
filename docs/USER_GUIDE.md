@@ -1199,6 +1199,7 @@ ______________________________________________________________________
 
 ## See Also
 
-- **Examples:** `examples/gallery/` - Visual showcases
+- **Examples Repository:** [StyledConsole-Examples](https://github.com/ksokolowski/StyledConsole-Examples) - Visual gallery and demos
+- **Local Demo:** `examples/quick_start.py` - Quick start code
 - **Source:** `src/styledconsole/` - Library source
 - **Tests:** `tests/` - Usage examples in tests

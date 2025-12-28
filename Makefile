@@ -2,7 +2,7 @@
 # Unified task runner for consistent Developer Experience
 # Requires: uv (https://github.com/astral-sh/uv)
 
-.PHONY: help setup test lint lint-fix format format-check qa clean coverage type-check demo
+.PHONY: help setup test lint lint-fix format format-check qa clean coverage type-check demo examples examples-auto examples-list
 
 # Windows compatibility: use PowerShell and .venv paths
 ifeq ($(OS),Windows_NT)
@@ -42,8 +42,11 @@ help:
 	@echo "  make qa            Run full quality assurance (lint + format + coverage)"
 	@echo "  make qa-quick      Run quick quality checks (lint + test)"
 	@echo ""
-	@echo "Demos:"
-	@echo "  make demo          Run all example scripts"
+	@echo "Examples:"
+	@echo "  make demo          Run local quick-start demo"
+	@echo "  make examples      Run all examples (interactive)"
+	@echo "  make examples-auto Run all examples (auto mode)"
+	@echo "  make examples-list List available example categories"
 	@echo ""
 	@echo "Git Hooks:"
 	@echo "  make install-hooks Install pre-commit hooks"
@@ -95,10 +98,22 @@ qa: lint format-check coverage
 qa-quick: lint test
 	@echo "Quick QA Passed!"
 
-# Demos
+# Demos and Examples
 demo:
-	@echo "Running examples..."
+	@echo "Running local quick-start demo..."
+	$(PYTHON) examples/quick_start.py
+
+examples:
+	@echo "Running all examples (interactive mode)..."
 	$(PYTHON) examples/run_examples.py
+
+examples-auto:
+	@echo "Running all examples (auto mode)..."
+	$(PYTHON) examples/run_examples.py --auto
+
+examples-list:
+	@echo "Listing available example categories..."
+	$(PYTHON) examples/run_examples.py --list
 
 # Git Hooks
 install-hooks:
