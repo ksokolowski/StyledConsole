@@ -290,6 +290,7 @@ ______________________________________________________________________
 ## 📚 Documentation
 
 - 📖 **[User Guide](docs/USER_GUIDE.md)**: Complete API reference with examples
+- 🏗️ **[Developer Guide](docs/DEVELOPER_GUIDE.md)**: Architecture and development guide
 - 📅 **[Changelog](CHANGELOG.md)**: Version history and release notes
 - 🤝 **[Contributing](CONTRIBUTING.md)**: Development workflow and standards
 
