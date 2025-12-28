@@ -1,7 +1,7 @@
 # AI Coding Agent Instructions for StyledConsole
 
-**Project:** StyledConsole v0.9.0
-**Last Updated:** December 7, 2025
+**Project:** StyledConsole v0.9.8.1
+**Last Updated:** December 28, 2025
 **Python:** ≥3.10 | **License:** Apache-2.0
 
 ______________________________________________________________________
@@ -132,9 +132,8 @@ styledconsole/
 │   └── run_examples.py          # Unified runner
 ├── docs/                        # Documentation
 │   ├── USER_GUIDE.md            # API usage, examples, troubleshooting
-│   ├── DEVELOPER_GUIDE.md       # Architecture guide
-│   ├── PROJECT_STATUS.md        # Roadmap & status
-│   └── DOCUMENTATION_POLICY.md  # Doc standards
+│   ├── DEVELOPER_GUIDE.md       # Architecture and development guide
+│   └── README.md                # Documentation overview
 ├── scripts/
 │   └── complexity_check.py      # Radon CC/MI gate
 ├── pyproject.toml               # Dependencies & config
@@ -350,10 +349,10 @@ ______________________________________________________________________
 | Document                  | Purpose                              |
 | ------------------------- | ------------------------------------ |
 | `docs/USER_GUIDE.md`      | API usage, examples, troubleshooting |
-| `docs/DEVELOPER_GUIDE.md` | Architecture, contributing           |
-| `docs/PROJECT_STATUS.md`  | Roadmap, changelog                   |
+| `docs/DEVELOPER_GUIDE.md` | Architecture and development guide   |
+| `CONTRIBUTING.md`         | Development workflow and standards   |
 | `CHANGELOG.md`            | Version history                      |
-| `README.md`               | Quick start                          |
+| `README.md`               | Quick start and project overview     |
 
 ______________________________________________________________________
 
