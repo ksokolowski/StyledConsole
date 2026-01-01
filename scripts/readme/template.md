@@ -8,12 +8,7 @@
 [![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole)
 [![MyPy](https://img.shields.io/badge/mypy-passing-success.svg)](https://github.com/ksokolowski/StyledConsole)
 
-<!-- markdownlint-disable MD033 -->
-
-<p align="center">
-  <img src="docs/images/gradient_animation.webp" alt="StyledConsole Animation"/>
-</p>
-<!-- markdownlint-enable MD033 -->
+![StyledConsole Animation](docs/images/gradient_animation.webp)
 
 ______________________________________________________________________
 
@@ -33,19 +28,9 @@ It provides ANSI-safe rendering with rich formatting, colors, emojis, gradients 
 pip install styledconsole
 ```
 
-<!-- markdownlint-disable MD033 -->
+<!-- EXAMPLE_IMAGE:basic_frame --> <!-- EXAMPLE_IMAGE:gradient_frame -->
 
-<table>
-<tr>
-<td><!-- EXAMPLE_IMAGE:basic_frame --></td>
-<td><!-- EXAMPLE_IMAGE:gradient_frame --></td>
-</tr>
-<tr>
-<td><!-- EXAMPLE_IMAGE:status_messages --></td>
-<td><!-- EXAMPLE_IMAGE:icons_showcase --></td>
-</tr>
-</table>
-<!-- markdownlint-enable MD033 -->
+<!-- EXAMPLE_IMAGE:status_messages --> <!-- EXAMPLE_IMAGE:icons_showcase -->
 
 ______________________________________________________________________
 
@@ -141,6 +126,18 @@ console = Console(policy=RenderPolicy.ci_friendly())
 
 # Detects: NO_COLOR, FORCE_COLOR, TERM=dumb, CI, GITHUB_ACTIONS
 ```
+
+### 🧱 Declarative Layout Engine
+
+Build complex dashboards and UIs using a simple dictionary/JSON structure. Perfect for "Low Code" interfaces or loading configurations from files.
+
+<!-- EXAMPLE_FULL:declarative_layout -->
+
+### 📊 Data-Driven Tables
+
+Separate your table data from styling. Feed JSON data directly into our table builder to generate beautiful, gradient-bordered tables instantly.
+
+<!-- EXAMPLE_FULL:json_table -->
 
 ### 📤 Multi-Format Export
 

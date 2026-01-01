@@ -23,7 +23,6 @@ from pathlib import Path
 MODULE_DIR = Path(__file__).parent
 PROJECT_ROOT = MODULE_DIR.parent.parent
 TEMPLATE_PATH = MODULE_DIR / "template.md"
-IMAGES_DIR = MODULE_DIR / "images"
 OUTPUT_PATH = PROJECT_ROOT / "README.md"
 
 # Image path in README (relative to project root)
@@ -82,7 +81,7 @@ def generate_readme(regenerate_images: bool = False) -> None:
             return match.group(0)
         image_path = get_image_path(name)
         alt_text = name.replace("_", " ").title()
-        return f'<img src="{image_path}" alt="{alt_text}"/>'
+        return f"![{alt_text}]({image_path})"
 
     # Replace <!-- EXAMPLE_FULL:name --> with image + code
     def replace_full(match):
@@ -93,13 +92,11 @@ def generate_readme(regenerate_images: bool = False) -> None:
         code = examples[name]["code"]
         image_path = get_image_path(name)
         alt_text = name.replace("_", " ").title()
-        return f'''<!-- markdownlint-disable MD033 -->
-<img src="{image_path}" alt="{alt_text}"/>
-<!-- markdownlint-enable MD033 -->
+        return f"""![{alt_text}]({image_path})
 
 ```python
 {code}
-```'''
+```"""
 
     output = template
     output = re.sub(r"<!-- EXAMPLE_FULL:(\w+) -->", replace_full, output)

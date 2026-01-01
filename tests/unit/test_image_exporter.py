@@ -193,6 +193,19 @@ class TestImageExporterClass:
         assert theme.font_size == 16
         assert theme.padding == 20
 
+    def test_image_exporter_debug_grid_does_not_crash(self, tmp_path):
+        from styledconsole.export import get_image_theme
+
+        console = Console(record=True)
+        console.frame("Grid test", border="rounded")
+
+        theme_cls = get_image_theme()
+        theme = theme_cls(terminal_size=(80, 24), debug_grid=True)
+
+        path = tmp_path / "grid.png"
+        console.export_webp(str(path.with_suffix(".webp")), theme=theme, auto_crop=False)
+        assert path.with_suffix(".webp").exists()
+
     def test_image_exporter_with_custom_theme(self, tmp_path):
         """ImageExporter accepts custom theme."""
         from rich.console import Console as RichConsole
@@ -217,6 +230,75 @@ class TestImageExporterClass:
         exporter.save_png(str(path))
 
         assert path.exists()
+
+    def test_image_exporter_width_accounts_for_wide_emoji_when_render_emojis_false(self):
+        """Width measurement uses Rich cell widths even without emoji rendering.
+
+        This prevents right-side border clipping/misalignment for lines that
+        contain emoji/icons (e.g. in tables) when render_emojis=False.
+        """
+        from rich.cells import cell_len
+        from rich.console import Console as RichConsole
+
+        from styledconsole.export import get_image_exporter
+
+        rich_console = RichConsole(record=True)
+        rich_console.print("A🚀B")
+
+        exporter_cls = get_image_exporter()
+        exporter = exporter_cls(rich_console, render_emojis=False)
+
+        # Ensure font metrics are loaded so char_width is available.
+        _, _, pil_font = exporter._lazy_import_pillow()
+        exporter._font_loader.load(pil_font)
+
+        width_px, _ = exporter._calculate_dimensions()
+        content_width_px = width_px - int(exporter._theme.padding * 2)
+
+        expected_cells = cell_len("A🚀B")
+        expected_px = expected_cells * exporter._font_loader.char_width
+
+        assert content_width_px >= expected_px
+
+    def test_emoji_renderer_uses_rich_cell_len_for_emoji_width(self, monkeypatch):
+        """EmojiRenderer advances emojis by Rich cell width * char_width.
+
+        README image generation patches Rich's cell_len; the image exporter must
+        follow that to keep table borders aligned.
+        """
+        from rich import cells as rich_cells
+        from rich.console import Console as RichConsole
+
+        from styledconsole.export import get_image_exporter
+
+        original_cell_len = rich_cells.cell_len
+
+        def patched_cell_len(text: str) -> int:
+            if text == "🚀":
+                return 1
+            return original_cell_len(text)
+
+        monkeypatch.setattr(rich_cells, "cell_len", patched_cell_len)
+
+        rich_console = RichConsole(record=True)
+        rich_console.print("X🚀Y")
+
+        exporter_cls = get_image_exporter()
+        exporter = exporter_cls(rich_console, render_emojis=True)
+
+        _, _, pil_font = exporter._lazy_import_pillow()
+        exporter._font_loader.load(pil_font)
+
+        # Create the renderer on a temp image and validate width.
+        from PIL import Image
+
+        img = Image.new("RGB", (10, 10))
+        emoji_renderer = exporter._create_emoji_renderer(img)
+        assert emoji_renderer is not None
+
+        width = emoji_renderer.getwidth("X🚀Y", font=exporter._font_loader.font)
+        expected = (1 + 1 + 1) * exporter._font_loader.char_width
+        assert width == expected
 
 
 class TestImageExporterFormats:

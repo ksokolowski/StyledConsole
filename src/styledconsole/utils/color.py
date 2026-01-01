@@ -544,6 +544,30 @@ def get_rainbow_color(position: float) -> str:
     )
 
 
+def apply_dim(color: str | RGBColor | None, factor: float = 0.5) -> str | RGBColor | None:
+    """Apply dim effect by reducing brightness (interpolating with black).
+
+    Args:
+        color: input color (hex string, CSS4 name, or RGB tuple).
+        factor: Dimming factor (0.0 = black, 1.0 = original color). Default 0.5.
+
+    Returns:
+        Dimmed color in same format as input (where possible).
+        Returns None if input is None.
+    """
+    if color is None:
+        return None
+
+    if isinstance(color, tuple):
+        # Handle RGB tuple
+        r, g, b = color
+        return (int(r * factor), int(g * factor), int(b * factor))
+
+    # Handle string (hex or name)
+    # We want to return hex if input was string to maintain compatibility
+    return interpolate_color("#000000", color, factor)
+
+
 # Alias for backward compatibility
 colorize = colorize_text
 
@@ -551,6 +575,7 @@ colorize = colorize_text
 __all__ = [
     "CSS4_COLORS",
     "RGBColor",
+    "apply_dim",
     "apply_line_gradient",
     "apply_rainbow_gradient",
     "color_distance",

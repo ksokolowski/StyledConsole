@@ -11,6 +11,7 @@ Usage:
   uv run python scripts/readme/examples.py  # Generate all images
 """
 
+import os
 from pathlib import Path
 
 from styledconsole import Console, RenderPolicy, icons
@@ -19,7 +20,10 @@ from styledconsole.icons import set_icon_mode
 from styledconsole.utils.text import set_render_target
 
 # Output directory for generated images (docs/images for GitHub compatibility)
-OUTPUT_DIR = Path(__file__).parent.parent.parent / "docs" / "images"
+# Allow override via env var for testing
+OUTPUT_DIR = Path(
+    os.getenv("STYLEDCONSOLE_DOCS_IMAGES", Path(__file__).parent.parent.parent / "docs" / "images")
+)
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 IMAGE_EXPORT_POLICY = RenderPolicy.for_image_export()
@@ -32,10 +36,29 @@ set_icon_mode("emoji")
 set_render_target("image")
 
 # Fixed terminal size for consistent font rendering across all images
+# 80x24 is the standard terminal size, ensuring examples look realistic
 TERMINAL_COLS = 80
 TERMINAL_ROWS = 24
 ImageTheme = get_image_theme()
 FIXED_TERMINAL_THEME = ImageTheme(terminal_size=(TERMINAL_COLS, TERMINAL_ROWS))
+
+# Debug: overlay a cell grid and disable auto-crop for easier alignment diagnosis.
+DEBUG_GRID = os.getenv("STYLEDCONSOLE_DEBUG_GRID", "0") == "1"
+DEBUG_TERMINAL_THEME = ImageTheme(
+    terminal_size=(TERMINAL_COLS, TERMINAL_ROWS),
+    debug_grid=DEBUG_GRID,
+    debug_grid_every=1,
+)
+
+
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# IMAGE GENERATION - VIRTUAL TERMINAL MODE
+# -----------------------------------------------------------------------------
+# The Virtual Terminal mode in TerminalManager + visual_width's render_target
+# context ensures consistent emoji widths (2 cells) for image exports.
+# No monkeypatching required!
 
 
 # =============================================================================
@@ -96,7 +119,9 @@ def generate_basic_frame():
         border_gradient_end="cyan",
     )
     console.export_webp(
-        str(OUTPUT_DIR / "basic_frame.webp"), theme=FIXED_TERMINAL_THEME, auto_crop=True
+        str(OUTPUT_DIR / "basic_frame.webp"),
+        theme=DEBUG_TERMINAL_THEME if DEBUG_GRID else FIXED_TERMINAL_THEME,
+        auto_crop=not DEBUG_GRID,
     )
     return "basic_frame.webp"
 
@@ -216,6 +241,7 @@ def generate_border_styles():
     from rich.table import Table
 
     from styledconsole.export import get_image_exporter
+    from styledconsole.export.image_cropper import auto_crop
 
     styles = ["solid", "double", "rounded", "heavy", "dots", "minimal", "thick", "ascii"]
 
@@ -245,7 +271,8 @@ def generate_border_styles():
     image_exporter_cls = get_image_exporter()
     exporter = image_exporter_cls(rich_console, theme=FIXED_TERMINAL_THEME)
     img = exporter._render_frame()
-    img = exporter._auto_crop(img, margin=20)
+    # Use directly imported auto_crop
+    img = auto_crop(img, FIXED_TERMINAL_THEME.background, margin=20)
     img.save(str(OUTPUT_DIR / "border_styles.webp"), "WEBP", quality=90)
     return "border_styles.webp"
 
@@ -550,9 +577,241 @@ def generate_error_report():
     return "error_report.webp"
 
 
-# =============================================================================
-# ANIMATION GENERATORS
-# =============================================================================
+# -----------------------------------------------------------------------------
+# Table Example
+# -----------------------------------------------------------------------------
+
+
+@example(
+    "table_example",
+    """
+from rich.table import Table
+
+table = Table(title="Server Status", border_style="cyan")
+table.add_column("Service", style="cyan", no_wrap=True)
+table.add_column("Status", style="magenta")
+table.add_column("Uptime", justify="right", style="green")
+
+table.add_row("API Gateway", "🟢 Online", "99.9%")
+table.add_row("Database", "🟡 Maintenance", "98.5%")
+table.add_row("Cache Layer", "🟢 Online", "99.9%")
+table.add_row("Worker Pool", "🔴 Offline", "0.0%")
+
+console.print(table)
+""",
+)
+def generate_table_example():
+    """Generate table example."""
+    from rich.table import Table
+
+    console = Console(record=True, width=TERMINAL_COLS, policy=IMAGE_EXPORT_POLICY)
+
+    # Add empty line for spacing
+    console._rich_console.print()
+
+    table = Table(
+        title=f"{icons.GLOBE_WITH_MERIDIANS} Server Cluster Status",
+        border_style="cyan",
+        show_lines=True,
+    )
+
+    table.add_column("Service", style="cyan", no_wrap=True)
+    table.add_column("Region", style="blue")
+    table.add_column("Status", style="magenta")
+    table.add_column("Uptime", justify="right", style="green")
+
+    table.add_row(f"{icons.CLOUD} API Gateway", "us-east-1", "🟢 Online", "99.9%")
+    table.add_row(f"{icons.FILE_CABINET} Primary DB", "us-east-1", "🟡 Maintenance", "98.5%")
+    table.add_row(f"{icons.HIGH_VOLTAGE} Cache Layer", "us-west-2", "🟢 Online", "99.9%")
+    table.add_row(f"{icons.GEAR} Worker Pool", "eu-central-1", "🔴 Offline", "0.0%")
+
+    console.print(table)
+
+    console.export_webp(
+        str(OUTPUT_DIR / "table_example.webp"),
+        theme=DEBUG_TERMINAL_THEME,
+        auto_crop=not DEBUG_GRID,
+    )
+    return "table_example.webp"
+
+
+# -----------------------------------------------------------------------------
+# Declarative/JSON Examples
+# -----------------------------------------------------------------------------
+
+
+@example(
+    "json_table",
+    """
+from styledconsole.presets.tables import create_table_from_config
+
+# Config-driven table creation (ideal for loading from JSON/YAML)
+table = create_table_from_config(
+    theme={
+        "border_style": "heavy",
+        "gradient": {"start": "cyan", "end": "blue"},
+        "title": "SERVER STATUS"
+    },
+    data={
+        "columns": [
+            {"header": "Region", "style": "bold white"},
+            {"header": "Status", "justify": "center"}
+        ],
+        "rows": [
+            ["US-East", {"text": "ONLINE", "color": "green", "icon": "CHECK_MARK_BUTTON"}],
+            ["EU-West", {"text": "MAINTENANCE", "color": "yellow", "icon": "GEAR"}]
+        ]
+    }
+)
+console.print(table)
+""",
+)
+def generate_json_table():
+    """Generate JSON table builder example."""
+    from styledconsole.presets.tables import create_table_from_config
+
+    console = Console(record=True, width=TERMINAL_COLS, policy=IMAGE_EXPORT_POLICY)
+    console._rich_console.print()  # Spacing
+
+    table = create_table_from_config(
+        theme={
+            "border_style": "heavy",
+            "gradient": {"start": "cyan", "end": "blue", "direction": "diagonal"},
+            "title": "SERVER STATUS",
+            "padding": (0, 2),
+        },
+        data={
+            "columns": [
+                {"header": "Region", "style": "bold white"},
+                {"header": "Cluster", "style": "cyan"},
+                {"header": "Status", "justify": "center"},
+            ],
+            "rows": [
+                [
+                    {"text": "US-East-1", "icon": "GLOBE_WITH_MERIDIANS"},
+                    "alpha-01",
+                    {"text": "ONLINE", "color": "green", "icon": "CHECK_MARK_BUTTON"},
+                ],
+                [
+                    {"text": "EU-West-2", "icon": "GLOBE_WITH_MERIDIANS"},
+                    "bravo-09",
+                    {"text": "MAINTENANCE", "color": "yellow", "icon": "GEAR"},
+                ],
+                [
+                    {"text": "AP-South-3", "icon": "GLOBE_WITH_MERIDIANS"},
+                    "delta-03",
+                    {"text": "OFFLINE", "color": "red", "icon": "CROSS_MARK"},
+                ],
+            ],
+        },
+    )
+    console.print(table)
+
+    console.export_webp(
+        str(OUTPUT_DIR / "json_table.webp"),
+        theme=DEBUG_TERMINAL_THEME,
+        auto_crop=not DEBUG_GRID,
+    )
+    return "json_table.webp"
+
+
+@example(
+    "declarative_layout",
+    """
+from styledconsole.presets.layouts import create_layout_from_config
+
+# Build entire dashboards from a single dictionary
+layout = create_layout_from_config({
+    "type": "panel",
+    "title": "MISSION CONTROL",
+    "title_rainbow": True,
+    "border": "heavy",
+    "border_style": "cyan",
+    "content": {
+        "type": "group",
+        "items": [
+            {"type": "text", "content": "Orbital Station Alpha", "align": "center"},
+            {"type": "rule", "style": "cyan dim"},
+            {"type": "vspacer"},
+            # Nested table component...
+            {"type": "table", "theme": {...}, "data": {...}}
+        ]
+    }
+})
+console.print(layout)
+""",
+)
+def generate_declarative_layout():
+    """Generate declarative layout engine example."""
+    from styledconsole.presets.layouts import create_layout_from_config
+
+    console = Console(record=True, width=TERMINAL_COLS, policy=IMAGE_EXPORT_POLICY)
+    console._rich_console.print()
+
+    layout = create_layout_from_config(
+        {
+            "type": "panel",
+            "title": "MISSION CONTROL",
+            "title_rainbow": True,
+            "border": "heavy",
+            "border_style": "cyan",
+            "padding": (0, 2),
+            "content": {
+                "type": "group",
+                "items": [
+                    {
+                        "type": "text",
+                        "content": "Orbital Station Alpha",
+                        "style": "bold cyan",
+                        "align": "center",
+                    },
+                    {"type": "rule", "style": "cyan dim"},
+                    {"type": "vspacer"},
+                    {
+                        "type": "table",
+                        "theme": {
+                            "border_style": "rounded",
+                            "gradient": {"start": "cyan", "end": "blue", "direction": "vertical"},
+                            "target": "border",
+                        },
+                        "data": {
+                            "columns": [{"header": "System"}, {"header": "Status"}],
+                            "rows": [
+                                [
+                                    {"text": "Life Support", "icon": "GEAR"},
+                                    {"text": "NOMINAL", "color": "green"},
+                                ],
+                                [
+                                    {"text": "Navigation", "icon": "SATELLITE_ANTENNA"},
+                                    {"text": "CALIBRATING", "color": "yellow"},
+                                ],
+                            ],
+                        },
+                    },
+                    {"type": "vspacer"},
+                    {
+                        "type": "panel",
+                        "title": "Alerts",
+                        "border": "rounded",
+                        "border_style": "red",
+                        "content": {
+                            "type": "text",
+                            "content": "⚠ Proximity Warning: Asteroid Field Detected",
+                            "style": "bold red blink",
+                        },
+                    },
+                ],
+            },
+        }
+    )
+    console.print(layout)
+
+    console.export_webp(
+        str(OUTPUT_DIR / "declarative_layout.webp"),
+        theme=DEBUG_TERMINAL_THEME,
+        auto_crop=not DEBUG_GRID,
+    )
+    return "declarative_layout.webp"
 
 
 def generate_progress_animation():
@@ -596,9 +855,9 @@ def generate_progress_animation():
 
     # Auto-crop all frames to common bounding box and save
     if frames:
-        image_exporter_cls = get_image_exporter()
-        exporter = image_exporter_cls(None, theme=FIXED_TERMINAL_THEME)
-        frames = exporter._auto_crop_frames(frames, margin=20)
+        from styledconsole.export.image_cropper import auto_crop_frames
+
+        frames = auto_crop_frames(frames, FIXED_TERMINAL_THEME.background, margin=20)
         frames[0].save(
             str(OUTPUT_DIR / "progress_animation.webp"),
             "WEBP",
@@ -708,9 +967,9 @@ def generate_gradient_animation():
 
     # Auto-crop all frames to common bounding box and save
     if frames:
-        image_exporter_cls = get_image_exporter()
-        exporter = image_exporter_cls(None, theme=FIXED_TERMINAL_THEME)
-        frames = exporter._auto_crop_frames(frames, margin=20)
+        from styledconsole.export.image_cropper import auto_crop_frames
+
+        frames = auto_crop_frames(frames, FIXED_TERMINAL_THEME.background, margin=20)
         frames[0].save(
             str(OUTPUT_DIR / "gradient_animation.webp"),
             "WEBP",

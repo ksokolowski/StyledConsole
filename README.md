@@ -8,12 +8,7 @@
 [![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole)
 [![MyPy](https://img.shields.io/badge/mypy-passing-success.svg)](https://github.com/ksokolowski/StyledConsole)
 
-<!-- markdownlint-disable MD033 -->
-
-<p align="center">
-  <img src="docs/images/gradient_animation.webp" alt="StyledConsole Animation"/>
-</p>
-<!-- markdownlint-enable MD033 -->
+![StyledConsole Animation](docs/images/gradient_animation.webp)
 
 ______________________________________________________________________
 
@@ -33,19 +28,9 @@ It provides ANSI-safe rendering with rich formatting, colors, emojis, gradients 
 pip install styledconsole
 ```
 
-<!-- markdownlint-disable MD033 -->
+![Basic Frame](docs/images/basic_frame.webp) ![Gradient Frame](docs/images/gradient_frame.webp)
 
-<table>
-<tr>
-<td><img src="docs/images/basic_frame.webp" alt="Basic Frame"/></td>
-<td><img src="docs/images/gradient_frame.webp" alt="Gradient Frame"/></td>
-</tr>
-<tr>
-<td><img src="docs/images/status_messages.webp" alt="Status Messages"/></td>
-<td><img src="docs/images/icons_showcase.webp" alt="Icons Showcase"/></td>
-</tr>
-</table>
-<!-- markdownlint-enable MD033 -->
+![Status Messages](docs/images/status_messages.webp) ![Icons Showcase](docs/images/icons_showcase.webp)
 
 ______________________________________________________________________
 
@@ -71,10 +56,7 @@ print(f"{icons.CHECK_MARK_BUTTON} Done!")
 
 Use named colors, bright variants, hex RGB, and ANSI 256-color codes for unlimited styling possibilities.
 
-<!-- markdownlint-disable MD033 -->
-
-<img src="docs/images/text_styles.webp" alt="Text Styles"/>
-<!-- markdownlint-enable MD033 -->
+![Text Styles](docs/images/text_styles.webp)
 
 ```python
 # Rich color support - named colors and RGB
@@ -88,10 +70,7 @@ console.text("Custom RGB", color="#ff6b6b")
 
 Apply smooth color gradients across multiple lines of text using the powerful `gradient_frame` function.
 
-<!-- markdownlint-disable MD033 -->
-
-<img src="docs/images/gradient_text.webp" alt="Gradient Text"/>
-<!-- markdownlint-enable MD033 -->
+![Gradient Text](docs/images/gradient_text.webp)
 
 ```python
 from styledconsole.effects import gradient_frame
@@ -111,10 +90,7 @@ for line in lines:
 
 Apply bold, italic, underline, strikethrough, and dim effects to any text — fully rendered in terminal and image export.
 
-<!-- markdownlint-disable MD033 -->
-
-<img src="docs/images/font_styles.webp" alt="Font Styles"/>
-<!-- markdownlint-enable MD033 -->
+![Font Styles](docs/images/font_styles.webp)
 
 ```python
 from styledconsole import Console
@@ -136,10 +112,7 @@ console.text("Italic + Cyan + Strike", italic=True, color="cyan", strike=True)
 
 Build complex, multi-layered UI architectures with 8 beautiful border styles and automatic width alignment for consistent layouts.
 
-<!-- markdownlint-disable MD033 -->
-
-<img src="docs/images/nested_frames.webp" alt="Nested Frames"/>
-<!-- markdownlint-enable MD033 -->
+![Nested Frames](docs/images/nested_frames.webp)
 
 ```python
 from styledconsole import Console
@@ -151,10 +124,7 @@ console.frame(["Application Shell", inner], border="heavy", width=40)
 
 #### 📦 8 Beautiful Border Styles
 
-<!-- markdownlint-disable MD033 -->
-
-<img src="docs/images/border_styles.webp" alt="Border Styles"/>
-<!-- markdownlint-enable MD033 -->
+![Border Styles](docs/images/border_styles.webp)
 
 ```python
 # 8 beautiful border styles available
@@ -200,10 +170,7 @@ Animation.run(gradient_generator, fps=20, duration=5)
 
 Generate massive, high-impact headers using 500+ fonts with integrated gradient support and automatic centering.
 
-<!-- markdownlint-disable MD033 -->
-
-<img src="docs/images/rainbow_banner.webp" alt="Rainbow Banner"/>
-<!-- markdownlint-enable MD033 -->
+![Rainbow Banner](docs/images/rainbow_banner.webp)
 
 ```python
 # Full ROYGBIV rainbow spectrum
@@ -224,6 +191,66 @@ from styledconsole import Console, RenderPolicy
 console = Console(policy=RenderPolicy.ci_friendly())
 
 # Detects: NO_COLOR, FORCE_COLOR, TERM=dumb, CI, GITHUB_ACTIONS
+```
+
+### 🧱 Declarative Layout Engine
+
+Build complex dashboards and UIs using a simple dictionary/JSON structure. Perfect for "Low Code" interfaces or loading configurations from files.
+
+![Declarative Layout](docs/images/declarative_layout.webp)
+
+```python
+from styledconsole.presets.layouts import create_layout_from_config
+
+# Build entire dashboards from a single dictionary
+layout = create_layout_from_config({
+    "type": "panel",
+    "title": "MISSION CONTROL",
+    "title_rainbow": True,
+    "border": "heavy",
+    "border_style": "cyan",
+    "content": {
+        "type": "group",
+        "items": [
+            {"type": "text", "content": "Orbital Station Alpha", "align": "center"},
+            {"type": "rule", "style": "cyan dim"},
+            {"type": "vspacer"},
+            # Nested table component...
+            {"type": "table", "theme": {...}, "data": {...}}
+        ]
+    }
+})
+console.print(layout)
+```
+
+### 📊 Data-Driven Tables
+
+Separate your table data from styling. Feed JSON data directly into our table builder to generate beautiful, gradient-bordered tables instantly.
+
+![Json Table](docs/images/json_table.webp)
+
+```python
+from styledconsole.presets.tables import create_table_from_config
+
+# Config-driven table creation (ideal for loading from JSON/YAML)
+table = create_table_from_config(
+    theme={
+        "border_style": "heavy",
+        "gradient": {"start": "cyan", "end": "blue"},
+        "title": "SERVER STATUS"
+    },
+    data={
+        "columns": [
+            {"header": "Region", "style": "bold white"},
+            {"header": "Status", "justify": "center"}
+        ],
+        "rows": [
+            ["US-East", {"text": "ONLINE", "color": "green", "icon": "CHECK_MARK_BUTTON"}],
+            ["EU-West", {"text": "MAINTENANCE", "color": "yellow", "icon": "GEAR"}]
+        ]
+    }
+)
+console.print(table)
 ```
 
 ### 📤 Multi-Format Export
@@ -252,10 +279,7 @@ ______________________________________________________________________
 pip install styledconsole
 ```
 
-<!-- markdownlint-disable MD033 -->
-
-<img src="docs/images/basic_frame.webp" alt="Basic Frame"/>
-<!-- markdownlint-enable MD033 -->
+![Basic Frame](docs/images/basic_frame.webp)
 
 ```python
 from styledconsole import Console, icons
@@ -278,10 +302,7 @@ ______________________________________________________________________
 
 ### CI/CD Pipeline Dashboard
 
-<!-- markdownlint-disable MD033 -->
-
-<img src="docs/images/build_report.webp" alt="Build Report"/>
-<!-- markdownlint-enable MD033 -->
+![Build Report](docs/images/build_report.webp)
 
 ```python
 from styledconsole import Console, icons
@@ -300,10 +321,7 @@ console.frame([
 
 ### Error Reporting with Style
 
-<!-- markdownlint-disable MD033 -->
-
-<img src="docs/images/error_report.webp" alt="Error Report"/>
-<!-- markdownlint-enable MD033 -->
+![Error Report](docs/images/error_report.webp)
 
 ```python
 console.frame(

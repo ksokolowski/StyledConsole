@@ -131,6 +131,17 @@ class Console:
         # Initialize terminal manager (handles detection and color system)
         self._terminal = TerminalManager(detect=detect_terminal, debug=debug)
 
+        # Enable virtual terminal mode for exports
+        # This ensures exporters get consistent "perfect terminal" behavior
+        if self._policy.render_target in ("image", "html"):
+            self._terminal.set_virtual_mode(True)
+            # Patch rich.cells.cell_len to match visual_width for consistent layout
+            # This must happen in __init__ before any rendering, not at export time,
+            # because Rich calculates layout during .frame()/.print() calls.
+            # Note: This affects terminal preview output from export consoles, but
+            # that's acceptable - it's just preview. Real terminal consoles are unaffected.
+            self._patch_rich_cell_len_for_export()
+
         # Resolve theme
         if isinstance(theme, str):
             self._theme = THEMES.get(theme) or DEFAULT_THEME
@@ -164,6 +175,111 @@ class Console:
 
         # Store debug flag for backward compatibility
         self._debug = debug
+
+    # Rich modules that cache cell_len at import time and need patching
+    _RICH_MODULES_WITH_CELL_LEN = (
+        "rich.cells",
+        "rich.text",
+        "rich.panel",
+        "rich.containers",
+        "rich.rule",
+        "rich.syntax",
+        "rich.pretty",
+        "rich._wrap",
+        "rich.segment",
+    )
+
+    def _patch_rich_cell_len_for_export(self) -> None:
+        """Patch rich.cells.cell_len to use visual_width for export mode.
+
+        This ensures Rich's internal layout (tables/panels) uses the same
+        emoji widths as our visual_width function, preventing drift in exports.
+
+        Rich modules import cell_len at module load time, caching the function
+        reference. We must patch BOTH the source (rich.cells) AND all modules
+        that have cached the reference, otherwise they continue using the
+        original function.
+
+        Additionally, Rich uses LRU-cached functions (cached_cell_len,
+        get_character_cell_size) that must be cleared and patched to prevent
+        stale cached values from causing misalignment.
+
+        Note: This is a TEMPORARY patch that gets restored when Console is destroyed
+        or when _restore_rich_cell_len() is called.
+        """
+        import sys
+
+        from styledconsole.utils.text import visual_width
+
+        try:
+            from rich import cells as rich_cells
+
+            # Backup originals ONCE per Console instance
+            if not hasattr(self, "_original_cell_len"):
+                self._original_cell_len = rich_cells.cell_len  # type: ignore[attr-defined]
+            if not hasattr(self, "_original_cached_cell_len"):
+                self._original_cached_cell_len = rich_cells.cached_cell_len  # type: ignore[attr-defined]
+
+            def _export_cell_len(text: str) -> int:
+                """Use visual_width which respects render target context."""
+                return visual_width(text)
+
+            # Clear Rich's LRU caches to prevent stale cached values
+            # These caches may contain pre-patch width calculations
+            if hasattr(rich_cells.cached_cell_len, "cache_clear"):
+                rich_cells.cached_cell_len.cache_clear()  # type: ignore[attr-defined]
+            if hasattr(rich_cells.get_character_cell_size, "cache_clear"):
+                rich_cells.get_character_cell_size.cache_clear()  # type: ignore[attr-defined]
+
+            # Apply the patch to rich.cells (the source)
+            rich_cells.cell_len = _export_cell_len  # type: ignore[assignment,attr-defined]
+            rich_cells.cached_cell_len = _export_cell_len  # type: ignore[assignment,attr-defined]
+
+            # Also patch all Rich modules that have cached cell_len at import time
+            # This is critical because `from .cells import cell_len` creates a
+            # local binding that doesn't update when we patch rich.cells.cell_len
+            for module_name in self._RICH_MODULES_WITH_CELL_LEN:
+                if module_name in sys.modules:
+                    module = sys.modules[module_name]
+                    if hasattr(module, "cell_len"):
+                        module.cell_len = _export_cell_len  # type: ignore[assignment,attr-defined]
+                    if hasattr(module, "cached_cell_len"):
+                        module.cached_cell_len = _export_cell_len  # type: ignore[assignment,attr-defined]
+
+            self._cell_len_patched = True
+        except ImportError:
+            self._cell_len_patched = False
+
+    def _restore_rich_cell_len(self) -> None:
+        """Restore original rich.cells.cell_len after export."""
+        import sys
+
+        if not hasattr(self, "_cell_len_patched") or not self._cell_len_patched:
+            return
+
+        try:
+            from rich import cells as rich_cells
+
+            if hasattr(self, "_original_cell_len"):
+                original_cell_len = self._original_cell_len
+                original_cached = getattr(self, "_original_cached_cell_len", original_cell_len)
+
+                # Restore in rich.cells (the source)
+                rich_cells.cell_len = original_cell_len  # type: ignore[assignment,attr-defined]
+                rich_cells.cached_cell_len = original_cached  # type: ignore[assignment,attr-defined]
+
+                # Restore in all Rich modules that we patched
+                for module_name in self._RICH_MODULES_WITH_CELL_LEN:
+                    if module_name in sys.modules:
+                        module = sys.modules[module_name]
+                        if hasattr(module, "cell_len"):
+                            module.cell_len = original_cell_len  # type: ignore[assignment,attr-defined]
+                        if hasattr(module, "cached_cell_len"):
+                            module.cached_cell_len = original_cached  # type: ignore[assignment,attr-defined]
+
+                self._cell_len_patched = False
+        except ImportError:
+            pass
 
     @property
     def theme(self) -> Theme:
@@ -1135,9 +1251,13 @@ class Console:
         self._exporter._validate_recording_enabled()
         from styledconsole.export import get_image_exporter
 
-        image_exporter_cls = get_image_exporter()
-        exporter = image_exporter_cls(self._rich_console)
-        exporter.save_png(path, scale=scale)
+        try:
+            image_exporter_cls = get_image_exporter()
+            exporter = image_exporter_cls(self._rich_console)
+            exporter.save_png(path, scale=scale)
+        finally:
+            # Restore cell_len after export so subsequent terminal output is correct
+            self._restore_rich_cell_len()
 
     def export_webp(
         self,
@@ -1190,17 +1310,23 @@ class Console:
         self._exporter._validate_recording_enabled()
         from styledconsole.export import get_image_exporter
 
-        image_exporter_cls = get_image_exporter()
-        exporter = image_exporter_cls(self._rich_console, theme=theme)
-        exporter.save_webp(
-            path,
-            quality=quality,
-            animated=animated,
-            fps=fps,
-            loop=loop,
-            auto_crop=auto_crop,
-            crop_margin=crop_margin,
-        )
+        # Patch cell_len only during export to avoid affecting terminal output
+        self._patch_rich_cell_len_for_export()
+        try:
+            image_exporter_cls = get_image_exporter()
+            exporter = image_exporter_cls(self._rich_console, theme=theme)
+            exporter.save_webp(
+                path,
+                quality=quality,
+                animated=animated,
+                fps=fps,
+                loop=loop,
+                do_auto_crop=auto_crop,
+                crop_margin=crop_margin,
+            )
+        finally:
+            # Restore cell_len after export so subsequent terminal output is correct
+            self._restore_rich_cell_len()
 
     def export_gif(self, path: str, *, fps: int = 10, loop: int = 0) -> None:
         """Export recorded console output as animated GIF.
@@ -1228,9 +1354,13 @@ class Console:
         self._exporter._validate_recording_enabled()
         from styledconsole.export import get_image_exporter
 
-        image_exporter_cls = get_image_exporter()
-        exporter = image_exporter_cls(self._rich_console)
-        exporter.save_gif(path, fps=fps, loop=loop)
+        try:
+            image_exporter_cls = get_image_exporter()
+            exporter = image_exporter_cls(self._rich_console)
+            exporter.save_gif(path, fps=fps, loop=loop)
+        finally:
+            # Restore cell_len after export so subsequent terminal output is correct
+            self._restore_rich_cell_len()
 
     def print(self, *args: Any, **kwargs: Any) -> None:
         """Direct pass-through to Rich console print.

@@ -51,6 +51,7 @@ class TerminalManager:
         """
         self._debug = debug
         self._logger = self._setup_logging() if debug else None
+        self._virtual_mode = False
 
         # Detect terminal capabilities if requested
         self.profile: TerminalProfile | None = None
@@ -142,7 +143,43 @@ class TerminalManager:
             ...     # Rich will treat output as terminal
             ...     pass
         """
+        # Virtual mode always forces terminal (for image/HTML export)
+        if self._virtual_mode:
+            return True
         return bool(self.profile and self.profile.ansi_support)
+
+    def set_virtual_mode(self, enabled: bool = True) -> None:
+        """Enable virtual terminal mode for exports.
+
+        When enabled, the TerminalManager behaves as if it's a perfect
+        terminal (TrueColor, Emoji support, modern width handling) regardless
+        of the actual environment. This ensures consistent layout for image
+        and HTML exports.
+
+        Args:
+            enabled: Whether to enable virtual mode. Defaults to True.
+
+        Example:
+            >>> manager = TerminalManager(detect=True)
+            >>> manager.set_virtual_mode(True)
+            >>> # Now behaves as perfect terminal for exports
+        """
+        self._virtual_mode = enabled
+        if enabled:
+            # Override with a "perfect" virtual terminal profile
+            self.profile = TerminalProfile(
+                ansi_support=True,
+                color_depth=16777216,  # TrueColor (24-bit)
+                emoji_safe=True,
+                width=80,
+                height=24,
+                term="xterm-256color",
+                colorterm="truecolor",
+                terminal_name="virtual",
+                modern_emoji=True,
+            )
+            if self._debug and self._logger:
+                self._logger.debug("Virtual terminal mode enabled (perfect profile)")
 
 
 __all__ = ["TerminalManager"]

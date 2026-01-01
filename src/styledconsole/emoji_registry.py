@@ -176,6 +176,23 @@ class _EmojiRegistry:
         self._ensure_initialized()
         return sorted(self._cache.keys())
 
+    def get_emoji_regex(self) -> str:
+        """Get the regex pattern for all emoji characters.
+
+        Returns:
+            Regex pattern string (unescaped).
+        """
+        import re
+
+        # We need the full data from the package to build the regex
+        # Sort by length descending to match longest sequences first
+        self._ensure_initialized()
+
+        # Note: We rely on _emoji_pkg.EMOJI_DATA which we already imported as _emoji_pkg
+        emoji_chars = sorted(_emoji_pkg.EMOJI_DATA.keys(), key=len, reverse=True)
+        pattern = "|".join(map(re.escape, emoji_chars))
+        return f"({pattern})"
+
 
 # Singleton instance
 EMOJI = _EmojiRegistry()
