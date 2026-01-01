@@ -209,10 +209,10 @@ def generate_rainbow_banner():
     """Generate rainbow banner example - shows both rainbow and gradient styles."""
     console = Console(record=True, width=TERMINAL_COLS, policy=IMAGE_EXPORT_POLICY)
     # Full ROYGBIV rainbow spectrum
-    console.banner("RAINBOW", font="slant", rainbow=True)
+    console.banner("Styled Console", font="slant", rainbow=True)
     console.newline()
     # Two-color gradient
-    console.banner("HELLO", font="big", start_color="cyan", end_color="magenta")
+    console.banner("Hello World!", font="big", start_color="cyan", end_color="magenta")
     console.export_webp(
         str(OUTPUT_DIR / "rainbow_banner.webp"), theme=FIXED_TERMINAL_THEME, auto_crop=True
     )
