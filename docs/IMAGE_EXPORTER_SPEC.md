@@ -1,8 +1,9 @@
 # Image Exporter Specification (v0.9.9)
 
-**Status:** Implementation Plan
-**Target Version:** v0.9.9
+**Status:** ✅ Implemented
+**Released:** v0.9.9
 **Created:** December 28, 2025
+**Updated:** January 2, 2026
 
 ______________________________________________________________________
 
