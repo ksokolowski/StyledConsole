@@ -2,10 +2,10 @@
 
 [![Python >=3.10](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-0.9.8.1-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole/releases/tag/v0.9.8.1)
+[![Version](https://img.shields.io/badge/version-0.9.9-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole/releases/tag/v0.9.9)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20the%20project-ff5e5b?logo=ko-fi&logoColor=white)](https://ko-fi.com/styledconsole)
-[![Tests](https://img.shields.io/badge/tests-943%20passing-success.svg)](https://github.com/ksokolowski/StyledConsole)
-[![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole)
+[![Tests](https://img.shields.io/badge/tests-869%20passing-success.svg)](https://github.com/ksokolowski/StyledConsole)
+[![Coverage](https://img.shields.io/badge/coverage-80%25-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole)
 [![MyPy](https://img.shields.io/badge/mypy-passing-success.svg)](https://github.com/ksokolowski/StyledConsole)
 
 ![StyledConsole Animation](docs/images/gradient_animation.webp)
