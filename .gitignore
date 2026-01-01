@@ -63,3 +63,9 @@ dmypy.json
 
 # Local Gitea setup guide (optional)
 SETUP-GITEA.md
+
+# Claude Code instructions (keep in StyledConsole-Internal)
+CLAUDE.md
+
+# Large font files (downloaded at runtime)
+src/styledconsole/export/fonts/*.ttf

@@ -23,6 +23,7 @@ class Banner:
         font: Pyfiglet font name (default: "standard")
         start_color: Starting color for gradient (hex, rgb, or named color)
         end_color: Ending color for gradient (hex, rgb, or named color)
+        rainbow: Use full ROYGBIV rainbow spectrum instead of linear gradient
         border: Border style name or BorderStyle object (None for no border)
         width: Fixed width for banner (None for auto-width)
         align: AlignType = "center"
@@ -33,6 +34,7 @@ class Banner:
     font: str = "standard"
     start_color: str | None = None
     end_color: str | None = None
+    rainbow: bool = False
     border: str | BorderStyle | None = None
     width: int | None = None
     align: AlignType = "center"

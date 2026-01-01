@@ -37,12 +37,12 @@ pip install styledconsole
 
 <table>
 <tr>
-<td><img src="docs/images/basic_frame.webp" alt="Basic Frame"/></td>
-<td><img src="docs/images/gradient_frame.webp" alt="Gradient Frame"/></td>
+<td><!-- EXAMPLE_IMAGE:basic_frame --></td>
+<td><!-- EXAMPLE_IMAGE:gradient_frame --></td>
 </tr>
 <tr>
-<td><img src="docs/images/status_messages.webp" alt="Status Messages"/></td>
-<td><img src="docs/images/icons_showcase.webp" alt="Icons Showcase"/></td>
+<td><!-- EXAMPLE_IMAGE:status_messages --></td>
+<td><!-- EXAMPLE_IMAGE:icons_showcase --></td>
 </tr>
 </table>
 <!-- markdownlint-enable MD033 -->
@@ -55,12 +55,7 @@ ______________________________________________________________________
 
 Use the `icons` facade for policy-aware symbols with automatic ASCII fallback and zero-width alignment fixes. Includes a data layer of 4000+ emojis.
 
-```python
-from styledconsole import icons
-
-print(f"{icons.ROCKET} Deploying...")  # Auto-detects terminal
-print(f"{icons.CHECK_MARK_BUTTON} Done!")
-```
+<!-- EXAMPLE:icons_showcase -->
 
 | Environment          | Output | Symbol        |
 | -------------------- | ------ | ------------- |
@@ -71,97 +66,29 @@ print(f"{icons.CHECK_MARK_BUTTON} Done!")
 
 Use named colors, bright variants, hex RGB, and ANSI 256-color codes for unlimited styling possibilities.
 
-<!-- markdownlint-disable MD033 -->
-
-<img src="docs/images/text_styles.webp" alt="Text Styles"/>
-<!-- markdownlint-enable MD033 -->
-
-```python
-# Rich color support - named colors and RGB
-console.text("Red alert!", color="red")
-console.text("Green success", color="green")
-console.text("Blue info", color="blue")
-console.text("Custom RGB", color="#ff6b6b")
-```
+<!-- EXAMPLE_FULL:text_styles -->
 
 ### 🌈 Multiline Gradient Text
 
 Apply smooth color gradients across multiple lines of text using the powerful `gradient_frame` function.
 
-<!-- markdownlint-disable MD033 -->
-
-<img src="docs/images/gradient_text.webp" alt="Gradient Text"/>
-<!-- markdownlint-enable MD033 -->
-
-```python
-from styledconsole.effects import gradient_frame
-
-# Apply gradient to multiline text
-lines = gradient_frame(
-    ["Welcome to StyledConsole!", "Beautiful gradient text", "Across multiple lines"],
-    start_color="cyan",
-    end_color="magenta",
-    target="content",
-)
-for line in lines:
-    print(line)
-```
+<!-- EXAMPLE_FULL:gradient_text -->
 
 ### ✨ Rich Text Styling
 
 Apply bold, italic, underline, strikethrough, and dim effects to any text — fully rendered in terminal and image export.
 
-<!-- markdownlint-disable MD033 -->
-
-<img src="docs/images/font_styles.webp" alt="Font Styles"/>
-<!-- markdownlint-enable MD033 -->
-
-```python
-from styledconsole import Console
-
-console = Console()
-
-# Text styling with bold, italic, underline, strikethrough
-console.text("Bold text for emphasis", bold=True)
-console.text("Italic text for style", italic=True)
-console.text("Underlined for importance", underline=True)
-console.text("Strikethrough for removed", strike=True)
-
-# Combined styles with colors
-console.text("Bold + Red + Underline", bold=True, color="red", underline=True)
-console.text("Italic + Cyan + Strike", italic=True, color="cyan", strike=True)
-```
+<!-- EXAMPLE_FULL:font_styles -->
 
 ### 🏗️ Advanced Frame Engine
 
 Build complex, multi-layered UI architectures with 8 beautiful border styles and automatic width alignment for consistent layouts.
 
-<!-- markdownlint-disable MD033 -->
-
-<img src="docs/images/nested_frames.webp" alt="Nested Frames"/>
-<!-- markdownlint-enable MD033 -->
-
-```python
-from styledconsole import Console
-
-console = Console()
-inner = console.render_frame("Core", border="double", width=20)
-console.frame(["Application Shell", inner], border="heavy", width=40)
-```
+<!-- EXAMPLE_FULL:nested_frames -->
 
 #### 📦 8 Beautiful Border Styles
 
-<!-- markdownlint-disable MD033 -->
-
-<img src="docs/images/border_styles.webp" alt="Border Styles"/>
-<!-- markdownlint-enable MD033 -->
-
-```python
-# 8 beautiful border styles available
-styles = ["solid", "double", "rounded", "heavy", "dots", "minimal", "thick", "ascii"]
-for style in styles:
-    console.frame(f"{style}", border=style, width=20)
-```
+<!-- EXAMPLE_FULL:border_styles -->
 
 ### 🌈 Dynamic Gradient Engine
 
@@ -200,18 +127,7 @@ Animation.run(gradient_generator, fps=20, duration=5)
 
 Generate massive, high-impact headers using 500+ fonts with integrated gradient support and automatic centering.
 
-<!-- markdownlint-disable MD033 -->
-
-<img src="docs/images/rainbow_banner.webp" alt="Rainbow Banner"/>
-<!-- markdownlint-enable MD033 -->
-
-```python
-# Full ROYGBIV rainbow spectrum
-console.banner("RAINBOW", font="slant", rainbow=True)
-
-# Two-color gradient
-console.banner("HELLO", font="big", start_color="cyan", end_color="magenta")
-```
+<!-- EXAMPLE_FULL:rainbow_banner -->
 
 ### 🔧 Environment-Aware Rendering
 
@@ -252,25 +168,7 @@ ______________________________________________________________________
 pip install styledconsole
 ```
 
-<!-- markdownlint-disable MD033 -->
-
-<img src="docs/images/basic_frame.webp" alt="Basic Frame"/>
-<!-- markdownlint-enable MD033 -->
-
-```python
-from styledconsole import Console, icons
-
-console = Console()
-
-console.frame(
-    f"{icons.CHECK_MARK_BUTTON} Build successful\n"
-    f"{icons.ROCKET} Deployed to production",
-    title=f"{icons.SPARKLES} Status",
-    border="rounded",
-    border_gradient_start="green",
-    border_gradient_end="cyan",
-)
-```
+<!-- EXAMPLE_FULL:basic_frame -->
 
 ______________________________________________________________________
 
@@ -278,46 +176,11 @@ ______________________________________________________________________
 
 ### CI/CD Pipeline Dashboard
 
-<!-- markdownlint-disable MD033 -->
-
-<img src="docs/images/build_report.webp" alt="Build Report"/>
-<!-- markdownlint-enable MD033 -->
-
-```python
-from styledconsole import Console, icons
-
-console = Console()
-console.banner("BUILD", font="standard", start_color="blue", end_color="purple")
-
-console.frame([
-    f"{icons.CHECK_MARK_BUTTON} Lint checks passed",
-    f"{icons.CHECK_MARK_BUTTON} Unit tests: 427/427",
-    f"{icons.CHECK_MARK_BUTTON} Integration tests: 52/52",
-    f"{icons.WARNING} Coverage: 94% (target: 95%)",
-    f"{icons.ROCKET} Deploying to staging...",
-], title=f"{icons.BAR_CHART} Pipeline Status", border="heavy", border_color="green")
-```
+<!-- EXAMPLE_FULL:build_report -->
 
 ### Error Reporting with Style
 
-<!-- markdownlint-disable MD033 -->
-
-<img src="docs/images/error_report.webp" alt="Error Report"/>
-<!-- markdownlint-enable MD033 -->
-
-```python
-console.frame(
-    f"{icons.CROSS_MARK} Connection refused\n\n"
-    f"   Host: database.example.com:5432\n"
-    f"   Error: ETIMEDOUT after 30s\n"
-    f"   Retry: 3/3 attempts failed\n\n"
-    f"{icons.LIGHT_BULB} Check firewall settings",
-    title=f"{icons.WARNING} Database Error",
-    border="heavy",
-    border_gradient_start="red",
-    border_gradient_end="darkred"
-)
-```
+<!-- EXAMPLE_FULL:error_report -->
 
 ______________________________________________________________________
 

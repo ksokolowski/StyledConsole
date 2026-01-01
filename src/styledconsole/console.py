@@ -27,6 +27,7 @@ from styledconsole.utils.terminal import TerminalProfile
 
 if TYPE_CHECKING:
     from styledconsole.core.group import FrameGroupContext
+    from styledconsole.export import ImageTheme
 
 
 class Console:
@@ -120,6 +121,12 @@ class Console:
 
         # Apply policy to global icon system
         self._policy.apply_to_icons()
+
+        # Apply render target to global width calculation system
+        # This ensures visual_width() uses correct calculations for image/html export
+        from styledconsole.utils.text import set_render_target
+
+        set_render_target(self._policy.render_target)
 
         # Initialize terminal manager (handles detection and color system)
         self._terminal = TerminalManager(detect=detect_terminal, debug=debug)
@@ -816,6 +823,7 @@ class Console:
         font: str = "standard",
         start_color: str | None = None,
         end_color: str | None = None,
+        rainbow: bool = False,
         border: str | None = None,
         width: int | None = None,
         align: AlignType = "center",
@@ -837,6 +845,8 @@ class Console:
                 hex codes, RGB tuples, or CSS4 names. Defaults to None.
             end_color: Ending color for per-line gradient effect. Required
                 when start_color is set. Defaults to None.
+            rainbow: Use full ROYGBIV rainbow spectrum instead of linear gradient.
+                Overrides start_color/end_color when True. Defaults to False.
             border: Optional border style to frame the banner. One of: "solid",
                 "double", "rounded", etc. Defaults to None (no border).
             width: Banner width in characters. If None, auto-calculated.
@@ -858,6 +868,9 @@ class Console:
             ...     end_color="blue",
             ...     border="double"
             ... )
+
+            >>> # With full rainbow spectrum
+            >>> console.banner("RAINBOW", font="slant", rainbow=True)
 
             >>> # With semantic theme colors
             >>> console = Console(theme="dark")
@@ -885,6 +898,7 @@ class Console:
             font=font,
             start_color=resolved_start_color,
             end_color=resolved_end_color,
+            rainbow=rainbow,
             border=border,
             width=width,
             align=align,
@@ -1093,6 +1107,130 @@ class Console:
             >>> print(repr(text))  # No ANSI codes
         """
         return self._exporter.export_text()
+
+    def export_png(self, path: str, *, scale: float = 1.0) -> None:
+        """Export recorded console output as PNG image.
+
+        Renders all recorded output to a PNG image file, preserving colors
+        and styling. Requires Pillow to be installed.
+
+        Args:
+            path: Output file path for the PNG image.
+            scale: Scale factor for the image (e.g., 2.0 for retina displays).
+                Defaults to 1.0.
+
+        Raises:
+            RuntimeError: If recording mode was not enabled during initialization.
+            ImportError: If Pillow is not installed.
+
+        Example:
+            >>> console = Console(record=True)
+            >>> console.frame("Hello World", border="rounded")
+            >>> console.export_png("output.png")
+            >>> console.export_png("output@2x.png", scale=2.0)  # Retina
+
+        Note:
+            Requires: pip install styledconsole[image]
+        """
+        self._exporter._validate_recording_enabled()
+        from styledconsole.export import get_image_exporter
+
+        image_exporter_cls = get_image_exporter()
+        exporter = image_exporter_cls(self._rich_console)
+        exporter.save_png(path, scale=scale)
+
+    def export_webp(
+        self,
+        path: str,
+        *,
+        quality: int = 90,
+        animated: bool = False,
+        fps: int = 10,
+        loop: int = 0,
+        theme: ImageTheme | None = None,
+        auto_crop: bool = False,
+        crop_margin: int = 20,
+    ) -> None:
+        """Export recorded console output as WebP image.
+
+        Renders output to WebP format, which offers better compression than PNG.
+        Supports both static and animated output. Requires Pillow.
+
+        Args:
+            path: Output file path for the WebP image.
+            quality: Image quality (0-100). Higher is better. Defaults to 90.
+            animated: If True, exports as animated WebP using captured frames.
+                Defaults to False.
+            fps: Frames per second for animation. Defaults to 10.
+            loop: Number of animation loops (0 = infinite). Defaults to 0.
+            theme: Image theme with colors, font size, and optional fixed terminal size.
+                Use ImageTheme(terminal_size=(80, 24)) for consistent sizing.
+            auto_crop: If True, automatically crop to content with margin.
+            crop_margin: Margin in pixels when auto_crop is True. Defaults to 20.
+
+        Raises:
+            RuntimeError: If recording mode was not enabled during initialization.
+            ImportError: If Pillow is not installed.
+
+        Example:
+            >>> console = Console(record=True)
+            >>> console.frame("Hello World", border="rounded")
+            >>> console.export_webp("output.webp")
+            >>> console.export_webp("output.webp", quality=95)  # Higher quality
+            >>> # Fixed terminal size for consistent image dimensions:
+            >>> from styledconsole.export import ImageTheme
+            >>> theme = ImageTheme(terminal_size=(80, 24))
+            >>> console.export_webp("output.webp", theme=theme)
+            >>> # Auto-crop to content:
+            >>> console.export_webp("output.webp", theme=theme, auto_crop=True)
+
+        Note:
+            Requires: pip install styledconsole[image]
+        """
+        self._exporter._validate_recording_enabled()
+        from styledconsole.export import get_image_exporter
+
+        image_exporter_cls = get_image_exporter()
+        exporter = image_exporter_cls(self._rich_console, theme=theme)
+        exporter.save_webp(
+            path,
+            quality=quality,
+            animated=animated,
+            fps=fps,
+            loop=loop,
+            auto_crop=auto_crop,
+            crop_margin=crop_margin,
+        )
+
+    def export_gif(self, path: str, *, fps: int = 10, loop: int = 0) -> None:
+        """Export recorded console output as animated GIF.
+
+        Renders output as GIF image. For animations, use capture_frame() to
+        record multiple states, then export_gif() to save. Requires Pillow.
+
+        Args:
+            path: Output file path for the GIF image.
+            fps: Frames per second for animation. Defaults to 10.
+            loop: Number of animation loops (0 = infinite). Defaults to 0.
+
+        Raises:
+            RuntimeError: If recording mode was not enabled during initialization.
+            ImportError: If Pillow is not installed.
+
+        Example:
+            >>> console = Console(record=True)
+            >>> console.frame("Hello World", border="rounded")
+            >>> console.export_gif("output.gif")
+
+        Note:
+            Requires: pip install styledconsole[image]
+        """
+        self._exporter._validate_recording_enabled()
+        from styledconsole.export import get_image_exporter
+
+        image_exporter_cls = get_image_exporter()
+        exporter = image_exporter_cls(self._rich_console)
+        exporter.save_gif(path, fps=fps, loop=loop)
 
     def print(self, *args: Any, **kwargs: Any) -> None:
         """Direct pass-through to Rich console print.

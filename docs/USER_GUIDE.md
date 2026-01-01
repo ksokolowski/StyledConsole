@@ -1,7 +1,7 @@
 # StyledConsole User Guide
 
-**Version:** 0.9.7
-**Last Updated:** December 26, 2025
+**Version:** 0.9.9
+**Last Updated:** December 28, 2025
 
 ______________________________________________________________________
 
@@ -16,7 +16,7 @@ ______________________________________________________________________
 1. [Icons & Terminal Fallback](#icons--terminal-fallback)
 1. [Render Policy](#render-policy)
 1. [Presets](#presets)
-1. [HTML Export](#html-export)
+1. [Export Formats](#export-formats)
 1. [Tips & Best Practices](#tips--best-practices)
 1. [API Conventions](#api-conventions)
 1. [Context Object Pattern](#context-object-pattern-advanced)
@@ -1010,9 +1010,11 @@ dashboard("System Monitor", widgets, columns=2)
 
 ______________________________________________________________________
 
-## HTML Export
+## Export Formats
 
-### Basic Export
+StyledConsole supports multiple export formats for sharing and documentation.
+
+### HTML Export
 
 ```python
 from styledconsole import Console
@@ -1031,7 +1033,7 @@ with open("output.html", "w") as f:
     f.write(html)
 ```
 
-### Customization Options
+#### HTML Customization
 
 ```python
 html = console.export_html(
@@ -1042,6 +1044,127 @@ html = console.export_html(
     clear_screen=True  # Clear buffer after export
 )
 ```
+
+### Plain Text Export
+
+```python
+console = Console(record=True)
+console.frame("Content", title="Demo")
+
+# Get ANSI-stripped plain text
+text = console.export_text()
+```
+
+### Image Export
+
+> **New in v0.9.9**
+
+Export console output as high-quality images using Pillow. Supports PNG, WebP (static and animated), and GIF formats.
+
+#### Requirements
+
+```bash
+# Install with image export support
+pip install styledconsole[image]
+```
+
+#### Static Image Export
+
+```python
+from styledconsole import Console, icons
+
+console = Console(record=True)
+console.frame(
+    f"{icons.CHECK_MARK_BUTTON} Build successful",
+    title="Status",
+    border="rounded",
+)
+
+# Export as WebP (recommended - smaller file size)
+console.export_webp("output.webp")
+
+# Export as PNG with retina scaling
+console.export_png("output.png", scale=2.0)
+
+# Export as GIF
+console.export_gif("output.gif")
+```
+
+#### Export Methods
+
+| Method          | Format | Best For                   |
+| --------------- | ------ | -------------------------- |
+| `export_webp()` | WebP   | Modern format, small files |
+| `export_png()`  | PNG    | Universal compatibility    |
+| `export_gif()`  | GIF    | Legacy support, animations |
+
+#### WebP Parameters
+
+```python
+console.export_webp(
+    "output.webp",
+    quality=90,       # Image quality (0-100)
+    animated=False,   # Set True for animated output
+    fps=10,           # Frames per second (animated only)
+    loop=0,           # Loop count (0 = infinite)
+)
+```
+
+#### PNG Parameters
+
+```python
+console.export_png(
+    "output.png",
+    scale=1.0,        # Scale factor (2.0 for retina)
+)
+```
+
+#### GIF Parameters
+
+```python
+console.export_gif(
+    "output.gif",
+    fps=10,           # Frames per second
+    loop=0,           # Loop count (0 = infinite)
+)
+```
+
+#### Advanced: Direct ImageExporter Usage
+
+For more control, use the `ImageExporter` class directly:
+
+```python
+from styledconsole.export import get_image_exporter, get_image_theme
+from rich.console import Console as RichConsole
+
+# Create custom theme
+ImageTheme = get_image_theme()
+custom_theme = ImageTheme(
+    background="#000000",
+    foreground="#ffffff",
+    font_size=16,
+    padding=30,
+)
+
+# Create Rich console with recording
+rich_console = RichConsole(record=True)
+rich_console.print("[bold red]Hello[/bold red] [green]World[/green]")
+
+# Export with custom theme
+ImageExporter = get_image_exporter()
+exporter = ImageExporter(rich_console, theme=custom_theme)
+exporter.save_webp("custom.webp")
+```
+
+#### Theme Properties
+
+| Property      | Default   | Description              |
+| ------------- | --------- | ------------------------ |
+| `background`  | `#1e1e2e` | Background color (hex)   |
+| `foreground`  | `#cdd6f4` | Default text color (hex) |
+| `font_size`   | `14`      | Font size in pixels      |
+| `padding`     | `20`      | Padding around content   |
+| `line_height` | `1.2`     | Line height multiplier   |
 
 ______________________________________________________________________
 

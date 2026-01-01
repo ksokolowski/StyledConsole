@@ -2,10 +2,15 @@
 
 This module provides emoji-safe text width calculation and grapheme manipulation,
 including support for ZWJ sequences and skin tone modifiers in modern terminals.
+
+The module supports different render targets (terminal, image, html) via a
+context variable that affects character width calculations.
 """
 
 import re
+from contextvars import ContextVar
 from functools import lru_cache
+from typing import Literal
 
 import emoji
 import wcwidth
@@ -14,12 +19,42 @@ from rich.text import Text as RichText
 
 from styledconsole.types import AlignType
 
+# Context variable for render target - affects width calculations
+# "terminal" = standard terminal width calculations
+# "image" = consistent width for image export (emojis always = 2 chars)
+# "html" = consistent width for HTML export
+_render_target_context: ContextVar[Literal["terminal", "image", "html"]] = ContextVar(
+    "render_target", default="terminal"
+)
+
 # Emoji Variation Selector-16 (U+FE0F) forces emoji presentation
 VARIATION_SELECTOR_16 = "\ufe0f"
 
 # ANSI escape sequence pattern (CSI sequences)
 # Matches CSI sequences (Control Sequence Introducer)
 ANSI_PATTERN = re.compile(r"\x1b\[[0-9;?]*[a-zA-Z]")
+
+
+def get_render_target() -> Literal["terminal", "image", "html"]:
+    """Get the current render target context.
+
+    Returns:
+        The current render target ("terminal", "image", or "html").
+    """
+    return _render_target_context.get()
+
+
+def set_render_target(target: Literal["terminal", "image", "html"]) -> None:
+    """Set the render target context for width calculations.
+
+    This affects how visual_width() calculates character widths.
+    For "image" and "html" modes, emojis are always calculated as
+    width 2 for consistent alignment in exported output.
+
+    Args:
+        target: The render target ("terminal", "image", or "html").
+    """
+    _render_target_context.set(target)
 
 
 def strip_ansi(text: str) -> str:
@@ -181,14 +216,38 @@ def _grapheme_width_standard(grapheme: str) -> int:
     return w if w >= 0 else 1
 
 
-@lru_cache(maxsize=1024)
+def _grapheme_width_export(grapheme: str) -> int:
+    """Calculate width in export mode (image/HTML).
+
+    In export mode, we use consistent widths for emojis to ensure
+    proper frame alignment in images and HTML output.
+    All emojis (including VS16 and ZWJ sequences) are width 2.
+    """
+    # Check if this is an emoji grapheme
+    if emoji.is_emoji(grapheme):
+        return 2  # All emojis are consistently width 2 in export mode
+
+    # For ZWJ sequences that might not be recognized as emoji
+    if "\u200d" in grapheme:
+        return 2
+
+    # For VS16 sequences that might not be recognized
+    if VARIATION_SELECTOR_16 in grapheme:
+        return 2
+
+    # For regular text, use wcwidth
+    w = wcwidth.wcswidth(grapheme)
+    return w if w >= 0 else 1
+
+
 def visual_width(text: str, markup: bool = False) -> int:
     """Calculate the visual display width of text.
 
     This function:
     1. Strips ANSI escape sequences
     2. Splits text into graphemes using robust logic
-    3. Calculates width for each grapheme based on terminal mode:
+    3. Calculates width for each grapheme based on render target and terminal mode:
+       - Export mode (image/html): All emojis = 2 (consistent for alignment)
        - Modern mode (Kitty, WezTerm, etc.): VS16 = 2, ZWJ = 2
        - Standard mode: VS16 = 1, ZWJ = 2
        - Legacy mode: Sum of parts for complex sequences
@@ -196,7 +255,32 @@ def visual_width(text: str, markup: bool = False) -> int:
     Terminal mode is auto-detected or can be controlled via:
     - STYLEDCONSOLE_MODERN_TERMINAL=1 (force modern mode)
     - STYLEDCONSOLE_LEGACY_EMOJI=1 (force legacy mode)
+
+    For image/HTML export, use set_render_target("image") or set_render_target("html")
+    before calling this function to get consistent emoji widths.
+
+    Note: To clear the internal cache, call visual_width.cache_clear().
     """
+    # Check render target - use export mode for image/html
+    render_target = get_render_target()
+    use_export_mode = render_target in ("image", "html")
+
+    # Use cached version for terminal mode (most common case)
+    if not use_export_mode:
+        return _visual_width_cached(text, markup)
+
+    # Export mode: calculate without caching (context-dependent)
+    return _visual_width_impl(text, markup, use_export_mode=True)
+
+
+@lru_cache(maxsize=1024)
+def _visual_width_cached(text: str, markup: bool = False) -> int:
+    """Cached version of visual_width for terminal mode."""
+    return _visual_width_impl(text, markup, use_export_mode=False)
+
+
+def _visual_width_impl(text: str, markup: bool, *, use_export_mode: bool) -> int:
+    """Implementation of visual_width calculation."""
     # Strip ANSI codes first
     clean_text = strip_ansi(text)
 
@@ -210,6 +294,15 @@ def visual_width(text: str, markup: bool = False) -> int:
 
     # Split into graphemes to handle complex sequences correctly
     graphemes = split_graphemes(clean_text)
+
+    # Export mode uses consistent emoji widths
+    if use_export_mode:
+        width = 0
+        for g in graphemes:
+            width += _grapheme_width_export(g)
+        return width
+
+    # Terminal mode uses terminal-specific calculations
     legacy_mode = _is_legacy_emoji_mode()
     modern_mode = _is_modern_terminal_mode() if not legacy_mode else False
 
@@ -223,6 +316,10 @@ def visual_width(text: str, markup: bool = False) -> int:
             width += _grapheme_width_standard(g)
 
     return width
+
+
+# Expose cache_clear on visual_width for backward compatibility
+visual_width.cache_clear = _visual_width_cached.cache_clear  # type: ignore[attr-defined]
 
 
 def _parse_ansi_sequence(text: str, start: int) -> tuple[str, int]:
@@ -724,8 +821,16 @@ def adjust_emoji_spacing_in_text(
     """Adjust spacing after emojis inside arbitrary text.
 
     Modified to work dynamically without a pre-computed safe list.
+
+    Note: In export mode (render_target="image" or "html"), this function
+    returns text unchanged since emoji widths are consistent in export mode.
     """
     if not text or separator == "":
+        return text
+
+    # Skip emoji spacing adjustment in export mode - widths are consistent there
+    render_target = get_render_target()
+    if render_target in ("image", "html"):
         return text
 
     # New implementation pattern:
@@ -785,9 +890,11 @@ __all__ = [
     "default_gluing_emojis",
     "format_emoji_with_spacing",
     "get_emoji_spacing_adjustment",
+    "get_render_target",
     "get_safe_emojis",
     "normalize_content",
     "pad_to_width",
+    "set_render_target",
     "split_graphemes",
     "strip_ansi",
     "truncate_to_width",

@@ -18,9 +18,13 @@ All functions support:
 from __future__ import annotations
 
 from io import StringIO
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from styledconsole.core.styles import get_border_style
+
+if TYPE_CHECKING:
+    from styledconsole import Console
+
 from styledconsole.effects.engine import apply_gradient
 from styledconsole.effects.strategies import (
     BorderOnly,
@@ -35,7 +39,7 @@ from styledconsole.effects.strategies import (
     VerticalPosition,
 )
 from styledconsole.utils.color import colorize, get_rainbow_color, interpolate_color
-from styledconsole.utils.text import strip_ansi
+from styledconsole.utils.text import get_render_target, set_render_target, strip_ansi
 
 __all__ = [
     "diagonal_gradient_frame",
@@ -71,6 +75,21 @@ def _get_border_chars(border_style: str) -> set[str]:
         style.bottom_joint,
         style.cross,
     }
+
+
+def _create_console_preserving_context(buffer: StringIO) -> Console:
+    """Create a Console while preserving the render_target context.
+
+    The Console.__init__ sets render_target based on its policy, which can
+    overwrite the caller's context (e.g., "image" mode during image export).
+    This helper saves and restores the context.
+    """
+    from styledconsole import Console
+
+    saved_target = get_render_target()
+    console = Console(file=buffer, detect_terminal=False, record=False)
+    set_render_target(saved_target)
+    return console
 
 
 def gradient_frame(
@@ -109,11 +128,9 @@ def gradient_frame(
     else:
         content_lines = content if content else [""]
 
-    # Render base frame
+    # Render base frame (preserve render_target context)
     buffer = StringIO()
-    from styledconsole import Console
-
-    console = Console(file=buffer, detect_terminal=False, record=False)
+    console = _create_console_preserving_context(buffer)
     console.frame(
         content_lines,
         title=title,
@@ -187,11 +204,9 @@ def diagonal_gradient_frame(
 
         width = max(20, min(needed_width, 100))
 
-    # Render base frame
+    # Render base frame (preserve render_target context)
     buffer = StringIO()
-    from styledconsole import Console
-
-    console = Console(file=buffer, detect_terminal=False, record=False)
+    console = _create_console_preserving_context(buffer)
     console.frame(
         content_lines,
         title=title,
@@ -244,11 +259,9 @@ def rainbow_frame(
     else:
         content_lines = content if content else [""]
 
-    # Render base frame
+    # Render base frame (preserve render_target context)
     buffer = StringIO()
-    from styledconsole import Console
-
-    console = Console(file=buffer, detect_terminal=False, record=False)
+    console = _create_console_preserving_context(buffer)
     console.frame(
         content_lines,
         title=title,
@@ -303,11 +316,9 @@ def rainbow_cycling_frame(
     else:
         content_lines = content if content else [""]
 
-    # Render base frame
+    # Render base frame (preserve render_target context)
     buffer = StringIO()
-    from styledconsole import Console
-
-    console = Console(file=buffer, detect_terminal=False, record=False)
+    console = _create_console_preserving_context(buffer)
     console.frame(
         content_lines,
         title=title,

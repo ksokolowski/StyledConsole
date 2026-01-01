@@ -543,7 +543,11 @@ class RenderingEngine:
                 ascii_lines = [banner.text]
 
         # Apply gradient coloring if specified
-        if banner.start_color and banner.end_color:
+        if banner.rainbow:
+            from styledconsole.utils.color import apply_rainbow_gradient
+
+            ascii_lines = apply_rainbow_gradient(ascii_lines)
+        elif banner.start_color and banner.end_color:
             ascii_lines = apply_line_gradient(ascii_lines, banner.start_color, banner.end_color)
 
         # If no border, return ASCII art lines directly
@@ -584,6 +588,7 @@ class RenderingEngine:
         font: str = "standard",
         start_color: str | None = None,
         end_color: str | None = None,
+        rainbow: bool = False,
         border: str | None = None,
         width: int | None = None,
         align: AlignType = "center",
@@ -596,6 +601,7 @@ class RenderingEngine:
             font: FIGlet font name. Defaults to "standard".
             start_color: Gradient start color. Defaults to None.
             end_color: Gradient end color. Defaults to None.
+            rainbow: Use full ROYGBIV rainbow spectrum. Defaults to False.
             border: Optional border style. Defaults to None.
             width: Fixed width or None for auto. Defaults to None.
             align: Text alignment. Defaults to "center".
@@ -604,7 +610,7 @@ class RenderingEngine:
         if self._debug:
             self._logger.debug(
                 f"Rendering banner: text='{text}', font='{font}', "
-                f"gradient={start_color}→{end_color}, border={border}"
+                f"gradient={start_color}→{end_color}, rainbow={rainbow}, border={border}"
             )
 
         banner_obj = Banner(
@@ -612,6 +618,7 @@ class RenderingEngine:
             font=font,
             start_color=start_color,
             end_color=end_color,
+            rainbow=rainbow,
             border=border,
             width=width,
             align=align,

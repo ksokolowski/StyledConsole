@@ -1,6 +1,6 @@
 [project]
 name = "styledconsole"
-version = "0.9.8.1"
+version = "0.9.9"
 description = "A modern Python library for elegant terminal output with rich formatting, colors, emoji support, and export capabilities"
 readme = "README.md"
 authors = [
@@ -36,6 +36,9 @@ Homepage = "https://github.com/ksokolowski/StyledConsole"
 Repository = "https://github.com/ksokolowski/StyledConsole"
 Documentation = "https://github.com/ksokolowski/StyledConsole"
 
+[project.optional-dependencies]
+image = ["Pillow>=10.0.0"]
+
 [dependency-groups]
 dev = [
     "pytest>=8.0",
@@ -45,6 +48,7 @@ dev = [
     "pre-commit>=3.6",
     "radon>=6.0",
     "mypy>=1.0",
+    "Pillow>=10.0.0",
 ]
 
 [build-system]

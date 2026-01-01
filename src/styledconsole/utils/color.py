@@ -405,6 +405,57 @@ def apply_line_gradient(
     return colored_lines
 
 
+def apply_rainbow_gradient(
+    lines: list[str],
+    policy: RenderPolicy | None = None,
+) -> list[str]:
+    """Apply ROYGBIV rainbow gradient to lines (top to bottom).
+
+    Uses the full rainbow spectrum instead of a simple two-color gradient.
+    Each line gets a color from the rainbow based on its position.
+
+    Policy-aware: returns uncolored lines when policy.color=False.
+
+    Args:
+        lines: Text lines to colorize
+        policy: Optional RenderPolicy. If policy.color=False, returns lines unchanged.
+
+    Returns:
+        Lines with ANSI color codes applied (or unchanged if color disabled)
+
+    Example:
+        >>> lines = ["Line 1", "Line 2", "Line 3", "Line 4", "Line 5"]
+        >>> colored = apply_rainbow_gradient(lines)
+        >>> for line in colored:
+        ...     print(line)  # Full rainbow gradient from red to violet
+    """
+    if not lines:
+        return lines
+
+    # Check policy - skip colorization if color is disabled
+    if policy is not None and not policy.color:
+        return lines
+
+    colored_lines = []
+    num_lines = len(lines)
+
+    for i, line in enumerate(lines):
+        # Calculate gradient position (0.0 to 1.0)
+        t = i / (num_lines - 1) if num_lines > 1 else 0.0
+
+        # Get rainbow color at this position
+        hex_color = get_rainbow_color(t)
+
+        # Parse hex color to RGB
+        r, g, b = hex_to_rgb(hex_color)
+
+        # Apply ANSI color code
+        colored_line = f"\033[38;2;{r};{g};{b}m{line}\033[0m"
+        colored_lines.append(colored_line)
+
+    return colored_lines
+
+
 def colorize_text(
     text: str,
     color: str,
@@ -501,8 +552,7 @@ __all__ = [
     "CSS4_COLORS",
     "RGBColor",
     "apply_line_gradient",
-    "apply_line_gradient",
-    "color_distance",
+    "apply_rainbow_gradient",
     "color_distance",
     "color_to_ansi",
     "colorize",

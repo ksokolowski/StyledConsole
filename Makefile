@@ -2,7 +2,7 @@
 # Unified task runner for consistent Developer Experience
 # Requires: uv (https://github.com/astral-sh/uv)
 
-.PHONY: help setup test lint lint-fix format format-check qa clean coverage type-check demo examples examples-auto examples-list
+.PHONY: help setup test lint lint-fix format format-check qa clean coverage type-check demo examples examples-auto examples-list readme readme-images
 
 # Windows compatibility: use PowerShell and .venv paths
 ifeq ($(OS),Windows_NT)
@@ -47,6 +47,10 @@ help:
 	@echo "  make examples      Run all examples (interactive)"
 	@echo "  make examples-auto Run all examples (auto mode)"
 	@echo "  make examples-list List available example categories"
+	@echo ""
+	@echo "Documentation:"
+	@echo "  make readme        Generate README.md from template"
+	@echo "  make readme-images Generate README images and update README.md"
 	@echo ""
 	@echo "Git Hooks:"
 	@echo "  make install-hooks Install pre-commit hooks"
@@ -114,6 +118,15 @@ examples-auto:
 examples-list:
 	@echo "Listing available example categories..."
 	$(PYTHON) examples/run_examples.py --list
+
+# Documentation
+readme:
+	@echo "Generating README.md from template..."
+	$(PYTHON) scripts/readme/generate.py
+
+readme-images:
+	@echo "Generating README images and updating README.md..."
+	$(PYTHON) scripts/readme/generate.py --images
 
 # Git Hooks
 install-hooks:

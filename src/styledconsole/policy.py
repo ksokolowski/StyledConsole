@@ -30,6 +30,9 @@ import sys
 from dataclasses import dataclass
 from typing import Literal
 
+# Render target types for different output modes
+RenderTarget = Literal["terminal", "image", "html"]
+
 
 @dataclass(frozen=True, slots=True)
 class RenderPolicy:
@@ -44,6 +47,8 @@ class RenderPolicy:
         color: Allow ANSI color codes in output.
         emoji: Allow emoji characters (implies unicode=True if emoji=True).
         force_ascii_icons: Force Icon Provider to use ASCII mode.
+        render_target: Output target ("terminal", "image", "html").
+            Affects character width calculations for proper alignment.
 
     Example:
         >>> # Minimal ASCII-only output for logs
@@ -54,12 +59,16 @@ class RenderPolicy:
         >>>
         >>> # CI-friendly: colors but no emoji
         >>> policy = RenderPolicy(unicode=True, color=True, emoji=False)
+        >>>
+        >>> # Image export mode (consistent emoji widths)
+        >>> policy = RenderPolicy.for_image_export()
     """
 
     unicode: bool = True
     color: bool = True
     emoji: bool = True
     force_ascii_icons: bool = False
+    render_target: RenderTarget = "terminal"
 
     def __post_init__(self) -> None:
         """Validate policy constraints."""
@@ -174,6 +183,42 @@ class RenderPolicy:
         """
         return cls(unicode=True, color=False, emoji=True, force_ascii_icons=False)
 
+    @classmethod
+    def for_image_export(cls) -> RenderPolicy:
+        """Create a policy optimized for image export.
+
+        Enables all visual features and sets render_target to "image"
+        for consistent character width calculations in exported images.
+
+        Returns:
+            RenderPolicy configured for image export.
+        """
+        return cls(
+            unicode=True,
+            color=True,
+            emoji=True,
+            force_ascii_icons=False,
+            render_target="image",
+        )
+
+    @classmethod
+    def for_html_export(cls) -> RenderPolicy:
+        """Create a policy optimized for HTML export.
+
+        Enables all visual features and sets render_target to "html"
+        for consistent character width calculations in HTML output.
+
+        Returns:
+            RenderPolicy configured for HTML export.
+        """
+        return cls(
+            unicode=True,
+            color=True,
+            emoji=True,
+            force_ascii_icons=False,
+            render_target="html",
+        )
+
     def with_override(
         self,
         *,
@@ -181,6 +226,7 @@ class RenderPolicy:
         color: bool | None = None,
         emoji: bool | None = None,
         force_ascii_icons: bool | None = None,
+        render_target: RenderTarget | None = None,
     ) -> RenderPolicy:
         """Create a new policy with selective overrides.
 
@@ -189,6 +235,7 @@ class RenderPolicy:
             color: Override color setting (or None to keep current).
             emoji: Override emoji setting (or None to keep current).
             force_ascii_icons: Override icon mode (or None to keep current).
+            render_target: Override render target (or None to keep current).
 
         Returns:
             New RenderPolicy with the specified overrides.
@@ -196,6 +243,7 @@ class RenderPolicy:
         Example:
             >>> policy = RenderPolicy.from_env()
             >>> no_emoji = policy.with_override(emoji=False)
+            >>> for_image = policy.with_override(render_target="image")
         """
         return RenderPolicy(
             unicode=unicode if unicode is not None else self.unicode,
@@ -204,6 +252,7 @@ class RenderPolicy:
             force_ascii_icons=(
                 force_ascii_icons if force_ascii_icons is not None else self.force_ascii_icons
             ),
+            render_target=(render_target if render_target is not None else self.render_target),
         )
 
     @property
@@ -240,7 +289,8 @@ class RenderPolicy:
         """Return a readable representation."""
         return (
             f"RenderPolicy(unicode={self.unicode}, color={self.color}, "
-            f"emoji={self.emoji}, force_ascii_icons={self.force_ascii_icons})"
+            f"emoji={self.emoji}, force_ascii_icons={self.force_ascii_icons}, "
+            f"render_target={self.render_target!r})"
         )
 
 
@@ -278,6 +328,7 @@ def reset_default_policy() -> None:
 
 __all__ = [
     "RenderPolicy",
+    "RenderTarget",
     "get_default_policy",
     "reset_default_policy",
     "set_default_policy",
