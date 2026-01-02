@@ -258,30 +258,30 @@ class TestModernTerminalZwjSupport:
     """Test ZWJ sequence handling in modern terminals (v0.9.6+)."""
 
     def test_zwj_sequence_width_modern(self, monkeypatch):
-        """ZWJ sequences should have width 2 in modern terminal mode.
+        """ALL ZWJ sequences should have width 2 in modern terminal mode.
 
-        In modern terminals (Kitty, etc.), a sequence like 👨‍👩‍👧 renders
-        as a single glyph (width 2), not as the sum of its parts.
+        Modern terminals (Kitty, WezTerm, iTerm2, Ghostty, Alacritty) render
+        ALL ZWJ sequences as a single glyph with width 2, regardless of how
+        many component emojis are joined.
         """
         # Force modern terminal mode
         monkeypatch.setenv("STYLEDCONSOLE_MODERN_TERMINAL", "1")
         visual_width.cache_clear()
 
-        # Family: Man + ZWJ + Woman + ZWJ + Girl (3 components)
-        # Hybrid Heuristic: >2 components -> Legacy width (Safe)
-        # Legacy width: 6 (2 + 2 + 2)
-        assert visual_width("👨‍👩‍👧") == 6
+        # Family: Man + ZWJ + Woman + ZWJ + Girl (3 components) = width 2
+        assert visual_width("👨‍👩‍👧") == 2
 
-        # Technologist: Man + ZWJ + Laptop (2 components)
-        # Hybrid Heuristic: <=2 components -> Modern width (Tight)
+        # Larger family (4 components) = still width 2
+        assert visual_width("👨‍👩‍👧‍👦") == 2
+
+        # Technologist: Man + ZWJ + Laptop (2 components) = width 2
         assert visual_width("👨‍💻") == 2
 
-        # Scientist: Woman + ZWJ + Microscope (2 components)
+        # Scientist: Woman + ZWJ + Microscope (2 components) = width 2
         assert visual_width("👩‍🔬") == 2
 
-        # Rainbow Flag: Flag (1) + ZWJ + Rainbow (2) = Legacy Width 3
-        # Hybrid Heuristic: odd width (3) -> fallback to Legacy (Safe)
-        assert visual_width("🏳️‍🌈") == 3
+        # Rainbow Flag: Flag + VS16 + ZWJ + Rainbow = width 2
+        assert visual_width("🏳️‍🌈") == 2
 
     def test_vs16_sequence_width_modern(self, monkeypatch):
         """VS16 sequences should have width 2 in modern terminal mode.

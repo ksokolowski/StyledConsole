@@ -100,6 +100,32 @@ def render_markup_to_ansi(text: str) -> str:
     return buffer.getvalue()
 
 
+def create_rich_text(text: str, *, no_wrap: bool = True) -> RichText:
+    """Create RichText from string, preserving ANSI escape codes.
+
+    Handles both ANSI-escaped strings and Rich markup strings,
+    automatically detecting which parser to use based on presence
+    of ANSI escape codes.
+
+    Args:
+        text: String to convert (may contain ANSI codes or Rich markup).
+        no_wrap: Whether to disable line wrapping (default True).
+
+    Returns:
+        RichText object with proper parsing applied.
+
+    Example:
+        >>> text_obj = create_rich_text("\\x1b[31mRed\\x1b[0m")
+        >>> text_obj = create_rich_text("[bold]Bold[/]")
+    """
+    if "\x1b" in text:
+        return RichText.from_ansi(text, no_wrap=no_wrap)
+    else:
+        text_obj = RichText.from_markup(text)
+        text_obj.no_wrap = no_wrap
+        return text_obj
+
+
 def _is_legacy_emoji_mode() -> bool:
     """Check if legacy emoji mode is enabled via environment variable.
 
@@ -176,28 +202,43 @@ def _count_emoji_codepoints(grapheme: str) -> int:
 def _grapheme_width_modern(grapheme: str) -> int:
     """Calculate width in modern terminal mode.
 
-    Modern terminals (Kitty, etc.) render ZWJ sequences where each
-    component emoji takes 2 cells, merged into a single glyph.
+    Modern terminals (Kitty, WezTerm, iTerm2, Ghostty, Alacritty) render
+    ALL ZWJ sequences as a single glyph with width 2, regardless of how
+    many component emojis are joined.
 
-    For example:
-    - 👨‍💻 (Man + ZWJ + Laptop) = 2 emoji components = 4 cells
-    - 👨‍👩‍👧 (Man + ZWJ + Woman + ZWJ + Girl) = 3 emoji = 6 cells
-    - 👨‍👩‍👧‍👦 (4 people) = 4 emoji = 8 cells
+    Examples (all render as width 2 in modern terminals):
+    - 👨‍💻 (Man + ZWJ + Laptop)
+    - 👨‍👩‍👧 (Man + ZWJ + Woman + ZWJ + Girl)
+    - 👨‍👩‍👧‍👦 (4 people joined)
+    - 🏳️‍🌈 (Flag + VS16 + ZWJ + Rainbow)
     """
     if "\u200d" in grapheme:
-        # Common ZWJ sequences (2 components) usually render correctly (Width 2).
-        # Complex sequences (>2 components) like Family often fail font support (Width > 2).
-        # Also, some 2-component sequences (Rainbow Flag) have a legacy width of 3
-        # (Width 1 + Width 2) and often render as 3 chars if unjoined.
-        # We compromise: Use Modern (2) for strict 2-component even-width, Legacy (Safe) otherwise.
-        leg_w = _grapheme_width_legacy(grapheme)
-        if _count_emoji_codepoints(grapheme) > 2 or leg_w == 3:
-            return leg_w
+        # Modern terminals render ALL ZWJ sequences as single width-2 glyphs
         return 2
-    # VS16 (Emoji Presentation) usually forces width 2 (Emoji style)
-    # We let wcwidth handle it, or default to 1 if wcwidth returns -1
 
-    # For emojis, use wcwidth which returns 2 for wide characters
+    # VS16 (Variation Selector 16) forces emoji presentation = width 2
+    if VARIATION_SELECTOR_16 in grapheme:
+        return 2
+
+    # For single characters, use wcwidth first (correctly handles zero-width chars)
+    # then override with East Asian Width for width 1 vs 2 decision
+    # (wcwidth can be wrong for some chars like trigrams U+2630-U+2637)
+    if len(grapheme) == 1:
+        w = wcwidth.wcwidth(grapheme)
+        # Zero-width characters (combining marks, zero-width spaces, etc.)
+        if w == 0:
+            return 0
+        # Use Unicode East Asian Width for width 1 vs 2 decision
+        import unicodedata
+
+        eaw = unicodedata.east_asian_width(grapheme)
+        # Wide (W) and Fullwidth (F) = width 2
+        # Neutral (N), Narrow (Na), Halfwidth (H), Ambiguous (A) = width 1 in Western terminals
+        if eaw in ("W", "F"):
+            return 2
+        return 1
+
+    # For multi-codepoint graphemes without ZWJ/VS16, use wcwidth
     w = wcwidth.wcswidth(grapheme)
     return w if w >= 0 else 1
 
