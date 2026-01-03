@@ -1,268 +1,238 @@
-# ✨ StyledConsole ✨
+# ✨ StyledConsole
 
 [![Python >=3.10](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-0.9.8.1-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole/releases/tag/v0.9.8.1)
-[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20the%20project-ff5e5b?logo=ko-fi&logoColor=white)](https://ko-fi.com/styledconsole)
-[![Tests](https://img.shields.io/badge/tests-943%20passing-success.svg)](https://github.com/ksokolowski/StyledConsole)
-[![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole)
-[![MyPy](https://img.shields.io/badge/mypy-passing-success.svg)](https://github.com/ksokolowski/StyledConsole)
+[![Version](https://img.shields.io/badge/version-0.9.9.1-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole/releases)
+[![Tests](https://img.shields.io/badge/tests-869%20passing-success.svg)](https://github.com/ksokolowski/StyledConsole)
+[![Coverage](https://img.shields.io/badge/coverage-80%25-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/ksokolowski?style=flat&logo=githubsponsors&logoColor=pink)](https://github.com/sponsors/ksokolowski)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support-ff5e5b?logo=ko-fi&logoColor=white)](https://ko-fi.com/styledconsole)
 
-![StyledConsole Animation](docs/images/gradient_animation.webp)
+**A modern Python library for elegant terminal output** — rich formatting, colors, emojis, gradients, and export capabilities built on top of [Rich](https://github.com/Textualize/rich).
 
-______________________________________________________________________
-
-## 🚀 Introduction
-
-StyledConsole is a production-ready Python library for creating elegant and expressive terminal output.
-It provides ANSI-safe rendering with rich formatting, colors, emojis, gradients and more — making your console output both beautiful and practical.
-
-- 🎨 ANSI-safe styled output
-- 🌈 Colors and gradients support
-- 😄 Emoji and icon support
-- 🧱 Structured tables and layouts
-- 📄 Optional HTML and image export
-- 🛠️ Designed for developer experience and usability
+> 🚧 **Early Access** — Currently available on TestPyPI. Some features may be experimental.
 
 ```bash
-pip install styledconsole
+pip install -i https://test.pypi.org/simple/ styledconsole
 ```
-
-<!-- EXAMPLE_IMAGE:basic_frame --> <!-- EXAMPLE_IMAGE:gradient_frame -->
-
-<!-- EXAMPLE_IMAGE:status_messages --> <!-- EXAMPLE_IMAGE:icons_showcase -->
 
 ______________________________________________________________________
 
-## 🌟 Major Features
+## 🎨 Visual Gallery
+
+**See the [Visual Gallery](docs/GALLERY.md) for screenshots and animated demos.**
+
+______________________________________________________________________
+
+## 🚀 Why StyledConsole?
+
+Rich is powerful, but StyledConsole adds the finishing touches:
+
+|     | Feature                   | What It Does                                                      |
+| --- | ------------------------- | ----------------------------------------------------------------- |
+| 🌈  | **Gradient Engine**       | Smooth rainbows and linear gradients on borders, text, banners    |
+| 🎯  | **Smart Icons**           | 224 icons with automatic ASCII fallback for CI/legacy terminals   |
+| 📊  | **StyledTables**          | Beautiful tables with gradient borders and config-driven creation |
+| 🔧  | **Environment Detection** | Auto-adapts for `NO_COLOR`, `CI`, `TERM=dumb`                     |
+| 🏗️  | **Frame Engine**          | 8 border styles, nested frames, width alignment                   |
+| 📤  | **HTML & Image Export**   | Export to HTML, PNG, WebP, GIF with full emoji support            |
+| 📋  | **Declarative Layouts**   | Build entire UIs from JSON/dict config                            |
+
+______________________________________________________________________
+
+## ✨ Key Features
 
 ### 🎯 Smart Icon System
 
-Use the `icons` facade for policy-aware symbols with automatic ASCII fallback and zero-width alignment fixes. Includes a data layer of 4000+ emojis.
-
-<!-- EXAMPLE:icons_showcase -->
-
-| Environment          | Output | Symbol        |
-| -------------------- | ------ | ------------- |
-| Modern Terminal      | `🚀`   | Emoji         |
-| CI / Legacy Terminal | `>>>`  | Colored ASCII |
-
-### 🎨 Full Color Palette
-
-Use named colors, bright variants, hex RGB, and ANSI 256-color codes for unlimited styling possibilities.
-
-<!-- EXAMPLE_FULL:text_styles -->
-
-### 🌈 Multiline Gradient Text
-
-Apply smooth color gradients across multiple lines of text using the powerful `gradient_frame` function.
-
-<!-- EXAMPLE_FULL:gradient_text -->
-
-### ✨ Rich Text Styling
-
-Apply bold, italic, underline, strikethrough, and dim effects to any text — fully rendered in terminal and image export.
-
-<!-- EXAMPLE_FULL:font_styles -->
-
-### 🏗️ Advanced Frame Engine
-
-Build complex, multi-layered UI architectures with 8 beautiful border styles and automatic width alignment for consistent layouts.
-
-<!-- EXAMPLE_FULL:nested_frames -->
-
-#### 📦 8 Beautiful Border Styles
-
-<!-- EXAMPLE_FULL:border_styles -->
-
-### 🌈 Dynamic Gradient Engine
-
-Apply smooth ROYGBIV rainbows, multi-color linear gradients, or custom interpolation to any frame, banner, or text element.
+Policy-aware symbols with automatic ASCII fallback — works everywhere:
 
 ```python
-from styledconsole.effects import rainbow_frame
+from styledconsole import icons
 
-# Full spectrum vertical or diagonal rainbows
-rainbow_frame("Spectral Output", direction="diagonal")
+print(f"{icons.ROCKET} Deploying...")      # 🚀 in modern terminals
+print(f"{icons.CHECK_MARK_BUTTON} Done!")  # ✅ or >>> in CI
 ```
 
-### 🔄 Live Terminal Animations & Progress
+| Environment     | Output | Rendering     |
+| --------------- | ------ | ------------- |
+| Modern Terminal | 🚀     | Full emoji    |
+| CI / Legacy     | `>>>`  | Colored ASCII |
 
-Create dynamic terminal experiences with a frame-based animation engine and themed progress bars that automatically adapt to your chosen color palette.
+### 🌈 Gradient Frames & Borders
 
-<!-- markdownlint-disable MD033 -->
-
-<img src="docs/images/progress_animation.webp" alt="Progress Animation"/>
-<!-- markdownlint-enable MD033 -->
+Smooth color transitions on any frame border:
 
 ```python
-from styledconsole import StyledProgress
-from styledconsole.animation import Animation
+from styledconsole import Console
 
-# Themed progress bars with automatic color inheritance
-with StyledProgress() as progress:
-    task = progress.add_task("Assets", total=100)
-    progress.update(task, advance=50)
-
-# Frame-based animation engine for cycling gradients
-Animation.run(gradient_generator, fps=20, duration=5)
+console = Console()
+console.frame(
+    "Build successful!",
+    title="Status",
+    border="rounded",
+    border_gradient_start="green",
+    border_gradient_end="cyan",
+)
 ```
 
 ### 🔤 ASCII Art Banners
 
-Generate massive, high-impact headers using 500+ fonts with integrated gradient support and automatic centering.
+500+ fonts with integrated gradient and rainbow support:
 
-<!-- EXAMPLE_FULL:rainbow_banner -->
+```python
+console.banner("HELLO", font="slant", rainbow=True)
+console.banner("WORLD", font="big", start_color="cyan", end_color="magenta")
+```
+
+### 📊 StyledTables
+
+Beautiful tables with gradient borders, created from code or config:
+
+```python
+from styledconsole.presets.tables import create_table_from_config
+
+table = create_table_from_config(
+    theme={"border_style": "heavy", "gradient": {"start": "cyan", "end": "blue"}},
+    data={
+        "columns": [{"header": "Service"}, {"header": "Status"}],
+        "rows": [["API", "✅ Online"], ["Database", "✅ Online"]]
+    }
+)
+console.print(table)
+```
 
 ### 🔧 Environment-Aware Rendering
 
-Automatically adapt output for CI/CD, `NO_COLOR`, or legacy terminals using a centralized `RenderPolicy`.
+Automatically adapts for CI/CD pipelines and restricted terminals:
 
 ```python
 from styledconsole import Console, RenderPolicy
 
-# CI-friendly mode: preserves colors but uses ASCII symbols
+# CI-friendly: colors preserved, ASCII symbols
 console = Console(policy=RenderPolicy.ci_friendly())
 
-# Detects: NO_COLOR, FORCE_COLOR, TERM=dumb, CI, GITHUB_ACTIONS
+# Auto-detects: NO_COLOR, FORCE_COLOR, TERM=dumb, CI, GITHUB_ACTIONS
 ```
 
-### 🧱 Declarative Layout Engine
+### 📤 HTML & Image Export
 
-Build complex dashboards and UIs using a simple dictionary/JSON structure. Perfect for "Low Code" interfaces or loading configurations from files.
-
-<!-- EXAMPLE_FULL:declarative_layout -->
-
-### 📊 Data-Driven Tables
-
-Separate your table data from styling. Feed JSON data directly into our table builder to generate beautiful, gradient-bordered tables instantly.
-
-<!-- EXAMPLE_FULL:json_table -->
-
-### 📤 Multi-Format Export
-
-Record your terminal session and export to HTML, plain text, or high-quality images (PNG, WebP, GIF).
+Record terminal sessions and export to HTML or images:
 
 ```python
 console = Console(record=True)
 # ... render your UI ...
 
-# Text exports
-html = console.export_html()
-text = console.export_text()
+# HTML export (built-in)
+console.export_html("output.html")
 
-# Image exports (requires: pip install styledconsole[image])
-console.export_webp("output.webp")  # Static or animated
-console.export_png("output.png", scale=2.0)  # Retina support
-console.export_gif("animation.gif")  # Animated GIF
+# Image export (pip install styledconsole[image])
+console.export_png("output.png")
+console.export_webp("output.webp")
+console.export_gif("animation.gif")  # animated!
+```
+
+### 📋 Declarative Layouts
+
+Build complex dashboards from JSON/dict — perfect for config-driven UIs:
+
+```python
+from styledconsole.presets.layouts import create_layout_from_config
+
+layout = create_layout_from_config({
+    "type": "panel",
+    "title": "DASHBOARD",
+    "border": "heavy",
+    "content": {"type": "text", "content": "Status: Online"}
+})
+console.print(layout)
 ```
 
 ______________________________________________________________________
 
-## 🚀 Quick Start
+## 🏁 Quick Start
 
 ```bash
-pip install styledconsole
+pip install -i https://test.pypi.org/simple/ styledconsole
 ```
 
-<!-- EXAMPLE_FULL:basic_frame -->
+```python
+from styledconsole import Console, icons
 
-______________________________________________________________________
+console = Console()
 
-## 🎯 Real-World Examples
-
-### CI/CD Pipeline Dashboard
-
-<!-- EXAMPLE_FULL:build_report -->
-
-### Error Reporting with Style
-
-<!-- EXAMPLE_FULL:error_report -->
-
-______________________________________________________________________
-
-## 📚 Visual Laboratory
-
-For a comprehensive gallery of **over 40 working examples**, visit our dedicated repository:
-
-👉 **[StyledConsole-Examples](https://github.com/ksokolowski/StyledConsole-Examples)**
-
-The examples library includes:
-
-- 🎨 **Visual Showcases**: Gradient effects, layout stress tests, and emoji rendering.
-- 🎬 **Feature Demos**: Animations, nested frames, and progress bar policies.
-- 💼 **Real-World Components**: CLI menus, interactive dashboards, and log viewers.
-- 🔬 **Validation Utilities**: Terminal compatibility checks and color benchmarks.
-
-### Try it now:
-
-```bash
-# Run the local quick start demo
-uv run examples/quick_start.py
+console.frame(
+    f"{icons.CHECK_MARK_BUTTON} Build successful\n"
+    f"{icons.ROCKET} Deployed to production",
+    title=f"{icons.SPARKLES} Status",
+    border="rounded",
+    border_gradient_start="green",
+    border_gradient_end="cyan",
+)
 ```
+
+**Output:**
+
+```
+╭──────── ✨ Status ─────────╮
+│ ✅ Build successful        │
+│ 🚀 Deployed to production  │
+╰────────────────────────────╯
+```
+
+👉 **Want more examples?** Check out [StyledConsole-Examples](https://github.com/ksokolowski/StyledConsole-Examples) for 40+ real-world demos including CLI dashboards, progress bars, error reporters, and animated effects.
 
 ______________________________________________________________________
 
 ## 🏗️ Built On Giants
 
-- [emoji](https://pypi.org/project/emoji/) — 🎁 4000+ official Unicode emojis
-- [Rich](https://github.com/Textualize/rich) — 💪 The powerful rendering engine
-- [PyFiglet](https://github.com/pwaller/pyfiglet) — 🔤 500+ ASCII art fonts
-- [wcwidth](https://github.com/jquast/wcwidth) — 📏 Correct Unicode width calculation
-- [ansi2html](https://github.com/pycontribs/ansi2html) — 💾 Terminal → HTML export
+StyledConsole extends these excellent libraries:
+
+| Library                                              | Contribution                 |
+| ---------------------------------------------------- | ---------------------------- |
+| [Rich](https://github.com/Textualize/rich)           | 💪 Core rendering engine     |
+| [emoji](https://pypi.org/project/emoji/)             | 😀 4000+ Unicode emojis      |
+| [PyFiglet](https://github.com/pwaller/pyfiglet)      | 🔤 500+ ASCII art fonts      |
+| [wcwidth](https://github.com/jquast/wcwidth)         | 📏 Unicode width calculation |
+| [ansi2html](https://github.com/pycontribs/ansi2html) | 💾 Terminal → HTML export    |
 
 ______________________________________________________________________
 
-## 🛠️ Project Status
+## 📊 Project Status
 
-**v0.9.8.1** — Production Ready ✅
+**v0.9.9.1** — 🏗️ Early Access (TestPyPI)
 
 | Metric      | Value       |
 | ----------- | ----------- |
-| 🧪 Tests    | 943 passing |
-| 📊 Coverage | 90%         |
+| 🧪 Tests    | 869 passing |
+| 📊 Coverage | 80%         |
 | 🔍 MyPy     | 0 errors    |
-| 📚 Examples | 37 working  |
-| 🐍 Python   | 3.10 - 3.14 |
-
-**Recent Improvements:**
-
-- ✅ Modern Terminal Detection (Kitty, WezTerm, Ghostty, etc.)
-- ✅ Symbol Facade Unification (`icons` as primary API)
-- ✅ Icon Provider with colored ASCII fallback (224 icons)
-- ✅ Render Policy for environment-aware output
-- ✅ Full mypy type checking with 0 errors
-- ✅ Windows compatibility fixes
-
-**See [CHANGELOG.md](CHANGELOG.md) for full release history.**
+| 🐍 Python   | 3.10 – 3.14 |
 
 ______________________________________________________________________
 
 ## 📚 Documentation
 
-- 📖 **[User Guide](docs/USER_GUIDE.md)**: Complete API reference with examples
-- 🏗️ **[Developer Guide](docs/DEVELOPER_GUIDE.md)**: Architecture and development guide
-- 📅 **[Changelog](CHANGELOG.md)**: Version history and release notes
-- 🤝 **[Contributing](CONTRIBUTING.md)**: Development workflow and standards
-
-## 💙 Support StyledConsole
-
-If StyledConsole improves your developer experience, you can support the project here:
-
-☕ https://ko-fi.com/styledconsole
-
-Thank you for helping keep this project alive and evolving!
+| Resource                                      | Description              |
+| --------------------------------------------- | ------------------------ |
+| 📖 [User Guide](docs/USER_GUIDE.md)           | Complete API reference   |
+| 🏗️ [Developer Guide](docs/DEVELOPER_GUIDE.md) | Architecture & internals |
+| 🎨 [Visual Gallery](docs/GALLERY.md)          | Screenshots & demos      |
+| 📅 [Changelog](CHANGELOG.md)                  | Version history          |
+| 🤝 [Contributing](CONTRIBUTING.md)            | Development workflow     |
 
 ______________________________________________________________________
 
-## 🤝 Contributing
+## 💙 Support
 
-We welcome contributions! Please see the **[Contributing Guide](CONTRIBUTING.md)** for details on our development workflow (`make qa`, `make test`, etc.).
+If StyledConsole improves your developer experience:
+
+| Platform           | Link                                                                       |
+| ------------------ | -------------------------------------------------------------------------- |
+| 💖 GitHub Sponsors | [github.com/sponsors/ksokolowski](https://github.com/sponsors/ksokolowski) |
+| ☕ Ko-fi           | [ko-fi.com/styledconsole](https://ko-fi.com/styledconsole)                 |
 
 ______________________________________________________________________
 
 ## 📄 License
 
-Apache License 2.0
-
-______________________________________________________________________
+Apache License 2.0 — See [LICENSE](LICENSE) for details.

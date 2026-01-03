@@ -5,6 +5,26 @@ All notable changes to StyledConsole will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.9.1] - 2026-01-03
+
+### Documentation & PyPI Compatibility
+
+Restructured documentation for better PyPI compatibility and added GitHub Sponsors support.
+
+### Changed
+
+- **README.md**: Simplified, text-focused README that renders properly on PyPI (no images)
+- **docs/GALLERY.md**: New auto-generated visual showcase with all example images
+- **GitHub Sponsors**: Added GitHub Sponsors to FUNDING.yml and README badges
+- **Generation System**: Updated `scripts/readme/generate.py` to produce both README and GALLERY
+
+### Fixed
+
+- **PyPI Rendering**: README now renders correctly on PyPI without broken image links
+- **Version Badges**: Updated all version references to 0.9.9.1
+
+______________________________________________________________________
+
 ## [0.9.9] - 2026-01-02
 
 ### 🎨 Image Export & Table System

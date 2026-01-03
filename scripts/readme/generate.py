@@ -1,32 +1,39 @@
 #!/usr/bin/env python3
-"""Generate README.md from template with example code and image injection.
+"""Generate README.md and docs/GALLERY.md from templates.
 
-Uses template.md as source and replaces placeholders with actual code
-and images from examples.py (single source of truth).
+README.md is a focused, PyPI-compatible document (no images).
+GALLERY.md is an auto-generated visual showcase with images.
 
-Placeholder formats:
+Placeholder formats (used in gallery_template.md):
   <!-- EXAMPLE:name -->        - Insert code block only
   <!-- EXAMPLE_IMAGE:name -->  - Insert image only
   <!-- EXAMPLE_FULL:name -->   - Insert both image and code
 
 Usage:
-  uv run python scripts/readme/generate.py           # Generate README only
-  uv run python scripts/readme/generate.py --images  # Regenerate images + README
+  uv run python scripts/readme/generate.py           # Generate both files
+  uv run python scripts/readme/generate.py --images  # Regenerate images + docs
   python -m scripts.readme --images                  # Same, as module
 """
 
 import re
+import shutil
 import sys
 from pathlib import Path
 
 # Paths relative to this module
 MODULE_DIR = Path(__file__).parent
 PROJECT_ROOT = MODULE_DIR.parent.parent
-TEMPLATE_PATH = MODULE_DIR / "template.md"
-OUTPUT_PATH = PROJECT_ROOT / "README.md"
 
-# Image path in README (relative to project root)
-README_IMAGE_PATH = "docs/images"
+# Template paths
+README_TEMPLATE = MODULE_DIR / "template.md"
+GALLERY_TEMPLATE = MODULE_DIR / "gallery_template.md"
+
+# Output paths
+README_OUTPUT = PROJECT_ROOT / "README.md"
+GALLERY_OUTPUT = PROJECT_ROOT / "docs" / "GALLERY.md"
+
+# Image path in gallery (relative to docs/)
+GALLERY_IMAGE_PATH = "images"
 
 
 def _import_examples():
@@ -42,27 +49,20 @@ def _import_examples():
 
 
 def get_image_path(name: str) -> str:
-    """Get the image path for an example (relative to project root)."""
-    return f"{README_IMAGE_PATH}/{name}.webp"
+    """Get the image path for an example (relative to docs/)."""
+    return f"{GALLERY_IMAGE_PATH}/{name}.webp"
 
 
-def generate_readme(regenerate_images: bool = False) -> None:
-    """Generate README.md from template.
+def process_template(template_content: str, examples: dict) -> str:
+    """Process a template, replacing placeholders with code and images.
 
     Args:
-        regenerate_images: If True, regenerate all images before updating README.
+        template_content: The template markdown content.
+        examples: Dictionary of example name -> {code, generator}.
+
+    Returns:
+        Processed markdown content.
     """
-    examples, generate_all_images = _import_examples()
-
-    if regenerate_images:
-        generate_all_images()
-
-    if not TEMPLATE_PATH.exists():
-        print(f"Template not found: {TEMPLATE_PATH}")
-        print("Please create template.md with placeholders.")
-        return
-
-    template = TEMPLATE_PATH.read_text()
 
     # Replace <!-- EXAMPLE:name --> with code block
     def replace_code(match):
@@ -98,26 +98,70 @@ def generate_readme(regenerate_images: bool = False) -> None:
 {code}
 ```"""
 
-    output = template
+    output = template_content
     output = re.sub(r"<!-- EXAMPLE_FULL:(\w+) -->", replace_full, output)
     output = re.sub(r"<!-- EXAMPLE_IMAGE:(\w+) -->", replace_image, output)
     output = re.sub(r"<!-- EXAMPLE:(\w+) -->", replace_code, output)
 
-    OUTPUT_PATH.write_text(output)
-    print(f"Generated: {OUTPUT_PATH}")
+    return output
+
+
+def generate_readme() -> None:
+    """Generate README.md from template (simple copy, no placeholders)."""
+    if not README_TEMPLATE.exists():
+        print(f"Template not found: {README_TEMPLATE}")
+        return
+
+    shutil.copy(README_TEMPLATE, README_OUTPUT)
+    print(f"Generated: {README_OUTPUT}")
+
+
+def generate_gallery(examples: dict) -> None:
+    """Generate docs/GALLERY.md from gallery template with placeholder replacement.
+
+    Args:
+        examples: Dictionary of example name -> {code, generator}.
+    """
+    if not GALLERY_TEMPLATE.exists():
+        print(f"Template not found: {GALLERY_TEMPLATE}")
+        return
+
+    # Ensure docs directory exists
+    GALLERY_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+
+    template = GALLERY_TEMPLATE.read_text()
+    output = process_template(template, examples)
+
+    GALLERY_OUTPUT.write_text(output)
+    print(f"Generated: {GALLERY_OUTPUT}")
+
+
+def generate_all(regenerate_images: bool = False) -> None:
+    """Generate both README.md and docs/GALLERY.md.
+
+    Args:
+        regenerate_images: If True, regenerate all images first.
+    """
+    examples, generate_all_images_fn = _import_examples()
+
+    if regenerate_images:
+        print("Regenerating images...")
+        generate_all_images_fn()
+
+    print("Generating documentation...")
+    generate_readme()
+    generate_gallery(examples)
 
 
 def main():
     """CLI entry point."""
-    import sys
-
     regenerate = "--images" in sys.argv or "-i" in sys.argv
     full = "--all" in sys.argv or "-a" in sys.argv
 
     if full:
         regenerate = True
 
-    generate_readme(regenerate_images=regenerate)
+    generate_all(regenerate_images=regenerate)
 
 
 if __name__ == "__main__":

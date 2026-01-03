@@ -32,7 +32,7 @@ from styledconsole.effects.strategies import (
 )
 from styledconsole.types import AlignType, FrameGroupItem
 from styledconsole.utils.color import colorize, normalize_color_for_rich
-from styledconsole.utils.text import adjust_emoji_spacing_in_text
+from styledconsole.utils.text import adjust_emoji_spacing_in_text, create_rich_text
 
 if TYPE_CHECKING:
     import pyfiglet
@@ -379,23 +379,9 @@ class RenderingEngine:
 
         output = self.render_frame_to_string(content, context=context)
 
-        # Print the output, handling alignment of the frame itself
-        # We align the entire block to avoid per-line centering issues with emojis
-        if "\x1b" in output:
-            text_obj = RichText.from_ansi(output, no_wrap=True)
-        else:
-            text_obj = RichText.from_markup(output)
-            text_obj.no_wrap = True
-
-        # Use frame_align if specified, otherwise fallback to align (for backward compat)
+        # Print with alignment (frame_align takes precedence for backward compat)
         effective_align = context.frame_align if context.frame_align is not None else context.align
-
-        if effective_align == "center":
-            self._rich_console.print(Align.center(text_obj), highlight=False, soft_wrap=True)
-        elif effective_align == "right":
-            self._rich_console.print(Align.right(text_obj), highlight=False, soft_wrap=True)
-        else:
-            self._rich_console.print(text_obj, highlight=False, soft_wrap=True)
+        self._print_aligned(create_rich_text(output), effective_align)
 
         if self._debug:
             self._logger.debug("Frame rendered using Rich Panel")
@@ -421,6 +407,20 @@ class RenderingEngine:
             normalize_color_for_rich(start_color),
             normalize_color_for_rich(end_color),
         )
+
+    def _print_aligned(self, text_obj: RichText, align: str = "left") -> None:
+        """Print RichText with alignment handling.
+
+        Args:
+            text_obj: RichText object to print.
+            align: Alignment ("left", "center", "right").
+        """
+        if align == "center":
+            self._rich_console.print(Align.center(text_obj), highlight=False, soft_wrap=True)
+        elif align == "right":
+            self._rich_console.print(Align.right(text_obj), highlight=False, soft_wrap=True)
+        else:
+            self._rich_console.print(text_obj, highlight=False, soft_wrap=True)
 
     def _build_content_renderable(
         self,
@@ -454,7 +454,6 @@ class RenderingEngine:
 
         # Gradient application
         if start_color and end_color:
-            lines = content_str.split("\n")
             lines = content_str.split("\n")
             if len(lines) > 1:
                 from styledconsole.effects.engine import apply_gradient
@@ -627,20 +626,9 @@ class RenderingEngine:
 
         lines = self._render_banner_lines(banner_obj)
 
-        # Convert to Rich Text to preserve ANSI and handle alignment as a block
+        # Print banner with alignment
         content_str = "\n".join(lines)
-        if "\x1b" in content_str:
-            content = RichText.from_ansi(content_str, no_wrap=True)
-        else:
-            content = RichText(content_str, no_wrap=True)
-
-        # Apply alignment
-        if align == "center":
-            self._rich_console.print(Align.center(content), highlight=False, soft_wrap=True)
-        elif align == "right":
-            self._rich_console.print(Align.right(content), highlight=False, soft_wrap=True)
-        else:
-            self._rich_console.print(content, highlight=False, soft_wrap=True)
+        self._print_aligned(create_rich_text(content_str), align)
 
         # Log completion
         if self._debug:
@@ -879,24 +867,9 @@ class RenderingEngine:
             frame_align=frame_align,
         )
 
-        # Print with proper ANSI handling
-        if "\x1b" in output:
-            text_obj = RichText.from_ansi(output, no_wrap=True)
-        else:
-            text_obj = RichText.from_markup(output)
-            text_obj.no_wrap = True
-
-        # Resolve alignment: frame_align takes precedence over frame content alignment (align)
-        # BUT print_frame_group creates an OUTER frame. The frame_align on RenderFrameToString
-        # applies to THAT outer frame relative to the screen.
+        # Print with alignment (frame_align takes precedence for outer frame positioning)
         effective_align = frame_align if frame_align is not None else align
-
-        if effective_align == "center":
-            self._rich_console.print(Align.center(text_obj), highlight=False, soft_wrap=True)
-        elif effective_align == "right":
-            self._rich_console.print(Align.right(text_obj), highlight=False, soft_wrap=True)
-        else:
-            self._rich_console.print(text_obj, highlight=False, soft_wrap=True)
+        self._print_aligned(create_rich_text(output), effective_align)
 
         if self._debug:
             self._logger.debug(f"Frame group rendered: {len(items)} frames")

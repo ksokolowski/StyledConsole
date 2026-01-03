@@ -28,6 +28,7 @@ from styledconsole.utils.terminal import (
     detect_terminal_capabilities,
 )
 from styledconsole.utils.text import (
+    create_rich_text,
     pad_to_width,
     split_graphemes,
     strip_ansi,
@@ -43,6 +44,7 @@ __all__ = [
     "TerminalProfile",
     "analyze_emoji_safety",
     "color_distance",
+    "create_rich_text",
     "demojize",
     "detect_terminal_capabilities",
     "emoji_list",

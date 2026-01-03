@@ -916,21 +916,9 @@ class Console:
             output: String containing ANSI escape codes.
             align: Alignment for the output ("left", "center", "right").
         """
-        from rich.align import Align
-        from rich.text import Text as RichText
+        from styledconsole.utils.text import create_rich_text
 
-        if "\x1b" in output:
-            text_obj = RichText.from_ansi(output, no_wrap=True)
-        else:
-            text_obj = RichText.from_markup(output)
-            text_obj.no_wrap = True
-
-        if align == "center":
-            self._rich_console.print(Align.center(text_obj), highlight=False, soft_wrap=True)
-        elif align == "right":
-            self._rich_console.print(Align.right(text_obj), highlight=False, soft_wrap=True)
-        else:
-            self._rich_console.print(text_obj, highlight=False, soft_wrap=True)
+        self._renderer._print_aligned(create_rich_text(output), align)
 
     def banner(
         self,

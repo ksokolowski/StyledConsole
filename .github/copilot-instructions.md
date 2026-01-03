@@ -92,6 +92,13 @@ ______________________________________________________________________
 - ❌ Piping command output through `| head`, `| tail`, `| grep` (hides errors)
 - ❌ Using `sed`, `awk`, `perl -i` for code edits (corrupts complex code)
 
+### Licensing & Ownership (CRITICAL - LEGAL RISK)
+
+- ❌ **NEVER add AI attribution to commits** - No "Generated with [AI Tool]", "Co-Authored-By: [AI]", or similar
+- ❌ **NEVER add ownership/licensing statements** - Project uses Apache 2.0 (defined in pyproject.toml)
+- ❌ **NEVER create LICENSE files** - License already configured
+- ⚠️ These additions can affect legal status and may require project deletion
+
 ______________________________________________________________________
 
 ## 📁 Project Structure (v0.9.0)
