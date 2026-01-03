@@ -158,7 +158,10 @@ class ThemeRegistry(Registry[Theme]):
             "sunset",
             "neon",
         ]
-        return [super().get(name) for name in standard_names if name in self]
+        # Note: super() in list comprehension requires Python 3.12+
+        # Use explicit reference for 3.10/3.11 compatibility
+        parent_get = super().get
+        return [parent_get(name) for name in standard_names if name in self]
 
     def solid_themes(self) -> list[Theme]:
         """Return only themes without gradients."""
