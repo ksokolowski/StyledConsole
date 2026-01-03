@@ -133,12 +133,22 @@ class TestDetectEmojiSafety:
 
     def test_emoji_safe_with_utf8_lang(self, monkeypatch):
         """Test emoji safe when LANG has UTF-8."""
+        # Clear CI environment variables that disable emoji
+        monkeypatch.delenv("CI", raising=False)
+        monkeypatch.delenv("GITHUB_ACTIONS", raising=False)
+        monkeypatch.delenv("GITLAB_CI", raising=False)
+        monkeypatch.delenv("JENKINS_URL", raising=False)
         monkeypatch.setenv("LANG", "en_US.UTF-8")
         safe = _detect_emoji_safety(is_tty=True, color_depth=256)
         assert safe is True
 
     def test_emoji_safe_with_utf8_lc_all(self, monkeypatch):
         """Test emoji safe when LC_ALL has UTF-8."""
+        # Clear CI environment variables that disable emoji
+        monkeypatch.delenv("CI", raising=False)
+        monkeypatch.delenv("GITHUB_ACTIONS", raising=False)
+        monkeypatch.delenv("GITLAB_CI", raising=False)
+        monkeypatch.delenv("JENKINS_URL", raising=False)
         monkeypatch.delenv("LANG", raising=False)
         monkeypatch.setenv("LC_ALL", "en_GB.UTF-8")
         safe = _detect_emoji_safety(is_tty=True, color_depth=256)
@@ -146,6 +156,11 @@ class TestDetectEmojiSafety:
 
     def test_emoji_safe_with_utf8_lc_ctype(self, monkeypatch):
         """Test emoji safe when LC_CTYPE has UTF-8."""
+        # Clear CI environment variables that disable emoji
+        monkeypatch.delenv("CI", raising=False)
+        monkeypatch.delenv("GITHUB_ACTIONS", raising=False)
+        monkeypatch.delenv("GITLAB_CI", raising=False)
+        monkeypatch.delenv("JENKINS_URL", raising=False)
         monkeypatch.delenv("LANG", raising=False)
         monkeypatch.delenv("LC_ALL", raising=False)
         monkeypatch.setenv("LC_CTYPE", "C.UTF-8")
@@ -223,6 +238,11 @@ class TestDetectTerminalCapabilities:
 
     def test_detect_truecolor_terminal(self, monkeypatch):
         """Test detection of truecolor terminal."""
+        # Clear CI environment variables that disable emoji
+        monkeypatch.delenv("CI", raising=False)
+        monkeypatch.delenv("GITHUB_ACTIONS", raising=False)
+        monkeypatch.delenv("GITLAB_CI", raising=False)
+        monkeypatch.delenv("JENKINS_URL", raising=False)
         monkeypatch.setenv("TERM", "xterm-256color")
         monkeypatch.setenv("COLORTERM", "truecolor")
         monkeypatch.setenv("LANG", "en_US.UTF-8")
@@ -245,6 +265,11 @@ class TestDetectTerminalCapabilities:
 
     def test_detect_256_color_terminal(self, monkeypatch):
         """Test detection of 256 color terminal."""
+        # Clear CI environment variables that disable emoji
+        monkeypatch.delenv("CI", raising=False)
+        monkeypatch.delenv("GITHUB_ACTIONS", raising=False)
+        monkeypatch.delenv("GITLAB_CI", raising=False)
+        monkeypatch.delenv("JENKINS_URL", raising=False)
         monkeypatch.setenv("TERM", "xterm-256color")
         monkeypatch.delenv("COLORTERM", raising=False)
         monkeypatch.setenv("LANG", "en_US.UTF-8")
@@ -265,6 +290,11 @@ class TestDetectTerminalCapabilities:
 
     def test_detect_basic_terminal(self, monkeypatch):
         """Test detection of basic ANSI terminal."""
+        # Clear CI environment variables that disable emoji
+        monkeypatch.delenv("CI", raising=False)
+        monkeypatch.delenv("GITHUB_ACTIONS", raising=False)
+        monkeypatch.delenv("GITLAB_CI", raising=False)
+        monkeypatch.delenv("JENKINS_URL", raising=False)
         monkeypatch.setenv("TERM", "xterm")
         monkeypatch.delenv("COLORTERM", raising=False)
         monkeypatch.setenv("LANG", "en_US.UTF-8")
@@ -392,12 +422,22 @@ class TestEdgeCases:
 
     def test_case_insensitive_utf8(self, monkeypatch):
         """Test UTF-8 detection is case-insensitive."""
+        # Clear CI environment variables that disable emoji
+        monkeypatch.delenv("CI", raising=False)
+        monkeypatch.delenv("GITHUB_ACTIONS", raising=False)
+        monkeypatch.delenv("GITLAB_CI", raising=False)
+        monkeypatch.delenv("JENKINS_URL", raising=False)
         monkeypatch.setenv("LANG", "en_US.utf-8")  # lowercase
         safe = _detect_emoji_safety(is_tty=True, color_depth=256)
         assert safe is True
 
     def test_multiple_locale_vars_priority(self, monkeypatch):
         """Test that any UTF-8 locale var enables emoji."""
+        # Clear CI environment variables that disable emoji
+        monkeypatch.delenv("CI", raising=False)
+        monkeypatch.delenv("GITHUB_ACTIONS", raising=False)
+        monkeypatch.delenv("GITLAB_CI", raising=False)
+        monkeypatch.delenv("JENKINS_URL", raising=False)
         # LANG without UTF-8, but LC_ALL with UTF-8
         monkeypatch.setenv("LANG", "C")
         monkeypatch.setenv("LC_ALL", "en_US.UTF-8")

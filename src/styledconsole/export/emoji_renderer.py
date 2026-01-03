@@ -414,8 +414,8 @@ class EmojiRenderer:
         from PIL import Image
 
         with Image.open(emoji_stream) as emoji_img:
-            emoji_img = emoji_img.convert("RGBA")
-            emoji_img = emoji_img.resize((emoji_size, emoji_size), Image.Resampling.LANCZOS)
+            emoji_img = emoji_img.convert("RGBA")  # type: ignore[assignment]
+            emoji_img = emoji_img.resize((emoji_size, emoji_size), Image.Resampling.LANCZOS)  # type: ignore[assignment]
 
             ox = (emoji_width - emoji_size) // 2
             oy = self._calculate_emoji_y_offset(emoji_size, font)
