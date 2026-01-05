@@ -457,13 +457,13 @@ console.frame("Custom", effect=EffectSpec.gradient("cyan", "magenta"))
 
 ### Available Presets (32 total)
 
-| Category | Presets |
-|----------|---------|
-| **Gradients** | `fire`, `ocean`, `sunset`, `forest`, `aurora`, `lavender`, `peach`, `mint`, `steel`, `gold` |
-| **Rainbows** | `rainbow`, `rainbow_pastel`, `rainbow_neon`, `rainbow_muted`, `rainbow_reverse`, `rainbow_horizontal`, `rainbow_diagonal` |
-| **Themed** | `matrix`, `cyberpunk`, `retro`, `vaporwave`, `dracula`, `nord_aurora` |
-| **Semantic** | `success`, `warning`, `error`, `info`, `neutral` |
-| **Border-only** | `border_fire`, `border_ocean`, `border_rainbow`, `border_gold` |
+| Category        | Presets                                                                                                                   |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **Gradients**   | `fire`, `ocean`, `sunset`, `forest`, `aurora`, `lavender`, `peach`, `mint`, `steel`, `gold`                               |
+| **Rainbows**    | `rainbow`, `rainbow_pastel`, `rainbow_neon`, `rainbow_muted`, `rainbow_reverse`, `rainbow_horizontal`, `rainbow_diagonal` |
+| **Themed**      | `matrix`, `cyberpunk`, `retro`, `vaporwave`, `dracula`, `nord_aurora`                                                     |
+| **Semantic**    | `success`, `warning`, `error`, `info`, `neutral`                                                                          |
+| **Border-only** | `border_fire`, `border_ocean`, `border_rainbow`, `border_gold`                                                            |
 
 ### EffectSpec Factory Methods
 
@@ -507,19 +507,19 @@ effect = EFFECTS.sunset.reversed()
 
 ### Target Options
 
-| Target | Effect Applied To |
-|--------|-------------------|
-| `"both"` | Border and content (default) |
-| `"border"` | Border only |
-| `"content"` | Content text only |
+| Target      | Effect Applied To            |
+| ----------- | ---------------------------- |
+| `"both"`    | Border and content (default) |
+| `"border"`  | Border only                  |
+| `"content"` | Content text only            |
 
 ### Direction Options
 
-| Direction | Description |
-|-----------|-------------|
-| `"vertical"` | Top to bottom (default) |
-| `"horizontal"` | Left to right |
-| `"diagonal"` | Top-left to bottom-right |
+| Direction      | Description              |
+| -------------- | ------------------------ |
+| `"vertical"`   | Top to bottom (default)  |
+| `"horizontal"` | Left to right            |
+| `"diagonal"`   | Top-left to bottom-right |
 
 ______________________________________________________________________
 

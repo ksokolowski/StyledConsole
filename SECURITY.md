@@ -21,15 +21,17 @@ StyledConsole is a terminal output formatting library. It has a minimal security
 If you discover a security issue, please report it by:
 
 1. **Email:** krzysiek.sokolowski@gmail.com
-2. **Subject:** `[SECURITY] StyledConsole - <brief description>`
+1. **Subject:** `[SECURITY] StyledConsole - <brief description>`
 
 Please include:
+
 - Description of the vulnerability
 - Steps to reproduce
 - Potential impact
 - Suggested fix (if any)
 
 **Response timeline:**
+
 - Acknowledgment within 48 hours
 - Assessment within 7 days
 - Fix timeline depends on severity
@@ -39,6 +41,7 @@ Please include:
 ### Dependencies
 
 StyledConsole depends on:
+
 - `rich` - Terminal rendering
 - `Pillow` - Image export (optional)
 - `pyfiglet` - ASCII art banners

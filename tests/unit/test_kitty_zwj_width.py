@@ -17,6 +17,7 @@ class TestKittyTerminalZwjWidth:
         with mock.patch.dict(os.environ, {"KITTY_WINDOW_ID": "1"}):
             # Clear any caches that might affect terminal detection
             from styledconsole.utils.text import _visual_width_cached
+
             _visual_width_cached.cache_clear()
             yield
             _visual_width_cached.cache_clear()
@@ -24,10 +25,10 @@ class TestKittyTerminalZwjWidth:
     @pytest.fixture
     def non_kitty_env(self):
         """Mock non-Kitty terminal environment."""
-        env_without_kitty = {k: v for k, v in os.environ.items()
-                             if not k.startswith("KITTY")}
+        env_without_kitty = {k: v for k, v in os.environ.items() if not k.startswith("KITTY")}
         with mock.patch.dict(os.environ, env_without_kitty, clear=True):
             from styledconsole.utils.text import _visual_width_cached
+
             _visual_width_cached.cache_clear()
             yield
             _visual_width_cached.cache_clear()

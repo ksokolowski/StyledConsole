@@ -166,7 +166,9 @@ class TestEmojiAlignment:
         # All lines should have same visual width
         widths = [visual_width(line) for line in lines]
 
-        assert len(set(widths)) == 1, f"Inconsistent widths: {dict(zip(lines, widths, strict=False))}"
+        assert len(set(widths)) == 1, (
+            f"Inconsistent widths: {dict(zip(lines, widths, strict=False))}"
+        )
 
 
 class TestGradientFrames:
@@ -229,8 +231,8 @@ class TestMultipleFrames:
 
         # Print multiple frames
         for i in range(3):
-            ctx = StyleContext(title=f"Frame {i+1}", border_style="solid")
-            engine.print_frame(f"Content {i+1}", context=ctx)
+            ctx = StyleContext(title=f"Frame {i + 1}", border_style="solid")
+            engine.print_frame(f"Content {i + 1}", context=ctx)
 
         output = buffer.getvalue()
         lines = [line for line in output.strip().split("\n") if line.strip()]

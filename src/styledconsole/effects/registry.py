@@ -49,9 +49,7 @@ class EffectRegistry(Registry[EffectSpec]):
         """Return all rainbow effects."""
         return [e for e in self.values() if e.is_rainbow()]
 
-    def by_direction(
-        self, direction: str
-    ) -> list[EffectSpec]:
+    def by_direction(self, direction: str) -> list[EffectSpec]:
         """Return effects with a specific direction."""
         return [e for e in self.values() if e.direction == direction]
 
@@ -189,13 +187,15 @@ EFFECTS.register(
 
 EFFECTS.register(
     "nord_aurora",
-    EffectSpec.multi_stop([
-        "#bf616a",  # Red
-        "#d08770",  # Orange
-        "#ebcb8b",  # Yellow
-        "#a3be8c",  # Green
-        "#b48ead",  # Purple
-    ]),
+    EffectSpec.multi_stop(
+        [
+            "#bf616a",  # Red
+            "#d08770",  # Orange
+            "#ebcb8b",  # Yellow
+            "#a3be8c",  # Green
+            "#b48ead",  # Purple
+        ]
+    ),
 )
 
 # =============================================================================

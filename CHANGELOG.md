@@ -32,7 +32,7 @@ Effects system is now fully integrated into the Console API with `effect=` param
 ### Deprecated
 
 - **`start_color`/`end_color` in `frame()`**: Use `effect=EffectSpec.gradient(start, end)` instead
-- **`border_gradient_start`/`border_gradient_end` in `frame()`**: Use `effect=EffectSpec.gradient(..., target='border')` instead  
+- **`border_gradient_start`/`border_gradient_end` in `frame()`**: Use `effect=EffectSpec.gradient(..., target='border')` instead
 - **`rainbow=True` in `banner()`**: Use `effect="rainbow"` instead
 - **`start_color`/`end_color` in `banner()`**: Use `effect=EffectSpec.gradient(start, end)` instead
 
@@ -54,7 +54,7 @@ All deprecated parameters continue to work with deprecation warnings. They will 
 
 - 968 tests passing (core test suite)
 - 31 effect integration tests
-- 41 effect system tests  
+- 41 effect system tests
 - 80.42% code coverage
 - Full backward compatibility maintained
 

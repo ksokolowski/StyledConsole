@@ -9,7 +9,7 @@ import warnings
 
 import pytest
 
-from styledconsole import Console, EFFECTS, EffectSpec
+from styledconsole import EFFECTS, Console, EffectSpec
 
 
 class TestFrameEffectParameter:
@@ -90,7 +90,7 @@ class TestFrameEffectParameter:
                 "Test",
                 effect="fire",
                 start_color="green",  # Should be ignored
-                end_color="yellow",   # Should be ignored
+                end_color="yellow",  # Should be ignored
             )
         output = console.export_text()
         assert "Test" in output
@@ -198,6 +198,7 @@ class TestEffectImports:
     def test_effects_import_from_main(self) -> None:
         """EFFECTS can be imported from styledconsole."""
         from styledconsole import EFFECTS
+
         assert hasattr(EFFECTS, "fire")
         assert hasattr(EFFECTS, "ocean")
         assert hasattr(EFFECTS, "rainbow")
@@ -205,17 +206,20 @@ class TestEffectImports:
     def test_effectspec_import_from_main(self) -> None:
         """EffectSpec can be imported from styledconsole."""
         from styledconsole import EffectSpec
+
         spec = EffectSpec.gradient("red", "blue")
         assert spec.colors == ("red", "blue")
 
     def test_effects_import_from_effects_module(self) -> None:
         """EFFECTS can be imported from styledconsole.effects."""
         from styledconsole.effects import EFFECTS
+
         assert len(EFFECTS.list_all()) >= 30
 
     def test_effectspec_import_from_effects_module(self) -> None:
         """EffectSpec can be imported from styledconsole.effects."""
         from styledconsole.effects import EffectSpec
+
         spec = EffectSpec.rainbow()
         assert spec.is_rainbow()
 
@@ -227,8 +231,16 @@ class TestAllEffectPresets:
         """All gradient presets work with frame()."""
         console = Console(record=True)
         gradient_presets = [
-            "fire", "ocean", "sunset", "forest", "aurora",
-            "lavender", "peach", "mint", "steel", "gold",
+            "fire",
+            "ocean",
+            "sunset",
+            "forest",
+            "aurora",
+            "lavender",
+            "peach",
+            "mint",
+            "steel",
+            "gold",
         ]
         for preset in gradient_presets:
             console.frame(f"Test {preset}", effect=preset)
@@ -239,8 +251,13 @@ class TestAllEffectPresets:
         """All rainbow presets work with frame()."""
         console = Console(record=True)
         rainbow_presets = [
-            "rainbow", "rainbow_pastel", "rainbow_neon", "rainbow_muted",
-            "rainbow_reverse", "rainbow_horizontal", "rainbow_diagonal",
+            "rainbow",
+            "rainbow_pastel",
+            "rainbow_neon",
+            "rainbow_muted",
+            "rainbow_reverse",
+            "rainbow_horizontal",
+            "rainbow_diagonal",
         ]
         for preset in rainbow_presets:
             console.frame(f"Test {preset}", effect=preset)
@@ -251,7 +268,12 @@ class TestAllEffectPresets:
         """All themed presets work with frame()."""
         console = Console(record=True)
         themed_presets = [
-            "matrix", "cyberpunk", "retro", "vaporwave", "dracula", "nord_aurora",
+            "matrix",
+            "cyberpunk",
+            "retro",
+            "vaporwave",
+            "dracula",
+            "nord_aurora",
         ]
         for preset in themed_presets:
             console.frame(f"Test {preset}", effect=preset)

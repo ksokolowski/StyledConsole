@@ -221,9 +221,7 @@ class EffectSpec:
             reverse=self.reverse,
         )
 
-    def with_target(
-        self, target: Literal["content", "border", "both"]
-    ) -> EffectSpec:
+    def with_target(self, target: Literal["content", "border", "both"]) -> EffectSpec:
         """Return a copy with a different target.
 
         Args:

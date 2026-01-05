@@ -171,6 +171,8 @@ __all__ = [
     "DEFAULT_THEME",
     "DOTS",
     "DOUBLE",
+    # Effect system (v0.9.9.3+)
+    "EFFECTS",
     # Emoji data layer (for raw emoji access, advanced use)
     "EMOJI",
     "EMOJI_PACKAGE_AVAILABLE",
@@ -200,8 +202,6 @@ __all__ = [
     "Console",
     "CuratedEmojis",
     "E",
-    # Effect system (v0.9.9.3+)
-    "EFFECTS",
     "EffectSpec",
     "EmojiConstants",
     "EmojiInfo",

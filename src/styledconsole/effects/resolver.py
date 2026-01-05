@@ -78,9 +78,7 @@ def resolve_effect(
     elif isinstance(effect, EffectSpec):
         spec = effect
     else:
-        raise TypeError(
-            f"effect must be an EffectSpec or string, got {type(effect).__name__}"
-        )
+        raise TypeError(f"effect must be an EffectSpec or string, got {type(effect).__name__}")
 
     # Resolve position strategy
     position = _resolve_position(spec.direction)
@@ -128,11 +126,7 @@ def _resolve_color_source(spec: EffectSpec) -> ColorSource:
 
     if spec.is_rainbow():
         # Use EnhancedRainbow if any adjustments are needed
-        if (
-            spec.saturation != 1.0
-            or spec.brightness != 1.0
-            or spec.reverse
-        ):
+        if spec.saturation != 1.0 or spec.brightness != 1.0 or spec.reverse:
             return EnhancedRainbow(
                 saturation=spec.saturation,
                 brightness=spec.brightness,

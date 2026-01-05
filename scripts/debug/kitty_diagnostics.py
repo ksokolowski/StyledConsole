@@ -102,7 +102,7 @@ def test_width_calculations() -> None:
     for desc, text in test_strings:
         vw = visual_width(text)
         cl = cell_len(text)
-        match = "" if vw == cl else ""
+        match = ""
 
         if vw != cl:
             mismatches.append((desc, text, vw, cl))
@@ -151,11 +151,11 @@ def test_soft_wrap_behavior() -> None:
 
     print(f"\nWith soft_wrap=True: {len(lines_true)} line(s)")
     for i, line in enumerate(lines_true):
-        print(f"  Line {i+1}: {line!r}")
+        print(f"  Line {i + 1}: {line!r}")
 
     print(f"\nWith soft_wrap=False: {len(lines_false)} line(s)")
     for i, line in enumerate(lines_false):
-        print(f"  Line {i+1}: {line!r}")
+        print(f"  Line {i + 1}: {line!r}")
 
     if len(lines_true) != len(lines_false):
         print("\n[ISSUE FOUND] soft_wrap=True causes extra lines!")
@@ -189,11 +189,11 @@ def test_frame_rendering() -> None:
     print("\nFrame output:")
     for i, line in enumerate(lines):
         vw = visual_width(line)
-        print(f"  {i+1:2}: (w={vw:2}) {line}")
+        print(f"  {i + 1:2}: (w={vw:2}) {line}")
 
     # Check for visual width consistency
-    frame_lines = [l for l in lines if l.strip()]
-    widths = [visual_width(l) for l in frame_lines]
+    frame_lines = [line for line in lines if line.strip()]
+    widths = [visual_width(line) for line in frame_lines]
     unique_widths = set(widths)
 
     if len(unique_widths) <= 2:  # Allow for some variation due to frame groups

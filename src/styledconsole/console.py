@@ -1104,11 +1104,8 @@ class Console:
 
         if effect is not None:
             # New effect= parameter takes precedence
-            if isinstance(effect, str):
-                # EFFECTS.get() raises KeyError with helpful message if not found
-                resolved_effect = EFFECTS.get(effect)
-            else:
-                resolved_effect = effect
+            # EFFECTS.get() raises KeyError with helpful message if not found
+            resolved_effect = EFFECTS.get(effect) if isinstance(effect, str) else effect
 
             # Convert effect to banner parameters
             if resolved_effect.is_rainbow():
@@ -1137,7 +1134,11 @@ class Console:
                 )
 
         # Apply theme banner gradient if no explicit gradient provided
-        if effective_start is None and not effective_rainbow and self._theme.banner_gradient is not None:
+        if (
+            effective_start is None
+            and not effective_rainbow
+            and self._theme.banner_gradient is not None
+        ):
             effective_start = self._theme.banner_gradient.start
             effective_end = self._theme.banner_gradient.end
 

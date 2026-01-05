@@ -295,6 +295,7 @@ def _grapheme_width_modern(grapheme: str) -> int:
             return w
         # Only fall back to East Asian Width if wcwidth fails (-1)
         import unicodedata
+
         eaw = unicodedata.east_asian_width(grapheme)
         if eaw in ("W", "F"):
             return 2
