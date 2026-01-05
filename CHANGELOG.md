@@ -60,7 +60,9 @@ All deprecated parameters continue to work with deprecation warnings. They will 
 
 ______________________________________________________________________
 
-## [0.9.9.2] - 2026-01-04
+## [0.9.9.2] - [UNRELEASED]
+
+> **Note**: Version 0.9.9.2 was never officially released. Its bug fixes have been integrated into v0.9.9.3.
 
 ### Effects System Foundation
 
