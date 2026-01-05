@@ -8,14 +8,14 @@ For more extensive examples, visit:
 https://github.com/ksokolowski/StyledConsole-Examples
 """
 
-from styledconsole import Console, icons
+from styledconsole import Console, icons, EffectSpec
 
 
 def main():
     console = Console()
 
     # 1. High-impact Banner
-    console.banner("StyledConsole", start_color="dodgerblue", end_color="cyan", border="double")
+    console.banner("StyledConsole", effect=EffectSpec.gradient("dodgerblue", "cyan"), border="double")
 
     # 2. Styled Frame with Features
     console.frame(
@@ -27,7 +27,7 @@ def main():
         ],
         title=f"{icons.STAR} Core Features",
         border="double",
-        border_gradient_start="cyan",
+        effect=EffectSpec.gradient("cyan", "blue"),
         border_gradient_end="blue",
         padding=1,
     )

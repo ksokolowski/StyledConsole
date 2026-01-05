@@ -1,0 +1,97 @@
+name: Bug Report
+description: Report a bug or unexpected behavior
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug! Please fill out the sections below.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear description of what the bug is.
+      placeholder: Describe the bug...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: Minimal code example or steps to reproduce the behavior.
+      placeholder: |
+        ```python
+        from styledconsole import Console
+        console = Console()
+        # Your code here
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: Paste a screenshot showing the issue. Drag and drop or paste an image.
+      placeholder: Drag and drop your screenshot here...
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: StyledConsole Version
+      description: Run `pip show styledconsole` to find out
+      placeholder: "0.9.9.1"
+    validations:
+      required: true
+
+  - type: input
+    id: python
+    attributes:
+      label: Python Version
+      placeholder: "3.12.0"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating System
+      description: Include specific version (e.g., Ubuntu 22.04, Windows 11 23H2, macOS 14.2)
+      placeholder: "Ubuntu 22.04 LTS"
+    validations:
+      required: true
+
+  - type: input
+    id: terminal
+    attributes:
+      label: Terminal
+      description: Terminal emulator and version
+      placeholder: "GNOME Terminal 3.48.0, Windows Terminal 1.18, iTerm2 3.5"
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other context or terminal output.

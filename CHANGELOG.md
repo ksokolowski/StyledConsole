@@ -5,6 +5,93 @@ All notable changes to StyledConsole will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [0.9.9.3] - 2026-01-05
+
+### Console API Integration
+
+Effects system is now fully integrated into the Console API with `effect=` parameter.
+
+### Added
+
+- **`effect=` parameter for `Console.frame()`**: Apply effects directly in frame calls
+  ```python
+  console.frame("Hello", effect="fire")
+  console.frame("World", effect=EFFECTS.ocean)
+  console.frame("Custom", effect=EffectSpec.gradient("red", "blue"))
+  ```
+- **`effect=` parameter for `Console.banner()`**: Apply effects to ASCII art banners
+  ```python
+  console.banner("SUCCESS", effect="rainbow_neon")
+  console.banner("ALERT", effect=EFFECTS.fire)
+  ```
+- **Public exports**: `EFFECTS` and `EffectSpec` now exported from main `styledconsole` module
+- **StyleContext.effect field**: New field to hold resolved effect specification
+
+### Deprecated
+
+- **`start_color`/`end_color` in `frame()`**: Use `effect=EffectSpec.gradient(start, end)` instead
+- **`border_gradient_start`/`border_gradient_end` in `frame()`**: Use `effect=EffectSpec.gradient(..., target='border')` instead  
+- **`rainbow=True` in `banner()`**: Use `effect="rainbow"` instead
+- **`start_color`/`end_color` in `banner()`**: Use `effect=EffectSpec.gradient(start, end)` instead
+
+All deprecated parameters continue to work with deprecation warnings. They will be removed in v1.0.0.
+
+### Fixed
+
+- **Kitty Terminal ZWJ Emoji Alignment**: Fixed frame alignment issues when using ZWJ (Zero Width Joiner) emoji sequences like 👨‍💻 (Developer) or 🏳️‍🌈 (Rainbow Flag) in Kitty terminal
+  - Kitty renders ZWJ components separately when fonts lack ligature support, resulting in wider visual width than other terminals
+  - `visual_width()` now correctly calculates component-summed widths (e.g., 👨‍💻 = 4 cells instead of 2) specifically for Kitty
+  - Other modern terminals (WezTerm, iTerm2, Ghostty, Alacritty) continue to use single-glyph width-2 calculation
+  - Fixes misalignment in `core/emoji_integration_demo.py` and `validation/emoji_comparison.py`
+- **Wide Symbol Character Width**: Fixed width calculation for wide non-emoji symbols like trigram (☰) in modern terminals
+  - `_grapheme_width_modern()` now correctly trusts `wcwidth` results for all characters, not just zero-width
+  - Previously incorrectly calculated trigram (☰ U+2630) as width 1 when it should be width 2
+  - Fixes frame border misalignment for lines containing wide Unicode symbols
+
+### Testing
+
+- 968 tests passing (core test suite)
+- 31 effect integration tests
+- 41 effect system tests  
+- 80.42% code coverage
+- Full backward compatibility maintained
+
+______________________________________________________________________
+
+## [0.9.9.2] - 2026-01-04
+
+### Effects System Foundation
+
+New declarative effects system with 32 pre-configured presets and extensible architecture.
+
+### Added
+
+- **EffectSpec** (`effects/spec.py`): Frozen dataclass for declarative effect definitions
+  - Factory methods: `EffectSpec.gradient()`, `EffectSpec.multi_stop()`, `EffectSpec.rainbow()`
+  - Immutable with `with_direction()`, `with_target()`, `reversed()` modifiers
+- **EffectRegistry** (`effects/registry.py`): Named effect preset catalog
+  - 10 gradient presets: fire, ocean, sunset, forest, aurora, lavender, peach, mint, steel, gold
+  - 7 rainbow presets: standard, pastel, neon, muted, reverse, horizontal, diagonal
+  - 6 themed presets: matrix, cyberpunk, retro, vaporwave, dracula, nord_aurora
+  - 5 semantic presets: success, warning, error, info, neutral
+  - 4 border-only presets: border_fire, border_ocean, border_rainbow, border_gold
+- **Effect Resolver** (`effects/resolver.py`): Bridge between specs and strategies
+  - `resolve_effect()` converts EffectSpec or preset name to strategy tuple
+  - Direction, color source, and target filter mapping
+- **MultiStopGradient**: 3+ color gradient interpolation with custom stop positions
+- **EnhancedRainbow**: Rainbow with saturation, brightness, and reverse controls
+- **ReversedColorSource**: Wrapper strategy for reversing any color source
+
+### Testing
+
+- 1028 tests passing (159 new tests for effects system)
+- 82.11% code coverage
+- All pre-commit hooks passing
+
+______________________________________________________________________
+
 ## [0.9.9.1] - 2026-01-03
 
 ### Documentation & PyPI Compatibility

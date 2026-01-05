@@ -1,7 +1,7 @@
 # StyledConsole Developer Guide
 
-**Version:** 0.9.9
-**Last Updated:** January 2, 2026
+**Version:** 0.9.9.3
+**Last Updated:** January 5, 2026
 **Audience:** Contributors and advanced users
 
 ______________________________________________________________________
@@ -243,6 +243,60 @@ classDiagram
 | **Strategy** | Gradient engine (position, color, target). **Goal:** Extensibility and isolated testability.                                |
 | **Adapter**  | `box_mapping.py` adapts borders to Rich.                                                                                    |
 
+### Effects System Architecture (v0.9.9.2+)
+
+The effects system provides a declarative layer on top of the strategy-based gradient engine:
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFF3E0', 'lineColor': '#FF9800'}}}%%
+flowchart TB
+    subgraph User["User API (v0.9.9.3)"]
+        FRAME["console.frame(..., effect='fire')"]
+        BANNER["console.banner(..., effect=EFFECTS.ocean)"]
+    end
+
+    subgraph Effects["Effects Module"]
+        SPEC["EffectSpec<br/>(frozen dataclass)"]
+        REGISTRY["EffectRegistry<br/>(32 presets)"]
+        RESOLVER["resolve_effect()"]
+    end
+
+    subgraph Strategies["Strategy Layer"]
+        POS["PositionStrategy"]
+        COLOR["ColorSource"]
+        TARGET["TargetFilter"]
+    end
+
+    subgraph Engine["Gradient Engine"]
+        APPLY["apply_gradient()"]
+    end
+
+    FRAME --> SPEC
+    BANNER --> SPEC
+    FRAME --> REGISTRY
+    BANNER --> REGISTRY
+    SPEC --> RESOLVER
+    REGISTRY --> RESOLVER
+    RESOLVER --> POS
+    RESOLVER --> COLOR
+    RESOLVER --> TARGET
+    POS --> APPLY
+    COLOR --> APPLY
+    TARGET --> APPLY
+
+    style SPEC fill:#4CAF50,color:#fff
+    style REGISTRY fill:#2196F3,color:#fff
+    style RESOLVER fill:#FF9800,color:#fff
+```
+
+**Key Components:**
+
+- **`EffectSpec`** (`effects/spec.py`): Immutable dataclass with factory methods (`gradient()`, `multi_stop()`, `rainbow()`) and modifiers (`with_direction()`, `with_target()`, `reversed()`)
+- **`EffectRegistry`** (`effects/registry.py`): Named preset catalog accessed via `EFFECTS.fire`, `EFFECTS.ocean`, etc.
+- **`resolve_effect()`** (`effects/resolver.py`): Converts `EffectSpec` or preset name into `(PositionStrategy, ColorSource, TargetFilter)` tuple for the engine
+
+**Extension Point:** Add new presets by calling `EFFECTS.register("name", EffectSpec.gradient(...))`.
+
 ### Design Principles
 
 1. **Graceful Degradation (Policy-Awareness)**: Use `RenderPolicy` to detect environments. Always provide a functional ASCII fallback for visual features.
@@ -378,9 +432,13 @@ src/styledconsole/
 │   ├── export_manager.py         # HTML export
 │   └── terminal_manager.py       # Terminal detection
 │
-├── effects/                      # Gradient effects (v0.4.0)
+├── effects/                      # Gradient effects (v0.4.0, enhanced v0.9.9.2+)
+│   ├── __init__.py               # Public exports (EFFECTS, EffectSpec)
 │   ├── engine.py                 # Unified apply_gradient()
-│   └── strategies.py             # Strategy classes
+│   ├── strategies.py             # Strategy classes (position, color, target)
+│   ├── spec.py                   # EffectSpec dataclass (v0.9.9.2)
+│   ├── registry.py               # EffectRegistry with 32 presets (v0.9.9.2)
+│   └── resolver.py               # EffectSpec → strategy tuple bridge (v0.9.9.2)
 │
 ├── presets/                      # High-level presets
 │   ├── status.py                 # status_frame()
@@ -424,6 +482,8 @@ Key points for contributors:
 - Public-facing APIs like `Console.frame()` still accept legacy kwargs such
   as `border`; internal code maps `border` → `border_style` before constructing
   `StyleContext`.
+- **v0.9.9.3**: `StyleContext` now includes an `effect: EffectSpec | None` field
+  for the new unified effects system.
 
 ### Defensive Construction in `FrameGroupContext`
 

@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from styledconsole.effects.spec import EffectSpec
     from styledconsole.types import AlignType
 
 
@@ -35,7 +36,7 @@ class StyleContext:
     border_style: str = "rounded"
     border_color: str | None = None
 
-    # Border Gradient
+    # Border Gradient (DEPRECATED: Use effect= instead)
     border_gradient_start: str | None = None
     border_gradient_end: str | None = None
     border_gradient_direction: str = "vertical"
@@ -43,9 +44,12 @@ class StyleContext:
     # Content Styling
     content_color: str | None = None
 
-    # Content Gradient
+    # Content Gradient (DEPRECATED: Use effect= instead)
     start_color: str | None = None
     end_color: str | None = None
+
+    # Effect System (v0.9.9.3+)
+    effect: EffectSpec | None = None
 
     # Meta
     title: str | None = None

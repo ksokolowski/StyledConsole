@@ -60,17 +60,16 @@ Apply smooth color gradients across multiple lines of text.
 ![Gradient Text](images/gradient_text.webp)
 
 ```python
-from styledconsole.effects import gradient_frame
+from styledconsole import Console, EffectSpec
+
+console = Console()
 
 # Apply gradient to multiline text
-lines = gradient_frame(
+console.frame(
     ["Welcome to StyledConsole!", "Beautiful gradient text", "Across multiple lines"],
-    start_color="cyan",
-    end_color="magenta",
-    target="content",
+    effect=EffectSpec.gradient("cyan", "magenta", target="content"),
+    border="rounded"
 )
-for line in lines:
-    print(line)
 ```
 
 ______________________________________________________________________
@@ -133,11 +132,15 @@ Generate massive, high-impact headers using 500+ fonts with gradient support.
 ![Rainbow Banner](images/rainbow_banner.webp)
 
 ```python
+from styledconsole import Console, EFFECTS, EffectSpec
+
+console = Console()
+
 # Full ROYGBIV rainbow spectrum
-console.banner("RAINBOW", font="slant", rainbow=True)
+console.banner("RAINBOW", font="slant", effect="rainbow")
 
 # Two-color gradient
-console.banner("HELLO", font="big", start_color="cyan", end_color="magenta")
+console.banner("HELLO", font="big", effect=EffectSpec.gradient("cyan", "magenta"))
 ```
 
 ______________________________________________________________________
@@ -237,10 +240,10 @@ ______________________________________________________________________
 ![Build Report](images/build_report.webp)
 
 ```python
-from styledconsole import Console, icons
+from styledconsole import Console, icons, EffectSpec
 
 console = Console()
-console.banner("BUILD", font="standard", start_color="blue", end_color="purple")
+console.banner("BUILD", font="standard", effect=EffectSpec.gradient("blue", "purple"))
 
 console.frame([
     f"{icons.CHECK_MARK_BUTTON} Lint checks passed",
@@ -264,8 +267,7 @@ console.frame(
     f"{icons.LIGHT_BULB} Check firewall settings",
     title=f"{icons.WARNING} Database Error",
     border="heavy",
-    border_gradient_start="red",
-    border_gradient_end="darkred"
+    effect=EffectSpec.gradient("red", "darkred")
 )
 ```
 
@@ -276,7 +278,7 @@ ______________________________________________________________________
 ![Basic Frame](images/basic_frame.webp)
 
 ```python
-from styledconsole import Console, icons
+from styledconsole import Console, icons, EffectSpec
 
 console = Console()
 
@@ -285,8 +287,7 @@ console.frame(
     f"{icons.ROCKET} Deployed to production",
     title=f"{icons.SPARKLES} Status",
     border="rounded",
-    border_gradient_start="green",
-    border_gradient_end="cyan",
+    effect=EffectSpec.gradient("green", "cyan"),
 )
 ```
 

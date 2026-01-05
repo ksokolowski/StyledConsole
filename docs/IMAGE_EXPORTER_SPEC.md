@@ -23,10 +23,10 @@ ______________________________________________________________________
 ### Console Methods
 
 ```python
-from styledconsole import Console
+from styledconsole import Console, EffectSpec
 
 console = Console(record=True)
-console.frame("Hello World", border="rounded", border_gradient_start="green")
+console.frame("Hello World", border="rounded", effect=EffectSpec.gradient("green", "cyan"))
 
 # Static exports
 console.export_png("output.png")                    # Lossless PNG

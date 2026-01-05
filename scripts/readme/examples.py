@@ -89,7 +89,7 @@ def example(name: str, code: str):
 @example(
     "basic_frame",
     """
-from styledconsole import Console, icons
+from styledconsole import Console, icons, EffectSpec
 
 console = Console()
 
@@ -98,13 +98,14 @@ console.frame(
     f"{icons.ROCKET} Deployed to production",
     title=f"{icons.SPARKLES} Status",
     border="rounded",
-    border_gradient_start="green",
-    border_gradient_end="cyan",
+    effect=EffectSpec.gradient("green", "cyan"),
 )
 """,
 )
 def generate_basic_frame():
     """Generate basic frame example - rich visual showcase."""
+    from styledconsole import EffectSpec
+
     console = Console(record=True, width=TERMINAL_COLS, policy=IMAGE_EXPORT_POLICY)
     console.frame(
         [
@@ -115,8 +116,7 @@ def generate_basic_frame():
         ],
         title=f"{icons.SPARKLES} Deployment Status",
         border="rounded",
-        border_gradient_start="green",
-        border_gradient_end="cyan",
+        effect=EffectSpec.gradient("green", "cyan"),
     )
     console.export_webp(
         str(OUTPUT_DIR / "basic_frame.webp"),
@@ -138,13 +138,14 @@ console.frame(
     "Beautiful gradient borders",
     title="Gradients",
     border="rounded",
-    border_gradient_start="cyan",
-    border_gradient_end="magenta",
+    effect=EffectSpec.gradient("cyan", "magenta"),
 )
 """,
 )
 def generate_gradient_frame():
     """Generate gradient border frame example - rainbow showcase."""
+    from styledconsole import EffectSpec
+
     console = Console(record=True, width=TERMINAL_COLS, policy=IMAGE_EXPORT_POLICY)
     console.frame(
         [
@@ -155,8 +156,7 @@ def generate_gradient_frame():
         ],
         title=f"{icons.SPARKLES} Gradient Engine",
         border="double",
-        border_gradient_start="magenta",
-        border_gradient_end="cyan",
+        effect=EffectSpec.gradient("magenta", "cyan"),
     )
     console.export_webp(
         str(OUTPUT_DIR / "gradient_frame.webp"), theme=FIXED_TERMINAL_THEME, auto_crop=True
@@ -198,21 +198,27 @@ def generate_nested_frames():
 @example(
     "rainbow_banner",
     """
+from styledconsole import Console, EFFECTS, EffectSpec
+
+console = Console()
+
 # Full ROYGBIV rainbow spectrum
-console.banner("RAINBOW", font="slant", rainbow=True)
+console.banner("RAINBOW", font="slant", effect="rainbow")
 
 # Two-color gradient
-console.banner("HELLO", font="big", start_color="cyan", end_color="magenta")
+console.banner("HELLO", font="big", effect=EffectSpec.gradient("cyan", "magenta"))
 """,
 )
 def generate_rainbow_banner():
     """Generate rainbow banner example - shows both rainbow and gradient styles."""
+    from styledconsole import EffectSpec
+
     console = Console(record=True, width=TERMINAL_COLS, policy=IMAGE_EXPORT_POLICY)
     # Full ROYGBIV rainbow spectrum
-    console.banner("Styled Console", font="slant", rainbow=True)
+    console.banner("Styled Console", font="slant", effect="rainbow")
     console.newline()
     # Two-color gradient
-    console.banner("Hello World!", font="big", start_color="cyan", end_color="magenta")
+    console.banner("Hello World!", font="big", effect=EffectSpec.gradient("cyan", "magenta"))
     console.export_webp(
         str(OUTPUT_DIR / "rainbow_banner.webp"), theme=FIXED_TERMINAL_THEME, auto_crop=True
     )
@@ -353,9 +359,7 @@ console.text("Custom RGB", color="#ff6b6b")
 )
 def generate_text_styles():
     """Generate color palette showcase - color options available."""
-    from rich.text import Text
-
-    from styledconsole.effects import gradient_frame
+    from styledconsole import EffectSpec
 
     console = Console(record=True, width=TERMINAL_COLS, policy=IMAGE_EXPORT_POLICY)
 
@@ -363,21 +367,17 @@ def generate_text_styles():
     console._rich_console.print()
 
     # Color palette frame with emojis
-    lines = gradient_frame(
+    console.frame(
         [
             f"{icons.ARTIST_PALETTE} Named: red, green, blue, cyan...",
             f"{icons.RAINBOW} Bright: bright_red, bright_green...",
             f"{icons.PAINTBRUSH} RGB: #ff6b6b, #4ecdc4, #ffe66d",
             f"{icons.FIRE} ANSI: color0-color255",
         ],
-        start_color="#ff6b6b",
-        end_color="#4ecdc4",
-        target="both",
+        effect=EffectSpec.gradient("#ff6b6b", "#4ecdc4"),
         border="rounded",
         title=f"{icons.SPARKLES} Color Palette",
     )
-    for line in lines:
-        console._rich_console.print(Text.from_ansi(line))
 
     console.export_webp(
         str(OUTPUT_DIR / "text_styles.webp"), theme=FIXED_TERMINAL_THEME, auto_crop=True
@@ -393,24 +393,21 @@ def generate_text_styles():
 @example(
     "gradient_text",
     """
-from styledconsole.effects import gradient_frame
+from styledconsole import Console, EffectSpec
+
+console = Console()
 
 # Apply gradient to multiline text
-lines = gradient_frame(
+console.frame(
     ["Welcome to StyledConsole!", "Beautiful gradient text", "Across multiple lines"],
-    start_color="cyan",
-    end_color="magenta",
-    target="content",
+    effect=EffectSpec.gradient("cyan", "magenta", target="content"),
+    border="rounded"
 )
-for line in lines:
-    print(line)
 """,
 )
 def generate_gradient_text():
     """Generate gradient text showcase - multiline gradient effect."""
-    from rich.text import Text
-
-    from styledconsole.effects import gradient_frame
+    from styledconsole import EffectSpec
 
     console = Console(record=True, width=TERMINAL_COLS, policy=IMAGE_EXPORT_POLICY)
 
@@ -418,22 +415,17 @@ def generate_gradient_text():
     console._rich_console.print()
 
     # Gradient text in a frame with emojis
-    lines = gradient_frame(
+    console.frame(
         [
             f"{icons.SPARKLES} Welcome to StyledConsole!",
             f"{icons.RAINBOW} Beautiful gradient text",
             f"{icons.ARTIST_PALETTE} Smooth color transitions",
             f"{icons.FIRE} From cyan to magenta",
         ],
-        start_color="cyan",
-        end_color="magenta",
-        target="both",
+        effect=EffectSpec.gradient("cyan", "magenta"),
         border="double",
         title=f"{icons.PAINTBRUSH} Gradient Text",
     )
-    for line in lines:
-        # Use Text.from_ansi() to properly render pre-colored ANSI strings
-        console._rich_console.print(Text.from_ansi(line))
 
     console.export_webp(
         str(OUTPUT_DIR / "gradient_text.webp"), theme=FIXED_TERMINAL_THEME, auto_crop=True
@@ -500,10 +492,10 @@ def generate_font_styles():
 @example(
     "build_report",
     """
-from styledconsole import Console, icons
+from styledconsole import Console, icons, EffectSpec
 
 console = Console()
-console.banner("BUILD", font="standard", start_color="blue", end_color="purple")
+console.banner("BUILD", font="standard", effect=EffectSpec.gradient("blue", "purple"))
 
 console.frame([
     f"{icons.CHECK_MARK_BUTTON} Lint checks passed",
@@ -516,8 +508,10 @@ console.frame([
 )
 def generate_build_report():
     """Generate CI/CD pipeline dashboard example."""
+    from styledconsole import EffectSpec
+
     console = Console(record=True, width=TERMINAL_COLS, policy=IMAGE_EXPORT_POLICY)
-    console.banner("BUILD", font="standard", start_color="blue", end_color="purple")
+    console.banner("BUILD", font="standard", effect=EffectSpec.gradient("blue", "purple"))
     console.frame(
         [
             f"{icons.CHECK_MARK_BUTTON} Lint checks passed",
@@ -552,13 +546,14 @@ console.frame(
     f"{icons.LIGHT_BULB} Check firewall settings",
     title=f"{icons.WARNING} Database Error",
     border="heavy",
-    border_gradient_start="red",
-    border_gradient_end="darkred"
+    effect=EffectSpec.gradient("red", "darkred")
 )
 """,
 )
 def generate_error_report():
     """Generate error reporting example."""
+    from styledconsole import EffectSpec
+
     console = Console(record=True, width=TERMINAL_COLS, policy=IMAGE_EXPORT_POLICY)
     console.frame(
         f"{icons.CROSS_MARK} Connection refused\n\n"
@@ -568,8 +563,7 @@ def generate_error_report():
         f"{icons.LIGHT_BULB} Check firewall settings",
         title=f"{icons.WARNING} Database Error",
         border="heavy",
-        border_gradient_start="red",
-        border_gradient_end="darkred",
+        effect=EffectSpec.gradient("red", "darkred"),
     )
     console.export_webp(
         str(OUTPUT_DIR / "error_report.webp"), theme=FIXED_TERMINAL_THEME, auto_crop=True

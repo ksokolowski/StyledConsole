@@ -538,6 +538,12 @@ class TestModernTerminalDetection:
         VS Code's integrated terminal doesn't properly render ZWJ sequences
         at the expected width, so it's excluded from modern terminal detection.
         """
+        # Clear all modern terminal env vars to isolate the test
+        monkeypatch.delenv("KITTY_WINDOW_ID", raising=False)
+        monkeypatch.delenv("WEZTERM_PANE", raising=False)
+        monkeypatch.delenv("WEZTERM_EXECUTABLE", raising=False)
+        monkeypatch.delenv("ITERM_SESSION_ID", raising=False)
+        monkeypatch.delenv("WT_SESSION", raising=False)
         monkeypatch.setenv("TERM_PROGRAM", "vscode")
         monkeypatch.setenv("TERM", "xterm-256color")
         assert is_modern_terminal() is False

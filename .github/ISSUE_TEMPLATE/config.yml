@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security Vulnerability
+    url: https://github.com/ksokolowski/StyledConsole/issues/new?title=%5BSECURITY%5D+
+    about: Report a security vulnerability (prefix title with [SECURITY])
+  - name: Documentation
+    url: https://github.com/ksokolowski/StyledConsole/tree/main/docs
+    about: Check the documentation before opening an issue

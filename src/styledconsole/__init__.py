@@ -40,6 +40,10 @@ from styledconsole.effects import (
     rainbow_frame,
 )
 
+# Effect system (v0.9.9.3+)
+from styledconsole.effects.registry import EFFECTS
+from styledconsole.effects.spec import EffectSpec
+
 # Import emoji data layer (4000+ emojis from emoji package)
 # NOTE: For terminal output, prefer `icons` module which provides ASCII fallback
 from styledconsole.emoji_registry import EMOJI, CuratedEmojis, E
@@ -196,6 +200,9 @@ __all__ = [
     "Console",
     "CuratedEmojis",
     "E",
+    # Effect system (v0.9.9.3+)
+    "EFFECTS",
+    "EffectSpec",
     "EmojiConstants",
     "EmojiInfo",
     "ExportError",

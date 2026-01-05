@@ -11,6 +11,7 @@ ExportManager, RenderingEngine) following the Facade pattern.
 from __future__ import annotations
 
 import sys
+import warnings
 from typing import TYPE_CHECKING, Any, TextIO
 
 from rich.console import Console as RichConsole
@@ -21,6 +22,8 @@ from styledconsole.core.progress import StyledProgress
 from styledconsole.core.rendering_engine import RenderingEngine
 from styledconsole.core.terminal_manager import TerminalManager
 from styledconsole.core.theme import DEFAULT_THEME, THEMES, Theme
+from styledconsole.effects.registry import EFFECTS
+from styledconsole.effects.spec import EffectSpec
 from styledconsole.policy import RenderPolicy, get_default_policy
 from styledconsole.types import AlignType, FrameGroupItem, LayoutType
 from styledconsole.utils.terminal import TerminalProfile
@@ -450,6 +453,73 @@ class Console:
             normalize_color_for_rich(res_fn(final_end)),
         )
 
+    def _resolve_effect(
+        self,
+        effect: EffectSpec | str | None,
+        start_color: str | None,
+        end_color: str | None,
+        border_gradient_start: str | None,
+        border_gradient_end: str | None,
+        border_gradient_direction: str,
+    ) -> EffectSpec | None:
+        """Resolve effect parameter, handling backward compatibility.
+
+        Args:
+            effect: New effect parameter (EffectSpec, preset name, or None).
+            start_color: Legacy content gradient start color.
+            end_color: Legacy content gradient end color.
+            border_gradient_start: Legacy border gradient start color.
+            border_gradient_end: Legacy border gradient end color.
+            border_gradient_direction: Legacy border gradient direction.
+
+        Returns:
+            Resolved EffectSpec or None.
+
+        Note:
+            When legacy gradient parameters are used, a deprecation warning
+            is emitted. The effect= parameter takes precedence.
+        """
+        # If explicit effect provided, use it
+        if effect is not None:
+            if isinstance(effect, str):
+                # EFFECTS.get() raises KeyError with helpful message if not found
+                return EFFECTS.get(effect)
+            return effect
+
+        # Backward compat: convert old content gradient params to effect
+        if start_color is not None and end_color is not None:
+            warnings.warn(
+                "start_color/end_color are deprecated. "
+                "Use effect=EffectSpec.gradient(start, end) instead.",
+                DeprecationWarning,
+                stacklevel=4,
+            )
+            return EffectSpec.gradient(
+                start_color,
+                end_color,
+                target="content",
+            )
+
+        # Backward compat: convert old border gradient params to effect
+        if border_gradient_start is not None and border_gradient_end is not None:
+            warnings.warn(
+                "border_gradient_start/end are deprecated. "
+                "Use effect=EffectSpec.gradient(..., target='border') instead.",
+                DeprecationWarning,
+                stacklevel=4,
+            )
+            direction = border_gradient_direction
+            if direction not in ("vertical", "horizontal", "diagonal"):
+                direction = "vertical"
+            return EffectSpec.gradient(
+                border_gradient_start,
+                border_gradient_end,
+                direction=direction,  # type: ignore[arg-type]
+                target="border",
+            )
+
+        return None
+
     def _resolve_simple_attrs(
         self,
         style: StyleContext | None,
@@ -500,6 +570,7 @@ class Console:
         border_gradient_start: str | None,
         border_gradient_end: str | None,
         border_gradient_direction: str,
+        effect: EffectSpec | None = None,
     ) -> StyleContext:
         """Resolve effective style parameters from arguments and style object."""
         # Resolve simple attributes
@@ -526,23 +597,30 @@ class Console:
             title_color, style.title_color if style else None
         )
 
-        # Resolve content gradient
-        resolved_start, resolved_end = self._resolve_gradient_colors(
-            start_color,
-            end_color,
-            style.start_color if style else None,
-            style.end_color if style else None,
-            self._theme.text_gradient,
-        )
+        # If effect is provided, it takes precedence over legacy gradient params
+        resolved_effect = effect if effect is not None else (style.effect if style else None)
 
-        # Resolve border gradient
-        bg_start, bg_end = self._resolve_gradient_colors(
-            border_gradient_start,
-            border_gradient_end,
-            style.border_gradient_start if style else None,
-            style.border_gradient_end if style else None,
-            self._theme.border_gradient,
-        )
+        # Resolve content gradient (legacy, only if no effect)
+        resolved_start, resolved_end = None, None
+        if resolved_effect is None:
+            resolved_start, resolved_end = self._resolve_gradient_colors(
+                start_color,
+                end_color,
+                style.start_color if style else None,
+                style.end_color if style else None,
+                self._theme.text_gradient,
+            )
+
+        # Resolve border gradient (legacy, only if no effect)
+        bg_start, bg_end = None, None
+        if resolved_effect is None:
+            bg_start, bg_end = self._resolve_gradient_colors(
+                border_gradient_start,
+                border_gradient_end,
+                style.border_gradient_start if style else None,
+                style.border_gradient_end if style else None,
+                self._theme.border_gradient,
+            )
         # Override direction from theme if applicable
         eff_bg_dir = attrs["border_gradient_direction"]
         if (
@@ -567,6 +645,7 @@ class Console:
             content_color=resolved_content_color,
             start_color=resolved_start,
             end_color=resolved_end,
+            effect=resolved_effect,
             title=attrs["title"],
             title_color=resolved_title_color,
         )
@@ -586,6 +665,9 @@ class Console:
         content_color: str | None = None,
         border_color: str | None = None,
         title_color: str | None = None,
+        # Effect system (v0.9.9.3+)
+        effect: EffectSpec | str | None = None,
+        # Legacy gradient params (deprecated, use effect= instead)
         start_color: str | None = None,
         end_color: str | None = None,
         border_gradient_start: str | None = None,
@@ -613,12 +695,39 @@ class Console:
             content_color: Color of the content text.
             border_color: Color of the border.
             title_color: Color of the title text.
-            start_color: Start color for content gradient.
-            end_color: End color for content gradient.
-            border_gradient_start: Start color for border gradient.
-            border_gradient_end: End color for border gradient.
+            effect: Effect specification for gradients/rainbows. Can be:
+                - An EffectSpec instance: EffectSpec.gradient("red", "blue")
+                - A preset name: "fire", "ocean", "rainbow", etc.
+                - None for no effect (default)
+            start_color: DEPRECATED. Use effect=EffectSpec.gradient() instead.
+            end_color: DEPRECATED. Use effect=EffectSpec.gradient() instead.
+            border_gradient_start: DEPRECATED. Use effect= with target="border" instead.
+            border_gradient_end: DEPRECATED. Use effect= with target="border" instead.
             border_gradient_direction: Direction of border gradient ("vertical", "horizontal").
+
+        Example:
+            >>> from styledconsole import Console
+            >>> from styledconsole.effects import EFFECTS, EffectSpec
+            >>> console = Console()
+            >>>
+            >>> # Using preset name
+            >>> console.frame("Hello", effect="fire")
+            >>>
+            >>> # Using EFFECTS registry
+            >>> console.frame("World", effect=EFFECTS.ocean)
+            >>>
+            >>> # Using custom EffectSpec
+            >>> console.frame("Custom", effect=EffectSpec.gradient("red", "blue"))
         """
+        # Resolve effect from new or legacy parameters
+        resolved_effect = self._resolve_effect(
+            effect=effect,
+            start_color=start_color,
+            end_color=end_color,
+            border_gradient_start=border_gradient_start,
+            border_gradient_end=border_gradient_end,
+            border_gradient_direction=border_gradient_direction,
+        )
 
         # Resolve style using helper
         resolved_context = self._resolve_frame_style(
@@ -638,6 +747,7 @@ class Console:
             border_gradient_start=border_gradient_start,
             border_gradient_end=border_gradient_end,
             border_gradient_direction=border_gradient_direction,
+            effect=resolved_effect,
         )
 
         # Check if we're inside a group context
@@ -925,6 +1035,9 @@ class Console:
         text: str,
         *,
         font: str = "standard",
+        # Effect system (v0.9.9.3+)
+        effect: EffectSpec | str | None = None,
+        # Legacy gradient params (deprecated, use effect= instead)
         start_color: str | None = None,
         end_color: str | None = None,
         rainbow: bool = False,
@@ -945,12 +1058,13 @@ class Console:
             font: Pyfiglet font name. Common options: "slant", "banner", "big",
                 "digital", "standard". Use BannerRenderer.list_fonts() to see
                 all available fonts. Defaults to "standard".
-            start_color: Starting color for per-line gradient effect. Accepts
-                hex codes, RGB tuples, or CSS4 names. Defaults to None.
-            end_color: Ending color for per-line gradient effect. Required
-                when start_color is set. Defaults to None.
-            rainbow: Use full ROYGBIV rainbow spectrum instead of linear gradient.
-                Overrides start_color/end_color when True. Defaults to False.
+            effect: Effect specification for gradients/rainbows. Can be:
+                - An EffectSpec instance: EffectSpec.gradient("red", "blue")
+                - A preset name: "fire", "ocean", "rainbow", etc.
+                - None for no effect (default)
+            start_color: DEPRECATED. Use effect=EffectSpec.gradient() instead.
+            end_color: DEPRECATED. Use effect=EffectSpec.gradient() instead.
+            rainbow: DEPRECATED. Use effect="rainbow" instead.
             border: Optional border style to frame the banner. One of: "solid",
                 "double", "rounded", etc. Defaults to None (no border).
             width: Banner width in characters. If None, auto-calculated.
@@ -964,33 +1078,66 @@ class Console:
             >>> console = Console()
             >>> console.banner("SUCCESS", font="slant")
 
-            >>> # With gradient and border
+            >>> # With effect preset
+            >>> console.banner("FIRE", effect="fire")
+            >>> console.banner("RAINBOW", effect="rainbow_neon")
+
+            >>> # With custom effect
             >>> console.banner(
             ...     "DEMO",
             ...     font="banner",
-            ...     start_color="red",
-            ...     end_color="blue",
-            ...     border="double"
+            ...     effect=EffectSpec.gradient("red", "blue")
             ... )
 
-            >>> # With full rainbow spectrum
-            >>> console.banner("RAINBOW", font="slant", rainbow=True)
-
-            >>> # With semantic theme colors
-            >>> console = Console(theme="dark")
-            >>> console.banner("OK", start_color="success", end_color="info")
-
-            >>> # With gradient theme (auto-applies gradients)
-            >>> console = Console(theme="rainbow")
-            >>> console.banner("HELLO")  # Uses theme's banner_gradient
+            >>> # Legacy (deprecated but still works):
+            >>> console.banner("DEMO", start_color="red", end_color="blue")
+            >>> console.banner("RAINBOW", rainbow=True)  # Use effect="rainbow" instead
         """
         # Resolve semantic colors from theme, then normalize for Rich
         from styledconsole.utils.color import normalize_color_for_rich
 
-        # Apply theme banner gradient if no explicit gradient provided
+        # Resolve effect parameter
+        resolved_effect: EffectSpec | None = None
+        effective_rainbow = rainbow
         effective_start = start_color
         effective_end = end_color
-        if start_color is None and self._theme.banner_gradient is not None:
+
+        if effect is not None:
+            # New effect= parameter takes precedence
+            if isinstance(effect, str):
+                # EFFECTS.get() raises KeyError with helpful message if not found
+                resolved_effect = EFFECTS.get(effect)
+            else:
+                resolved_effect = effect
+
+            # Convert effect to banner parameters
+            if resolved_effect.is_rainbow():
+                effective_rainbow = True
+                effective_start = None
+                effective_end = None
+            elif resolved_effect.is_gradient() or resolved_effect.is_multi_stop():
+                effective_rainbow = False
+                if len(resolved_effect.colors) >= 2:
+                    effective_start = resolved_effect.colors[0]
+                    effective_end = resolved_effect.colors[-1]
+        else:
+            # Legacy parameter handling
+            if rainbow:
+                warnings.warn(
+                    "rainbow=True is deprecated. Use effect='rainbow' instead.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+            elif start_color is not None and end_color is not None:
+                warnings.warn(
+                    "start_color/end_color are deprecated. "
+                    "Use effect=EffectSpec.gradient(start, end) instead.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+
+        # Apply theme banner gradient if no explicit gradient provided
+        if effective_start is None and not effective_rainbow and self._theme.banner_gradient is not None:
             effective_start = self._theme.banner_gradient.start
             effective_end = self._theme.banner_gradient.end
 
@@ -1002,7 +1149,7 @@ class Console:
             font=font,
             start_color=resolved_start_color,
             end_color=resolved_end_color,
-            rainbow=rainbow,
+            rainbow=effective_rainbow,
             border=border,
             width=width,
             align=align,

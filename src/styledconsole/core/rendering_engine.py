@@ -16,7 +16,6 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from rich.align import Align
 from rich.console import Console as RichConsole
 from rich.text import Text as RichText
 
@@ -109,7 +108,27 @@ class RenderingEngine:
         # Use custom renderer to ensure correct emoji width calculation
         output = self._render_custom_frame(content, context)
 
-        # Apply border gradient if needed (skip if color disabled)
+        # Apply effect if provided (new v0.9.9.3+ system)
+        if context.effect is not None:
+            # Skip if policy disables color
+            if self._policy is not None and not self._policy.color:
+                return output
+
+            from styledconsole.effects.resolver import resolve_effect
+
+            position, color_source, target_filter = resolve_effect(context.effect)
+
+            lines = output.splitlines()
+            colored_lines = apply_gradient(
+                lines,
+                position_strategy=position,
+                color_source=color_source,
+                target_filter=target_filter,
+                border_chars=get_border_chars(get_border_style(context.border_style)),
+            )
+            return "\n".join(colored_lines)
+
+        # Legacy: Apply border gradient if needed (skip if color disabled)
         if context.border_gradient_start and context.border_gradient_end:
             # Skip gradient if policy disables color
             if self._policy is not None and not self._policy.color:
@@ -414,13 +433,60 @@ class RenderingEngine:
         Args:
             text_obj: RichText object to print.
             align: Alignment ("left", "center", "right").
+
+        Note:
+            Uses manual padding instead of Rich's native Align class for center/right
+            alignment. This ensures consistency with StyledConsole's terminal-aware
+            visual_width() calculation and avoids discrepancies with Rich's internal
+            cell_len() that could cause line wraps in environments like VS Code.
         """
-        if align == "center":
-            self._rich_console.print(Align.center(text_obj), highlight=False, soft_wrap=True)
-        elif align == "right":
-            self._rich_console.print(Align.right(text_obj), highlight=False, soft_wrap=True)
+        if align == "left" or not align:
+            self._rich_console.print(text_obj, highlight=False, soft_wrap=False)
+            return
+
+        # Manual alignment to avoid Rich width discrepancies
+        from styledconsole.utils.text import visual_width
+
+        # For multi-line text (like frames), align each line individually
+        content = text_obj.plain
+        if "\n" in content:
+            # Re-render to ANSI to preserve styles while padding
+            from io import StringIO
+
+            buffer = StringIO()
+            temp_console = RichConsole(file=buffer, force_terminal=True, width=10000)
+            temp_console.print(text_obj, highlight=False, soft_wrap=False)
+            lines = buffer.getvalue().splitlines()
+
+            term_width = self._rich_console.width
+            aligned_lines = []
+            for line in lines:
+                v_width = visual_width(line)
+                if align == "center":
+                    indent = max(0, (term_width - v_width) // 2)
+                else:  # right
+                    indent = max(0, term_width - v_width)
+                aligned_lines.append(" " * indent + line)
+
+            # Wrap in Text.from_ansi so Rich understands the content has escape codes
+            # and applies the correct visual width (avoiding wrapping of ANSI sequences)
+            from rich.text import Text
+
+            self._rich_console.print(
+                Text.from_ansi("\n".join(aligned_lines)), highlight=False, soft_wrap=False
+            )
         else:
-            self._rich_console.print(text_obj, highlight=False, soft_wrap=True)
+            # Single line alignment
+            v_width = visual_width(content)
+            term_width = self._rich_console.width
+            if align == "center":
+                indent = max(0, (term_width - v_width) // 2)
+            else:  # right
+                indent = max(0, term_width - v_width)
+
+            if indent > 0:
+                self._rich_console.print(" " * indent, end="")
+            self._rich_console.print(text_obj, highlight=False, soft_wrap=False)
 
     def _build_content_renderable(
         self,
@@ -509,17 +575,18 @@ class RenderingEngine:
 
         return self._figlet_cache[font]
 
-    def _render_banner_lines(self, banner: Banner) -> list[str]:
+    def _render_banner_lines(self, banner: Banner, width: int | None = None) -> list[str]:
         """Render a Banner configuration object to lines.
 
         Args:
             banner: Banner configuration object
+            width: Optional maximum width for truncation
 
         Returns:
             List of rendered lines ready for printing
         """
         from styledconsole.utils.color import apply_line_gradient
-        from styledconsole.utils.text import strip_ansi, visual_width
+        from styledconsole.utils.text import strip_ansi, truncate_to_width, visual_width
 
         # Check if text contains emoji (visual_width > len indicates emoji)
         text_clean = strip_ansi(banner.text)
@@ -540,6 +607,17 @@ class RenderingEngine:
                 if self._debug:
                     self._logger.warning(f"Font error: {e}")
                 ascii_lines = [banner.text]
+
+        # Truncate lines if width is specified and exceeded
+        if width:
+            truncated_lines = []
+            for line in ascii_lines:
+                if visual_width(line) > width:
+                    # Clean cut for ASCII art looks better than ellipses on every line
+                    truncated_lines.append(truncate_to_width(line, width, suffix=""))
+                else:
+                    truncated_lines.append(line)
+            ascii_lines = truncated_lines
 
         # Apply gradient coloring if specified
         if banner.rainbow:
@@ -612,6 +690,9 @@ class RenderingEngine:
                 f"gradient={start_color}→{end_color}, rainbow={rainbow}, border={border}"
             )
 
+        from styledconsole.core.banner import Banner
+        from styledconsole.utils.text import create_rich_text
+
         banner_obj = Banner(
             text=text,
             font=font,
@@ -624,11 +705,18 @@ class RenderingEngine:
             padding=padding,
         )
 
-        lines = self._render_banner_lines(banner_obj)
+        # Calculate available width to prevent wrapping
+        # We use the actual terminal width (self._rich_console.size.width)
+        # instead of the preferred width (self._rich_console.width) to allow
+        # banners to expand if the terminal is large enough, even if a fixed
+        # console width was set (though usually they are the same).
+        term_width = self._rich_console.size.width
+        # Banners with borders take up 4 chars of width (2 corners + 2 padding)
+        available_width = term_width - 4 if border else term_width
 
-        # Print banner with alignment
-        content_str = "\n".join(lines)
-        self._print_aligned(create_rich_text(content_str), align)
+        lines = self._render_banner_lines(banner_obj, width=available_width)
+        text_obj = create_rich_text("\n".join(lines))
+        self._print_aligned(text_obj, align=align)
 
         # Log completion
         if self._debug:

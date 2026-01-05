@@ -61,19 +61,19 @@ def apply_gradient(
         plain_text = text.plain
 
         # 2. Iterate over graphemes (logical visual characters)
-        # Note: text.plain does NOT contain ANSI codes, so split_graphemes works purely on unicode
         graphemes = split_graphemes(plain_text)
 
         current_idx = 0  # String index
         visual_col = 0  # Visual column index
 
+        # Group adjacent characters with the same target color to minimize ANSI codes
+        pending_style = None
+        pending_start = 0
+        pending_end = 0
+
         for grapheme in graphemes:
             g_len = len(grapheme)
             g_width = visual_width(grapheme)
-
-            # If width is 0, it's likely a control char or zero-width joiner not handled by
-            # split_graphemes logic? split_graphemes on plain text should return actual content.
-            # However, if split_graphemes handles ANSI, but we passed plain text, it's fine.
 
             if g_width > 0:
                 # Check is_border on the plain character
@@ -83,12 +83,30 @@ def apply_gradient(
                     position = position_strategy.calculate(row, visual_col, total_rows, max_col)
                     color = color_source.get_color(position)
 
-                    # Apply color to the range in the Text object
-                    # We use "color" style type. Rich handles hex codes.
-                    text.stylize(color, current_idx, current_idx + g_len)
+                    if pending_style == color and pending_end == current_idx:
+                        # Extend existing style range
+                        pending_end += g_len
+                    else:
+                        # Apply previous pending style if any
+                        if pending_style:
+                            text.stylize(pending_style, pending_start, pending_end)
+
+                        # Start new style range
+                        pending_style = color
+                        pending_start = current_idx
+                        pending_end = current_idx + g_len
+                else:
+                    # Character should not be colored, apply pending style and reset
+                    if pending_style:
+                        text.stylize(pending_style, pending_start, pending_end)
+                        pending_style = None
 
             current_idx += g_len
             visual_col += g_width
+
+        # Apply final pending style
+        if pending_style:
+            text.stylize(pending_style, pending_start, pending_end)
 
         # 3. Render back to ANSI string
         console.print(text, end="")

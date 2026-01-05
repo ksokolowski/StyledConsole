@@ -8,11 +8,26 @@ Available Effects:
 - diagonal_gradient_frame(): Diagonal gradients (top-left to bottom-right)
 - rainbow_frame(): 7-color rainbow spectrum (vertical or diagonal)
 
+Effect System (v0.9.9.2+):
+- EffectSpec: Declarative effect specification
+- EFFECTS: Registry of 30+ named effect presets
+- resolve_effect(): Convert specs to strategies
+
 All functions support:
 - target/mode: "content", "border", or "both"
 - Auto-width calculation (when width=None)
 - Custom border styles
 - Safe emoji handling
+
+Example:
+    >>> from styledconsole.effects import EffectSpec, EFFECTS
+    >>>
+    >>> # Use preset
+    >>> fire = EFFECTS.fire
+    >>> ocean = EFFECTS["ocean"]
+    >>>
+    >>> # Create custom effect
+    >>> custom = EffectSpec.gradient("red", "blue", direction="horizontal")
 """
 
 from __future__ import annotations
@@ -26,15 +41,21 @@ if TYPE_CHECKING:
     from styledconsole import Console
 
 from styledconsole.effects.engine import apply_gradient
+from styledconsole.effects.registry import EFFECTS, EffectRegistry
+from styledconsole.effects.resolver import resolve_effect
+from styledconsole.effects.spec import EffectSpec
 from styledconsole.effects.strategies import (
     BorderOnly,
     Both,
     ContentOnly,
     DiagonalPosition,
+    EnhancedRainbow,
     HorizontalPosition,
     LinearGradient,
+    MultiStopGradient,
     PositionStrategy,
     RainbowSpectrum,
+    ReversedColorSource,
     TargetFilter,
     VerticalPosition,
 )
@@ -42,10 +63,27 @@ from styledconsole.utils.color import colorize, get_rainbow_color, interpolate_c
 from styledconsole.utils.text import get_render_target, set_render_target, strip_ansi
 
 __all__ = [
+    "EFFECTS",
+    "BorderOnly",
+    "Both",
+    "ContentOnly",
+    "DiagonalPosition",
+    "EffectRegistry",
+    "EffectSpec",
+    "EnhancedRainbow",
+    "HorizontalPosition",
+    "LinearGradient",
+    "MultiStopGradient",
+    "PositionStrategy",
+    "RainbowSpectrum",
+    "ReversedColorSource",
+    "TargetFilter",
+    "VerticalPosition",
     "diagonal_gradient_frame",
     "gradient_frame",
     "rainbow_cycling_frame",
     "rainbow_frame",
+    "resolve_effect",
 ]
 
 

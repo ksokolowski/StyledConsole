@@ -1,7 +1,7 @@
 # StyledConsole Documentation
 
-**Version:** 0.9.9
-**Last Updated:** January 2, 2026
+**Version:** 0.9.9.3
+**Last Updated:** January 5, 2026
 
 ______________________________________________________________________
 
@@ -29,15 +29,14 @@ pip install styledconsole
 **Basic Example:**
 
 ```python
-from styledconsole import Console, icons
+from styledconsole import Console, icons, EffectSpec
 
 console = Console()
 console.frame(
     f"{icons.CHECK_MARK_BUTTON} Build successful",
     title=f"{icons.SPARKLES} Status",
     border="rounded",
-    border_gradient_start="green",
-    border_gradient_end="cyan"
+    effect=EffectSpec.gradient("green", "cyan")
 )
 ```
 

@@ -2,15 +2,15 @@
 
 [![Python >=3.10](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-0.9.9.1-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole/releases)
-[![Tests](https://img.shields.io/badge/tests-869%20passing-success.svg)](https://github.com/ksokolowski/StyledConsole)
-[![Coverage](https://img.shields.io/badge/coverage-80%25-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole)
+[![Version](https://img.shields.io/badge/version-0.9.9.3-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole/releases)
+[![Tests](https://img.shields.io/badge/tests-1073%20passing-success.svg)](https://github.com/ksokolowski/StyledConsole)
+[![Coverage](https://img.shields.io/badge/coverage-82%25-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole)
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/ksokolowski?style=flat&logo=githubsponsors&logoColor=pink)](https://github.com/sponsors/ksokolowski)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support-ff5e5b?logo=ko-fi&logoColor=white)](https://ko-fi.com/styledconsole)
 
 **A modern Python library for elegant terminal output** — rich formatting, colors, emojis, gradients, and export capabilities built on top of [Rich](https://github.com/Textualize/rich).
 
-> 🚧 **Early Access** — Currently available on TestPyPI. Some features may be experimental.
+> 🚧 **Early Access** — Currently available on TestPyPI. Some features may be experimental. API not yet final!
 
 ```bash
 pip install -i https://test.pypi.org/simple/ styledconsole
@@ -63,15 +63,20 @@ print(f"{icons.CHECK_MARK_BUTTON} Done!")  # ✅ or >>> in CI
 Smooth color transitions on any frame border:
 
 ```python
-from styledconsole import Console
+from styledconsole import Console, EFFECTS, EffectSpec
 
 console = Console()
+
+# Use preset effects (32 available)
+console.frame("Build successful!", title="Status", effect="fire")
+console.frame("Deployed!", title="Status", effect=EFFECTS.ocean)
+
+# Or create custom gradients
 console.frame(
-    "Build successful!",
+    "Custom gradient!",
     title="Status",
     border="rounded",
-    border_gradient_start="green",
-    border_gradient_end="cyan",
+    effect=EffectSpec.gradient("green", "cyan"),
 )
 ```
 
@@ -80,8 +85,9 @@ console.frame(
 500+ fonts with integrated gradient and rainbow support:
 
 ```python
-console.banner("HELLO", font="slant", rainbow=True)
-console.banner("WORLD", font="big", start_color="cyan", end_color="magenta")
+console.banner("HELLO", font="slant", effect="rainbow")
+console.banner("WORLD", font="big", effect=EffectSpec.gradient("cyan", "magenta"))
+console.banner("FIRE", font="banner", effect=EFFECTS.fire)
 ```
 
 ### 📊 StyledTables

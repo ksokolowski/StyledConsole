@@ -162,6 +162,18 @@ def _is_modern_terminal_mode() -> bool:
     return is_modern_terminal()
 
 
+def _is_kitty_terminal() -> bool:
+    """Check if running in Kitty terminal.
+
+    Kitty terminal renders ZWJ sequences differently than other modern terminals.
+    When fonts don't have specific ligature support, Kitty renders component
+    emojis separately, so ZWJ sequences take up the sum of component widths.
+    """
+    from styledconsole.utils.terminal import _detect_modern_terminal
+
+    return _detect_modern_terminal() == "kitty"
+
+
 def _is_skin_tone_modifier(char: str) -> bool:
     """Check if character is a skin tone modifier (U+1F3FB to U+1F3FF)."""
     return 0x1F3FB <= ord(char) <= 0x1F3FF
@@ -199,47 +211,100 @@ def _count_emoji_codepoints(grapheme: str) -> int:
     return count
 
 
+def _zwj_width_kitty(grapheme: str) -> int:
+    """Calculate ZWJ sequence width for Kitty terminal.
+
+    Kitty renders ZWJ sequences as separate glyphs when fonts lack ligature support.
+    This function sums the widths of component emojis.
+
+    Examples:
+    - 👨‍💻 (Man + ZWJ + Laptop) = 2 + 2 = 4 cells
+    - 👨‍👩‍👧 (Man + ZWJ + Woman + ZWJ + Girl) = 2 + 2 + 2 = 6 cells
+    - 🏳️‍🌈 (Flag + VS16 + ZWJ + Rainbow) = 2 + 2 = 4 cells
+    """
+    width = 0
+
+    for c in grapheme:
+        cp = ord(c)
+        # Skip ZWJ (U+200D) and VS16 (U+FE0F) - they're zero-width joiners
+        if cp == 0x200D or cp == 0xFE0F:
+            continue
+        # Skin tone modifiers add 2 width in Kitty (rendered separately)
+        if 0x1F3FB <= cp <= 0x1F3FF:
+            width += 2
+            continue
+
+        # For emoji characters, always use width 2 in ZWJ sequences
+        # This is because in Kitty, emojis in ZWJ sequences are rendered
+        # as separate full-width glyphs, even if wcwidth reports width 1
+        if emoji.is_emoji(c):
+            width += 2
+        else:
+            # Get width of this codepoint for non-emoji characters
+            w = wcwidth.wcwidth(c)
+            if w > 0:
+                width += w
+            else:
+                # Fallback for unrecognized characters
+                width += 1
+
+    return width if width > 0 else 2  # Minimum width 2 for emoji sequences
+
+
 def _grapheme_width_modern(grapheme: str) -> int:
     """Calculate width in modern terminal mode.
 
-    Modern terminals (Kitty, WezTerm, iTerm2, Ghostty, Alacritty) render
-    ALL ZWJ sequences as a single glyph with width 2, regardless of how
-    many component emojis are joined.
+    Most modern terminals (WezTerm, iTerm2, Ghostty, Alacritty) render
+    ZWJ sequences as a single glyph with width 2.
 
-    Examples (all render as width 2 in modern terminals):
-    - 👨‍💻 (Man + ZWJ + Laptop)
-    - 👨‍👩‍👧 (Man + ZWJ + Woman + ZWJ + Girl)
-    - 👨‍👩‍👧‍👦 (4 people joined)
-    - 🏳️‍🌈 (Flag + VS16 + ZWJ + Rainbow)
+    However, Kitty terminal renders ZWJ sequences differently - it displays
+    component emojis separately when fonts lack ligature support, so the width
+    is the sum of component widths.
+
+    Examples for non-Kitty modern terminals (all render as width 2):
+    - 👨‍💻 (Man + ZWJ + Laptop) = 2
+    - 👨‍👩‍👧 (Man + ZWJ + Woman + ZWJ + Girl) = 2
+
+    Examples for Kitty terminal (component widths summed):
+    - 👨‍💻 (Man + ZWJ + Laptop) = 4
+    - 👨‍👩‍👧 (Man + ZWJ + Woman + ZWJ + Girl) = 6
     """
-    if "\u200d" in grapheme:
-        # Modern terminals render ALL ZWJ sequences as single width-2 glyphs
+    # Check if this is a ZWJ sequence or has VS16
+    has_zwj = "\u200d" in grapheme
+    has_vs16 = VARIATION_SELECTOR_16 in grapheme
+
+    # Kitty terminal renders ZWJ components separately
+    if has_zwj and _is_kitty_terminal():
+        return _zwj_width_kitty(grapheme)
+
+    # Other modern terminals render ZWJ and VS16 sequences as single width-2 glyphs
+    if has_zwj or has_vs16:
         return 2
 
-    # VS16 (Variation Selector 16) forces emoji presentation = width 2
-    if VARIATION_SELECTOR_16 in grapheme:
+    # Check if this is an emoji grapheme using the emoji package
+    # This correctly handles complex sequences that wcwidth might fail on
+    if emoji.is_emoji(grapheme):
         return 2
 
-    # For single characters, use wcwidth first (correctly handles zero-width chars)
-    # then override with East Asian Width for width 1 vs 2 decision
-    # (wcwidth can be wrong for some chars like trigrams U+2630-U+2637)
+    # For single characters, trust wcwidth's width calculation
+    # wcwidth correctly handles most Unicode width assignments including
+    # symbols, CJK characters, and various Unicode blocks
     if len(grapheme) == 1:
         w = wcwidth.wcwidth(grapheme)
-        # Zero-width characters (combining marks, zero-width spaces, etc.)
-        if w == 0:
-            return 0
-        # Use Unicode East Asian Width for width 1 vs 2 decision
+        if w >= 0:
+            return w
+        # Only fall back to East Asian Width if wcwidth fails (-1)
         import unicodedata
-
         eaw = unicodedata.east_asian_width(grapheme)
-        # Wide (W) and Fullwidth (F) = width 2
-        # Neutral (N), Narrow (Na), Halfwidth (H), Ambiguous (A) = width 1 in Western terminals
         if eaw in ("W", "F"):
             return 2
         return 1
 
-    # For multi-codepoint graphemes without ZWJ/VS16, use wcwidth
-    w = wcwidth.wcswidth(grapheme)
+    # For multi-codepoint graphemes, use wcswidth on clean text
+    clean = strip_ansi(grapheme)
+    if not clean:
+        return 0
+    w = wcwidth.wcswidth(clean)
     return w if w >= 0 else 1
 
 
@@ -247,13 +312,21 @@ def _grapheme_width_standard(grapheme: str) -> int:
     """Calculate width in standard mode (conservative for older terminals)."""
     if "\u200d" in grapheme:
         return 2  # ZWJ sequences are always width 2
+
+    # In standard mode, VS16 emojis often render as width 1
+    # regardless of what wcwidth reports.
     if VARIATION_SELECTOR_16 in grapheme:
-        # Older terminals (Gnome, VSCode default) often treat ZWJ/VS16 sequences as text (Width 1)
-        # We force Width 1 here to maintain compatibility with legacy behavior
         return 1
 
+    # Check if this is an emoji grapheme using the emoji package
+    if emoji.is_emoji(grapheme):
+        return 2
+
     # For others, trust wcwidth or default to 1
-    w = wcwidth.wcswidth(grapheme)
+    clean = strip_ansi(grapheme)
+    if not clean:
+        return 0
+    w = wcwidth.wcswidth(clean)
     return w if w >= 0 else 1
 
 
@@ -378,11 +451,15 @@ def _parse_ansi_sequence(text: str, start: int) -> tuple[str, int]:
     return text[start:end], end
 
 
-def _should_extend_grapheme(current: str, char: str) -> bool:
-    """Check if char should extend the current grapheme cluster."""
-    if not current:
+def _should_extend_grapheme_v2(last_real_char: str | None, char: str) -> bool:
+    """Check if char should extend the current grapheme cluster.
+
+    Args:
+        last_real_char: The last non-ANSI character in the current cluster
+        char: The character to check for extension
+    """
+    if last_real_char is None:
         return False
-    prev_char = current[-1]
 
     # VS16 (Variation Selector-16) extends previous
     if char == VARIATION_SELECTOR_16:
@@ -391,7 +468,7 @@ def _should_extend_grapheme(current: str, char: str) -> bool:
     if char == "\u200d":
         return True
     # If previous was ZWJ, this char extends it (emoji sequence)
-    if prev_char == "\u200d":
+    if last_real_char == "\u200d":
         return True
     # Skin tone modifiers extend previous
     return bool(_is_skin_tone_modifier(char))
@@ -409,6 +486,7 @@ def split_graphemes(text: str) -> list[str]:
     """
     graphemes: list[str] = []
     current_grapheme = ""
+    last_real_char: str | None = None
     i = 0
     n = len(text)
 
@@ -422,18 +500,21 @@ def split_graphemes(text: str) -> list[str]:
             elif graphemes:
                 graphemes[-1] += ansi_code
             else:
-                graphemes.append(ansi_code)
+                current_grapheme = ansi_code  # Start with ANSI
             continue
 
         char = text[i]
 
-        if _should_extend_grapheme(current_grapheme, char):
+        if _should_extend_grapheme_v2(last_real_char, char):
             current_grapheme += char
+            last_real_char = char
         elif not current_grapheme:
             current_grapheme = char
+            last_real_char = char
         else:
             graphemes.append(current_grapheme)
             current_grapheme = char
+            last_real_char = char
         i += 1
 
     if current_grapheme:

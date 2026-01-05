@@ -69,3 +69,9 @@ CLAUDE.md
 
 # Large font files (downloaded at runtime)
 src/styledconsole/export/fonts/*.ttf
+
+# CI/CD Infrastructure (local Proxmox only - keep in StyledConsole-Internal)
+Jenkinsfile
+infrastructure/
+.jenkins/
+.harbor/

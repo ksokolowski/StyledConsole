@@ -82,26 +82,28 @@ class TestConsoleFrame:
         assert ctx.margin == (5, 5, 5, 5)
 
     def test_frame_gradient_args(self, console):
-        """Verify gradient arguments are passed."""
-        console.frame(
-            "Content",
-            start_color="red",
-            end_color="blue",
-            border_gradient_start="green",
-            border_gradient_end="yellow",
-            border_gradient_direction="horizontal",
-        )
+        """Verify gradient arguments are passed (converts to effect in v0.9.9.3+)."""
+        import warnings
+
+        # Legacy gradient params now emit deprecation warnings and are converted to effect
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
+            console.frame(
+                "Content",
+                start_color="red",
+                end_color="blue",
+                border_gradient_start="green",
+                border_gradient_end="yellow",
+                border_gradient_direction="horizontal",
+            )
 
         _, kwargs = console._renderer.print_frame.call_args
         ctx = kwargs["context"]
 
-        # Console.frame resolves colors.
-        # If we passed strings, they should be in the context as strings (normalized)
-        # or as Resolve/Normalized values.
-        # Since we don't mock theme fully, the default theme will run.
-        # Default theme resolve_color returns the string input if it's a valid color or hex.
-
-        # We mostly care that they made it into the context object
-        assert ctx.border_gradient_start is not None
-        assert ctx.border_gradient_end is not None
-        assert ctx.border_gradient_direction == "horizontal"
+        # In v0.9.9.3+, legacy gradient params are converted to effect
+        # The content gradient (start_color/end_color) creates an effect
+        # When both content and border gradients are provided, content gradient wins
+        # because it's processed first in _resolve_effect
+        assert ctx.effect is not None
+        assert ctx.effect.colors == ("red", "blue")
+        assert ctx.effect.target == "content"

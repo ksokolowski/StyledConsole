@@ -1,7 +1,7 @@
 # StyledConsole User Guide
 
-**Version:** 0.9.9
-**Last Updated:** January 2, 2026
+**Version:** 0.9.9.3
+**Last Updated:** January 5, 2026
 
 ______________________________________________________________________
 
@@ -11,6 +11,7 @@ ______________________________________________________________________
 1. [Frames & Borders](#frames--borders)
 1. [Frame Groups](#frame-groups)
 1. [Banners](#banners)
+1. [Effects System](#effects-system) *(New in v0.9.9.3)*
 1. [Colors & Gradients](#colors--gradients)
 1. [Emojis](#emojis)
 1. [Icons & Terminal Fallback](#icons--terminal-fallback)
@@ -120,7 +121,34 @@ console.frame(
 
 ### Gradient Borders
 
+> **New in v0.9.9.3:** Use the `effect=` parameter for cleaner gradient syntax.
+
 ```python
+# Recommended (v0.9.9.3+)
+from styledconsole import Console, EFFECTS, EffectSpec
+
+console = Console()
+console.frame(
+    "Gradient magic!",
+    title="Rainbow",
+    effect="fire"  # Use preset name
+)
+
+# Or use the EFFECTS registry
+console.frame("Ocean vibes", effect=EFFECTS.ocean)
+
+# Or create custom gradients
+console.frame(
+    "Custom gradient",
+    effect=EffectSpec.gradient("red", "blue")
+)
+```
+
+<details>
+<summary>Legacy syntax (deprecated)</summary>
+
+```python
+# Still works, but shows deprecation warning
 console.frame(
     "Gradient magic!",
     title="Rainbow",
@@ -128,6 +156,8 @@ console.frame(
     border_gradient_end="blue"
 )
 ```
+
+</details>
 
 ### Width Best Practices
 
@@ -207,8 +237,7 @@ console.frame_group(
 # Outer frame gradient
 console.frame_group(
     [{"content": "A"}, {"content": "B"}],
-    border_gradient_start="cyan",
-    border_gradient_end="magenta",
+    effect=EffectSpec.gradient("cyan", "magenta"),
 )
 ```
 
@@ -357,18 +386,140 @@ console.banner("SUCCESS", font="slant")
 
 ### Gradient Banner
 
+> **New in v0.9.9.3:** Use the `effect=` parameter for cleaner gradient syntax.
+
 ```python
+from styledconsole import Console, EFFECTS, EffectSpec
+
+console = Console()
+
+# Using preset names
+console.banner("LAUNCH", font="banner", effect="fire")
+console.banner("OCEAN", font="slant", effect="rainbow_neon")
+
+# Using EFFECTS registry
+console.banner("SUCCESS", font="big", effect=EFFECTS.success)
+
+# Custom gradient
+console.banner(
+    "CUSTOM",
+    font="banner",
+    effect=EffectSpec.gradient("red", "blue")
+)
+```
+
+<details>
+<summary>Legacy syntax (deprecated)</summary>
+
+```python
+# Still works, but shows deprecation warning
 console.banner(
     "LAUNCH",
     font="banner",
     start_color="red",
     end_color="blue"
 )
+
+console.banner("RAINBOW", font="slant", rainbow=True)  # Deprecated
 ```
+
+</details>
 
 ### Available Fonts
 
 Common pyfiglet fonts: `standard`, `slant`, `banner`, `big`, `small`, `mini`
+
+______________________________________________________________________
+
+## Effects System
+
+> **New in v0.9.9.3**
+
+The effects system provides a unified way to apply gradients, rainbows, and color effects to frames and banners.
+
+### Quick Start
+
+```python
+from styledconsole import Console, EFFECTS, EffectSpec
+
+console = Console()
+
+# Use preset names (easiest)
+console.frame("Fire effect!", effect="fire")
+console.banner("SUCCESS", effect="rainbow_neon")
+
+# Use EFFECTS registry (IDE autocomplete)
+console.frame("Ocean theme", effect=EFFECTS.ocean)
+
+# Create custom effects
+console.frame("Custom", effect=EffectSpec.gradient("cyan", "magenta"))
+```
+
+### Available Presets (32 total)
+
+| Category | Presets |
+|----------|---------|
+| **Gradients** | `fire`, `ocean`, `sunset`, `forest`, `aurora`, `lavender`, `peach`, `mint`, `steel`, `gold` |
+| **Rainbows** | `rainbow`, `rainbow_pastel`, `rainbow_neon`, `rainbow_muted`, `rainbow_reverse`, `rainbow_horizontal`, `rainbow_diagonal` |
+| **Themed** | `matrix`, `cyberpunk`, `retro`, `vaporwave`, `dracula`, `nord_aurora` |
+| **Semantic** | `success`, `warning`, `error`, `info`, `neutral` |
+| **Border-only** | `border_fire`, `border_ocean`, `border_rainbow`, `border_gold` |
+
+### EffectSpec Factory Methods
+
+```python
+from styledconsole import EffectSpec
+
+# Two-color gradient
+effect = EffectSpec.gradient("red", "blue")
+effect = EffectSpec.gradient("#ff6b6b", "#4ecdc4", direction="horizontal")
+
+# Multi-stop gradient (3+ colors)
+effect = EffectSpec.multi_stop(["red", "yellow", "green"])
+effect = EffectSpec.multi_stop(
+    colors=["#ff0000", "#00ff00", "#0000ff"],
+    stops=[0.0, 0.5, 1.0]  # Custom positions
+)
+
+# Rainbow effects
+effect = EffectSpec.rainbow()
+effect = EffectSpec.rainbow(saturation=0.8, brightness=1.0)
+```
+
+### Effect Modifiers
+
+Effects are immutable, so modifiers return new instances:
+
+```python
+from styledconsole import EFFECTS
+
+# Change direction
+effect = EFFECTS.fire.with_direction("horizontal")
+effect = EFFECTS.ocean.with_direction("diagonal")
+
+# Change target
+effect = EFFECTS.rainbow.with_target("border")  # Only apply to border
+effect = EFFECTS.fire.with_target("content")    # Only apply to content
+
+# Reverse colors
+effect = EFFECTS.sunset.reversed()
+```
+
+### Target Options
+
+| Target | Effect Applied To |
+|--------|-------------------|
+| `"both"` | Border and content (default) |
+| `"border"` | Border only |
+| `"content"` | Content text only |
+
+### Direction Options
+
+| Direction | Description |
+|-----------|-------------|
+| `"vertical"` | Top to bottom (default) |
+| `"horizontal"` | Left to right |
+| `"diagonal"` | Top-left to bottom-right |
 
 ______________________________________________________________________
 
