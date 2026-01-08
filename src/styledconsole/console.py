@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import sys
 import warnings
+from collections.abc import Iterable
 from typing import TYPE_CHECKING, Any, TextIO
 
 from rich.console import Console as RichConsole
@@ -25,7 +26,7 @@ from styledconsole.core.theme import DEFAULT_THEME, THEMES, Theme
 from styledconsole.effects.registry import EFFECTS
 from styledconsole.effects.spec import EffectSpec
 from styledconsole.policy import RenderPolicy, get_default_policy
-from styledconsole.types import AlignType, FrameGroupItem, LayoutType
+from styledconsole.types import AlignType, ColumnsType, FrameGroupItem, LayoutType
 from styledconsole.utils.terminal import TerminalProfile
 
 if TYPE_CHECKING:
@@ -337,6 +338,9 @@ class Console:
         content_color: str | None = None,
         border_color: str | None = None,
         title_color: str | None = None,
+        # Effect system (v0.9.9.3+)
+        effect: EffectSpec | str | None = None,
+        # Legacy gradient params (deprecated, use effect= instead)
         start_color: str | None = None,
         end_color: str | None = None,
         border_gradient_start: str | None = None,
@@ -354,64 +358,38 @@ class Console:
         Returns:
             Rendered frame as a string containing ANSI escape codes.
         """
-        # Resolve semantic colors through theme and normalize for Rich
-        from styledconsole.core.context import StyleContext
-        from styledconsole.utils.color import normalize_color_for_rich
-
-        resolved_content_color = normalize_color_for_rich(self._theme.resolve_color(content_color))
-        resolved_border_color = normalize_color_for_rich(self._theme.resolve_color(border_color))
-        resolved_title_color = normalize_color_for_rich(self._theme.resolve_color(title_color))
-
-        # Apply theme text gradient if no explicit content gradient provided
-        effective_start_color = start_color
-        effective_end_color = end_color
-        if start_color is None and self._theme.text_gradient is not None:
-            effective_start_color = self._theme.text_gradient.start
-            effective_end_color = self._theme.text_gradient.end
-
-        resolved_start_color = normalize_color_for_rich(
-            self._theme.resolve_color(effective_start_color)
-        )
-        resolved_end_color = normalize_color_for_rich(
-            self._theme.resolve_color(effective_end_color)
+        # Resolve effect from new or legacy parameters
+        resolved_effect = self._resolve_effect(
+            effect=effect,
+            start_color=start_color,
+            end_color=end_color,
+            border_gradient_start=border_gradient_start,
+            border_gradient_end=border_gradient_end,
+            border_gradient_direction=border_gradient_direction,
         )
 
-        # Apply theme border gradient if no explicit gradient provided
-        effective_border_gradient_start = border_gradient_start
-        effective_border_gradient_end = border_gradient_end
-        effective_direction = border_gradient_direction
-        if border_gradient_start is None and self._theme.border_gradient is not None:
-            effective_border_gradient_start = self._theme.border_gradient.start
-            effective_border_gradient_end = self._theme.border_gradient.end
-            effective_direction = self._theme.border_gradient.direction
-
-        resolved_border_gradient_start = normalize_color_for_rich(
-            self._theme.resolve_color(effective_border_gradient_start)
-        )
-        resolved_border_gradient_end = normalize_color_for_rich(
-            self._theme.resolve_color(effective_border_gradient_end)
-        )
-
-        # Create Context
-        context = StyleContext(
+        # Resolve style using helper
+        resolved_context = self._resolve_frame_style(
+            style=None,  # render_frame doesn't support style= parameter
+            title=title,
+            border=border,
             width=width,
             padding=padding,
             align=align,
             frame_align=frame_align,
             margin=margin,
-            border_style=border,
-            border_color=resolved_border_color,
-            border_gradient_start=resolved_border_gradient_start,
-            border_gradient_end=resolved_border_gradient_end,
-            border_gradient_direction=effective_direction,
-            content_color=resolved_content_color,
-            start_color=resolved_start_color,
-            end_color=resolved_end_color,
-            title=title,
-            title_color=resolved_title_color,
+            content_color=content_color,
+            border_color=border_color,
+            title_color=title_color,
+            start_color=start_color,
+            end_color=end_color,
+            border_gradient_start=border_gradient_start,
+            border_gradient_end=border_gradient_end,
+            border_gradient_direction=border_gradient_direction,
+            effect=resolved_effect,
         )
 
-        return self._renderer.render_frame_to_string(content, context=context)
+        return self._renderer.render_frame_to_string(content, context=resolved_context)
 
     def _resolve_color(
         self,
@@ -795,15 +773,14 @@ class Console:
         layout: LayoutType = "vertical",
         gap: int = 1,
         inherit_style: bool = False,
+        columns: ColumnsType = "auto",
+        min_columns: int = 2,
+        item_width: int | None = None,
     ) -> str:
         """Render a group of frames to a string.
 
         Creates multiple frames arranged within an outer container frame.
-        Useful for dashboards, multi-section displays, and organized layouts.
-
-        Note:
-            This is a v0.7.0 feature. Currently only "vertical" layout is supported.
-            Future versions may add "horizontal" and "grid" layouts.
+        Supports vertical, horizontal, and grid layouts.
 
         Args:
             items: List of frame item dictionaries. Each dict must have 'content'
@@ -822,11 +799,19 @@ class Console:
             title_color: Color for outer frame title.
             border_gradient_start: Starting color for outer border gradient.
             border_gradient_end: Ending color for outer border gradient.
-            layout: Layout mode for inner frames. Currently only "vertical"
-                (stack top-to-bottom) is supported. Defaults to "vertical".
-            gap: Number of blank lines between inner frames. Defaults to 1.
+            layout: Layout mode for inner frames:
+                - "vertical": Stack frames top-to-bottom (default)
+                - "horizontal": Place all frames side-by-side in one row
+                - "grid": Arrange frames in rows/columns
+            gap: Space between frames. For vertical layout, number of blank lines.
+                For horizontal/grid, number of characters. Defaults to 1.
             inherit_style: If True, inner frames inherit outer border style
                 when not explicitly specified. Defaults to False.
+            columns: Number of columns for horizontal/grid layout.
+                Use "auto" to calculate from terminal width. Defaults to "auto".
+            min_columns: Minimum columns when columns="auto". Defaults to 2.
+            item_width: Width of each item frame for horizontal/grid layout.
+                If None, uses 35. Defaults to None.
 
         Returns:
             Rendered frame group as a string containing ANSI escape codes.
@@ -834,12 +819,18 @@ class Console:
 
         Example:
             >>> console = Console()
-            >>> # Render to string for nesting
+            >>> # Vertical layout (default)
             >>> group = console.render_frame_group(
-            ...     [{"content": "Section A"}, {"content": "Section B"}],
-            ...     title="Inner Group",
+            ...     [{"content": "A"}, {"content": "B"}],
+            ...     title="Vertical",
             ... )
-            >>> console.frame(group, title="Outer Frame")
+            >>> # Grid layout with auto columns
+            >>> group = console.render_frame_group(
+            ...     [{"content": f"Item {i}"} for i in range(8)],
+            ...     layout="grid",
+            ...     columns="auto",
+            ...     min_columns=2,
+            ... )
         """
         return self._renderer.render_frame_group_to_string(
             items,
@@ -855,6 +846,9 @@ class Console:
             layout=layout,
             gap=gap,
             inherit_style=inherit_style,
+            columns=columns,
+            min_columns=min_columns,
+            item_width=item_width,
         )
 
     def frame_group(
@@ -875,16 +869,15 @@ class Console:
         inherit_style: bool = False,
         margin: int | tuple[int, int, int, int] = 0,
         frame_align: AlignType | None = None,
+        columns: ColumnsType = "auto",
+        min_columns: int = 2,
+        item_width: int | None = None,
     ) -> None:
         """Render and print a group of frames.
 
         Creates multiple frames arranged within an outer container frame.
         Perfect for dashboards, status panels, multi-section displays, and
         organized information layouts.
-
-        Note:
-            This is a v0.7.0 feature. Currently only "vertical" layout is supported.
-            Future versions may add "horizontal" and "grid" layouts.
 
         Args:
             items: List of frame item dictionaries. Each dict must have 'content'
@@ -903,17 +896,25 @@ class Console:
             title_color: Color for outer frame title.
             border_gradient_start: Starting color for outer border gradient.
             border_gradient_end: Ending color for outer border gradient.
-            layout: Layout mode for inner frames. Currently only "vertical"
-                (stack top-to-bottom) is supported. Defaults to "vertical".
-            gap: Number of blank lines between inner frames. Defaults to 1.
+            layout: Layout mode for inner frames:
+                - "vertical": Stack frames top-to-bottom (default)
+                - "horizontal": Place all frames side-by-side in one row
+                - "grid": Arrange frames in rows/columns
+            gap: Space between frames. For vertical layout, number of blank lines.
+                For horizontal/grid, number of characters. Defaults to 1.
             inherit_style: If True, inner frames inherit outer border style
                 when not explicitly specified. Defaults to False.
             margin: Margin around the outer frame.
             frame_align: Alignment of the outer frame on screen.
+            columns: Number of columns for horizontal/grid layout.
+                Use "auto" to calculate from terminal width. Defaults to "auto".
+            min_columns: Minimum columns when columns="auto". Defaults to 2.
+            item_width: Width of each item frame for horizontal/grid layout.
+                If None, uses 35. Defaults to None.
 
         Example:
             >>> console = Console()
-            >>> # Simple frame group
+            >>> # Simple vertical frame group
             >>> console.frame_group(
             ...     [
             ...         {"content": "Status: OK", "title": "System"},
@@ -923,21 +924,20 @@ class Console:
             ...     border="double",
             ... )
 
-            >>> # With styling
+            >>> # Grid layout with auto columns
             >>> console.frame_group(
-            ...     [
-            ...         {"content": "Error!", "border_color": "red"},
-            ...         {"content": "Warning", "border_color": "yellow"},
-            ...     ],
-            ...     border_gradient_start="red",
-            ...     border_gradient_end="yellow",
+            ...     [{"content": f"Item {i}", "border": "solid"} for i in range(8)],
+            ...     layout="grid",
+            ...     columns="auto",
+            ...     min_columns=2,
+            ...     item_width=30,
             ... )
 
-            >>> # Inherit outer style
+            >>> # Horizontal layout (all in one row)
             >>> console.frame_group(
-            ...     [{"content": "A"}, {"content": "B"}],
-            ...     border="heavy",
-            ...     inherit_style=True,  # Inner frames also use "heavy"
+            ...     [{"content": "A"}, {"content": "B"}, {"content": "C"}],
+            ...     layout="horizontal",
+            ...     gap=2,
             ... )
         """
         self._renderer.print_frame_group(
@@ -956,6 +956,9 @@ class Console:
             inherit_style=inherit_style,
             margin=margin,
             frame_align=frame_align,
+            columns=columns,
+            min_columns=min_columns,
+            item_width=item_width,
         )
 
     def group(
@@ -1584,3 +1587,69 @@ class Console:
             >>> console.resolve_color("red")      # Returns "red" (unchanged)
         """
         return self._theme.resolve_color(color)
+
+    def columns(
+        self,
+        renderables: Iterable[Any],
+        padding: int | tuple[int] | tuple[int, int] | tuple[int, int, int, int] = (0, 2),
+        *,
+        width: int | None = None,
+        expand: bool = False,
+        equal: bool = False,
+        column_first: bool = False,
+        right_to_left: bool = False,
+        align: AlignType | None = None,
+        title: str | None = None,
+    ) -> None:
+        """Display renderables in columns with automatic policy awareness.
+
+        Creates a multi-column layout with automatic emoji sanitization
+        and VS16 emoji width fix for proper alignment.
+
+        Args:
+            renderables: Iterable of renderable items (strings, Rich objects, etc.).
+            padding: Padding around each column. Can be int or tuple
+                (top, right, bottom, left). Defaults to (0, 2).
+            width: Width constraint for the entire column layout.
+            expand: Expand columns to fill available width. Defaults to False.
+            equal: Make all columns equal width. Defaults to False.
+            column_first: Fill columns vertically instead of horizontally.
+                Defaults to False.
+            right_to_left: Render columns from right to left. Defaults to False.
+            align: Alignment of content within columns ("left", "center", "right").
+            title: Optional title for the columns layout.
+
+        Example:
+            >>> console = Console()
+            >>> # Simple columns
+            >>> console.columns(["Item 1", "Item 2", "Item 3"])
+
+            >>> # With custom padding and equal widths
+            >>> console.columns(
+            ...     ["Short", "Medium Text", "Very Long Item"],
+            ...     padding=(0, 3),
+            ...     equal=True,
+            ... )
+
+            >>> # Vertical filling (column-first)
+            >>> items = [f"Item {i}" for i in range(10)]
+            >>> console.columns(items, column_first=True)
+
+            >>> # With emoji (automatically sanitized based on policy)
+            >>> console.columns(["✅ Done", "⚠️ Warning", "❌ Error"])
+        """
+        from styledconsole.columns import StyledColumns
+
+        columns_obj = StyledColumns(
+            renderables,
+            padding=padding,
+            policy=self._policy,
+            width=width,
+            expand=expand,
+            equal=equal,
+            column_first=column_first,
+            right_to_left=right_to_left,
+            align=align,
+            title=title,
+        )
+        self._rich_console.print(columns_obj)

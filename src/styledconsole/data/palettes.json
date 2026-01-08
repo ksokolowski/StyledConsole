@@ -1,0 +1,1217 @@
+{
+  "aesthetic": {
+    "colors": [
+      "#66545e",
+      "#a39193",
+      "#aa6f73",
+      "#eea990",
+      "#f6e0b5"
+    ],
+    "categories": [
+      "pastel",
+      "warm",
+      "red",
+      "pink"
+    ]
+  },
+  "android_lolipop": {
+    "colors": [
+      "#009688",
+      "#35a79c",
+      "#54b2a9",
+      "#65c3ba",
+      "#83d0c9"
+    ],
+    "categories": [
+      "pastel",
+      "monochrome"
+    ]
+  },
+  "anime_skin_tones": {
+    "colors": [
+      "#ffe9dc",
+      "#fce9db",
+      "#e0a899",
+      "#dfa290",
+      "#c99789"
+    ],
+    "categories": [
+      "bright",
+      "warm",
+      "red",
+      "monochrome"
+    ]
+  },
+  "autumn_leaves": {
+    "colors": [
+      "#d63031",
+      "#e17055",
+      "#fdcb6e",
+      "#6c5ce7"
+    ],
+    "categories": [
+      "vibrant",
+      "warm",
+      "red"
+    ]
+  },
+  "beach": {
+    "colors": [
+      "#96ceb4",
+      "#ffeead",
+      "#ff6f69",
+      "#ffcc5c",
+      "#88d8b0"
+    ],
+    "categories": [
+      "vibrant",
+      "bright"
+    ]
+  },
+  "beach_minimal": {
+    "colors": [
+      "#96ceb4",
+      "#ffeaa7",
+      "#dfe6e9",
+      "#74b9ff"
+    ],
+    "categories": [
+      "vibrant",
+      "bright"
+    ]
+  },
+  "beautiful_blues": {
+    "colors": [
+      "#011f4b",
+      "#03396c",
+      "#005b96",
+      "#6497b1",
+      "#b3cde0"
+    ],
+    "categories": [
+      "vibrant",
+      "cool",
+      "blue"
+    ]
+  },
+  "best_metro": {
+    "colors": [
+      "#00aba9",
+      "#ff0097",
+      "#a200ff",
+      "#1ba1e2",
+      "#f09609"
+    ],
+    "categories": [
+      "vibrant"
+    ]
+  },
+  "bluegrey": {
+    "colors": [
+      "#6e7f80",
+      "#536872",
+      "#708090",
+      "#536878",
+      "#36454f"
+    ],
+    "categories": [
+      "muted",
+      "cool",
+      "blue"
+    ]
+  },
+  "blues": {
+    "colors": [
+      "#77aaff",
+      "#99ccff",
+      "#bbeeff",
+      "#5588ff",
+      "#3366ff"
+    ],
+    "categories": [
+      "vibrant",
+      "bright",
+      "cool",
+      "blue"
+    ]
+  },
+  "bootstrap": {
+    "colors": [
+      "#d9534f",
+      "#f9f9f9",
+      "#5bc0de",
+      "#5cb85c",
+      "#428bca"
+    ],
+    "categories": [
+      "pastel"
+    ]
+  },
+  "cappuccino": {
+    "colors": [
+      "#4b3832",
+      "#854442",
+      "#fff4e6",
+      "#3c2f2f",
+      "#be9b7b"
+    ],
+    "categories": [
+      "pastel",
+      "warm",
+      "red"
+    ]
+  },
+  "cappuccino_minimal": {
+    "colors": [
+      "#6c5b7b",
+      "#c06c84",
+      "#f67280",
+      "#f8b195"
+    ],
+    "categories": [
+      "pastel",
+      "warm",
+      "pink"
+    ]
+  },
+  "carnival_vintage": {
+    "colors": [
+      "#b7ded2",
+      "#f6a6b2",
+      "#f7c297",
+      "#ffecb8",
+      "#90d2d8"
+    ],
+    "categories": [
+      "vibrant",
+      "bright"
+    ]
+  },
+  "caucasian_skin_tone": {
+    "colors": [
+      "#ffe0bd",
+      "#ffcd94",
+      "#eac086",
+      "#ffad60",
+      "#ffe39f"
+    ],
+    "categories": [
+      "vibrant",
+      "bright",
+      "warm",
+      "orange"
+    ]
+  },
+  "city_sunset": {
+    "colors": [
+      "#eeaf61",
+      "#fb9062",
+      "#ee5d6c",
+      "#ce4993",
+      "#6a0d83"
+    ],
+    "categories": [
+      "vibrant",
+      "warm",
+      "pink"
+    ]
+  },
+  "cool_blue": {
+    "colors": [
+      "#005073",
+      "#107dac",
+      "#189ad3",
+      "#1ebbd7",
+      "#71c7ec"
+    ],
+    "categories": [
+      "vibrant",
+      "cool",
+      "blue",
+      "monochrome"
+    ]
+  },
+  "cream_coffee": {
+    "colors": [
+      "#ece0d1",
+      "#dbc1ac",
+      "#967259",
+      "#634832",
+      "#38220f"
+    ],
+    "categories": [
+      "pastel",
+      "warm",
+      "red"
+    ]
+  },
+  "cyberpunk_neon": {
+    "colors": [
+      "#711c91",
+      "#ea00d9",
+      "#0abdc6",
+      "#133e7c"
+    ],
+    "categories": [
+      "vibrant",
+      "cool",
+      "blue",
+      "purple"
+    ]
+  },
+  "dark_red_light": {
+    "colors": [
+      "#ff0000",
+      "#bf0000",
+      "#800000",
+      "#400000",
+      "#000000"
+    ],
+    "categories": [
+      "vibrant",
+      "dark",
+      "warm",
+      "red",
+      "monochrome"
+    ]
+  },
+  "discord": {
+    "colors": [
+      "#7289da",
+      "#ffffff",
+      "#99aab5",
+      "#2c2f33",
+      "#23272a"
+    ],
+    "categories": [
+      "muted",
+      "cool",
+      "blue"
+    ]
+  },
+  "down_town": {
+    "colors": [
+      "#373854",
+      "#493267",
+      "#9e379f",
+      "#e86af0",
+      "#7bb3ff"
+    ],
+    "categories": [
+      "pastel",
+      "blue"
+    ]
+  },
+  "dusty_sage": {
+    "colors": [
+      "#f8d3c5",
+      "#fceee9",
+      "#dde6d5",
+      "#a3b899",
+      "#667b68"
+    ],
+    "categories": [
+      "pastel",
+      "bright",
+      "green"
+    ]
+  },
+  "facebook": {
+    "colors": [
+      "#3b5998",
+      "#8b9dc3",
+      "#dfe3ee",
+      "#f7f7f7",
+      "#ffffff"
+    ],
+    "categories": [
+      "muted",
+      "bright",
+      "blue"
+    ]
+  },
+  "faded_rose": {
+    "colors": [
+      "#dfdfde",
+      "#a2798f",
+      "#d7c6cf",
+      "#8caba8",
+      "#ebdada"
+    ],
+    "categories": [
+      "muted",
+      "bright",
+      "pink"
+    ]
+  },
+  "forest_green": {
+    "colors": [
+      "#134e5e",
+      "#3a6351",
+      "#71b280",
+      "#a8e6cf"
+    ],
+    "categories": [
+      "pastel",
+      "green"
+    ]
+  },
+  "google": {
+    "colors": [
+      "#008744",
+      "#0057e7",
+      "#d62d20",
+      "#ffa700",
+      "#ffffff"
+    ],
+    "categories": [
+      "vibrant"
+    ]
+  },
+  "green_logo": {
+    "colors": [
+      "#52bf90",
+      "#49ab81",
+      "#419873",
+      "#398564",
+      "#317256"
+    ],
+    "categories": [
+      "pastel",
+      "monochrome"
+    ]
+  },
+  "greylavender": {
+    "colors": [
+      "#d2d4dc",
+      "#afafaf",
+      "#f8f8fa",
+      "#e5e6eb",
+      "#c0c2ce"
+    ],
+    "categories": [
+      "muted",
+      "bright",
+      "cool",
+      "blue"
+    ]
+  },
+  "gryffindor": {
+    "colors": [
+      "#740001",
+      "#ae0001",
+      "#eeba30",
+      "#d3a625",
+      "#000000"
+    ],
+    "categories": [
+      "vibrant",
+      "warm",
+      "red",
+      "pink"
+    ]
+  },
+  "happy_pastel": {
+    "colors": [
+      "#b88c8c",
+      "#ddadad",
+      "#d6c7c7",
+      "#9fb9bf",
+      "#aec8ce"
+    ],
+    "categories": [
+      "muted",
+      "bright",
+      "red"
+    ]
+  },
+  "hufflepuff": {
+    "colors": [
+      "#ecb939",
+      "#f0c75e",
+      "#726255",
+      "#372e29",
+      "#000000"
+    ],
+    "categories": [
+      "pastel",
+      "warm",
+      "red"
+    ]
+  },
+  "i_loved_shades": {
+    "colors": [
+      "#adff00",
+      "#74d600",
+      "#028900",
+      "#00d27f",
+      "#00ff83"
+    ],
+    "categories": [
+      "vibrant"
+    ]
+  },
+  "ice_cream": {
+    "colors": [
+      "#6b3e26",
+      "#ffc5d9",
+      "#c2f2d0",
+      "#fdf5c9",
+      "#ffcb85"
+    ],
+    "categories": [
+      "vibrant",
+      "bright",
+      "warm"
+    ]
+  },
+  "instagram_gradient": {
+    "colors": [
+      "#feda75",
+      "#fa7e1e",
+      "#d62976",
+      "#962fbf",
+      "#4f5bd5"
+    ],
+    "categories": [
+      "vibrant"
+    ]
+  },
+  "k_gold": {
+    "colors": [
+      "#a67c00",
+      "#bf9b30",
+      "#ffbf00",
+      "#ffcf40",
+      "#ffdc73"
+    ],
+    "categories": [
+      "vibrant",
+      "warm",
+      "orange",
+      "monochrome"
+    ]
+  },
+  "kawaii_pastel": {
+    "colors": [
+      "#ffdef2",
+      "#f2e2ff",
+      "#e2eeff",
+      "#ddfffc",
+      "#ffffe3"
+    ],
+    "categories": [
+      "vibrant",
+      "bright"
+    ]
+  },
+  "light_retro": {
+    "colors": [
+      "#e5c3c6",
+      "#e1e9b7",
+      "#f96161",
+      "#bcd2d0",
+      "#d0b783"
+    ],
+    "categories": [
+      "pastel",
+      "bright"
+    ]
+  },
+  "bedroom_muted": {
+    "colors": [
+      "#a69eb0",
+      "#efeff2",
+      "#f2e2cd",
+      "#dadae3",
+      "#000000"
+    ],
+    "categories": [
+      "muted",
+      "blue"
+    ]
+  },
+  "metro_style": {
+    "colors": [
+      "#00aedb",
+      "#a200ff",
+      "#f47835",
+      "#d41243",
+      "#8ec127"
+    ],
+    "categories": [
+      "vibrant"
+    ]
+  },
+  "metro_ui": {
+    "colors": [
+      "#d11141",
+      "#00b159",
+      "#00aedb",
+      "#f37735",
+      "#ffc425"
+    ],
+    "categories": [
+      "vibrant"
+    ]
+  },
+  "midnight_blue": {
+    "colors": [
+      "#191970",
+      "#0f0e23",
+      "#1e3a8a",
+      "#312e81"
+    ],
+    "categories": [
+      "dark",
+      "cool",
+      "blue"
+    ]
+  },
+  "millennial_pink": {
+    "colors": [
+      "#fb958b",
+      "#f7a583",
+      "#f7baa1",
+      "#fb9fa4",
+      "#ff9e99"
+    ],
+    "categories": [
+      "vibrant",
+      "bright",
+      "warm",
+      "red"
+    ]
+  },
+  "muted": {
+    "colors": [
+      "#2e4045",
+      "#83adb5",
+      "#c7bbc9",
+      "#5e3c58",
+      "#bfb5b2"
+    ],
+    "categories": [
+      "muted"
+    ]
+  },
+  "off_white": {
+    "colors": [
+      "#fffff2",
+      "#f9f9f9",
+      "#fffff4",
+      "#fbf7f5",
+      "#f9f1f1"
+    ],
+    "categories": [
+      "pastel",
+      "bright",
+      "red"
+    ]
+  },
+  "parrot_green": {
+    "colors": [
+      "#234d20",
+      "#36802d",
+      "#77ab59",
+      "#c9df8a",
+      "#f0f7da"
+    ],
+    "categories": [
+      "pastel",
+      "green"
+    ]
+  },
+  "pastel": {
+    "colors": [
+      "#1b85b8",
+      "#5a5255",
+      "#559e83",
+      "#ae5a41",
+      "#c3cb71"
+    ],
+    "categories": [
+      "pastel"
+    ]
+  },
+  "pastel_candy": {
+    "colors": [
+      "#e1f7d5",
+      "#ffbdbd",
+      "#c9c9ff",
+      "#ffffff",
+      "#f1cbff"
+    ],
+    "categories": [
+      "vibrant",
+      "bright"
+    ]
+  },
+  "pastel_mint": {
+    "colors": [
+      "#b8dbd3",
+      "#f7e7b4",
+      "#68c4af",
+      "#96ead7",
+      "#f2f6c3"
+    ],
+    "categories": [
+      "pastel",
+      "bright"
+    ]
+  },
+  "pastel_rainbow": {
+    "colors": [
+      "#a8e6cf",
+      "#dcedc1",
+      "#ffd3b6",
+      "#ffaaa5",
+      "#ff8b94"
+    ],
+    "categories": [
+      "vibrant",
+      "bright",
+      "red"
+    ]
+  },
+  "pastel_rainbow_soft": {
+    "colors": [
+      "#ffb3ba",
+      "#ffdfba",
+      "#ffffba",
+      "#baffc9",
+      "#bae1ff"
+    ],
+    "categories": [
+      "vibrant",
+      "bright"
+    ]
+  },
+  "pastel_rainbow_minimal": {
+    "colors": [
+      "#ffeaa7",
+      "#fab1a0",
+      "#fd79a8",
+      "#a29bfe"
+    ],
+    "categories": [
+      "vibrant",
+      "bright",
+      "warm"
+    ]
+  },
+  "pastels": {
+    "colors": [
+      "#ffd4e5",
+      "#d4ffea",
+      "#eecbff",
+      "#feffa3",
+      "#dbdcff"
+    ],
+    "categories": [
+      "vibrant",
+      "bright"
+    ]
+  },
+  "princess_pink": {
+    "colors": [
+      "#ffc2cd",
+      "#ff93ac",
+      "#ff6289",
+      "#fc3468",
+      "#ff084a"
+    ],
+    "categories": [
+      "vibrant",
+      "warm",
+      "red",
+      "pink",
+      "monochrome"
+    ]
+  },
+  "program_catalog": {
+    "colors": [
+      "#edc951",
+      "#eb6841",
+      "#cc2a36",
+      "#4f372d",
+      "#00a0b0"
+    ],
+    "categories": [
+      "vibrant",
+      "warm",
+      "red"
+    ]
+  },
+  "purplegrey": {
+    "colors": [
+      "#8b8589",
+      "#989898",
+      "#838996",
+      "#979aaa",
+      "#4c516d"
+    ],
+    "categories": [
+      "muted",
+      "blue"
+    ]
+  },
+  "pwc_corp": {
+    "colors": [
+      "#dc6900",
+      "#eb8c00",
+      "#e0301e",
+      "#a32020",
+      "#602320"
+    ],
+    "categories": [
+      "vibrant",
+      "warm",
+      "red"
+    ]
+  },
+  "rainbow_dash": {
+    "colors": [
+      "#ee4035",
+      "#f37736",
+      "#fdf498",
+      "#7bc043",
+      "#0392cf"
+    ],
+    "categories": [
+      "vibrant"
+    ]
+  },
+  "ravenclaw": {
+    "colors": [
+      "#0e1a40",
+      "#222f5b",
+      "#5d5d5d",
+      "#946b2d",
+      "#000000"
+    ],
+    "categories": [
+      "pastel",
+      "dark"
+    ]
+  },
+  "redorange": {
+    "colors": [
+      "#ffc100",
+      "#ff9a00",
+      "#ff7400",
+      "#ff4d00",
+      "#ff0000"
+    ],
+    "categories": [
+      "vibrant",
+      "warm",
+      "red"
+    ]
+  },
+  "retro": {
+    "colors": [
+      "#666547",
+      "#fb2e01",
+      "#6fcb9f",
+      "#ffe28a",
+      "#fffeb3"
+    ],
+    "categories": [
+      "vibrant",
+      "warm",
+      "orange"
+    ]
+  },
+  "rose_gold_iphone": {
+    "colors": [
+      "#e3e4e6",
+      "#f7d0cb",
+      "#f9fafc",
+      "#313131",
+      "#f6d9d5"
+    ],
+    "categories": [
+      "pastel",
+      "bright",
+      "red"
+    ]
+  },
+  "sage_green": {
+    "colors": [
+      "#8f9779",
+      "#78866b",
+      "#738276",
+      "#738678",
+      "#4d5d53"
+    ],
+    "categories": [
+      "muted",
+      "green"
+    ]
+  },
+  "say_name_seventeen": {
+    "colors": [
+      "#f7cac9",
+      "#dec2cb",
+      "#c5b9cd",
+      "#abb1cf",
+      "#92a8d1"
+    ],
+    "categories": [
+      "pastel",
+      "bright"
+    ]
+  },
+  "sb_teal": {
+    "colors": [
+      "#007777",
+      "#006666",
+      "#005555",
+      "#004444",
+      "#003333"
+    ],
+    "categories": [
+      "vibrant",
+      "dark",
+      "cool",
+      "blue",
+      "monochrome"
+    ]
+  },
+  "seafoam": {
+    "colors": [
+      "#a3c1ad",
+      "#a0d6b4",
+      "#5f9ea0",
+      "#317873",
+      "#49796b"
+    ],
+    "categories": [
+      "pastel"
+    ]
+  },
+  "shades_gray": {
+    "colors": [
+      "#999999",
+      "#777777",
+      "#555555",
+      "#333333",
+      "#111111"
+    ],
+    "categories": [
+      "muted",
+      "warm",
+      "red",
+      "monochrome"
+    ]
+  },
+  "shades_lavender": {
+    "colors": [
+      "#997a8d",
+      "#aa98a9",
+      "#b39eb5",
+      "#777696",
+      "#796878"
+    ],
+    "categories": [
+      "muted",
+      "purple",
+      "pink"
+    ]
+  },
+  "shades_pink": {
+    "colors": [
+      "#ff00a9",
+      "#fb9f9f",
+      "#ff0065",
+      "#ffbfd3",
+      "#fb5858"
+    ],
+    "categories": [
+      "vibrant",
+      "warm",
+      "red",
+      "pink"
+    ]
+  },
+  "shades_purple": {
+    "colors": [
+      "#efbbff",
+      "#d896ff",
+      "#be29ec",
+      "#800080",
+      "#660066"
+    ],
+    "categories": [
+      "vibrant",
+      "purple",
+      "pink"
+    ]
+  },
+  "shades_teal": {
+    "colors": [
+      "#b2d8d8",
+      "#66b2b2",
+      "#008080",
+      "#006666",
+      "#004c4c"
+    ],
+    "categories": [
+      "vibrant",
+      "cool",
+      "blue",
+      "monochrome"
+    ]
+  },
+  "shades_turquoise": {
+    "colors": [
+      "#b3ecec",
+      "#89ecda",
+      "#43e8d8",
+      "#40e0d0",
+      "#3bd6c6"
+    ],
+    "categories": []
+  },
+  "shades_white": {
+    "colors": [
+      "#faf0e6",
+      "#fff5ee",
+      "#fdf5e6",
+      "#faebd7",
+      "#010412"
+    ],
+    "categories": [
+      "vibrant",
+      "bright",
+      "warm",
+      "orange"
+    ]
+  },
+  "skin_lips": {
+    "colors": [
+      "#eec1ad",
+      "#dbac98",
+      "#d29985",
+      "#c98276",
+      "#e35d6a"
+    ],
+    "categories": [
+      "pastel",
+      "warm",
+      "red"
+    ]
+  },
+  "skin_tones": {
+    "colors": [
+      "#8d5524",
+      "#c68642",
+      "#e0ac69",
+      "#f1c27d",
+      "#ffdbac"
+    ],
+    "categories": [
+      "vibrant",
+      "warm",
+      "orange"
+    ]
+  },
+  "slytherin": {
+    "colors": [
+      "#1a472a",
+      "#2a623d",
+      "#5d5d5d",
+      "#aaaaaa",
+      "#000000"
+    ],
+    "categories": [
+      "muted",
+      "dark",
+      "red"
+    ]
+  },
+  "soft_black": {
+    "colors": [
+      "#414a4c",
+      "#3b444b",
+      "#353839",
+      "#232b2b",
+      "#0e1111"
+    ],
+    "categories": [
+      "muted",
+      "dark",
+      "cool",
+      "blue",
+      "monochrome"
+    ]
+  },
+  "spacegray_like": {
+    "colors": [
+      "#343d46",
+      "#4f5b66",
+      "#65737e",
+      "#a7adba",
+      "#c0c5ce"
+    ],
+    "categories": [
+      "muted",
+      "cool",
+      "blue"
+    ]
+  },
+  "spring_blossom": {
+    "colors": [
+      "#fd79a8",
+      "#fdcb6e",
+      "#55efc4",
+      "#74b9ff"
+    ],
+    "categories": [
+      "vibrant",
+      "bright"
+    ]
+  },
+  "summer_coming": {
+    "colors": [
+      "#ff4e50",
+      "#fc913a",
+      "#f9d62e",
+      "#eae374",
+      "#e2f4c7"
+    ],
+    "categories": [
+      "vibrant",
+      "warm"
+    ]
+  },
+  "summertime": {
+    "colors": [
+      "#e8d174",
+      "#e39e54",
+      "#d64d4d",
+      "#4d7358",
+      "#9ed670"
+    ],
+    "categories": [
+      "pastel"
+    ]
+  },
+  "summertime_bold": {
+    "colors": [
+      "#ffbe4f",
+      "#6bd2db",
+      "#0ea7b5",
+      "#0c457d",
+      "#e8702a"
+    ],
+    "categories": [
+      "vibrant",
+      "blue"
+    ]
+  },
+  "tropical": {
+    "colors": [
+      "#fc5c65",
+      "#fd9644",
+      "#fed330",
+      "#26de81"
+    ],
+    "categories": [
+      "vibrant",
+      "warm"
+    ]
+  },
+  "twilight_sparkle": {
+    "colors": [
+      "#363b74",
+      "#673888",
+      "#ef4f91",
+      "#c79dd7",
+      "#4d1b7b"
+    ],
+    "categories": [
+      "pastel",
+      "purple"
+    ]
+  },
+  "underwater_scene": {
+    "colors": [
+      "#daf8e3",
+      "#97ebdb",
+      "#00c2c7",
+      "#0086ad",
+      "#005582"
+    ],
+    "categories": [
+      "vibrant",
+      "blue"
+    ]
+  },
+  "ocean_depths": {
+    "colors": [
+      "#2a4d69",
+      "#4b86b4",
+      "#adcbe3",
+      "#e7eff6",
+      "#63ace5"
+    ],
+    "categories": [
+      "pastel",
+      "cool",
+      "blue",
+      "monochrome"
+    ]
+  },
+  "vaporwave": {
+    "colors": [
+      "#ff71ce",
+      "#01cdfe",
+      "#05ffa1",
+      "#b967ff",
+      "#fffb96"
+    ],
+    "categories": [
+      "vibrant"
+    ]
+  },
+  "vaporwave_minimal": {
+    "colors": [
+      "#ff71ce",
+      "#01cdfe",
+      "#05ffa1",
+      "#b967ff"
+    ],
+    "categories": [
+      "vibrant"
+    ]
+  },
+  "vaporwave_neon_purple": {
+    "colors": [
+      "#ff00c1",
+      "#9600ff",
+      "#4900ff",
+      "#00b8ff",
+      "#00fff9"
+    ],
+    "categories": [
+      "vibrant"
+    ]
+  },
+  "violet": {
+    "colors": [
+      "#ffffff",
+      "#e5d0ff",
+      "#dabcff",
+      "#cca3ff",
+      "#bf8bff"
+    ],
+    "categories": [
+      "vibrant",
+      "bright",
+      "cool",
+      "blue"
+    ]
+  }
+}

@@ -29,7 +29,7 @@ from styledconsole.effects.strategies import (
     LinearGradient,
     VerticalPosition,
 )
-from styledconsole.types import AlignType, FrameGroupItem
+from styledconsole.types import AlignType, ColumnsType, FrameGroupItem
 from styledconsole.utils.color import colorize, normalize_color_for_rich
 from styledconsole.utils.text import adjust_emoji_spacing_in_text, create_rich_text
 
@@ -828,11 +828,14 @@ class RenderingEngine:
         inherit_style: bool = False,
         margin: int | tuple[int, int, int, int] = 0,
         frame_align: AlignType | None = None,
+        columns: ColumnsType = "auto",
+        min_columns: int = 2,
+        item_width: int | None = None,
     ) -> str:
         """Render a group of frames to a string.
 
         Creates multiple frames arranged within an outer container frame.
-        Currently supports vertical layout (frames stacked top to bottom).
+        Supports vertical, horizontal, and grid layouts.
 
         Args:
             items: List of frame item dictionaries. Each dict must have 'content'
@@ -846,12 +849,16 @@ class RenderingEngine:
             title_color: Color for outer frame title.
             border_gradient_start: Gradient start for outer border.
             border_gradient_end: Gradient end for outer border.
-            layout: Layout mode. Currently only "vertical" supported.
-            gap: Number of blank lines between inner frames. Defaults to 1.
-            inherit_style: If True, inner frames inherit outer border style
-                when not explicitly specified. Defaults to False.
+            layout: Layout mode. One of "vertical", "horizontal", or "grid".
+            gap: Space between frames (lines for vertical, chars for horizontal).
+            inherit_style: If True, inner frames inherit outer border style.
             margin: Margin around the outer frame.
             frame_align: Alignment of the outer frame on screen.
+            columns: Number of columns for horizontal/grid layout.
+                Use "auto" to calculate from terminal width. Defaults to "auto".
+            min_columns: Minimum columns when columns="auto". Defaults to 2.
+            item_width: Width of each item frame. Required for horizontal/grid
+                layout when columns="auto". If None, uses 35.
 
         Returns:
             Rendered frame group as a string with ANSI codes.
@@ -861,7 +868,66 @@ class RenderingEngine:
                 f"Rendering frame_group: {len(items)} items, layout={layout}, gap={gap}"
             )
 
-        # Build inner frames content
+        # Handle horizontal and grid layouts
+        if layout in ("horizontal", "grid"):
+            return self._render_horizontal_frame_group(
+                items=items,
+                title=title,
+                border=border,
+                width=width,
+                padding=padding,
+                align=align,
+                border_color=border_color,
+                title_color=title_color,
+                border_gradient_start=border_gradient_start,
+                border_gradient_end=border_gradient_end,
+                layout=layout,
+                gap=gap,
+                inherit_style=inherit_style,
+                margin=margin,
+                frame_align=frame_align,
+                columns=columns,
+                min_columns=min_columns,
+                item_width=item_width,
+            )
+
+        # Vertical layout (original behavior)
+        return self._render_vertical_frame_group(
+            items=items,
+            title=title,
+            border=border,
+            width=width,
+            padding=padding,
+            align=align,
+            border_color=border_color,
+            title_color=title_color,
+            border_gradient_start=border_gradient_start,
+            border_gradient_end=border_gradient_end,
+            gap=gap,
+            inherit_style=inherit_style,
+            margin=margin,
+            frame_align=frame_align,
+        )
+
+    def _render_vertical_frame_group(
+        self,
+        items: list[FrameGroupItem],
+        *,
+        title: str | None = None,
+        border: str = "rounded",
+        width: int | None = None,
+        padding: int = 1,
+        align: AlignType = "left",
+        border_color: str | None = None,
+        title_color: str | None = None,
+        border_gradient_start: str | None = None,
+        border_gradient_end: str | None = None,
+        gap: int = 1,
+        inherit_style: bool = False,
+        margin: int | tuple[int, int, int, int] = 0,
+        frame_align: AlignType | None = None,
+    ) -> str:
+        """Render frames in vertical layout (stacked top to bottom)."""
         inner_content_lines: list[str] = []
 
         for i, item in enumerate(items):
@@ -872,7 +938,6 @@ class RenderingEngine:
             item_content_color = item.get("content_color")
             item_title_color = item.get("title_color")
 
-            # Render inner frame to string
             inner_ctx = StyleContext(
                 title=item_title,
                 border_style=item_border,
@@ -880,20 +945,141 @@ class RenderingEngine:
                 title_color=item_title_color,
                 content_color=item_content_color,
             )
-            inner_frame = self.render_frame_to_string(
-                content,
-                context=inner_ctx,
-            )
-
-            # Add to content
+            inner_frame = self.render_frame_to_string(content, context=inner_ctx)
             inner_content_lines.append(inner_frame)
 
-            # Add gap between items (not after last)
             if i < len(items) - 1 and gap > 0:
                 inner_content_lines.extend([""] * gap)
 
-        # Join all inner content
         combined_content = "\n".join(inner_content_lines) if inner_content_lines else ""
+
+        outer_ctx = StyleContext(
+            title=title,
+            border_style=border,
+            width=width,
+            padding=padding,
+            align=align,
+            border_color=border_color,
+            title_color=title_color,
+            border_gradient_start=border_gradient_start,
+            border_gradient_end=border_gradient_end,
+            margin=margin,
+            frame_align=frame_align,
+        )
+        return self.render_frame_to_string(combined_content, context=outer_ctx)
+
+    def _render_horizontal_frame_group(
+        self,
+        items: list[FrameGroupItem],
+        *,
+        title: str | None = None,
+        border: str = "rounded",
+        width: int | None = None,
+        padding: int = 1,
+        align: AlignType = "left",
+        border_color: str | None = None,
+        title_color: str | None = None,
+        border_gradient_start: str | None = None,
+        border_gradient_end: str | None = None,
+        layout: str = "horizontal",
+        gap: int = 2,
+        inherit_style: bool = False,
+        margin: int | tuple[int, int, int, int] = 0,
+        frame_align: AlignType | None = None,
+        columns: ColumnsType = "auto",
+        min_columns: int = 2,
+        item_width: int | None = None,
+    ) -> str:
+        """Render frames in horizontal or grid layout (side by side).
+
+        For horizontal layout: all items in one row.
+        For grid layout: items arranged in rows based on columns setting.
+        """
+        from styledconsole.utils.text import visual_width
+
+        # Default item width
+        effective_item_width = item_width if item_width is not None else 35
+
+        # Calculate number of columns
+        if columns == "auto":
+            terminal_width = self._rich_console.width
+            # Formula: max(min_columns, (terminal_width + gap) // (item_width + gap))
+            calculated_cols = (terminal_width + gap) // (effective_item_width + gap)
+            num_columns = max(min_columns, calculated_cols)
+        else:
+            num_columns = columns
+
+        # For horizontal layout, put all items in one row
+        if layout == "horizontal":
+            num_columns = len(items)
+
+        # Render all item frames
+        rendered_frames: list[list[str]] = []
+        for item in items:
+            content = item.get("content", "")
+            item_title = item.get("title")
+            item_border = item.get("border", border if inherit_style else "rounded")
+            item_border_color = item.get("border_color")
+            item_content_color = item.get("content_color")
+            item_title_color = item.get("title_color")
+
+            inner_ctx = StyleContext(
+                title=item_title,
+                border_style=item_border,
+                border_color=item_border_color,
+                title_color=item_title_color,
+                content_color=item_content_color,
+                width=effective_item_width,
+            )
+            inner_frame = self.render_frame_to_string(content, context=inner_ctx)
+
+            # Split and clean trailing empty lines
+            lines = inner_frame.split("\n")
+            if lines and lines[-1].strip() == "":
+                lines = lines[:-1]
+            rendered_frames.append(lines)
+
+        # Build rows of frames
+        all_row_outputs: list[str] = []
+
+        for row_start in range(0, len(rendered_frames), num_columns):
+            row_frames = rendered_frames[row_start : row_start + num_columns]
+
+            # Get max lines in this row
+            max_lines = max(len(f) for f in row_frames) if row_frames else 0
+
+            # Pad all frames to have the same number of lines
+            for frame_lines in row_frames:
+                while len(frame_lines) < max_lines:
+                    frame_lines.append("")
+
+            # Combine frames line by line
+            row_lines: list[str] = []
+            for line_idx in range(max_lines):
+                line_parts: list[str] = []
+                for frame_lines in row_frames:
+                    line = frame_lines[line_idx]
+                    if line:
+                        # Calculate visual width and pad
+                        vwidth = visual_width(line)
+                        if vwidth < effective_item_width:
+                            line += " " * (effective_item_width - vwidth)
+                    else:
+                        line = " " * effective_item_width
+                    line_parts.append(line)
+
+                # Join with gap
+                row_lines.append((" " * gap).join(line_parts))
+
+            all_row_outputs.append("\n".join(row_lines))
+
+        # Join rows with vertical gap
+        combined_content = ("\n" + "\n" * gap).join(all_row_outputs)
+
+        # If no outer frame requested (title is None and no border styling),
+        # return just the combined content
+        if title is None and border_color is None and border_gradient_start is None:
+            return combined_content
 
         # Wrap in outer frame
         outer_ctx = StyleContext(
@@ -909,10 +1095,7 @@ class RenderingEngine:
             margin=margin,
             frame_align=frame_align,
         )
-        return self.render_frame_to_string(
-            combined_content,
-            context=outer_ctx,
-        )
+        return self.render_frame_to_string(combined_content, context=outer_ctx)
 
     def print_frame_group(
         self,
@@ -932,6 +1115,9 @@ class RenderingEngine:
         inherit_style: bool = False,
         margin: int | tuple[int, int, int, int] = 0,
         frame_align: AlignType | None = None,
+        columns: ColumnsType = "auto",
+        min_columns: int = 2,
+        item_width: int | None = None,
     ) -> None:
         """Render and print a group of frames.
 
@@ -953,6 +1139,9 @@ class RenderingEngine:
             inherit_style=inherit_style,
             margin=margin,
             frame_align=frame_align,
+            columns=columns,
+            min_columns=min_columns,
+            item_width=item_width,
         )
 
         # Print with alignment (frame_align takes precedence for outer frame positioning)

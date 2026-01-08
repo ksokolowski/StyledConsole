@@ -1,7 +1,7 @@
 # StyledConsole Developer Guide
 
-**Version:** 0.9.9.3
-**Last Updated:** January 5, 2026
+**Version:** 0.9.9.5
+**Last Updated:** January 8, 2026
 **Audience:** Contributors and advanced users
 
 ______________________________________________________________________
@@ -20,6 +20,35 @@ ______________________________________________________________________
 ______________________________________________________________________
 
 ## Architecture Overview
+
+### Data File Guidelines
+
+**Design Principle: Readability over Optimization**
+
+Keep data files \<100 KB as human-readable JSON or Python dictionaries. Debugging and code inspection are more valuable than marginal compression savings.
+
+**Current approach:**
+
+- **palettes.json** (17 KB): Plain JSON with 90 color palettes, lazy-loaded for performance
+- **colors.py** (57 KB): Python dict with 949 extended colors
+- **emoji_data.py** (40 KB): Python dict with emoji metadata
+- **icon_data.py**: Python dict with icon definitions
+
+**Rationale:**
+
+- Modern SSDs load \<100 KB in \<1ms
+- Python package managers (pip, uv) handle small files efficiently
+- Compression adds dependency overhead (zstandard ~500 KB installed)
+- Uncompressed data easier to inspect during debugging
+- Git diffs work better with plain text
+
+**Exception:** Consider compression only if:
+
+- Data file >100 KB AND
+- Accessed \<10% of runtime AND
+- Worth the complexity cost
+
+**Anti-pattern learned:** We initially compressed palettes.json (saved 13 KB) but added zstandard dependency, decompression overhead, and debugging complexity. Not worth the tradeoff for small data files.
 
 ### System Layers
 

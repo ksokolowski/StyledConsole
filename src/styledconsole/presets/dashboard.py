@@ -68,6 +68,9 @@ def dashboard(
     from rich.table import Table
     from rich.text import Text
 
+    # Import patched_cell_len from table module for emoji width fix
+    from styledconsole.table import _patched_cell_len
+
     # Render header using Console frame method
     console.frame(
         title,
@@ -76,42 +79,44 @@ def dashboard(
         align="center",
     )
 
-    # Create grid for widget layout
-    grid_table = Table.grid(expand=True, padding=1)
-    for _ in range(columns):
-        grid_table.add_column(ratio=1)
+    # Use patched cell_len context for proper emoji width in grid layout
+    with _patched_cell_len():
+        # Create grid for widget layout
+        grid_table = Table.grid(expand=True, padding=1)
+        for _ in range(columns):
+            grid_table.add_column(ratio=1)
 
-    # Render each widget using Console API and collect for grid
-    row_widgets: list[str | Text] = []
-    for widget in widgets:
-        widget_border_color = widget.get("border_color", "secondary")
-        widget_content = widget["content"]
+        # Render each widget using Console API and collect for grid
+        row_widgets: list[str | Text] = []
+        for widget in widgets:
+            widget_border_color = widget.get("border_color", "secondary")
+            widget_content = widget["content"]
 
-        # Normalize content to string or list
-        if isinstance(widget_content, (str, list)):
-            # Render widget frame using Console API
-            rendered = console.render_frame(
-                widget_content,
-                title=widget["title"],
-                border="rounded",
-                border_color=widget_border_color,
-                title_color=widget_border_color,
-            )
-            row_widgets.append(Text.from_ansi(rendered))
-        else:
-            # For Rich renderables, wrap in a simple text representation
-            # (backwards compatibility for complex content)
-            row_widgets.append(Text(str(widget_content)))
+            # Normalize content to string or list
+            if isinstance(widget_content, (str, list)):
+                # Render widget frame using Console API
+                rendered = console.render_frame(
+                    widget_content,
+                    title=widget["title"],
+                    border="rounded",
+                    border_color=widget_border_color,
+                    title_color=widget_border_color,
+                )
+                row_widgets.append(Text.from_ansi(rendered))
+            else:
+                # For Rich renderables, wrap in a simple text representation
+                # (backwards compatibility for complex content)
+                row_widgets.append(Text(str(widget_content)))
 
-        if len(row_widgets) == columns:
+            if len(row_widgets) == columns:
+                grid_table.add_row(*row_widgets)
+                row_widgets = []
+
+        # Add remaining widgets if row is incomplete
+        if row_widgets:
+            while len(row_widgets) < columns:
+                row_widgets.append(Text(""))
             grid_table.add_row(*row_widgets)
-            row_widgets = []
 
-    # Add remaining widgets if row is incomplete
-    if row_widgets:
-        while len(row_widgets) < columns:
-            row_widgets.append(Text(""))
-        grid_table.add_row(*row_widgets)
-
-    # Print grid using Console's Rich pass-through
-    console.print(grid_table)
+        # Print grid using Console's Rich pass-through
+        console.print(grid_table)

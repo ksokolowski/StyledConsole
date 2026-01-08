@@ -7,6 +7,119 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.9.5] - 2026-01-08
+
+### Feature Expansion
+
+This release expands the effects system with palettes, phase animations, horizontal/grid layouts, and the StyledColumns component.
+
+### Added
+
+- **Horizontal & Grid Layouts for `frame_group()`**: Arrange frames side-by-side or in grids
+
+  ```python
+  console.frame_group(items, layout="horizontal", gap=2)
+  console.frame_group(items, layout="grid", columns=3, item_width=30)
+  console.frame_group(items, layout="grid", columns="auto", min_columns=2)
+  ```
+
+  - `columns=` parameter: Number of columns or `"auto"` for terminal-width calculation
+  - `min_columns=` parameter: Minimum columns when using auto-calculation
+  - `item_width=` parameter: Width of each item frame in horizontal/grid layouts
+
+- **Palette System** (`data/palettes.py`): 90 curated color palettes with category filtering
+
+  ```python
+  from styledconsole import PALETTES, get_palette, list_palettes, get_palette_categories
+
+  # Get palette colors
+  ocean = get_palette("ocean_depths")  # {"colors": [...], "categories": [...]}
+
+  # List palettes by category
+  vibrant = list_palettes("vibrant")  # ["fire", "neon", "sunset", ...]
+  pastel = list_palettes("pastel")    # ["pastel_candy", "soft_dream", ...]
+
+  # Create effect from palette
+  console.frame("Content", effect=EffectSpec.from_palette("ocean_depths"))
+  ```
+
+  - Categories: warm, cool, vibrant, muted, pastel, dark, bright, monochrome, rainbow
+
+- **Extended Color Registry** (`data/colors.py`): 949+ named colors
+
+  - CSS4 colors (148), Rich colors (251), Extended colors (944 filtered)
+  - Filtering API to exclude crude/inappropriate names
+
+- **Phase Animation System**: Smooth gradient animations with phase cycling
+
+  ```python
+  from styledconsole import EffectSpec, cycle_phase, PHASE_INCREMENT_DEFAULT
+
+  phase = 0.0
+  for frame in range(30):
+      effect = EffectSpec.rainbow(phase=phase)
+      console.frame("Animated!", effect=effect)
+      phase = cycle_phase(phase)  # Increments and wraps at 1.0
+  ```
+
+  - `phase=` parameter on `EffectSpec.gradient()`, `.multi_stop()`, `.rainbow()`
+  - `cycle_phase()` helper for smooth animation loops
+  - `PHASE_FULL_CYCLE` (1.0) and `PHASE_INCREMENT_DEFAULT` (0.033) constants
+  - `.with_phase()` method for functional-style updates
+
+- **Neon Rainbow Palette**: Cyberpunk-style vivid colors for rainbows
+
+  ```python
+  console.frame("NEON", effect=EffectSpec.rainbow(neon=True))
+  ```
+
+- **StyledColumns** (`columns.py`): Policy-aware Rich Columns wrapper
+
+  ```python
+  from styledconsole import Console, StyledColumns
+
+  console = Console()
+  columns = StyledColumns(["Item 1", "Item 2", "Item 3"], padding=(0, 2))
+  console.print(columns)
+
+  # Or via Console API
+  console.columns(["A", "B", "C"], equal=True, expand=True)
+  ```
+
+  - Automatic emoji-to-ASCII sanitization when `policy.emoji=False`
+  - VS16 emoji width fix for proper column alignment in modern terminals
+  - Full Rich Columns API compatibility
+
+- **`EffectSpec.from_palette()`**: Create multi-stop gradients from named palettes
+
+  ```python
+  effect = EffectSpec.from_palette("fire", direction="horizontal")
+  console.frame("Fire gradient from palette!", effect=effect)
+  ```
+
+- **Palette Utilities** (`utils/palette.py`):
+
+  - `create_palette_effect()`: Quick effect creation from palette name
+  - `palette_from_dict()`: Import custom palettes from dict format
+
+### Changed
+
+- **`Console.frame()`**: Now accepts `effect=` parameter alongside legacy gradient params
+- **`Console.frame_group()`**: Extended with `columns=`, `min_columns=`, `item_width=` parameters
+- **`RenderingEngine`**: Refactored with `_render_vertical_frame_group()` and `_render_horizontal_frame_group()` private methods
+
+### Developer Dependencies
+
+- Added `requests>=2.31.0` for palette fetching utilities
+- Added `beautifulsoup4>=4.12.0` for HTML parsing in examples
+- Added `lxml>=5.0.0` for XML processing
+
+### Testing
+
+- 968 tests passing (975 total, 7 Kitty terminal-specific skipped)
+- 79.23% code coverage
+- New test file: `test_columns.py` for StyledColumns
+
 ## [0.9.9.4] - 2026-01-05
 
 ### Fixed

@@ -179,6 +179,7 @@ class EnhancedRainbow:
         saturation: float = 1.0,
         brightness: float = 1.0,
         reverse: bool = False,
+        neon: bool = False,
     ):
         """Initialize enhanced rainbow.
 
@@ -186,10 +187,12 @@ class EnhancedRainbow:
             saturation: Saturation multiplier (0.0-2.0, 1.0 = normal).
             brightness: Brightness multiplier (0.0-2.0, 1.0 = normal).
             reverse: If True, reverses rainbow direction (violet to red).
+            neon: If True, uses neon/cyberpunk color palette.
         """
         self.saturation = saturation
         self.brightness = brightness
         self.reverse = reverse
+        self.neon = neon
 
     def get_color(self, position: float) -> str:
         """Get rainbow color at position with adjustments.
@@ -203,8 +206,8 @@ class EnhancedRainbow:
         if self.reverse:
             position = 1.0 - position
 
-        # Get base rainbow color
-        base_color = get_rainbow_color(position)
+        # Get base rainbow color (neon or standard)
+        base_color = get_rainbow_color(position, neon=self.neon)
 
         # If no adjustments needed, return base color
         if self.saturation == 1.0 and self.brightness == 1.0:
@@ -226,26 +229,30 @@ class EnhancedRainbow:
 
         r, g, b = hex_to_rgb(hex_color)
 
-        # Convert to HSL-like adjustment (simplified)
-        # Calculate luminance
-        max_c = max(r, g, b)
-        min_c = min(r, g, b)
-        lum = (max_c + min_c) / 2
+        # Normalize RGB to 0-1 range for HSL conversion
+        r_norm = r / 255.0
+        g_norm = g / 255.0
+        b_norm = b / 255.0
+
+        # Convert to HSL
+        max_c = max(r_norm, g_norm, b_norm)
+        min_c = min(r_norm, g_norm, b_norm)
+        lum = (max_c + min_c) / 2.0
 
         if max_c == min_c:
             # Achromatic
             h = s = 0.0
         else:
             d = max_c - min_c
-            s = d / (2 - max_c - min_c) if lum > 0.5 else d / (max_c + min_c)
+            s = d / (2.0 - max_c - min_c) if lum > 0.5 else d / (max_c + min_c)
 
-            if max_c == r:
-                h = (g - b) / d + (6 if g < b else 0)
-            elif max_c == g:
-                h = (b - r) / d + 2
+            if max_c == r_norm:
+                h = (g_norm - b_norm) / d + (6 if g_norm < b_norm else 0)
+            elif max_c == g_norm:
+                h = (b_norm - r_norm) / d + 2
             else:
-                h = (r - g) / d + 4
-            h /= 6
+                h = (r_norm - g_norm) / d + 4
+            h /= 6.0
 
         # Apply adjustments
         s = min(1.0, s * self.saturation)

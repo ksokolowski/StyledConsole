@@ -53,6 +53,46 @@ class EffectRegistry(Registry[EffectSpec]):
         """Return effects with a specific direction."""
         return [e for e in self.values() if e.direction == direction]
 
+    def load_palette(
+        self,
+        name: str,
+        *,
+        direction: str = "vertical",
+        target: str = "both",
+        layer: str = "foreground",
+        reverse: bool = False,
+    ) -> EffectSpec:
+        """Dynamically load a palette as an effect.
+
+        Creates a multi-stop gradient from any of the 90 curated palettes.
+        This provides runtime palette loading without pre-registering all palettes.
+
+        Args:
+            name: Palette name (e.g., 'ocean_depths', 'pastel_candy').
+            direction: Gradient direction ('vertical', 'horizontal', 'diagonal').
+            target: What to apply effect to ('content', 'border', 'both').
+            layer: Color layer ('foreground', 'background').
+            reverse: Reverse the gradient direction.
+
+        Returns:
+            EffectSpec configured with palette colors.
+
+        Raises:
+            ValueError: If palette name not found.
+
+        Example:
+            >>> from styledconsole.effects import EFFECTS
+            >>> ocean = EFFECTS.load_palette("ocean_depths", direction="horizontal")
+            >>> bedroom = EFFECTS.load_palette("bedroom_muted", reverse=True)
+        """
+        return EffectSpec.from_palette(
+            name,
+            direction=direction,  # type: ignore[arg-type]
+            target=target,  # type: ignore[arg-type]
+            layer=layer,  # type: ignore[arg-type]
+            reverse=reverse,
+        )
+
 
 # =============================================================================
 # Global Registry Instance
@@ -133,12 +173,12 @@ EFFECTS.register(
 
 EFFECTS.register(
     "rainbow_neon",
-    EffectSpec.rainbow(saturation=1.2, brightness=1.1),
+    EffectSpec.rainbow(neon=True),
 )
 
 EFFECTS.register(
     "rainbow_muted",
-    EffectSpec.rainbow(saturation=0.3, brightness=0.9),
+    EffectSpec.rainbow(saturation=0.3, brightness=0.8),
 )
 
 EFFECTS.register(
@@ -255,4 +295,89 @@ EFFECTS.register(
 EFFECTS.register(
     "border_gold",
     EffectSpec.gradient("#f7971e", "#ffd200", target="border"),
+)
+
+# =============================================================================
+# Curated Palette Presets
+# Optimized preset effects with pre-configured direction and target settings
+# =============================================================================
+
+# Nature & Seasons
+EFFECTS.register(
+    "beach",
+    EffectSpec.multi_stop(["#96ceb4", "#ffeaa7", "#dfe6e9", "#74b9ff"]),
+)
+
+EFFECTS.register(
+    "autumn",
+    EffectSpec.multi_stop(["#d63031", "#e17055", "#fdcb6e", "#6c5ce7"]),
+)
+
+EFFECTS.register(
+    "spring_blossom",
+    EffectSpec.multi_stop(["#fd79a8", "#fdcb6e", "#55efc4", "#74b9ff"]),
+)
+
+EFFECTS.register(
+    "winter_frost",
+    EffectSpec.multi_stop(["#dfe6e9", "#74b9ff", "#a29bfe", "#b2bec3"]),
+)
+
+# Food & Drink
+EFFECTS.register(
+    "cappuccino",
+    EffectSpec.multi_stop(["#6c5b7b", "#c06c84", "#f67280", "#f8b195"]),
+)
+
+EFFECTS.register(
+    "tropical_juice",
+    EffectSpec.multi_stop(["#fc5c65", "#fd9644", "#fed330", "#26de81"]),
+)
+
+EFFECTS.register(
+    "berry_smoothie",
+    EffectSpec.multi_stop(["#a29bfe", "#fd79a8", "#e84393", "#6c5ce7"]),
+)
+
+# Tech & Cyber
+EFFECTS.register(
+    "terminal_green",
+    EffectSpec.gradient("#052e16", "#00ff41"),
+)
+
+EFFECTS.register(
+    "electric_blue",
+    EffectSpec.multi_stop(["#0a3d62", "#0652dd", "#00a8ff", "#0abde3"]),
+)
+
+EFFECTS.register(
+    "cyber_magenta",
+    EffectSpec.multi_stop(["#ea00d9", "#c44569", "#5f27cd", "#341f97"]),
+)
+
+# Pastels
+EFFECTS.register(
+    "pastel_candy",
+    EffectSpec.multi_stop(["#ffeaa7", "#fab1a0", "#fd79a8", "#a29bfe"]),
+)
+
+EFFECTS.register(
+    "soft_rainbow",
+    EffectSpec.multi_stop(["#ffcccc", "#ffd9b3", "#ffffcc", "#ccffcc", "#ccccff"]),
+)
+
+# Dark Themes
+EFFECTS.register(
+    "dark_purple",
+    EffectSpec.gradient("#2c003e", "#512b58"),
+)
+
+EFFECTS.register(
+    "midnight",
+    EffectSpec.multi_stop(["#191970", "#0f0e23", "#1e3a8a", "#312e81"]),
+)
+
+EFFECTS.register(
+    "carbon",
+    EffectSpec.gradient("#2c3e50", "#34495e"),
 )

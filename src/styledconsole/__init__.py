@@ -11,6 +11,7 @@ Example:
     >>> console.text("Status: OK", color="green", bold=True)
 """
 
+from styledconsole.columns import StyledColumns
 from styledconsole.console import Console
 from styledconsole.core.banner import Banner
 from styledconsole.core.context import StyleContext
@@ -31,6 +32,12 @@ from styledconsole.core.styles import (
     list_border_styles,
 )
 from styledconsole.core.theme import DEFAULT_THEME, THEMES, GradientSpec, Theme
+from styledconsole.data.palettes import (
+    PALETTES,
+    get_palette,
+    get_palette_categories,
+    list_palettes,
+)
 
 # Import effects
 from styledconsole.effects import (
@@ -42,7 +49,12 @@ from styledconsole.effects import (
 
 # Effect system (v0.9.9.3+)
 from styledconsole.effects.registry import EFFECTS
-from styledconsole.effects.spec import EffectSpec
+from styledconsole.effects.spec import (
+    PHASE_FULL_CYCLE,
+    PHASE_INCREMENT_DEFAULT,
+    EffectSpec,
+    cycle_phase,
+)
 
 # Import emoji data layer (4000+ emojis from emoji package)
 # NOTE: For terminal output, prefer `icons` module which provides ASCII fallback
@@ -111,6 +123,10 @@ from styledconsole.utils.emoji_support import (
     is_valid_emoji,
     is_zwj_sequence,
 )
+from styledconsole.utils.palette import (
+    create_palette_effect,
+    palette_from_dict,
+)
 from styledconsole.utils.terminal import (
     TerminalProfile,
     detect_terminal_capabilities,
@@ -165,24 +181,25 @@ class TerminalError(StyledConsoleError):
 
 # Public API
 __all__ = [
+    # Constants
     "ASCII",
     "BORDERS",
     "CSS4_COLORS",
     "DEFAULT_THEME",
     "DOTS",
     "DOUBLE",
-    # Effect system (v0.9.9.3+)
     "EFFECTS",
-    # Emoji data layer (for raw emoji access, advanced use)
     "EMOJI",
     "EMOJI_PACKAGE_AVAILABLE",
-    # Presets
     "ERROR_STYLE",
     "HEAVY",
     "INFO_STYLE",
     "MINIMAL",
     "MINIMAL_STYLE",
+    "PALETTES",
     "PANEL_STYLE",
+    "PHASE_FULL_CYCLE",
+    "PHASE_INCREMENT_DEFAULT",
     "RICH_TO_CSS4_MAPPING",
     "ROUNDED",
     "ROUNDED_THICK",
@@ -191,14 +208,11 @@ __all__ = [
     "THEMES",
     "THICK",
     "WARNING_STYLE",
-    # Type aliases
+    # Types and Classes
     "AlignType",
-    # Banner rendering
     "Banner",
-    # Border styles
     "BorderStyle",
     "ColorType",
-    # Main Console API
     "Console",
     "CuratedEmojis",
     "E",
@@ -212,27 +226,26 @@ __all__ = [
     "IconProvider",
     "RGBColor",
     "RenderError",
-    # Policy system (environment-aware rendering)
     "RenderPolicy",
     "Renderer",
     "StyleContext",
-    # Core types and exceptions
+    "StyledColumns",
     "StyledConsoleError",
-    # Progress tracking
     "StyledProgress",
     "TerminalError",
-    # Terminal utilities
     "TerminalProfile",
-    # Theme system
     "Theme",
+    # Metadata
     "__author__",
     "__license__",
-    # Metadata
     "__version__",
+    # Functions
     "analyze_emoji_safety",
     "auto_size_content",
     "color_distance",
     "convert_emoji_to_ascii",
+    "create_palette_effect",
+    "cycle_phase",
     "demojize",
     "detect_terminal_capabilities",
     "diagonal_gradient_frame",
@@ -248,21 +261,22 @@ __all__ = [
     "get_emoji_info",
     "get_emoji_version",
     "get_icon_mode",
+    "get_palette",
+    "get_palette_categories",
     "get_rich_color_names",
     "get_safe_emojis",
-    # Special effects
     "gradient_frame",
     "hex_to_rgb",
-    # Icon system - PRIMARY FACADE for terminal output
     "icons",
     "interpolate_color",
     "interpolate_rgb",
     "is_valid_emoji",
     "is_zwj_sequence",
     "list_border_styles",
+    "list_palettes",
     "normalize_color_for_rich",
     "pad_to_width",
-    # Color utilities
+    "palette_from_dict",
     "parse_color",
     "prepare_frame_content",
     "rainbow_cycling_frame",
@@ -277,10 +291,8 @@ __all__ = [
     "truncate_lines",
     "truncate_to_width",
     "validate_emoji",
-    # Text utilities
     "visual_width",
     "wrap_multiline",
-    # Text wrapping utilities
     "wrap_text",
 ]
 

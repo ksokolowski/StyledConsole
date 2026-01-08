@@ -1,6 +1,6 @@
 [project]
 name = "styledconsole"
-version = "0.9.9.4"
+version = "0.9.9.5"
 description = "A modern Python library for elegant terminal output with rich formatting, colors, emoji support, and export capabilities"
 readme = "README.md"
 authors = [
@@ -49,6 +49,9 @@ dev = [
     "radon>=6.0",
     "mypy>=1.0",
     "Pillow>=10.0.0",
+    "requests>=2.31.0",
+    "beautifulsoup4>=4.12.0",
+    "lxml>=5.0.0",
 ]
 
 [build-system]

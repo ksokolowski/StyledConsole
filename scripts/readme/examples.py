@@ -870,23 +870,14 @@ def generate_gradient_animation():
     from io import StringIO
 
     from rich.console import Console as RichConsole
+    from rich.text import Text
 
-    from styledconsole import StyleContext
-    from styledconsole.core.styles import get_border_style
-    from styledconsole.effects.engine import apply_gradient
-    from styledconsole.effects.strategies import (
-        Both,
-        DiagonalPosition,
-        OffsetPositionStrategy,
-        RainbowSpectrum,
-    )
+    from styledconsole import cycle_phase
+    from styledconsole.effects import EffectSpec
     from styledconsole.export import get_image_exporter
 
-    # Pre-render the base content (no colors)
+    # Frame content
     frame_width = 40
-    buffer = StringIO()
-    temp_console = Console(file=buffer, detect_terminal=False, width=frame_width)
-
     content = [
         "✨ Animated Gradients ✨",
         "",
@@ -896,55 +887,28 @@ def generate_gradient_animation():
         "Beautiful terminal output",
     ]
 
-    style = StyleContext(
-        border_style="double",
-        width=frame_width,
-        align="center",
-        padding=1,
-    )
-    temp_console.frame(content, title="🚀 StyledConsole", style=style)
-    base_lines = [line.rstrip() for line in buffer.getvalue().splitlines()]
-
-    # Setup gradient strategies
-    base_pos_strategy = DiagonalPosition()
-    color_source = RainbowSpectrum()
-    target_filter = Both()
-
-    # Get border chars for detection
-    border_style = get_border_style("double")
-    border_chars = {
-        border_style.top_left,
-        border_style.top_right,
-        border_style.bottom_left,
-        border_style.bottom_right,
-        border_style.horizontal,
-        border_style.vertical,
-        border_style.left_joint,
-        border_style.right_joint,
-        border_style.top_joint,
-        border_style.bottom_joint,
-        border_style.cross,
-    }
-
     frames = []
 
     # Generate frames for one complete color cycle (loopable)
     num_frames = 30
-    for i in range(num_frames):
-        offset = i * 0.033
+    phase = 0.0
+    for _ in range(num_frames):
+        # Render frame with current phase using high-level API
+        buffer = StringIO()
+        temp_console = Console(file=buffer, record=True, detect_terminal=False, width=frame_width)
 
-        # Create strategy with current offset
-        pos_strategy = OffsetPositionStrategy(base_pos_strategy, offset=offset)
-
-        # Apply gradient
-        colored_lines = apply_gradient(
-            base_lines, pos_strategy, color_source, target_filter, border_chars
+        temp_console.frame(
+            content,
+            title="🚀 StyledConsole",
+            border="double",
+            width=frame_width,
+            align="center",
+            padding=1,
+            effect=EffectSpec.rainbow(phase=phase, direction="diagonal"),
         )
 
-        # Convert ANSI-colored lines to Rich Text for proper parsing
-        from rich.text import Text
-
-        ansi_text = "\n".join(colored_lines)
+        # Convert to Rich Text for image export
+        ansi_text = buffer.getvalue()
         styled_text = Text.from_ansi(ansi_text)
 
         # Render to image using Rich console with fixed terminal size
@@ -958,6 +922,9 @@ def generate_gradient_animation():
         exporter = image_exporter_cls(rich_console, theme=FIXED_TERMINAL_THEME)
         frame = exporter._render_frame()
         frames.append(frame)
+
+        # Advance phase for next frame
+        phase = cycle_phase(phase)
 
     # Auto-crop all frames to common bounding box and save
     if frames:

@@ -29,6 +29,7 @@ from styledconsole.effects.strategies import (
     HorizontalPosition,
     LinearGradient,
     MultiStopGradient,
+    OffsetPositionStrategy,
     PositionStrategy,
     RainbowSpectrum,
     ReversedColorSource,
@@ -83,6 +84,10 @@ def resolve_effect(
     # Resolve position strategy
     position = _resolve_position(spec.direction)
 
+    # Apply phase offset if non-zero (for animation)
+    if spec.phase != 0.0:
+        position = OffsetPositionStrategy(position, offset=spec.phase)
+
     # Resolve color source
     color = _resolve_color_source(spec)
 
@@ -125,12 +130,13 @@ def _resolve_color_source(spec: EffectSpec) -> ColorSource:
     """
 
     if spec.is_rainbow():
-        # Use EnhancedRainbow if any adjustments are needed
-        if spec.saturation != 1.0 or spec.brightness != 1.0 or spec.reverse:
+        # Use EnhancedRainbow if any adjustments or neon mode are needed
+        if spec.saturation != 1.0 or spec.brightness != 1.0 or spec.reverse or spec.neon:
             return EnhancedRainbow(
                 saturation=spec.saturation,
                 brightness=spec.brightness,
                 reverse=spec.reverse,
+                neon=spec.neon,
             )
         # Use simple RainbowSpectrum for default rainbow
         return RainbowSpectrum()

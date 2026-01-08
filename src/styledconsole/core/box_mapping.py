@@ -32,20 +32,33 @@ THICK_BOX = Box(
     "█▄██\n"  # bottom: blocks and lower half blocks (sits at baseline)
 )
 
-# Custom box style for ROUNDED_THICK - combines thick sides with rounded corners
-# Uses thin rounded corners (╭╮╰╯) with thick block sides for aesthetic balance
+# Custom box style for ROUNDED_THICK - combines thick sides with thick rounded corners
+# Uses thick rounded corners (╭╮╰╯) with thick block sides for visual consistency
 ROUNDED_THICK_BOX = Box(
-    "╭▀▀╮\n"  # top: rounded corners with upper half blocks
+    "╭▀▀╮\n"  # top: thick rounded corners with upper half blocks
     "█ ██\n"  # head: full blocks with space for content
     "█▀▀█\n"  # head_row: blocks and upper half blocks
     "█ ██\n"  # mid: full blocks with space
     "█▀▀█\n"  # row: blocks and upper half blocks
     "█▄▄█\n"  # foot_row: blocks and lower half blocks
     "█ ██\n"  # foot: full blocks with space
-    "╰▄▄╯\n"  # bottom: rounded corners with lower half blocks
+    "╰▄▄╯\n"  # bottom: thick rounded corners with lower half blocks
 )
 
-# Custom box style for DOTS - uses periods for all characters
+# Custom box style for MINIMAL - simple top and bottom lines with no sides
+# Uses spaces for sides and em-dash for top/bottom
+MINIMAL_BOX = Box(
+    " ── \n"  # top: space dash dash space
+    "    \n"  # head: all spaces
+    " ── \n"  # head_row: space dash dash space
+    "    \n"  # mid: all spaces
+    " ── \n"  # row: space dash dash space
+    " ── \n"  # foot_row: space dash dash space
+    "    \n"  # foot: all spaces
+    " ── \n"  # bottom: space dash dash space
+)
+
+# Custom box style for DOTS - uses middle dots (·) for a lighter, more elegant appearance
 # Format: 8 lines, each with EXACTLY 4 characters (no spaces between them)
 # Line 1: top (top_left, top, top_divider, top_right)
 # Line 2: head (head_left, space, head_vertical, head_right)
@@ -56,14 +69,14 @@ ROUNDED_THICK_BOX = Box(
 # Line 7: foot (foot_left, space, foot_vertical, foot_right)
 # Line 8: bottom (bottom_left, bottom, bottom_divider, bottom_right)
 DOTS_BOX = Box(
-    "....\n"  # top: . . . .
-    ". ..\n"  # head: . space . .
-    "....\n"  # head_row: . . . .
-    ". ..\n"  # mid: . space . .
-    "....\n"  # row: . . . .
-    "....\n"  # foot_row: . . . .
-    ". ..\n"  # foot: . space . .
-    "....\n"  # bottom: . . . .
+    "····\n"  # top: · · · ·
+    "· ··\n"  # head: · space · ·
+    "····\n"  # head_row: · · · ·
+    "· ··\n"  # mid: · space · ·
+    "····\n"  # row: · · · ·
+    "····\n"  # foot_row: · · · ·
+    "· ··\n"  # foot: · space · ·
+    "····\n"  # bottom: · · · ·
 )
 
 
@@ -85,7 +98,7 @@ BORDER_TO_BOX.register("heavy", box.HEAVY)
 BORDER_TO_BOX.register("thick", THICK_BOX)
 BORDER_TO_BOX.register("rounded_thick", ROUNDED_THICK_BOX)
 BORDER_TO_BOX.register("ascii", box.ASCII)
-BORDER_TO_BOX.register("minimal", box.MINIMAL)
+BORDER_TO_BOX.register("minimal", MINIMAL_BOX)
 BORDER_TO_BOX.register("dots", DOTS_BOX)
 
 

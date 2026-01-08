@@ -137,7 +137,7 @@ def _try_rgb_pattern(value: str) -> RGBColor | None:
 
 
 @lru_cache(maxsize=512)
-def parse_color(value: str) -> RGBColor:
+def parse_color(value: str, include_extended: bool = True) -> RGBColor:
     """Parse color string in any supported format to RGB tuple.
 
     Cached with LRU cache (512 entries) for performance in loops.
@@ -149,9 +149,11 @@ def parse_color(value: str) -> RGBColor:
     - Tuple: "(255, 0, 0)"
     - Named CSS4: 148 colors (case-insensitive) - "red", "dodgerblue", "lime"
     - Named Rich: 250+ colors (case-insensitive) - "bright_green", "dodger_blue1"
+    - Named Extended: 949 colors (case-insensitive) - "puke_green", "baby_blue"
 
     Args:
         value: Color string in any supported format
+        include_extended: Include extended color names (default: True)
 
     Returns:
         RGB tuple (r, g, b) with values 0-255
@@ -172,15 +174,25 @@ def parse_color(value: str) -> RGBColor:
         (0, 255, 0)
         >>> parse_color("dodger_blue1")  # Rich numbered variant
         (30, 144, 255)
+        >>> parse_color("puke_green")  # Extended
+        (154, 174, 7)
     """
     # Normalize for caching: strip whitespace and lowercase
     # This ensures "RED", "red", " red " all hit the same cache entry
     value_normalized = value.strip().lower()
 
-    # Try named colors first (most common)
+    # Try named colors first (CSS4 + Rich)
     named_result = _try_named_color(value_normalized)
     if named_result:
         return named_result
+
+    # Try extended colors if enabled
+    if include_extended:
+        from styledconsole.utils.color_registry import get_color
+
+        extended_hex = get_color(value_normalized, include_extended=True)
+        if extended_hex:
+            return hex_to_rgb(extended_hex)
 
     # Try hex format (use original stripped value to preserve case for regex)
     value_stripped = value.strip()
@@ -193,9 +205,10 @@ def parse_color(value: str) -> RGBColor:
         return pattern_result
 
     # No match found
+    color_count = "148 CSS4, 250+ Rich" + (", 949 extended" if include_extended else "")
     raise ValueError(
         f"Invalid color format: '{value}'. "
-        f"Supported: hex (#FF0000), rgb(r,g,b), CSS4 names (148), Rich names (250+)"
+        f"Supported: hex (#FF0000), rgb(r,g,b), named colors ({color_count})"
     )
 
 
@@ -523,25 +536,36 @@ RAINBOW_COLORS = [
     "darkviolet",  # #9400D3
 ]
 
+# Neon rainbow spectrum - electric, cyberpunk-inspired colors
+NEON_RAINBOW_COLORS = [
+    "#ff006e",  # Hot neon pink
+    "#ff5400",  # Electric orange
+    "#ffbd00",  # Neon yellow
+    "#00ff41",  # Electric green
+    "#00f5ff",  # Neon cyan
+    "#8b00ff",  # Electric purple
+    "#ea00d9",  # Neon magenta
+]
 
-def get_rainbow_color(position: float) -> str:
+
+def get_rainbow_color(position: float, neon: bool = False) -> str:
     """Get rainbow color at a specific position.
 
     Args:
         position: Position in rainbow (0.0 = red, 1.0 = violet)
+        neon: If True, use neon/cyberpunk color palette instead of standard rainbow
 
     Returns:
         Hex color code at that position in rainbow spectrum
     """
+    colors = NEON_RAINBOW_COLORS if neon else RAINBOW_COLORS
     position = max(0.0, min(1.0, position))
-    num_segments = len(RAINBOW_COLORS) - 1
+    num_segments = len(colors) - 1
     segment_size = 1.0 / num_segments
     segment_index = min(int(position / segment_size), num_segments - 1)
     local_position = (position - segment_index * segment_size) / segment_size
 
-    return interpolate_color(
-        RAINBOW_COLORS[segment_index], RAINBOW_COLORS[segment_index + 1], local_position
-    )
+    return interpolate_color(colors[segment_index], colors[segment_index + 1], local_position)
 
 
 def apply_dim(color: str | RGBColor | None, factor: float = 0.5) -> str | RGBColor | None:

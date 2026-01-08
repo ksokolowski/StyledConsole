@@ -10,7 +10,10 @@ from typing import Literal, Protocol, TypedDict
 AlignType = Literal["left", "center", "right"]
 
 # Type alias for layout options
-LayoutType = Literal["vertical"]
+LayoutType = Literal["vertical", "horizontal", "grid"]
+
+# Type alias for columns specification (explicit count or auto-calculate)
+ColumnsType = int | Literal["auto"]
 
 # Type alias for color values (hex string, rgb string, named color, or RGB tuple)
 ColorType = str | tuple[int, int, int]
@@ -54,6 +57,7 @@ class Renderer(Protocol):
 __all__ = [
     "AlignType",
     "ColorType",
+    "ColumnsType",
     "FrameGroupItem",
     "LayoutType",
     "Renderer",
