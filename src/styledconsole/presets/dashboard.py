@@ -68,8 +68,8 @@ def dashboard(
     from rich.table import Table
     from rich.text import Text
 
-    # Import patched_cell_len from table module for emoji width fix
-    from styledconsole.table import _patched_cell_len
+    # Import patched_cell_len from shared utils for emoji width fix
+    from styledconsole.utils.rich_compat import patched_cell_len
 
     # Render header using Console frame method
     console.frame(
@@ -80,7 +80,7 @@ def dashboard(
     )
 
     # Use patched cell_len context for proper emoji width in grid layout
-    with _patched_cell_len():
+    with patched_cell_len():
         # Create grid for widget layout
         grid_table = Table.grid(expand=True, padding=1)
         for _ in range(columns):
