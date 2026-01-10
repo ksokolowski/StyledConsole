@@ -89,6 +89,28 @@ class TestTheme:
         theme = Theme()
         assert theme.resolve_color(None) is None
 
+    def test_to_rich_theme(self):
+        """Test conversion to Rich Theme."""
+        theme = Theme(
+            name="test",
+            success="green",
+            warning="yellow",
+            error="red",
+            primary="blue",
+        )
+        rich_theme = theme.to_rich_theme()
+
+        from rich.theme import Theme as RichTheme
+
+        assert isinstance(rich_theme, RichTheme)
+
+        # Verify styles are generated correctly
+        styles = rich_theme.styles
+        assert str(styles["success"]) == "bold green"
+        assert str(styles["warning"]) == "bold yellow"
+        assert str(styles["error"]) == "bold red"
+        assert str(styles["primary"]) == "blue"  # No modifier for primary
+
 
 class TestThemesCollection:
     """Tests for THEMES predefined collection."""
@@ -204,6 +226,18 @@ class TestConsoleTheme:
         assert console.resolve_color("success") == "bright_green"
         assert console.resolve_color("red") == "red"
         assert console.resolve_color(None) is None
+
+    def test_console_theme_markup(self):
+        """Test Console properly configures Rich with theme styles."""
+        console = Console(theme=THEMES.DARK)
+
+        # Verify it has our styles using get_style()
+        # This confirms the theme was loaded into the Console
+        success_style = console._rich_console.get_style("success")
+        assert str(success_style) == "bold bright_green"
+
+        error_style = console._rich_console.get_style("error")
+        assert str(error_style) == "bold red"
 
 
 class TestThemeColors:

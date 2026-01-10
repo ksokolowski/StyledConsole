@@ -7,7 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.9.9.5] - 2026-01-08
+### Rich Integration & Quality Improvements
+
+This release focuses on cleaner integration with the underlying Rich library, fixing duplication and improving visual stability.
+
+### Changed
+
+- **Internal Core Refactoring**:
+  - **Theme Integration**: `StyledConsole` themes now natively power Rich markup (e.g., `[success]Text[/]`).
+  - **Color Blending**: Replaced custom RGB interpolation with `rich.color.blend_rgb` for more accurate gradients.
+  - **Text Styling**: Refactored `utils/color.py` to use `rich.text.Text` objects, improving nested style and multiline support.
+- **Emoji Support**:
+  - **VS16 Fix**: Added `utils/rich_compat.py` with `patched_cell_len()` to correctly measure emojis in modern terminals (fixing alignment issues).
+  - **Sanitization**: Standardized emoji fallback logic in `utils/sanitize.py`.
+
+### Fixed
+
+- **StyledColumns Bug**: Fixed an issue where `StyledColumns` would strip color from ASCII fallback icons when emoji support was disabled.
+- **Layout Issues**: Fixed "Safey Analysis" frame layout in `emoji_integration_demo.py`.
 
 ### Feature Expansion
 

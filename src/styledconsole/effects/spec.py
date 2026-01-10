@@ -434,3 +434,40 @@ class EffectSpec:
             neon=self.neon,
             phase=phase,
         )
+
+    def get_start_color(self) -> str | None:
+        """Get the starting color of a gradient effect.
+
+        Returns the first color in the colors tuple, or None if empty
+        (e.g., rainbow effects which generate colors dynamically).
+
+        Returns:
+            First color string, or None if no colors defined.
+
+        Example:
+            >>> fire = EffectSpec.gradient("red", "yellow")
+            >>> fire.get_start_color()
+            'red'
+            >>> rainbow = EffectSpec.rainbow()
+            >>> rainbow.get_start_color()  # None (dynamically generated)
+        """
+        return self.colors[0] if self.colors else None
+
+    def get_end_color(self) -> str | None:
+        """Get the ending color of a gradient effect.
+
+        Returns the last color in the colors tuple, or None if empty
+        (e.g., rainbow effects which generate colors dynamically).
+
+        Returns:
+            Last color string, or None if no colors defined.
+
+        Example:
+            >>> fire = EffectSpec.gradient("red", "yellow")
+            >>> fire.get_end_color()
+            'yellow'
+            >>> ocean = EffectSpec.multi_stop(["blue", "cyan", "white"])
+            >>> ocean.get_end_color()
+            'white'
+        """
+        return self.colors[-1] if self.colors else None

@@ -27,6 +27,8 @@ from styledconsole.utils.color_data import (
 )
 
 if TYPE_CHECKING:
+    from rich.console import Console
+
     from styledconsole.policy import RenderPolicy
 
 # Regex patterns for color parsing
@@ -234,15 +236,22 @@ def interpolate_rgb(
         >>> interpolate_rgb((255, 0, 0), (0, 0, 255), 0.5)
         (128, 0, 128)
     """
-    # Clamp t to [0, 1]
+
+    from rich.color import ColorTriplet, blend_rgb
+
+    # Ensure inputs are in the format Rich expects (ColorTriplet or tuple)
+    # Rich's blend_rgb handles tuples generally, but explicit casting ensures safety
+    c1 = ColorTriplet(*start_rgb)
+    c2 = ColorTriplet(*end_rgb)
+
+    # Rich clamps cross_fade internally? Actually blend_rgb might not clamp.
+    # We should keep our clamping for safety as per original implementation.
     t = max(0.0, min(1.0, t))
 
-    # Linear interpolation for each channel
-    r = int(start_rgb[0] + (end_rgb[0] - start_rgb[0]) * t)
-    g = int(start_rgb[1] + (end_rgb[1] - start_rgb[1]) * t)
-    b = int(start_rgb[2] + (end_rgb[2] - start_rgb[2]) * t)
+    result = blend_rgb(c1, c2, cross_fade=t)
 
-    return (r, g, b)
+    # Return as tuple[int, int, int]
+    return (result.red, result.green, result.blue)
 
 
 def interpolate_color(
@@ -401,6 +410,11 @@ def apply_line_gradient(
     start_rgb = parse_color(start_color)
     end_rgb = parse_color(end_color)
 
+    from rich.text import Text
+
+    from styledconsole.utils.color import _get_string_render_console
+
+    console = _get_string_render_console()
     colored_lines = []
     num_lines = len(lines)
 
@@ -410,10 +424,15 @@ def apply_line_gradient(
 
         # Interpolate color using optimized RGB function
         r, g, b = interpolate_rgb(start_rgb, end_rgb, t)
+        hex_color = rgb_to_hex(r, g, b)
 
-        # Apply ANSI color code
-        colored_line = f"\033[38;2;{r};{g};{b}m{line}\033[0m"
-        colored_lines.append(colored_line)
+        # Create Text object from line (handling existing ANSI)
+        text_obj = Text.from_ansi(line)
+        text_obj.stylize(hex_color)
+
+        with console.capture() as capture:
+            console.print(text_obj, end="")
+        colored_lines.append(capture.get())
 
     return colored_lines
 
@@ -449,6 +468,11 @@ def apply_rainbow_gradient(
     if policy is not None and not policy.color:
         return lines
 
+    from rich.text import Text
+
+    from styledconsole.utils.color import _get_string_render_console
+
+    console = _get_string_render_console()
     colored_lines = []
     num_lines = len(lines)
 
@@ -459,14 +483,25 @@ def apply_rainbow_gradient(
         # Get rainbow color at this position
         hex_color = get_rainbow_color(t)
 
-        # Parse hex color to RGB
-        r, g, b = hex_to_rgb(hex_color)
+        # Create Text object from line (handling existing ANSI)
+        text_obj = Text.from_ansi(line)
+        text_obj.stylize(hex_color)
 
-        # Apply ANSI color code
-        colored_line = f"\033[38;2;{r};{g};{b}m{line}\033[0m"
-        colored_lines.append(colored_line)
+        with console.capture() as capture:
+            console.print(text_obj, end="")
+        colored_lines.append(capture.get())
 
     return colored_lines
+
+
+@lru_cache(maxsize=1)
+def _get_string_render_console() -> Console:
+    """Get a cached Rich Console for string rendering operations."""
+    from rich.console import Console
+
+    return Console(
+        file=None, force_terminal=True, width=10000, color_system="truecolor", highlight=False
+    )
 
 
 def colorize_text(
@@ -494,15 +529,32 @@ def colorize_text(
     if policy is not None and not policy.color:
         return text
 
-    r, g, b = parse_color(color)
-    start_sequence = f"\033[38;2;{r};{g};{b}m"
-    reset_sequence = "\033[0m"
+    # Optimizing: Use a shared/cached console for rendering to string
+    # We do this lazily to avoid import overhead if possible, or global caching
+    from styledconsole.utils.color import _get_string_render_console
 
-    # Handle nested resets to preserve gradient
-    if reset_sequence in text:
-        text = text.replace(reset_sequence, reset_sequence + start_sequence)
+    console = _get_string_render_console()
 
-    return f"{start_sequence}{text}{reset_sequence}"
+    # Use Rich Text for styling
+    from rich.text import Text
+
+    # Parse existing ANSI if present
+    text_obj = Text.from_ansi(text)
+
+    # Apply new color
+    # Note: Text.stylize applies directly, or we can construct a new one.
+    # To match original behavior (wrapping entire text):
+    # original logic: f"{start_sequence}{text}{reset_sequence}" which wraps effectively.
+    # Rich's stylize applies to the whole range if no start/end given.
+
+    # We need to resolve the color name to what Rich understands or hex
+    hex_color = normalize_color_for_rich(color) or color
+
+    text_obj.stylize(hex_color)
+
+    with console.capture() as capture:
+        console.print(text_obj, end="")
+    return capture.get()
 
 
 def color_to_ansi(
