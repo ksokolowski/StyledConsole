@@ -16,8 +16,12 @@ Example:
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from styledconsole.core.registry import Registry
+
+if TYPE_CHECKING:
+    from rich.theme import Theme as RichTheme
 
 
 @dataclass(frozen=True)
@@ -89,7 +93,7 @@ class Theme:
     info: str = "blue"
     border: str = "white"
     text: str = "white"
-    muted: str = "gray"
+    muted: str = "bright_black"  # Rich uses "grey" not "gray", bright_black is safe
     background: str = "black"
 
     # Gradient specifications (optional)
@@ -135,6 +139,36 @@ class Theme:
     def has_gradients(self) -> bool:
         """Check if this theme has any gradient definitions."""
         return any([self.border_gradient, self.text_gradient, self.banner_gradient])
+
+    def to_rich_theme(self) -> RichTheme:
+        """Convert this Theme to a Rich Theme for markup support.
+
+        This enables Rich markup like [success], [error], [primary] to work
+        with StyledConsole theme colors.
+
+        Returns:
+            A Rich Theme instance with style definitions for semantic colors.
+
+        Example:
+            >>> from styledconsole import Console, THEMES
+            >>> console = Console(theme=THEMES.DARK)
+            >>> console.print("[success]Operation completed![/]")  # Now works!
+        """
+        from rich.theme import Theme as RichTheme
+
+        return RichTheme(
+            {
+                "primary": self.primary,
+                "secondary": self.secondary,
+                "success": f"bold {self.success}",
+                "warning": f"bold {self.warning}",
+                "error": f"bold {self.error}",
+                "info": self.info,
+                "muted": f"dim {self.muted}",
+                "border": self.border,
+                "text": self.text,
+            }
+        )
 
 
 class ThemeRegistry(Registry[Theme]):

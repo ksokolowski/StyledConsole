@@ -162,6 +162,10 @@ class Console:
         # This ensures colors work in non-TTY environments when policy.color=True
         force_terminal = self._terminal.should_force_terminal() or self._policy.color
 
+        # Convert our theme to Rich theme for markup support
+        # This enables Rich markup like [success], [error], [primary] to work
+        rich_theme = self._theme.to_rich_theme()
+
         # Initialize Rich console with terminal settings
         self._rich_console = RichConsole(
             record=record,
@@ -169,6 +173,7 @@ class Console:
             file=file or sys.stdout,
             force_terminal=force_terminal,
             color_system=color_system,
+            theme=rich_theme,
         )
 
         # Initialize rendering engine (handles frame, banner, text, rule, newline)
