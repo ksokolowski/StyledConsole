@@ -30,8 +30,16 @@ from styledconsole.types import AlignType, ColumnsType, FrameGroupItem, LayoutTy
 from styledconsole.utils.terminal import TerminalProfile
 
 if TYPE_CHECKING:
+    from styledconsole.builders import (
+        BannerBuilder,
+        FrameBuilder,
+        LayoutBuilder,
+        TableBuilder,
+    )
     from styledconsole.core.group import FrameGroupContext
     from styledconsole.export import ImageTheme
+    from styledconsole.model import ConsoleObject
+    from styledconsole.rendering import RenderContext
 
 
 class Console:
@@ -1658,3 +1666,188 @@ class Console:
             title=title,
         )
         self._rich_console.print(columns_obj)
+
+    # =========================================================================
+    # Builder Factory Methods (Phase 5 - v0.10.0 API)
+    # =========================================================================
+
+    def build_frame(self) -> FrameBuilder:
+        """Create a FrameBuilder for fluent frame construction.
+
+        Returns a builder that can be configured with method chaining,
+        then rendered with .render() or converted to object with .build().
+
+        Returns:
+            FrameBuilder instance bound to this console.
+
+        Example:
+            >>> console = Console()
+            >>> # Fluent building and rendering
+            >>> console.build_frame().content("Hello").title("Greeting").effect("ocean").render()
+            >>>
+            >>> # Build object for later use
+            >>> frame = console.build_frame().content("Test").build()
+        """
+        from styledconsole.builders import FrameBuilder
+
+        return FrameBuilder()._bind_console(self)
+
+    def build_banner(self) -> BannerBuilder:
+        """Create a BannerBuilder for fluent banner construction.
+
+        Returns a builder for ASCII art banners with figlet fonts.
+
+        Returns:
+            BannerBuilder instance bound to this console.
+
+        Example:
+            >>> console.build_banner().text("HELLO").font("slant").effect("fire").render()
+        """
+        from styledconsole.builders import BannerBuilder
+
+        return BannerBuilder()._bind_console(self)
+
+    def build_table(self) -> TableBuilder:
+        """Create a TableBuilder for fluent table construction.
+
+        Returns a builder for data tables with columns and rows.
+
+        Returns:
+            TableBuilder instance bound to this console.
+
+        Example:
+            >>> console.build_table().columns("Name", "Value").row("a", "1").row("b", "2").render()
+        """
+        from styledconsole.builders import TableBuilder
+
+        return TableBuilder()._bind_console(self)
+
+    def build_layout(self) -> LayoutBuilder:
+        """Create a LayoutBuilder for fluent layout construction.
+
+        Returns a builder for arranging multiple objects in layouts.
+
+        Returns:
+            LayoutBuilder instance bound to this console.
+
+        Example:
+            >>> from styledconsole.model import Text
+            >>> console.build_layout().horizontal().gap(2).add(
+            ...     Text(content="Left"), Text(content="Right")
+            ... ).render()
+        """
+        from styledconsole.builders import LayoutBuilder
+
+        return LayoutBuilder()._bind_console(self)
+
+    # =========================================================================
+    # Model Rendering (Phase 5 - v0.10.0 API)
+    # =========================================================================
+
+    def render_object(
+        self,
+        obj: ConsoleObject,
+        *,
+        context: RenderContext | None = None,
+    ) -> None:
+        """Render a ConsoleObject to the console.
+
+        This method renders objects from the model layer (Text, Frame, Banner,
+        Table, Layout, etc.) using the terminal renderer.
+
+        Args:
+            obj: ConsoleObject to render.
+            context: Optional render context. If None, auto-detected.
+
+        Example:
+            >>> from styledconsole.model import Frame, Text
+            >>> frame = Frame(content=Text(content="Hello"), title="Greeting")
+            >>> console.render_object(frame)
+        """
+        from styledconsole.rendering import RenderContext, TerminalRenderer
+
+        renderer = TerminalRenderer()
+        ctx = context or RenderContext(
+            color=self._policy.color,
+            emoji=self._policy.emoji,
+            width=self._rich_console.width,
+        )
+        renderer.render(obj, target=self._rich_console.file, context=ctx)
+
+    # =========================================================================
+    # Declarative Methods (Phase 5 - v0.10.0 API)
+    # =========================================================================
+
+    def render_dict(
+        self,
+        data: dict[str, Any] | list[Any] | str,
+        *,
+        variables: dict[str, Any] | None = None,
+    ) -> None:
+        """Render a ConsoleObject from declarative data.
+
+        Supports shorthand syntax:
+        - String: "Hello" renders as Text
+        - List: ["a", "b"] renders as vertical Layout
+        - Dict: {"frame": "content"} renders as Frame
+
+        Args:
+            data: Declarative data (dict, list, or string).
+            variables: Optional template variables for ${var} substitution.
+
+        Example:
+            >>> console.render_dict("Hello World")
+            >>> console.render_dict({"frame": "Content", "title": "Title"})
+            >>> console.render_dict(["Item 1", "Item 2", "Item 3"])
+        """
+        from styledconsole.declarative import load_dict
+
+        obj = load_dict(data, variables=variables)
+        self.render_object(obj)
+
+    def render_template(
+        self,
+        name: str,
+        **variables: Any,
+    ) -> None:
+        """Render a named template with variable substitution.
+
+        Uses built-in templates (info_box, warning_box, error_box, etc.)
+        or custom registered templates.
+
+        Args:
+            name: Template name.
+            **variables: Template variable values.
+
+        Example:
+            >>> console.render_template("info_box", message="Important information")
+            >>> console.render_template("error_box", message="Something went wrong")
+        """
+        from styledconsole.declarative import Declarative
+
+        decl = Declarative()
+        obj = decl.from_template(name, **variables)
+        self.render_object(obj)
+
+    def render_file(
+        self,
+        path: str,
+        *,
+        variables: dict[str, Any] | None = None,
+    ) -> None:
+        """Render a ConsoleObject from a JSON or YAML file.
+
+        Auto-detects format from file extension (.json, .yaml, .yml).
+
+        Args:
+            path: Path to the file.
+            variables: Optional template variables.
+
+        Example:
+            >>> console.render_file("dashboard.yaml")
+            >>> console.render_file("config.json", variables={"name": "Test"})
+        """
+        from styledconsole.declarative import load_file
+
+        obj = load_file(path, variables=variables)
+        self.render_object(obj)

@@ -11,6 +11,13 @@ Example:
     >>> console.text("Status: OK", color="green", bold=True)
 """
 
+# v0.10.0 API - Builder Layer
+from styledconsole.builders import (
+    BannerBuilder,
+    FrameBuilder,
+    LayoutBuilder,
+    TableBuilder,
+)
 from styledconsole.columns import StyledColumns
 from styledconsole.console import Console
 from styledconsole.core.banner import Banner
@@ -37,6 +44,21 @@ from styledconsole.data.palettes import (
     get_palette,
     get_palette_categories,
     list_palettes,
+)
+
+# v0.10.0 API - Declarative Layer
+from styledconsole.declarative import (
+    BUILTIN_TEMPLATES,
+    Declarative,
+    Template,
+    TemplateRegistry,
+    from_template,
+    load_dict,
+    load_file,
+    normalize,
+)
+from styledconsole.declarative import (
+    create as create_object,
 )
 
 # Import effects
@@ -74,6 +96,29 @@ from styledconsole.icons import (
     set_icon_mode,
 )
 
+# v0.10.0 API - Model Layer
+from styledconsole.model import (
+    Banner as BannerModel,
+)
+from styledconsole.model import (
+    Column,
+    ConsoleObject,
+    Group,
+    Layout,
+    Spacer,
+    Style,
+    Text,
+)
+from styledconsole.model import (
+    Frame as FrameModel,
+)
+from styledconsole.model import (
+    Rule as RuleModel,
+)
+from styledconsole.model import (
+    Table as TableModel,
+)
+
 # Import policy system (v0.9.0+)
 from styledconsole.policy import (
     RenderPolicy,
@@ -88,6 +133,13 @@ from styledconsole.presets.styles import (
     PANEL_STYLE,
     SUCCESS_STYLE,
     WARNING_STYLE,
+)
+
+# v0.10.0 API - Renderer Layer
+from styledconsole.rendering import (
+    HTMLRenderer,
+    RenderContext,
+    TerminalRenderer,
 )
 
 # Import type aliases
@@ -184,6 +236,7 @@ __all__ = [
     # Constants
     "ASCII",
     "BORDERS",
+    "BUILTIN_TEMPLATES",
     "CSS4_COLORS",
     "DEFAULT_THEME",
     "DOTS",
@@ -211,29 +264,50 @@ __all__ = [
     # Types and Classes
     "AlignType",
     "Banner",
+    "BannerBuilder",
+    "BannerModel",
     "BorderStyle",
     "ColorType",
+    "Column",
     "Console",
+    "ConsoleObject",
     "CuratedEmojis",
+    "Declarative",
     "E",
     "EffectSpec",
     "EmojiConstants",
     "EmojiInfo",
     "ExportError",
+    "FrameBuilder",
+    "FrameModel",
     "GradientSpec",
+    "Group",
+    "HTMLRenderer",
     "Icon",
     "IconMode",
     "IconProvider",
+    "Layout",
+    "LayoutBuilder",
     "RGBColor",
+    "RenderContext",
     "RenderError",
     "RenderPolicy",
     "Renderer",
+    "RuleModel",
+    "Spacer",
+    "Style",
     "StyleContext",
     "StyledColumns",
     "StyledConsoleError",
     "StyledProgress",
+    "TableBuilder",
+    "TableModel",
+    "Template",
+    "TemplateRegistry",
     "TerminalError",
     "TerminalProfile",
+    "TerminalRenderer",
+    "Text",
     "Theme",
     # Metadata
     "__author__",
@@ -244,6 +318,7 @@ __all__ = [
     "auto_size_content",
     "color_distance",
     "convert_emoji_to_ascii",
+    "create_object",
     "create_palette_effect",
     "cycle_phase",
     "demojize",
@@ -253,6 +328,7 @@ __all__ = [
     "emojize",
     "filter_by_version",
     "format_emoji_with_spacing",
+    "from_template",
     "get_all_color_names",
     "get_all_emojis",
     "get_border_style",
@@ -274,6 +350,9 @@ __all__ = [
     "is_zwj_sequence",
     "list_border_styles",
     "list_palettes",
+    "load_dict",
+    "load_file",
+    "normalize",
     "normalize_color_for_rich",
     "pad_to_width",
     "palette_from_dict",

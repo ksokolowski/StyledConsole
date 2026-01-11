@@ -17,7 +17,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Generic, Protocol, TypeVar, runtime_checkable
 
+from typing_extensions import Self
+
 if TYPE_CHECKING:
+    from styledconsole.console import Console
     from styledconsole.model import ConsoleObject
 
 T = TypeVar("T", bound="ConsoleObject", covariant=True)
@@ -71,6 +74,39 @@ class BaseBuilder(Generic[T]):
     Provides shared validation and error handling logic.
     Subclasses should override _validate() and _build().
     """
+
+    _console: Console | None = None
+
+    def _bind_console(self, console: Console) -> Self:
+        """Bind this builder to a Console for rendering.
+
+        This is called internally by Console.build_*() methods.
+
+        Args:
+            console: Console to bind.
+
+        Returns:
+            Self for chaining.
+        """
+        self._console = console
+        return self
+
+    def render(self) -> None:
+        """Build and render the object to the bound console.
+
+        This is a convenience method that builds the object and
+        renders it in one step.
+
+        Raises:
+            RuntimeError: If no console is bound.
+            ValueError: If validation fails.
+        """
+        if self._console is None:
+            raise RuntimeError(
+                "No console bound. Use console.build_frame() or bind with _bind_console()."
+            )
+        obj = self.build()
+        self._console.render_object(obj)
 
     def validate(self) -> list[str]:
         """Validate builder state.
@@ -126,7 +162,8 @@ def _resolve_effect(effect: str | Any | None) -> str | None:
         return effect
     # If it's an EffectSpec, get its name
     if hasattr(effect, "name"):
-        return effect.name
+        name = effect.name
+        return str(name) if name is not None else None
     return str(effect)
 
 
