@@ -1,7 +1,7 @@
 # StyledConsole Developer Guide
 
-**Version:** 0.9.9.5
-**Last Updated:** January 8, 2026
+**Version:** 0.9.9.6
+**Last Updated:** January 10, 2026
 **Audience:** Contributors and advanced users
 
 ______________________________________________________________________
@@ -459,8 +459,15 @@ src/styledconsole/
 │   ├── group.py                  # Frame group context manager
 │   ├── progress.py               # Styled progress bars
 │   ├── export_manager.py         # HTML export
-│   └── terminal_manager.py       # Terminal detection
+│   ├── terminal_manager.py       # Terminal detection
+│   └── context.py                # StyleContext dataclass
 │
+├── rich/                         # VS16-aware Rich class wrappers (v0.9.9.6)
+│   ├── __init__.py
+│   ├── cells.py                  # cell_len() with VS16 support
+│   ├── text.py                   # StyledText (extends rich.text.Text)
+│   ├── panel.py                  # StyledPanel (extends rich.panel.Panel)
+│   └── align.py                  # StyledAlign (extends rich.align.Align)
 ├── effects/                      # Gradient effects (v0.4.0, enhanced v0.9.9.2+)
 │   ├── __init__.py               # Public exports (EFFECTS, EffectSpec)
 │   ├── engine.py                 # Unified apply_gradient()

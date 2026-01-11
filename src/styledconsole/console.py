@@ -396,19 +396,34 @@ class Console:
 
         return self._renderer.render_frame_to_string(content, context=resolved_context)
 
+    def _normalize_theme_color(self, color: str | None) -> str | None:
+        """Resolve semantic color and normalize for Rich.
+
+        Combines theme.resolve_color() with normalize_color_for_rich() to
+        convert semantic names (like "success") to Rich-compatible colors.
+
+        Args:
+            color: Semantic color name or literal color value.
+
+        Returns:
+            Normalized color string ready for Rich, or None.
+        """
+        if color is None:
+            return None
+        from styledconsole.utils.color import normalize_color_for_rich
+
+        return normalize_color_for_rich(self._theme.resolve_color(color))
+
     def _resolve_color(
         self,
         arg_val: str | None,
         style_val: str | None,
     ) -> str | None:
         """Resolve a color with precedence: arg > style > None."""
-        from styledconsole.utils.color import normalize_color_for_rich
-
-        res_fn = self._theme.resolve_color
         if arg_val is not None:
-            return normalize_color_for_rich(res_fn(arg_val))
+            return self._normalize_theme_color(arg_val)
         if style_val is not None:
-            return normalize_color_for_rich(res_fn(style_val))
+            return self._normalize_theme_color(style_val)
         return None
 
     def _resolve_gradient_colors(
@@ -420,10 +435,6 @@ class Console:
         theme_gradient: Any,
     ) -> tuple[str | None, str | None]:
         """Resolve gradient colors with precedence: arg > style > theme."""
-        from styledconsole.utils.color import normalize_color_for_rich
-
-        res_fn = self._theme.resolve_color
-
         final_start = arg_start if arg_start is not None else style_start
         final_end = arg_end if arg_end is not None else style_end
 
@@ -432,8 +443,8 @@ class Console:
             final_end = theme_gradient.end
 
         return (
-            normalize_color_for_rich(res_fn(final_start)),
-            normalize_color_for_rich(res_fn(final_end)),
+            self._normalize_theme_color(final_start),
+            self._normalize_theme_color(final_end),
         )
 
     def _resolve_effect(
@@ -1101,9 +1112,6 @@ class Console:
             >>> console.banner("DEMO", start_color="red", end_color="blue")
             >>> console.banner("RAINBOW", rainbow=True)  # Use effect="rainbow" instead
         """
-        # Resolve semantic colors from theme, then normalize for Rich
-        from styledconsole.utils.color import normalize_color_for_rich
-
         # Resolve effect parameter
         resolved_effect: EffectSpec | None = None
         effective_rainbow = rainbow
@@ -1122,9 +1130,8 @@ class Console:
                 effective_end = None
             elif resolved_effect.is_gradient() or resolved_effect.is_multi_stop():
                 effective_rainbow = False
-                if len(resolved_effect.colors) >= 2:
-                    effective_start = resolved_effect.colors[0]
-                    effective_end = resolved_effect.colors[-1]
+                effective_start = resolved_effect.get_start_color()
+                effective_end = resolved_effect.get_end_color()
         else:
             # Legacy parameter handling
             if rainbow:
@@ -1150,8 +1157,8 @@ class Console:
             effective_start = self._theme.banner_gradient.start
             effective_end = self._theme.banner_gradient.end
 
-        resolved_start_color = normalize_color_for_rich(self._theme.resolve_color(effective_start))
-        resolved_end_color = normalize_color_for_rich(self._theme.resolve_color(effective_end))
+        resolved_start_color = self._normalize_theme_color(effective_start)
+        resolved_end_color = self._normalize_theme_color(effective_end)
 
         self._renderer.print_banner(
             text,
@@ -1210,11 +1217,7 @@ class Console:
             >>> console.text("Loading", end="")
             >>> console.text("... done!", color="green")
         """
-        # Resolve semantic color from theme, then normalize for Rich
-        from styledconsole.utils.color import normalize_color_for_rich
-
-        resolved_color = self._theme.resolve_color(color) if color else None
-        normalized_color = normalize_color_for_rich(resolved_color)
+        normalized_color = self._normalize_theme_color(color)
 
         # Build style string
         styles = []
@@ -1279,10 +1282,7 @@ class Console:
             >>> console = Console(theme="dark")
             >>> console.rule("Status", color="primary")
         """
-        # Resolve semantic color from theme, then normalize for Rich
-        from styledconsole.utils.color import normalize_color_for_rich
-
-        resolved_color = normalize_color_for_rich(self._theme.resolve_color(color)) or "white"
+        resolved_color = self._normalize_theme_color(color) or "white"
 
         self._renderer.print_rule(title=title, color=resolved_color, style=style, align=align)
 

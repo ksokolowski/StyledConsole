@@ -14,6 +14,7 @@ Policy-aware: Respects RenderPolicy for graceful degradation on limited terminal
 from __future__ import annotations
 
 import logging
+from functools import lru_cache
 from typing import TYPE_CHECKING
 
 from rich.console import Console as RichConsole
@@ -37,6 +38,29 @@ if TYPE_CHECKING:
     import pyfiglet
 
     from styledconsole.policy import RenderPolicy
+
+
+@lru_cache(maxsize=32)
+def _get_cached_figlet(font: str) -> pyfiglet.Figlet:
+    """Get a cached Figlet instance for a font.
+
+    Module-level cached function to avoid repeated font loading.
+    Figlet fonts are loaded from disk, so caching improves performance
+    significantly when rendering multiple banners with the same font.
+
+    Args:
+        font: Font name (e.g., "standard", "slant", "banner")
+
+    Returns:
+        Cached Figlet instance for the font
+
+    Note:
+        Cache size of 32 is sufficient for typical usage where
+        applications use a small set of fonts repeatedly.
+    """
+    import pyfiglet
+
+    return pyfiglet.Figlet(font=font, width=1000)
 
 
 class RenderingEngine:
@@ -564,16 +588,7 @@ class RenderingEngine:
         Returns:
             Cached Figlet instance for the font
         """
-        # Simple caching to avoid repeated font loading
-        if not hasattr(self, "_figlet_cache"):
-            self._figlet_cache: dict[str, pyfiglet.Figlet] = {}
-
-        if font not in self._figlet_cache:
-            import pyfiglet
-
-            self._figlet_cache[font] = pyfiglet.Figlet(font=font, width=1000)
-
-        return self._figlet_cache[font]
+        return _get_cached_figlet(font)
 
     def _render_banner_lines(self, banner: Banner, width: int | None = None) -> list[str]:
         """Render a Banner configuration object to lines.
