@@ -52,10 +52,16 @@ from styledconsole.declarative import (
     Declarative,
     Template,
     TemplateRegistry,
+    add_jinja_filter,
     from_template,
     load_dict,
     load_file,
+    load_jinja_file,
+    load_json,
+    load_yaml,
     normalize,
+    render_jinja,
+    render_jinja_string,
 )
 from styledconsole.declarative import (
     create as create_object,
@@ -231,9 +237,8 @@ class TerminalError(StyledConsoleError):
     pass
 
 
-# Public API
+# Public API (sorted alphabetically per RUF022)
 __all__ = [
-    # Constants
     "ASCII",
     "BORDERS",
     "BUILTIN_TEMPLATES",
@@ -261,7 +266,6 @@ __all__ = [
     "THEMES",
     "THICK",
     "WARNING_STYLE",
-    # Types and Classes
     "AlignType",
     "Banner",
     "BannerBuilder",
@@ -309,11 +313,10 @@ __all__ = [
     "TerminalRenderer",
     "Text",
     "Theme",
-    # Metadata
     "__author__",
     "__license__",
     "__version__",
-    # Functions
+    "add_jinja_filter",
     "analyze_emoji_safety",
     "auto_size_content",
     "color_distance",
@@ -352,6 +355,9 @@ __all__ = [
     "list_palettes",
     "load_dict",
     "load_file",
+    "load_jinja_file",
+    "load_json",
+    "load_yaml",
     "normalize",
     "normalize_color_for_rich",
     "pad_to_width",
@@ -360,6 +366,8 @@ __all__ = [
     "prepare_frame_content",
     "rainbow_cycling_frame",
     "rainbow_frame",
+    "render_jinja",
+    "render_jinja_string",
     "reset_default_policy",
     "reset_icon_mode",
     "rgb_to_hex",

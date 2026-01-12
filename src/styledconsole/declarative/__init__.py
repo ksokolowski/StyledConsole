@@ -46,21 +46,50 @@ from styledconsole.declarative.templates import (
     get_builtin_registry,
 )
 
+# Jinja2 support (optional dependency)
+try:
+    from styledconsole.declarative.jinja import (
+        add_filter as add_jinja_filter,
+    )
+    from styledconsole.declarative.jinja import (
+        load_jinja_file,
+        render_jinja,
+        render_jinja_string,
+    )
+
+    _HAS_JINJA = True
+except ImportError:
+    _HAS_JINJA = False
+
+    def _jinja_not_installed(*args: object, **kwargs: object) -> object:
+        raise ImportError(
+            "Jinja2 is required for Jinja template support: pip install styledconsole[jinja]"
+        )
+
+    add_jinja_filter = _jinja_not_installed  # type: ignore[assignment]
+    load_jinja_file = _jinja_not_installed  # type: ignore[assignment]
+    render_jinja = _jinja_not_installed  # type: ignore[assignment]
+    render_jinja_string = _jinja_not_installed  # type: ignore[assignment]
+
 __all__ = [
     "BUILTIN_TEMPLATES",
     "Declarative",
     "Template",
     "TemplateRegistry",
     "TemplateVariable",
+    "add_jinja_filter",
     "create",
     "from_template",
     "get_builtin_registry",
     "get_declarative",
     "load_dict",
     "load_file",
+    "load_jinja_file",
     "load_json",
     "load_yaml",
     "normalize",
     "parse_data",
     "render",
+    "render_jinja",
+    "render_jinja_string",
 ]

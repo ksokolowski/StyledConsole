@@ -24,6 +24,7 @@ from rich.table import Table as RichTable
 from rich.text import Text as RichText
 
 from styledconsole.rendering.base import BaseRenderer
+from styledconsole.utils.text import adjust_emoji_spacing_in_text, create_rich_text
 
 if TYPE_CHECKING:
     from styledconsole.model import (
@@ -110,17 +111,32 @@ class TerminalRenderer(BaseRenderer):
         return ""
 
     def _render_text(self, obj: Text, context: RenderContext) -> RichText:
-        """Render Text to Rich Text."""
+        """Render Text to Rich Text, handling markup and emoji spacing."""
+        # Reuse existing support for emoji spacing and markup
+        processed_content = adjust_emoji_spacing_in_text(obj.content)
+        rich_text = create_rich_text(processed_content)
+
         if obj.style:
             style = self._convert_style(obj.style)
             if style is not None:
-                return RichText(obj.content, style=style)
-        return RichText(obj.content)
+                rich_text.stylize(style)
+        return rich_text
 
     def _render_frame(self, obj: Frame, context: RenderContext) -> Panel:
         """Render Frame to Rich Panel."""
         # Render content
         content = self._dispatch(obj.content, context) if obj.content else ""
+
+        # Prepare title and subtitle with markup and emoji support
+        title = None
+        if obj.title:
+            adj_title = adjust_emoji_spacing_in_text(obj.title)
+            title = create_rich_text(adj_title)
+
+        subtitle = None
+        if obj.subtitle:
+            adj_subtitle = adjust_emoji_spacing_in_text(obj.subtitle)
+            subtitle = create_rich_text(adj_subtitle)
 
         # Get border style based on effect
         border_style = self._resolve_border_style(obj, context)
@@ -130,11 +146,12 @@ class TerminalRenderer(BaseRenderer):
 
         # Build panel kwargs
         panel_kwargs: dict[str, Any] = {
-            "title": obj.title,
-            "subtitle": obj.subtitle,
+            "title": title,
+            "subtitle": subtitle,
             "box": box,
             "width": obj.width,
             "padding": (0, obj.padding),
+            "expand": False,  # Don't expand to full width if width is None
         }
 
         # Only add border_style if set
@@ -225,7 +242,9 @@ class TerminalRenderer(BaseRenderer):
         """Render Rule to Rich Rule."""
         kwargs: dict[str, Any] = {}
         if obj.title:
-            kwargs["title"] = obj.title
+            # Handle markup and emoji in rule title
+            adj_title = adjust_emoji_spacing_in_text(obj.title)
+            kwargs["title"] = create_rich_text(adj_title)
         if obj.style:
             kwargs["style"] = self._convert_style(obj.style)
         return RichRule(**kwargs)

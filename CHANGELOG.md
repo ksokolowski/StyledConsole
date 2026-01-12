@@ -5,6 +5,96 @@ All notable changes to StyledConsole will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.0] - 2026-01-12
+
+### 🎉 Major API Overhaul - Four-Layer Architecture
+
+This release introduces a complete architectural redesign with four composable API layers, giving developers full control over how they build terminal UIs.
+
+### New Architecture Layers
+
+#### 1. Builder Layer (Fluent API)
+
+```python
+from styledconsole import FrameBuilder, BannerBuilder, TableBuilder, LayoutBuilder
+
+frame = (FrameBuilder()
+    .title("Dashboard")
+    .content("Hello World")
+    .effect("ocean")
+    .build())
+```
+
+#### 2. Model Layer (Direct Construction)
+
+```python
+from styledconsole import Frame, Banner, Table, Layout, Text, Style, ConsoleObject
+
+frame = Frame(
+    title="Status",
+    content=Text("Online", style=Style(color="green")),
+    border_style="rounded"
+)
+```
+
+#### 3. Renderer Layer (Output Targets)
+
+```python
+from styledconsole import TerminalRenderer, HTMLRenderer, RenderContext
+
+renderer = TerminalRenderer()
+renderer.render(frame, context=RenderContext(width=80))
+```
+
+#### 4. Declarative Layer (Configuration-Driven)
+
+```python
+from styledconsole import Declarative, load_dict, load_yaml, load_json, from_template
+
+# From Python dict
+ui = load_dict({"type": "frame", "title": "Hello", "content": "World"})
+
+# From YAML/JSON files
+ui = load_yaml("config.yaml")
+ui = load_json("config.json")
+
+# From Jinja2 templates
+ui = from_template("dashboard.j2", context={"user": "Alice"})
+```
+
+### Added
+
+- **Builder Classes**: `FrameBuilder`, `BannerBuilder`, `TableBuilder`, `LayoutBuilder` with fluent method chaining
+- **Model Classes**: `Frame`, `Banner`, `Table`, `Layout`, `Text`, `Style`, `ConsoleObject` base class
+- **Renderer Protocol**: `TerminalRenderer`, `HTMLRenderer`, `RenderContext` for multi-target output
+- **Declarative Facade**: `Declarative` class with `load_dict()`, `load_yaml()`, `load_json()`, `from_template()` functions
+- **Template System**: Jinja2 integration with built-in component macros and filters
+- **11 v0.10 Examples**: Complete examples demonstrating all four API layers in `10_v010_api/`
+
+### Migration from v0.9.x
+
+The existing `Console` API remains fully supported. The new layers are additive:
+
+```python
+# v0.9.x style (still works)
+console = Console()
+console.frame("Hello", effect="ocean")
+
+# v0.10.0 style (new option)
+frame = FrameBuilder().content("Hello").effect("ocean").build()
+TerminalRenderer().render(frame)
+```
+
+See [MIGRATION.md](docs/MIGRATION.md) for the complete migration guide.
+
+### Testing
+
+- 968 tests passing (975 total, 7 Kitty terminal-specific skipped)
+- 79.23% code coverage
+- Full backward compatibility with v0.9.x API
+
+______________________________________________________________________
+
 ## [0.9.9.6] - 2026-01-10
 
 ### Rich Integration & Quality Improvements

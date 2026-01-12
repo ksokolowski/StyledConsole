@@ -199,6 +199,7 @@ class TemplateRegistry:
 
 # Built-in templates
 BUILTIN_TEMPLATES: dict[str, dict[str, Any]] = {
+    # === Alert Boxes ===
     "info_box": {
         "type": "frame",
         "title": "${title:Info}",
@@ -227,24 +228,230 @@ BUILTIN_TEMPLATES: dict[str, dict[str, Any]] = {
         "effect": "forest",
         "border": "rounded",
     },
+    "tip_box": {
+        "type": "frame",
+        "title": "${title:Tip}",
+        "content": {"type": "text", "content": "${message}"},
+        "effect": "aurora",
+        "border": "rounded",
+    },
+    "note_box": {
+        "type": "frame",
+        "title": "${title:Note}",
+        "content": {"type": "text", "content": "${message}"},
+        "effect": "steel",
+        "border": "minimal",
+    },
+    # === Headers and Banners ===
     "header_banner": {
         "type": "banner",
         "text": "${text}",
         "font": "${font:slant}",
         "effect": "${effect:ocean}",
     },
+    "dashboard_header": {
+        "type": "layout",
+        "direction": "vertical",
+        "gap": 1,
+        "children": [
+            {
+                "type": "banner",
+                "text": "${title}",
+                "font": "${font:small}",
+                "effect": "${effect:rainbow}",
+            },
+            {
+                "type": "frame",
+                "title": "${subtitle:}",
+                "content": {"type": "text", "content": "${description:}"},
+                "effect": "${accent:ocean}",
+                "border": "rounded",
+            },
+        ],
+    },
+    "page_header": {
+        "type": "layout",
+        "direction": "vertical",
+        "gap": 0,
+        "children": [
+            {"type": "text", "content": "[bold]${title}[/]"},
+            {"type": "text", "content": "[dim]${subtitle:}[/]"},
+            {"type": "rule"},
+        ],
+    },
+    # === Status and Metrics ===
+    "status_card": {
+        "type": "frame",
+        "title": "${title:Status}",
+        "content": {
+            "type": "layout",
+            "direction": "vertical",
+            "children": [
+                {"type": "text", "content": "${icon} ${status}"},
+                {"type": "text", "content": "[dim]${details:}[/]"},
+            ],
+        },
+        "effect": "${effect:steel}",
+        "border": "rounded",
+    },
+    "metric_card": {
+        "type": "frame",
+        "title": "${label}",
+        "content": {"type": "text", "content": "[bold]${value}[/] ${unit:}"},
+        "effect": "${effect:steel}",
+        "border": "rounded",
+    },
+    "progress_card": {
+        "type": "frame",
+        "title": "${title:Progress}",
+        "content": {
+            "type": "layout",
+            "direction": "vertical",
+            "children": [
+                {"type": "text", "content": "${description:}"},
+                {"type": "text", "content": "${progress_bar}"},
+                {"type": "text", "content": "[dim]${status:}[/]"},
+            ],
+        },
+        "effect": "${effect:ocean}",
+        "border": "rounded",
+    },
+    # === Notifications ===
+    "notification": {
+        "type": "frame",
+        "title": "${title}",
+        "content": {"type": "text", "content": "${icon:} ${message}"},
+        "effect": "${effect:steel}",
+        "border": "${border:minimal}",
+    },
+    "toast": {
+        "type": "frame",
+        "content": {"type": "text", "content": "${icon:} ${message}"},
+        "effect": "${effect:steel}",
+        "border": "rounded",
+    },
+    # === Content Sections ===
     "section": {
-        "type": "vertical",
+        "type": "layout",
+        "direction": "vertical",
         "gap": 1,
         "children": [
             {"type": "rule", "title": "${title}"},
             {"type": "text", "content": "${content}"},
         ],
     },
+    "card": {
+        "type": "frame",
+        "title": "${title:}",
+        "subtitle": "${subtitle:}",
+        "content": {"type": "text", "content": "${content}"},
+        "effect": "${effect:steel}",
+        "border": "${border:rounded}",
+        "padding": "${padding:1}",
+    },
+    "code_block": {
+        "type": "frame",
+        "title": "${title:Code}",
+        "content": {"type": "text", "content": "${code}"},
+        "effect": "steel",
+        "border": "rounded",
+    },
+    # === Data Display ===
     "key_value": {
         "type": "table",
         "columns": ["Key", "Value"],
         "rows": "${rows}",
+        "border": "rounded",
+    },
+    "list_panel": {
+        "type": "frame",
+        "title": "${title:}",
+        "content": {
+            "type": "layout",
+            "direction": "vertical",
+            "children": "${items}",
+        },
+        "effect": "${effect:steel}",
+        "border": "rounded",
+    },
+    # === Layouts ===
+    "two_column": {
+        "type": "layout",
+        "direction": "horizontal",
+        "gap": 2,
+        "equal_width": True,
+        "children": [
+            {
+                "type": "frame",
+                "title": "${left_title:}",
+                "content": {"type": "text", "content": "${left_content}"},
+                "border": "rounded",
+            },
+            {
+                "type": "frame",
+                "title": "${right_title:}",
+                "content": {"type": "text", "content": "${right_content}"},
+                "border": "rounded",
+            },
+        ],
+    },
+    "sidebar_layout": {
+        "type": "layout",
+        "direction": "vertical",
+        "gap": 1,
+        "children": [
+            {
+                "type": "frame",
+                "title": "${sidebar_title:Menu}",
+                "content": {"type": "text", "content": "${sidebar_content}"},
+                "effect": "steel",
+                "border": "rounded",
+            },
+            {
+                "type": "frame",
+                "title": "${main_title:Content}",
+                "content": {"type": "text", "content": "${main_content}"},
+                "effect": "${effect:ocean}",
+                "border": "rounded",
+            },
+        ],
+    },
+    # === Application Patterns ===
+    "confirmation": {
+        "type": "frame",
+        "title": "${title:Confirm}",
+        "content": {
+            "type": "layout",
+            "direction": "vertical",
+            "gap": 1,
+            "children": [
+                {"type": "text", "content": "${message}"},
+                {"type": "text", "content": "[dim]${hint:Press Y to confirm, N to cancel}[/]"},
+            ],
+        },
+        "effect": "${effect:sunset}",
+        "border": "double",
+    },
+    "loading": {
+        "type": "frame",
+        "content": {"type": "text", "content": "${icon:} ${message:Loading...}"},
+        "effect": "steel",
+        "border": "minimal",
+    },
+    "empty_state": {
+        "type": "frame",
+        "title": "${title:No Data}",
+        "content": {
+            "type": "layout",
+            "direction": "vertical",
+            "gap": 1,
+            "children": [
+                {"type": "text", "content": "[dim]${icon:}[/]"},
+                {"type": "text", "content": "${message:No items to display}"},
+                {"type": "text", "content": "[dim]${hint:}[/]"},
+            ],
+        },
+        "effect": "steel",
         "border": "rounded",
     },
 }

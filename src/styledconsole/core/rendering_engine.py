@@ -774,7 +774,12 @@ class RenderingEngine:
         # Adjust emoji spacing by default for plain text printing
         adj_text = adjust_emoji_spacing_in_text(text)
         style = " ".join(style_parts) if style_parts else ""
-        rich_text = RichText(adj_text, style=style)
+
+        # Use create_rich_text to handle markup and ANSI codes
+        rich_text = create_rich_text(adj_text)
+        if style:
+            rich_text.stylize(style)
+
         self._rich_console.print(rich_text, end=end, highlight=False)
 
     def print_rule(
@@ -796,11 +801,12 @@ class RenderingEngine:
         if self._debug:
             self._logger.debug(f"Rendering rule: title='{title}', color={color}")
 
-        # Adjust emoji spacing in rule title if provided
+        # Adjust emoji spacing and parse markup in rule title if provided
         rule_title = adjust_emoji_spacing_in_text(title) if title else ""
+        rich_title = create_rich_text(rule_title)
 
         self._rich_console.rule(
-            title=rule_title,
+            title=rich_title,
             style=color,
             align=align,
         )

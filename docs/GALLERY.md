@@ -1,7 +1,19 @@
 # StyledConsole Visual Gallery
 
-> Auto-generated visual showcase of StyledConsole capabilities.
+> Visual showcase of StyledConsole capabilities.
 > See the main [README](../README.md) for installation and documentation.
+
+______________________________________________________________________
+
+## Three Ways to Build UIs
+
+StyledConsole v0.10.0 offers three interfaces for creating terminal UIs:
+
+| Interface      | Best For                           | Guide                                    |
+| -------------- | ---------------------------------- | ---------------------------------------- |
+| **Python API** | Full control, complex applications | [PYTHON_API.md](PYTHON_API.md)           |
+| **JSON/YAML**  | Config-driven UIs, non-programmers | [DECLARATIVE.md](DECLARATIVE.md)         |
+| **Jinja2**     | Dynamic templates, data-driven UIs | [JINJA_TEMPLATES.md](JINJA_TEMPLATES.md) |
 
 ______________________________________________________________________
 
@@ -293,9 +305,143 @@ console.frame(
 
 ______________________________________________________________________
 
+## v0.10.0 API Showcase
+
+### Builder Pattern
+
+Fluent API for constructing complex UIs step-by-step:
+
+```python
+from styledconsole import Console
+from styledconsole.model import Spacer
+
+console = Console()
+
+# Build a complete dashboard fluently
+header = console.build_banner().text("DASHBOARD").effect("rainbow").build()
+status = console.build_frame().title("Status").content("All systems operational").effect("success").build()
+metrics = (
+    console.build_table()
+    .title("Metrics")
+    .columns("Service", "Status", "Uptime")
+    .row("API", "Online", "99.9%")
+    .row("Database", "Online", "99.8%")
+    .row("Cache", "Degraded", "95.2%")
+    .border("heavy")
+    .effect("ocean")
+    .build()
+)
+
+dashboard = (
+    console.build_layout()
+    .add(header)
+    .add(Spacer(lines=1))
+    .add(status)
+    .add(metrics)
+    .build()
+)
+console.render_object(dashboard)
+```
+
+### Declarative JSON/YAML
+
+Build UIs from configuration without writing Python:
+
+```yaml
+# dashboard.yaml
+type: layout
+items:
+  - type: banner
+    text: MONITOR
+    font: slant
+    effect: ocean
+
+  - type: spacer
+    lines: 1
+
+  - type: frame
+    title: Server Status
+    content:
+      type: table
+      columns: [Server, Status, Uptime]
+      rows:
+        - [api-1, Online, 99.9%]
+        - [api-2, Online, 99.8%]
+        - [db-1, Maintenance, 95.2%]
+    border: heavy
+    effect: success
+```
+
+```python
+from styledconsole import Console, load_yaml
+
+with open("dashboard.yaml") as f:
+    ui = load_yaml(f.read())
+Console().render_object(ui)
+```
+
+### Jinja2 Templates
+
+Generate dynamic UIs from data:
+
+```python
+from styledconsole import Console, render_jinja
+
+template = """
+type: frame
+title: "{{ title }}"
+content:
+  type: group
+  items:
+{% for server in servers %}
+    - "{{ server.status | status_icon }} {{ server.name }}: {{ server.status }}"
+{% endfor %}
+effect: {{ 'success' if all_healthy else 'warning' }}
+"""
+
+servers = [
+    {"name": "API Gateway", "status": "running"},
+    {"name": "Auth Service", "status": "running"},
+    {"name": "Database", "status": "warning"},
+]
+
+ui = render_jinja(
+    template,
+    title="Service Health",
+    servers=servers,
+    all_healthy=all(s["status"] == "running" for s in servers)
+)
+Console().render_object(ui)
+```
+
+### Built-in Templates
+
+22 ready-to-use UI patterns:
+
+```python
+from styledconsole import Console
+
+console = Console()
+
+# Alert boxes
+console.render_template("info_box", title="Notice", content="Scheduled maintenance tonight")
+console.render_template("success_box", content="Deployment completed successfully!")
+console.render_template("warning_box", title="Warning", content="Disk space running low")
+console.render_template("error_box", title="Error", content="Connection refused")
+
+# Metric cards
+console.render_template("metric_card", label="CPU Usage", value="45", unit="%", trend="up")
+console.render_template("metric_card", label="Memory", value="2.4", unit="GB", trend="stable")
+
+# Status cards
+console.render_template("status_card", title="API Gateway", status="Online", message="Healthy")
+```
+
+______________________________________________________________________
+
 ## More Examples
 
-For a comprehensive gallery of **over 40 working examples**, visit:
+For a comprehensive gallery of **over 50 working examples**, visit:
 
 **[StyledConsole-Examples](https://github.com/ksokolowski/StyledConsole-Examples)**
 

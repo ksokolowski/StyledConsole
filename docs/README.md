@@ -1,20 +1,28 @@
 # StyledConsole Documentation
 
-**Version:** 0.9.9.3
-**Last Updated:** January 5, 2026
+**Version:** 0.10.0
+**Last Updated:** January 2026
 
 ______________________________________________________________________
 
 ## Documentation Overview
 
-StyledConsole provides comprehensive documentation for both users and contributors.
+StyledConsole offers three interfaces for creating terminal UIs. Choose the approach that fits your needs:
 
-| Document                                 | Purpose                              | Audience     |
-| ---------------------------------------- | ------------------------------------ | ------------ |
-| [USER_GUIDE.md](USER_GUIDE.md)           | Complete API reference with examples | All users    |
-| [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) | Architecture and development guide   | Contributors |
-| [../CHANGELOG.md](../CHANGELOG.md)       | Version history and release notes    | All users    |
-| [../CONTRIBUTING.md](../CONTRIBUTING.md) | Development workflow and standards   | Contributors |
+| Guide                                  | Description                                 | Best For                           |
+| -------------------------------------- | ------------------------------------------- | ---------------------------------- |
+| [Python API](PYTHON_API.md)            | Complete API with builders, effects, themes | Full control, complex apps         |
+| [Declarative](DECLARATIVE.md)          | JSON/YAML configuration                     | Config-driven UIs, non-programmers |
+| [Jinja2 Templates](JINJA_TEMPLATES.md) | Dynamic templates with loops/conditionals   | Data-driven UIs                    |
+
+### Additional Resources
+
+| Document                              | Description                     |
+| ------------------------------------- | ------------------------------- |
+| [Visual Gallery](GALLERY.md)          | Screenshots and animated demos  |
+| [Migration Guide](MIGRATION.md)       | Upgrading from earlier versions |
+| [Developer Guide](DEVELOPER_GUIDE.md) | Architecture and contributing   |
+| [Changelog](../CHANGELOG.md)          | Version history                 |
 
 ______________________________________________________________________
 
@@ -23,90 +31,86 @@ ______________________________________________________________________
 **Installation:**
 
 ```bash
-pip install styledconsole
+pip install styledconsole              # Core library
+pip install styledconsole[yaml]        # + YAML support
+pip install styledconsole[jinja]       # + Jinja2 templates
+pip install styledconsole[all]         # Everything
 ```
 
-**Basic Example:**
+**Three Ways to Create UIs:**
 
 ```python
 from styledconsole import Console, icons, EffectSpec
 
 console = Console()
+
+# 1. Python API (full power)
 console.frame(
     f"{icons.CHECK_MARK_BUTTON} Build successful",
-    title=f"{icons.SPARKLES} Status",
-    border="rounded",
+    title="Status",
     effect=EffectSpec.gradient("green", "cyan")
 )
+
+# 2. Declarative (config-driven)
+console.render_dict({
+    "type": "frame",
+    "title": "Status",
+    "content": "Build successful!",
+    "effect": "success"
+})
+
+# 3. Jinja2 (dynamic templates)
+from styledconsole import render_jinja
+ui = render_jinja("""
+type: frame
+title: {{ title }}
+content: {{ message }}
+""", title="Status", message="Build successful!")
+console.render_object(ui)
 ```
 
 ______________________________________________________________________
 
-## Learning Resources
+## Learning Path
 
-### Getting Started
+### New Users
 
-- [Installation & Setup](USER_GUIDE.md#installation)
-- [Quick Start Examples](USER_GUIDE.md#quick-start)
-- [Basic Concepts](USER_GUIDE.md#core-concepts)
+1. Start with [Python API](PYTHON_API.md) — the most comprehensive guide
+1. Browse the [Visual Gallery](GALLERY.md) for inspiration
+1. Try the [Examples Repository](https://github.com/ksokolowski/StyledConsole-Examples)
 
-### Core Features
+### Config-Driven UIs
 
-- [Frames & Borders](USER_GUIDE.md#frames--borders)
-- [Colors & Gradients](USER_GUIDE.md#colors--gradients)
-- [Text Styling](USER_GUIDE.md#text-styling)
-- [Banners](USER_GUIDE.md#banners)
+1. Read the [Declarative Guide](DECLARATIVE.md) for JSON/YAML basics
+1. Explore [Built-in Templates](DECLARATIVE.md#built-in-templates) — 22 ready-to-use patterns
+1. For dynamic content, see [Jinja2 Templates](JINJA_TEMPLATES.md)
 
-### Advanced Topics
+### Upgrading
 
-- [Emoji Support](USER_GUIDE.md#emoji-reference)
-- [Icon Provider](USER_GUIDE.md#icon-provider)
-- [Render Policy](USER_GUIDE.md#render-policy)
-- [HTML Export](USER_GUIDE.md#html-export)
-- [Theme System](USER_GUIDE.md#themes)
+- See [Migration Guide](MIGRATION.md) for changes in v0.10.0
+- Check [Changelog](../CHANGELOG.md) for version history
 
-### For Contributors
+### Contributing
 
-**Development Workflow:**
-
-See [CONTRIBUTING.md](../CONTRIBUTING.md) for:
-
-- Development environment setup
-- Running tests and QA
-- Code quality requirements
-- Git workflow and commit conventions
-
-**Architecture & Design:**
-
-See [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) for:
-
-- Architecture overview
-- Module structure and patterns
-- Design decisions and rationale
-- Testing strategy
+- [CONTRIBUTING.md](../CONTRIBUTING.md) — Development workflow
+- [Developer Guide](DEVELOPER_GUIDE.md) — Architecture and internals
 
 ______________________________________________________________________
 
 ## External Resources
 
-### Examples Repository
-
-Comprehensive examples and visual showcases:
-👉 **[StyledConsole-Examples](https://github.com/ksokolowski/StyledConsole-Examples)**
-
-### Community
-
-- Report issues: [GitHub Issues](https://github.com/ksokolowski/StyledConsole/issues)
-- Source code: [GitHub Repository](https://github.com/ksokolowski/StyledConsole)
-- Support the project: [Ko-fi](https://ko-fi.com/styledconsole)
+- **Examples:** [StyledConsole-Examples](https://github.com/ksokolowski/StyledConsole-Examples) — 50+ working demos
+- **Issues:** [GitHub Issues](https://github.com/ksokolowski/StyledConsole/issues)
+- **Source:** [GitHub Repository](https://github.com/ksokolowski/StyledConsole)
+- **Support:** [Ko-fi](https://ko-fi.com/styledconsole)
 
 ______________________________________________________________________
 
 ## Version Information
 
-- **Current Version:** 0.9.8.1
-- **Python:** ≥3.10
-- **License:** Apache-2.0
-- **Status:** Production Ready
-
-See [CHANGELOG.md](../CHANGELOG.md) for complete version history.
+|             |                  |
+| ----------- | ---------------- |
+| **Version** | 0.10.0           |
+| **Python**  | ≥3.10            |
+| **License** | Apache-2.0       |
+| **Status**  | Production Ready |
