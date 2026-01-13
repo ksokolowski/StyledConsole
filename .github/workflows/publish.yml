@@ -4,10 +4,16 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to publish (e.g., v0.10.0)'
+        required: true
+        type: string
 
 jobs:
   build-n-publish:
-    name: Build and publish Python 🐍 distributions 📦 to TestPyPI
+    name: Build and publish Python 🐍 distributions 📦 to PyPI
     runs-on: ubuntu-latest
     permissions:
       id-token: write  # MANDATORY for Trusted Publishing
@@ -15,6 +21,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
@@ -29,10 +37,9 @@ jobs:
           rm -rf dist/
           uv build
 
-      - name: Publish package distributions to TestPyPI
+      - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          repository-url: https://test.pypi.org/legacy/
           packages-dir: dist/
           skip-existing: true
           verbose: true
