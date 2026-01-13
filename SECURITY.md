@@ -20,7 +20,7 @@ StyledConsole is a terminal output formatting library. It has a minimal security
 
 If you discover a security issue, please report it by:
 
-1. **Email:** krzysiek.sokolowski@gmail.com
+1. **Email:** styledconsole@proton.me
 1. **Subject:** `[SECURITY] StyledConsole - <brief description>`
 
 Please include:
