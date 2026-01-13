@@ -5,6 +5,21 @@ All notable changes to StyledConsole will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.1] - 2026-01-13
+
+### Added
+
+- Unit tests for `presets/layouts.py` (15 new tests)
+- Unit tests for `presets/tables.py` (19 new tests)
+
+### Changed
+
+- Updated project contact email to styledconsole@proton.me
+
+### Fixed
+
+- Test coverage improved from 79% to 81%
+
 ## [0.10.0] - 2026-01-12
 
 ### 🎉 Major API Overhaul - Four-Layer Architecture
