@@ -1,7 +1,7 @@
 # StyledConsole Developer Guide
 
-**Version:** 0.9.9.6
-**Last Updated:** January 10, 2026
+**Version:** 0.10.1
+**Last Updated:** January 14, 2026
 **Audience:** Contributors and advanced users
 
 ______________________________________________________________________
