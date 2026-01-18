@@ -8,16 +8,16 @@ Example:
     >>> from styledconsole.effects.resolver import resolve_effect
     >>>
     >>> # Resolve a preset by name
-    >>> position, color, target = resolve_effect("fire")
+    >>> position, color, target, layer = resolve_effect("fire")
     >>>
     >>> # Resolve an EffectSpec
     >>> spec = EffectSpec.rainbow(saturation=0.5)
-    >>> position, color, target = resolve_effect(spec)
+    >>> position, color, target, layer = resolve_effect(spec)
 """
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from styledconsole.effects.strategies import (
     BorderOnly,
@@ -43,7 +43,7 @@ if TYPE_CHECKING:
 
 def resolve_effect(
     effect: EffectSpec | str,
-) -> tuple[PositionStrategy, ColorSource, TargetFilter]:
+) -> tuple[PositionStrategy, ColorSource, TargetFilter, Literal["foreground", "background"]]:
     """Convert an EffectSpec or preset name to strategy objects.
 
     This function bridges the declarative EffectSpec with the imperative
@@ -53,8 +53,8 @@ def resolve_effect(
         effect: An EffectSpec instance or a preset name (e.g., "fire", "rainbow").
 
     Returns:
-        Tuple of (PositionStrategy, ColorSource, TargetFilter) for use
-        with the gradient engine.
+        Tuple of (PositionStrategy, ColorSource, TargetFilter, layer) for use
+        with the gradient engine. The layer is "foreground" or "background".
 
     Raises:
         KeyError: If effect is a string and not found in EFFECTS registry.
@@ -64,11 +64,17 @@ def resolve_effect(
         >>> from styledconsole.effects.resolver import resolve_effect
         >>>
         >>> # From preset name
-        >>> pos, color, target = resolve_effect("fire")
+        >>> pos, color, target, layer = resolve_effect("fire")
         >>>
         >>> # From EffectSpec
         >>> spec = EffectSpec.gradient("red", "blue")
-        >>> pos, color, target = resolve_effect(spec)
+        >>> pos, color, target, layer = resolve_effect(spec)
+        >>>
+        >>> # Background gradient
+        >>> spec = EffectSpec.gradient("red", "blue", layer="background")
+        >>> pos, color, target, layer = resolve_effect(spec)
+        >>> layer
+        'background'
     """
     from styledconsole.effects.registry import EFFECTS
     from styledconsole.effects.spec import EffectSpec
@@ -99,7 +105,10 @@ def resolve_effect(
     # Resolve target filter
     target = _resolve_target(spec.target)
 
-    return position, color, target
+    # Get layer setting
+    layer = spec.layer
+
+    return position, color, target, layer
 
 
 def _resolve_position(direction: str) -> PositionStrategy:

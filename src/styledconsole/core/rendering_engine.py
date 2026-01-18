@@ -140,7 +140,7 @@ class RenderingEngine:
 
             from styledconsole.effects.resolver import resolve_effect
 
-            position, color_source, target_filter = resolve_effect(context.effect)
+            position, color_source, target_filter, layer = resolve_effect(context.effect)
 
             lines = output.splitlines()
             colored_lines = apply_gradient(
@@ -149,6 +149,7 @@ class RenderingEngine:
                 color_source=color_source,
                 target_filter=target_filter,
                 border_chars=get_border_chars(get_border_style(context.border_style)),
+                layer=layer,
             )
             return "\n".join(colored_lines)
 

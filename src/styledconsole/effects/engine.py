@@ -4,12 +4,17 @@ Applies color gradients to frames using pluggable strategies for
 position calculation, color generation, and target filtering.
 """
 
+from typing import Literal
+
 from styledconsole.effects.strategies import (
     ColorSource,
     PositionStrategy,
     TargetFilter,
 )
 from styledconsole.utils.text import split_graphemes, strip_ansi, visual_width
+
+# Type alias for layer parameter
+LayerType = Literal["foreground", "background"]
 
 
 def apply_gradient(
@@ -18,6 +23,7 @@ def apply_gradient(
     color_source: ColorSource,
     target_filter: TargetFilter,
     border_chars: set[str],
+    layer: LayerType = "foreground",
 ) -> list[str]:
     """Apply gradient to frame lines using pluggable strategies.
 
@@ -29,6 +35,9 @@ def apply_gradient(
         color_source: What color to use at each position
         target_filter: Which characters to color (content, border, both)
         border_chars: Set of border characters for detection
+        layer: Which layer to apply color to ("foreground" or "background").
+            Default is "foreground" for text color. Use "background" for
+            background color gradients.
 
     Returns:
         Colored frame lines
@@ -83,7 +92,10 @@ def apply_gradient(
                     position = position_strategy.calculate(row, visual_col, total_rows, max_col)
                     color = color_source.get_color(position)
 
-                    if pending_style == color and pending_end == current_idx:
+                    # Convert color to Rich style based on layer
+                    style = f"on {color}" if layer == "background" else color
+
+                    if pending_style == style and pending_end == current_idx:
                         # Extend existing style range
                         pending_end += g_len
                     else:
@@ -92,7 +104,7 @@ def apply_gradient(
                             text.stylize(pending_style, pending_start, pending_end)
 
                         # Start new style range
-                        pending_style = color
+                        pending_style = style
                         pending_start = current_idx
                         pending_end = current_idx + g_len
                 else:

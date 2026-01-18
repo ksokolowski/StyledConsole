@@ -350,30 +350,31 @@ class TestResolveEffect:
 
     def test_resolve_from_string(self):
         """Test resolving effect from preset name."""
-        position, color, target = resolve_effect("fire")
+        position, color, target, layer = resolve_effect("fire")
 
         assert position is not None
         assert color is not None
         assert target is not None
+        assert layer in ("foreground", "background")
 
     def test_resolve_from_spec(self):
         """Test resolving effect from EffectSpec."""
         spec = EffectSpec.gradient("cyan", "magenta")
-        _position, color, _target = resolve_effect(spec)
+        _position, color, _target, _layer = resolve_effect(spec)
 
         assert isinstance(color, LinearGradient)
 
     def test_resolve_rainbow(self):
         """Test resolving rainbow effect."""
         spec = EffectSpec.rainbow(saturation=0.5)
-        _position, color, _target = resolve_effect(spec)
+        _position, color, _target, _layer = resolve_effect(spec)
 
         assert isinstance(color, EnhancedRainbow)
 
     def test_resolve_multi_stop(self):
         """Test resolving multi-stop gradient."""
         spec = EffectSpec.multi_stop(["red", "yellow", "green"])
-        _position, color, _target = resolve_effect(spec)
+        _position, color, _target, _layer = resolve_effect(spec)
 
         assert isinstance(color, MultiStopGradient)
 
@@ -395,9 +396,9 @@ class TestResolveEffect:
         spec_h = EffectSpec.gradient("a", "b", direction="horizontal")
         spec_d = EffectSpec.gradient("a", "b", direction="diagonal")
 
-        pos_v, _, _ = resolve_effect(spec_v)
-        pos_h, _, _ = resolve_effect(spec_h)
-        pos_d, _, _ = resolve_effect(spec_d)
+        pos_v, _, _, _ = resolve_effect(spec_v)
+        pos_h, _, _, _ = resolve_effect(spec_h)
+        pos_d, _, _, _ = resolve_effect(spec_d)
 
         assert isinstance(pos_v, VerticalPosition)
         assert isinstance(pos_h, HorizontalPosition)
@@ -411,9 +412,9 @@ class TestResolveEffect:
         spec_b = EffectSpec.gradient("a", "b", target="border")
         spec_both = EffectSpec.gradient("a", "b", target="both")
 
-        _, _, target_c = resolve_effect(spec_c)
-        _, _, target_b = resolve_effect(spec_b)
-        _, _, target_both = resolve_effect(spec_both)
+        _, _, target_c, _ = resolve_effect(spec_c)
+        _, _, target_b, _ = resolve_effect(spec_b)
+        _, _, target_both, _ = resolve_effect(spec_both)
 
         assert isinstance(target_c, ContentOnly)
         assert isinstance(target_b, BorderOnly)
@@ -434,7 +435,7 @@ class TestEffectsIntegration:
         fire = EFFECTS.fire
 
         # Resolve to strategies
-        _position, color, _target = resolve_effect(fire)
+        _position, color, _target, _layer = resolve_effect(fire)
 
         # Use the color source
         start_color = color.get_color(0.0)
@@ -452,7 +453,7 @@ class TestEffectsIntegration:
             target="border",
         )
 
-        position, color, target = resolve_effect(spec)
+        position, color, target, layer = resolve_effect(spec)
 
         # Verify correct types
         from styledconsole.effects import BorderOnly, HorizontalPosition
@@ -460,3 +461,15 @@ class TestEffectsIntegration:
         assert isinstance(position, HorizontalPosition)
         assert isinstance(color, MultiStopGradient)
         assert isinstance(target, BorderOnly)
+        assert layer == "foreground"
+
+    def test_layer_resolution(self):
+        """Test that layer is correctly resolved."""
+        spec_fg = EffectSpec.gradient("a", "b", layer="foreground")
+        spec_bg = EffectSpec.gradient("a", "b", layer="background")
+
+        _, _, _, layer_fg = resolve_effect(spec_fg)
+        _, _, _, layer_bg = resolve_effect(spec_bg)
+
+        assert layer_fg == "foreground"
+        assert layer_bg == "background"
