@@ -88,6 +88,17 @@ from styledconsole.effects.spec import (
 # NOTE: For terminal output, prefer `icons` module which provides ASCII fallback
 from styledconsole.emoji_registry import EMOJI, CuratedEmojis, E
 
+# Import enums for IDE autocomplete (v0.10.2+)
+from styledconsole.enums import (
+    Align,
+    Border,
+    Direction,
+    Effect,
+    ExportFormat,
+    LayoutMode,
+    Target,
+)
+
 # Note: EmojiConstants is deprecated and available via __getattr__ below
 # Icon system - PRIMARY FACADE for terminal symbol output (v0.9.5+)
 # Provides 204 icons with automatic ASCII fallback for non-emoji terminals
@@ -207,7 +218,7 @@ from styledconsole.utils.wrap import (
     wrap_text,
 )
 
-__version__ = "0.9.9.6"
+__version__ = "0.10.2.dev1"
 __author__ = "Krzysztof Sokołowski"
 __license__ = "Apache-2.0"
 
@@ -266,10 +277,12 @@ __all__ = [
     "THEMES",
     "THICK",
     "WARNING_STYLE",
+    "Align",
     "AlignType",
     "Banner",
     "BannerBuilder",
     "BannerModel",
+    "Border",
     "BorderStyle",
     "ColorType",
     "Column",
@@ -277,11 +290,14 @@ __all__ = [
     "ConsoleObject",
     "CuratedEmojis",
     "Declarative",
+    "Direction",
     "E",
+    "Effect",
     "EffectSpec",
     "EmojiConstants",
     "EmojiInfo",
     "ExportError",
+    "ExportFormat",
     "FrameBuilder",
     "FrameModel",
     "GradientSpec",
@@ -292,6 +308,7 @@ __all__ = [
     "IconProvider",
     "Layout",
     "LayoutBuilder",
+    "LayoutMode",
     "RGBColor",
     "RenderContext",
     "RenderError",
@@ -306,6 +323,7 @@ __all__ = [
     "StyledProgress",
     "TableBuilder",
     "TableModel",
+    "Target",
     "Template",
     "TemplateRegistry",
     "TerminalError",
