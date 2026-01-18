@@ -302,13 +302,20 @@ class EffectSpec:
             >>> bedroom = EffectSpec.from_palette("bedroom_muted", reverse=True)
             >>> animated = EffectSpec.from_palette("fire", phase=0.66)
         """
-        from styledconsole.data.palettes import get_palette
+        from styledconsole.data.palettes import PALETTES, get_palette
 
         palette_data = get_palette(name)
         if not palette_data:
-            raise ValueError(
-                f"Palette '{name}' not found. Use list_palettes() to see available palettes."
+            from styledconsole.utils.suggestions import format_error_with_suggestion
+
+            error_msg = format_error_with_suggestion(
+                f"Palette '{name}' not found",
+                name,
+                list(PALETTES.keys()),
+                max_distance=3,
+                max_available=8,
             )
+            raise ValueError(error_msg)
 
         colors = palette_data["colors"]
         return cls.multi_stop(

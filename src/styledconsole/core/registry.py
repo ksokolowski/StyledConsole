@@ -53,14 +53,19 @@ class Registry(Generic[T]):
             The registered item.
 
         Raises:
-            KeyError: If item name is not found.
+            KeyError: If item name is not found, includes suggestion if available.
         """
         name_lower = name.lower()
         if name_lower not in self._items:
-            available = ", ".join(sorted(self._items.keys()))
-            raise KeyError(
-                f"Unknown {self._item_type_name}: {name!r}. Available styles: {available}"
+            from styledconsole.utils.suggestions import format_error_with_suggestion
+
+            error_msg = format_error_with_suggestion(
+                f"Unknown {self._item_type_name}: {name!r}",
+                name,
+                list(self._items.keys()),
+                max_distance=2,
             )
+            raise KeyError(error_msg)
         return self._items[name_lower]
 
     def list_all(self) -> list[str]:

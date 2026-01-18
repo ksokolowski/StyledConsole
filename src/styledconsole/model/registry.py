@@ -171,8 +171,15 @@ def create_object(data: dict[str, Any]) -> ConsoleObject:
 
     object_types = _get_object_types()
     if type_name not in object_types:
-        available = ", ".join(sorted(object_types.keys()))
-        raise ValueError(f"Unknown object type: '{type_name}'. Available: {available}")
+        from styledconsole.utils.suggestions import format_error_with_suggestion
+
+        error_msg = format_error_with_suggestion(
+            f"Unknown object type: '{type_name}'",
+            type_name,
+            list(object_types.keys()),
+            max_distance=2,
+        )
+        raise ValueError(error_msg)
 
     obj_class = object_types[type_name]
 

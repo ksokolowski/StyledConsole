@@ -206,11 +206,24 @@ def parse_color(value: str, include_extended: bool = True) -> RGBColor:
     if pattern_result:
         return pattern_result
 
-    # No match found
+    # No match found - try to provide a helpful suggestion
     color_count = "148 CSS4, 250+ Rich" + (", 949 extended" if include_extended else "")
+    base_msg = f"Invalid color format: '{value}'"
+
+    # Only try suggestions if it looks like a color name (not hex/rgb format)
+    if not value_stripped.startswith("#") and not value_stripped.startswith("rgb"):
+        from styledconsole.utils.suggestions import suggest_similar
+
+        # Try CSS4 colors first (most common), then Rich colors for suggestions
+        suggestion = suggest_similar(value_normalized, list(CSS4_COLORS.keys()), max_distance=2)
+        if suggestion:
+            raise ValueError(
+                f"{base_msg}. {suggestion} "
+                f"Supported: hex (#FF0000), rgb(r,g,b), named colors ({color_count})"
+            )
+
     raise ValueError(
-        f"Invalid color format: '{value}'. "
-        f"Supported: hex (#FF0000), rgb(r,g,b), named colors ({color_count})"
+        f"{base_msg}. Supported: hex (#FF0000), rgb(r,g,b), named colors ({color_count})"
     )
 
 

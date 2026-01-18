@@ -589,7 +589,7 @@ class TestGetBorderStyle:
         with pytest.raises(ValueError) as exc_info:
             get_border_style("invalid")
         assert "Unknown border style: 'invalid'" in str(exc_info.value)
-        assert "Available styles:" in str(exc_info.value)
+        assert "Available:" in str(exc_info.value)
 
     def test_get_border_style_error_message_lists_styles(self):
         """Test that error message lists available styles."""

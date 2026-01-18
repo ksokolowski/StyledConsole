@@ -23,6 +23,32 @@ def validate_align(align: AlignType) -> None:
         >>> validate_align("middle")  # Raises ValueError
     """
     if align not in VALID_ALIGNMENTS:
+        from styledconsole.utils.suggestions import suggest_similar
+
+        # Common aliases that might be used
+        common_aliases = {"middle": "center", "centre": "center", "justify": None}
+
+        # Check for common aliases first
+        if align in common_aliases:
+            correct = common_aliases[align]
+            if correct:
+                raise ValueError(
+                    f"align must be one of {VALID_ALIGNMENTS}, got: {align!r}. "
+                    f"Did you mean '{correct}'?"
+                )
+            else:
+                raise ValueError(
+                    f"align must be one of {VALID_ALIGNMENTS}, got: {align!r}. "
+                    "Note: 'justify' is not supported."
+                )
+
+        # Try fuzzy matching
+        suggestion = suggest_similar(align, list(VALID_ALIGNMENTS), max_distance=2)
+        if suggestion:
+            raise ValueError(
+                f"align must be one of {VALID_ALIGNMENTS}, got: {align!r}. {suggestion}"
+            )
+
         raise ValueError(f"align must be one of {VALID_ALIGNMENTS}, got: {align!r}")
 
 
