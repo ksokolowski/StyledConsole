@@ -5,6 +5,56 @@ All notable changes to StyledConsole will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.2] - 2026-01-18
+
+### Added
+
+- **StrEnum Types for IDE Autocomplete**: New enum types provide IDE autocomplete and type safety while maintaining backward compatibility with string values:
+
+  - `Border`: `SOLID`, `ROUNDED`, `DOUBLE`, `HEAVY`, `THICK`, `ROUNDED_THICK`, `ASCII`, `MINIMAL`, `DOTS`
+  - `Effect`: 47 preset effects including `FIRE`, `OCEAN`, `RAINBOW`, `CYBERPUNK`, etc.
+  - `Align`: `LEFT`, `CENTER`, `RIGHT`
+  - `Direction`: `VERTICAL`, `HORIZONTAL`, `DIAGONAL`
+  - `Target`: `CONTENT`, `BORDER`, `BOTH`
+  - `LayoutMode`: `VERTICAL`, `HORIZONTAL`, `GRID`
+  - `ExportFormat`: `HTML`, `TEXT`, `PNG`, `WEBP`, `GIF`
+
+  ```python
+  from styledconsole import Console, Border, Effect, Align
+  console = Console()
+  console.frame("Hello", border=Border.ROUNDED, effect=Effect.OCEAN, align=Align.CENTER)
+  # String values still work for backward compatibility
+  console.frame("Hello", border="rounded", effect="ocean", align="center")
+  ```
+
+- **Background Layer Support for Effects**: Gradient effects can now be applied to background colors in addition to foreground text:
+
+  ```python
+  from styledconsole import EffectSpec
+
+  # Foreground gradient (default)
+  effect = EffectSpec.gradient("red", "blue", layer="foreground")
+
+  # Background gradient
+  effect = EffectSpec.gradient("red", "blue", layer="background")
+  ```
+
+- **Intelligent Error Messages with Suggestions**: Error messages now include "Did you mean?" suggestions using fuzzy matching:
+
+  - Border styles: `"rounde"` → Did you mean 'rounded'?
+  - Effect presets: `"rainbo"` → Did you mean 'rainbow'?
+  - Palette names: `"ocea"` → Did you mean 'ocean'?
+  - Object types: `"fram"` → Did you mean 'frame'?
+  - Color names: `"gren"` → Did you mean 'green'?
+  - Alignment: `"middle"` → Did you mean 'center'?
+
+- **Suggestions Utility Module**: New `styledconsole.utils.suggestions` module with Levenshtein distance-based fuzzy matching utilities
+
+### Changed
+
+- `resolve_effect()` now returns 4 values: `(position, color, target, layer)` instead of 3
+- Registry base class now uses fuzzy matching for error suggestions
+
 ## [0.10.1] - 2026-01-13
 
 ### Added
