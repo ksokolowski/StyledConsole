@@ -808,6 +808,137 @@ def generate_declarative_layout():
     return "declarative_layout.webp"
 
 
+# -----------------------------------------------------------------------------
+# Background Layer Effects (v0.10.2)
+# -----------------------------------------------------------------------------
+
+
+@example(
+    "background_effects",
+    """
+from styledconsole import Console, EffectSpec
+
+console = Console()
+
+# Background gradient creates striking visual effect
+console.frame(
+    ["System Status Dashboard", "All services operational"],
+    title="Monitor",
+    effect=EffectSpec.gradient("purple", "blue", layer="background"),
+    border="heavy",
+)
+""",
+)
+def generate_background_effects():
+    """Generate background layer effects showcase - v0.10.2 feature."""
+    from styledconsole import EffectSpec
+
+    console = Console(record=True, width=TERMINAL_COLS, policy=IMAGE_EXPORT_POLICY)
+
+    # Add empty line for spacing
+    console._rich_console.print()
+
+    # Large frame with background gradient - visually striking
+    console.frame(
+        [
+            f"{icons.SPARKLES} Background Layer Effects",
+            "",
+            f"{icons.CHECK_MARK_BUTTON} API Gateway     Online",
+            f"{icons.CHECK_MARK_BUTTON} Database        Online",
+            f"{icons.CHECK_MARK_BUTTON} Cache Layer     Online",
+            f"{icons.WARNING} Worker Pool     Scaling",
+            "",
+            "Gradient applied to background, not text",
+        ],
+        title=f"{icons.GLOBE_WITH_MERIDIANS} System Monitor",
+        effect=EffectSpec.gradient("#6366f1", "#8b5cf6", layer="background"),
+        border="heavy",
+        width=50,
+    )
+
+    console.export_webp(
+        str(OUTPUT_DIR / "background_effects.webp"),
+        theme=FIXED_TERMINAL_THEME,
+        auto_crop=True,
+    )
+    return "background_effects.webp"
+
+
+# -----------------------------------------------------------------------------
+# Palette Showcase
+# -----------------------------------------------------------------------------
+
+
+@example(
+    "palette_showcase",
+    """
+from styledconsole import Console, EffectSpec
+
+console = Console()
+
+# 90 curated color palettes available
+palettes = ["ocean_depths", "sunset_glow", "forest_canopy"]
+for name in palettes:
+    console.frame(f"Palette: {name}", effect=EffectSpec.from_palette(name))
+""",
+)
+def generate_palette_showcase():
+    """Generate palette showcase - demonstrate curated color palettes."""
+    from io import StringIO
+
+    from rich.console import Console as RichConsole
+    from rich.table import Table
+
+    from styledconsole import EffectSpec
+    from styledconsole.export import get_image_exporter
+    from styledconsole.export.image_cropper import auto_crop
+
+    # Selected palettes that look great together
+    palettes = [
+        ("ocean_depths", "Ocean"),
+        ("city_sunset", "Sunset"),
+        ("forest_green", "Forest"),
+        ("cyberpunk_neon", "Neon"),
+    ]
+
+    rich_console = RichConsole(record=True, width=TERMINAL_COLS, force_terminal=True)
+
+    table = Table(show_header=False, box=None, padding=(0, 2))
+    table.add_column()
+    table.add_column()
+
+    # Create pairs for 2x2 grid
+    pairs = [(palettes[0], palettes[1]), (palettes[2], palettes[3])]
+
+    for (left_name, left_label), (right_name, right_label) in pairs:
+        cells = []
+        for palette_name, label in [(left_name, left_label), (right_name, right_label)]:
+            buffer = StringIO()
+            temp = Console(file=buffer, detect_terminal=False, width=36, policy=IMAGE_EXPORT_POLICY)
+            temp.frame(
+                f"{icons.ARTIST_PALETTE} {label}",
+                title=palette_name,
+                effect=EffectSpec.from_palette(palette_name),
+                width=34,
+                border="rounded",
+            )
+            frame_text = buffer.getvalue().rstrip()
+            from rich.text import Text
+
+            cells.append(Text.from_ansi(frame_text))
+        table.add_row(*cells)
+
+    rich_console.print()
+    rich_console.print(table)
+
+    image_exporter_cls = get_image_exporter()
+    exporter = image_exporter_cls(rich_console, theme=FIXED_TERMINAL_THEME)
+    img = exporter._render_frame()
+    img = auto_crop(img, FIXED_TERMINAL_THEME.background, margin=20)
+    img.save(str(OUTPUT_DIR / "palette_showcase.webp"), "WEBP", quality=90)
+    return "palette_showcase.webp"
+
+
 def generate_progress_animation():
     """Generate animated parallel progress bars WebP."""
     from rich.console import Console as RichConsole

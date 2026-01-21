@@ -48,6 +48,22 @@ Apply smooth color gradients across multiple lines of text.
 
 ______________________________________________________________________
 
+## Background Layer Effects (v0.10.2)
+
+Apply gradients to the background instead of text for striking visual effects.
+
+<!-- EXAMPLE_FULL:background_effects -->
+
+______________________________________________________________________
+
+## 90 Curated Color Palettes
+
+Choose from 90 carefully curated color palettes for instant beautiful styling.
+
+<!-- EXAMPLE_FULL:palette_showcase -->
+
+______________________________________________________________________
+
 ## Rich Text Styling
 
 Apply bold, italic, underline, strikethrough, and dim effects to any text.

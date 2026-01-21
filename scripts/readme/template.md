@@ -2,9 +2,9 @@
 
 [![Python >=3.10](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-0.9.9.1-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole/releases)
-[![Tests](https://img.shields.io/badge/tests-869%20passing-success.svg)](https://github.com/ksokolowski/StyledConsole)
-[![Coverage](https://img.shields.io/badge/coverage-80%25-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole)
+[![Version](https://img.shields.io/badge/version-0.10.3-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole/releases)
+[![Tests](https://img.shields.io/badge/tests-1315%20passing-success.svg)](https://github.com/ksokolowski/StyledConsole)
+[![Coverage](https://img.shields.io/badge/coverage-82%25-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole)
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/ksokolowski?style=flat&logo=githubsponsors&logoColor=pink)](https://github.com/sponsors/ksokolowski)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support-ff5e5b?logo=ko-fi&logoColor=white)](https://ko-fi.com/styledconsole)
 
@@ -199,14 +199,14 @@ ______________________________________________________________________
 
 ## 📊 Project Status
 
-**v0.9.9.1** — 🏗️ Early Access (TestPyPI)
+**v0.10.3** — 🏗️ Early Access (TestPyPI)
 
-| Metric      | Value       |
-| ----------- | ----------- |
-| 🧪 Tests    | 869 passing |
-| 📊 Coverage | 80%         |
-| 🔍 MyPy     | 0 errors    |
-| 🐍 Python   | 3.10 – 3.14 |
+| Metric      | Value        |
+| ----------- | ------------ |
+| 🧪 Tests    | 1315 passing |
+| 📊 Coverage | 82%          |
+| 🔍 MyPy     | 0 errors     |
+| 🐍 Python   | 3.10 – 3.14  |
 
 ______________________________________________________________________
 

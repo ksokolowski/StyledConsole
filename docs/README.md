@@ -1,7 +1,17 @@
 # StyledConsole Documentation
 
-**Version:** 0.10.0
+**Version:** 0.10.2
 **Last Updated:** January 2026
+
+> **StyledConsole is to Rich what Tailwind is to CSS** — opinionated, declarative, fast.
+
+______________________________________________________________________
+
+## Start Here
+
+| Guide                                     | Description                                    |
+| ----------------------------------------- | ---------------------------------------------- |
+| **[Getting Started](GETTING_STARTED.md)** | **Zero to dashboard in minutes — start here!** |
 
 ______________________________________________________________________
 

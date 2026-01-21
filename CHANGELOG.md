@@ -5,6 +5,36 @@ All notable changes to StyledConsole will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.3] - 2026-01-21
+
+### 📚 Golden Path Documentation & Visual Upgrades
+
+This release focuses on improving the onboarding experience with comprehensive "Golden Path" documentation, new complex examples, and a visual overhaul of the gallery.
+
+### Added
+
+- **Golden Path Guide** (`docs/GETTING_STARTED.md`): A comprehensive 30-second to 5-minute guide covering:
+    - First frame creation
+    - Emojis, colors, and gradients
+    - Background effects and progress bars
+    - Building complete dashboards
+- **New Complex Examples**:
+    - `enum_showcase.py`: Demonstrates all v0.10.2 Enums (Border, Effect, Align, etc.)
+    - `background_combinations.py`: Large dashboards with background gradients and alerts
+    - `grid_dashboard.py`: 2x2/3-column grids, complete dashboard layouts, cyberpunk themes
+- **Gallery Updates**:
+    - Added **Background Layer Effects** section
+    - Added **90 Curated Color Palettes** section
+
+### Changed
+
+- **README Overhaul**:
+    - Added positioning statement: "StyledConsole is to Rich what Tailwind is to CSS"
+    - Highlighted "Getting Started" link
+    - Updated Key Features table with Background Effects and Enums
+- **Documentation**:
+    - `docs/README.md` now features a prominent "Start Here" section
+
 ## [0.10.2] - 2026-01-18
 
 ### Added

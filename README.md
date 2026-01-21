@@ -1,120 +1,238 @@
-# StyledConsole
+# ✨ StyledConsole
 
 [![Python >=3.10](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-0.10.0-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole/releases)
-[![Tests](https://img.shields.io/badge/tests-968%20passing-success.svg)](https://github.com/ksokolowski/StyledConsole)
-[![Coverage](https://img.shields.io/badge/coverage-79%25-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole)
+[![Version](https://img.shields.io/badge/version-0.10.3-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole/releases)
+[![Tests](https://img.shields.io/badge/tests-1315%20passing-success.svg)](https://github.com/ksokolowski/StyledConsole)
+[![Coverage](https://img.shields.io/badge/coverage-82%25-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/ksokolowski?style=flat&logo=githubsponsors&logoColor=pink)](https://github.com/sponsors/ksokolowski)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support-ff5e5b?logo=ko-fi&logoColor=white)](https://ko-fi.com/styledconsole)
 
-**A multi-interface Python library for elegant terminal output** — use Python code, JSON/YAML configuration, or Jinja2 templates to create beautiful CLI experiences.
+**A modern Python library for elegant terminal output** — rich formatting, colors, emojis, gradients, and export capabilities built on top of [Rich](https://github.com/Textualize/rich).
+
+> 🚧 **Early Access** — Currently available on TestPyPI. Some features may be experimental.
 
 ```bash
-pip install styledconsole              # Core library
-pip install styledconsole[yaml]        # + YAML support
-pip install styledconsole[jinja]       # + Jinja2 templates
-pip install styledconsole[all]         # Everything
+pip install -i https://test.pypi.org/simple/ styledconsole
 ```
 
 ______________________________________________________________________
 
-## Three Ways to Style Your Terminal
+## 🎨 Visual Gallery
 
-### Python API (Full Power)
+**See the [Visual Gallery](docs/GALLERY.md) for screenshots and animated demos.**
 
-The complete API with builders, effects, gradients, themes, and export capabilities.
+______________________________________________________________________
+
+## 🚀 Why StyledConsole?
+
+Rich is powerful, but StyledConsole adds the finishing touches:
+
+|     | Feature                   | What It Does                                                      |
+| --- | ------------------------- | ----------------------------------------------------------------- |
+| 🌈  | **Gradient Engine**       | Smooth rainbows and linear gradients on borders, text, banners    |
+| 🎯  | **Smart Icons**           | 224 icons with automatic ASCII fallback for CI/legacy terminals   |
+| 📊  | **StyledTables**          | Beautiful tables with gradient borders and config-driven creation |
+| 🔧  | **Environment Detection** | Auto-adapts for `NO_COLOR`, `CI`, `TERM=dumb`                     |
+| 🏗️  | **Frame Engine**          | 8 border styles, nested frames, width alignment                   |
+| 📤  | **HTML & Image Export**   | Export to HTML, PNG, WebP, GIF with full emoji support            |
+| 📋  | **Declarative Layouts**   | Build entire UIs from JSON/dict config                            |
+
+______________________________________________________________________
+
+## ✨ Key Features
+
+### 🎯 Smart Icon System
+
+Policy-aware symbols with automatic ASCII fallback — works everywhere:
 
 ```python
-from styledconsole import Console, icons, EffectSpec
+from styledconsole import icons
+
+print(f"{icons.ROCKET} Deploying...")      # 🚀 in modern terminals
+print(f"{icons.CHECK_MARK_BUTTON} Done!")  # ✅ or >>> in CI
+```
+
+| Environment     | Output | Rendering     |
+| --------------- | ------ | ------------- |
+| Modern Terminal | 🚀     | Full emoji    |
+| CI / Legacy     | `>>>`  | Colored ASCII |
+
+### 🌈 Gradient Frames & Borders
+
+Smooth color transitions on any frame border:
+
+```python
+from styledconsole import Console
 
 console = Console()
 console.frame(
-    f"{icons.CHECK_MARK_BUTTON} Build successful\n{icons.ROCKET} Deployed to production",
+    "Build successful!",
     title="Status",
-    effect=EffectSpec.gradient("green", "cyan"),
+    border="rounded",
+    border_gradient_start="green",
+    border_gradient_end="cyan",
 )
 ```
 
-### JSON/YAML Configuration (No Code Required)
+### 🔤 ASCII Art Banners
 
-Perfect for config-driven UIs and non-programmers.
+500+ fonts with integrated gradient and rainbow support:
 
 ```python
-from styledconsole import Console, load_yaml
+console.banner("HELLO", font="slant", rainbow=True)
+console.banner("WORLD", font="big", start_color="cyan", end_color="magenta")
+```
+
+### 📊 StyledTables
+
+Beautiful tables with gradient borders, created from code or config:
+
+```python
+from styledconsole.presets.tables import create_table_from_config
+
+table = create_table_from_config(
+    theme={"border_style": "heavy", "gradient": {"start": "cyan", "end": "blue"}},
+    data={
+        "columns": [{"header": "Service"}, {"header": "Status"}],
+        "rows": [["API", "✅ Online"], ["Database", "✅ Online"]]
+    }
+)
+console.print(table)
+```
+
+### 🔧 Environment-Aware Rendering
+
+Automatically adapts for CI/CD pipelines and restricted terminals:
+
+```python
+from styledconsole import Console, RenderPolicy
+
+# CI-friendly: colors preserved, ASCII symbols
+console = Console(policy=RenderPolicy.ci_friendly())
+
+# Auto-detects: NO_COLOR, FORCE_COLOR, TERM=dumb, CI, GITHUB_ACTIONS
+```
+
+### 📤 HTML & Image Export
+
+Record terminal sessions and export to HTML or images:
+
+```python
+console = Console(record=True)
+# ... render your UI ...
+
+# HTML export (built-in)
+console.export_html("output.html")
+
+# Image export (pip install styledconsole[image])
+console.export_png("output.png")
+console.export_webp("output.webp")
+console.export_gif("animation.gif")  # animated!
+```
+
+### 📋 Declarative Layouts
+
+Build complex dashboards from JSON/dict — perfect for config-driven UIs:
+
+```python
+from styledconsole.presets.layouts import create_layout_from_config
+
+layout = create_layout_from_config({
+    "type": "panel",
+    "title": "DASHBOARD",
+    "border": "heavy",
+    "content": {"type": "text", "content": "Status: Online"}
+})
+console.print(layout)
+```
+
+______________________________________________________________________
+
+## 🏁 Quick Start
+
+```bash
+pip install -i https://test.pypi.org/simple/ styledconsole
+```
+
+```python
+from styledconsole import Console, icons
 
 console = Console()
-console.render_dict({
-    "type": "frame",
-    "title": "Status",
-    "content": "Build successful!",
-    "effect": "success"
-})
+
+console.frame(
+    f"{icons.CHECK_MARK_BUTTON} Build successful\n"
+    f"{icons.ROCKET} Deployed to production",
+    title=f"{icons.SPARKLES} Status",
+    border="rounded",
+    border_gradient_start="green",
+    border_gradient_end="cyan",
+)
 ```
 
-### Jinja2 Templates (Dynamic Content)
+**Output:**
 
-Generate UIs from data with loops, conditionals, and filters.
-
-```python
-from styledconsole import Console, render_jinja
-
-template = """
-type: frame
-title: Server Status
-content:
-  type: group
-  items:
-  {% for server in servers %}
-    - "{{ server.status | status_icon }} {{ server.name }}: {{ server.status }}"
-  {% endfor %}
-"""
-obj = render_jinja(template, servers=[{"name": "API", "status": "running"}])
-Console().render_object(obj)
+```
+╭──────── ✨ Status ─────────╮
+│ ✅ Build successful        │
+│ 🚀 Deployed to production  │
+╰────────────────────────────╯
 ```
 
-______________________________________________________________________
-
-## Key Features
-
-| Feature                   | Description                                                     |
-| ------------------------- | --------------------------------------------------------------- |
-| **Gradient Engine**       | Rainbow and linear gradients on borders, text, banners          |
-| **Smart Icons**           | 224 icons with automatic ASCII fallback for CI/legacy terminals |
-| **Effects System**        | 32 presets + 90 color palettes + phase animations               |
-| **Builder Pattern**       | Fluent API for complex layouts                                  |
-| **Environment Detection** | Auto-adapts for `NO_COLOR`, `CI`, `TERM=dumb`                   |
-| **Export Formats**        | HTML, PNG, WebP, GIF with full emoji support                    |
-| **22 Built-in Templates** | Ready-to-use UI patterns                                        |
+👉 **Want more examples?** Check out [StyledConsole-Examples](https://github.com/ksokolowski/StyledConsole-Examples) for 40+ real-world demos including CLI dashboards, progress bars, error reporters, and animated effects.
 
 ______________________________________________________________________
 
-## Documentation
+## 🏗️ Built On Giants
 
-| Guide                                       | Description                                                |
-| ------------------------------------------- | ---------------------------------------------------------- |
-| [Python API](docs/PYTHON_API.md)            | Complete API reference — builders, effects, themes, export |
-| [Declarative Guide](docs/DECLARATIVE.md)    | JSON/YAML configuration for config-driven UIs              |
-| [Jinja2 Templates](docs/JINJA_TEMPLATES.md) | Dynamic templates with loops and filters                   |
-| [Visual Gallery](docs/GALLERY.md)           | Screenshots and animated demos                             |
-| [Migration Guide](docs/MIGRATION.md)        | Upgrading from earlier versions                            |
-| [Developer Guide](docs/DEVELOPER_GUIDE.md)  | Architecture and contributing                              |
+StyledConsole extends these excellent libraries:
 
-______________________________________________________________________
-
-## Quick Links
-
-- [Examples Repository](https://github.com/ksokolowski/StyledConsole-Examples) — 50+ working demos
-- [Changelog](CHANGELOG.md) — Version history
-- [Contributing](CONTRIBUTING.md) — Development workflow
+| Library                                              | Contribution                 |
+| ---------------------------------------------------- | ---------------------------- |
+| [Rich](https://github.com/Textualize/rich)           | 💪 Core rendering engine     |
+| [emoji](https://pypi.org/project/emoji/)             | 😀 4000+ Unicode emojis      |
+| [PyFiglet](https://github.com/pwaller/pyfiglet)      | 🔤 500+ ASCII art fonts      |
+| [wcwidth](https://github.com/jquast/wcwidth)         | 📏 Unicode width calculation |
+| [ansi2html](https://github.com/pycontribs/ansi2html) | 💾 Terminal → HTML export    |
 
 ______________________________________________________________________
 
-## Support
+## 📊 Project Status
 
-| Platform        | Link                                                                       |
-| --------------- | -------------------------------------------------------------------------- |
-| GitHub Sponsors | [github.com/sponsors/ksokolowski](https://github.com/sponsors/ksokolowski) |
-| Ko-fi           | [ko-fi.com/styledconsole](https://ko-fi.com/styledconsole)                 |
+**v0.10.3** — 🏗️ Early Access (TestPyPI)
+
+| Metric      | Value        |
+| ----------- | ------------ |
+| 🧪 Tests    | 1315 passing |
+| 📊 Coverage | 82%          |
+| 🔍 MyPy     | 0 errors     |
+| 🐍 Python   | 3.10 – 3.14  |
 
 ______________________________________________________________________
 
-**Apache License 2.0** — Built on [Rich](https://github.com/Textualize/rich), [PyFiglet](https://github.com/pwaller/pyfiglet), and [emoji](https://pypi.org/project/emoji/).
+## 📚 Documentation
+
+| Resource                                      | Description              |
+| --------------------------------------------- | ------------------------ |
+| 📖 [User Guide](docs/USER_GUIDE.md)           | Complete API reference   |
+| 🏗️ [Developer Guide](docs/DEVELOPER_GUIDE.md) | Architecture & internals |
+| 🎨 [Visual Gallery](docs/GALLERY.md)          | Screenshots & demos      |
+| 📅 [Changelog](CHANGELOG.md)                  | Version history          |
+| 🤝 [Contributing](CONTRIBUTING.md)            | Development workflow     |
+
+______________________________________________________________________
+
+## 💙 Support
+
+If StyledConsole improves your developer experience:
+
+| Platform           | Link                                                                       |
+| ------------------ | -------------------------------------------------------------------------- |
+| 💖 GitHub Sponsors | [github.com/sponsors/ksokolowski](https://github.com/sponsors/ksokolowski) |
+| ☕ Ko-fi           | [ko-fi.com/styledconsole](https://ko-fi.com/styledconsole)                 |
+
+______________________________________________________________________
+
+## 📄 License
+
+Apache License 2.0 — See [LICENSE](LICENSE) for details.
