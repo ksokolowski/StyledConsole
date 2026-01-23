@@ -159,6 +159,9 @@ from styledconsole.rendering import (
     TerminalRenderer,
 )
 
+# JSON Schema for declarative configs (v0.10.4+)
+from styledconsole.schemas import SCHEMA_PATH, get_schema, get_schema_path
+
 # Import type aliases
 from styledconsole.types import AlignType, ColorType, Renderer
 from styledconsole.utils.color import (
@@ -218,7 +221,7 @@ from styledconsole.utils.wrap import (
     wrap_text,
 )
 
-__version__ = "0.10.3"
+__version__ = "0.10.4"
 __author__ = "Krzysztof Sokołowski"
 __license__ = "Apache-2.0"
 
@@ -272,6 +275,7 @@ __all__ = [
     "RICH_TO_CSS4_MAPPING",
     "ROUNDED",
     "ROUNDED_THICK",
+    "SCHEMA_PATH",
     "SOLID",
     "SUCCESS_STYLE",
     "THEMES",
@@ -362,6 +366,8 @@ __all__ = [
     "get_palette_categories",
     "get_rich_color_names",
     "get_safe_emojis",
+    "get_schema",
+    "get_schema_path",
     "gradient_frame",
     "hex_to_rgb",
     "icons",

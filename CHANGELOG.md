@@ -5,6 +5,39 @@ All notable changes to StyledConsole will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.4] - 2026-01-22
+
+### 🖥️ CLI Preview Tool & JSON Schema
+
+This release adds a command-line interface for exploring StyledConsole features and a JSON Schema for IDE autocomplete.
+
+### Added
+
+- **CLI Tool**: New `styledconsole` command with 6 subcommands:
+  - `styledconsole demo` — Interactive feature showcase
+  - `styledconsole palette [name]` — List or preview 90 color palettes
+  - `styledconsole effects [name]` — List or preview 47 effect presets
+  - `styledconsole icons [search]` — List or search 200+ icons
+  - `styledconsole render <file>` — Render YAML/JSON config files
+  - `styledconsole schema` — Get JSON Schema path for IDE configuration
+- **JSON Schema**: Full schema for declarative configs at `styledconsole/schemas/styledconsole.schema.json`
+  - Enables IDE autocomplete and validation for YAML/JSON config files
+  - Supports VS Code, JetBrains, and other schema-aware editors
+  - Covers all 11 object types: text, frame, banner, table, layout, vertical, horizontal, grid, group, spacer, rule
+  - Includes shorthand syntax definitions (frame:, banner:, row:, column:, grid:)
+  - Documents all 32+ effect presets and 9 border styles
+- **Schema API**: New `styledconsole.schemas` module with `get_schema_path()` and `get_schema()` functions
+- **Entry Point**: `styledconsole` command available after installation via `[project.scripts]`
+- **CLI Tests**: 20 new tests covering all CLI functionality
+
+### Documentation
+
+- Updated Getting Started guide with CLI section
+- Added CLI Preview Tool section to main README
+- Updated docs/README.md with CLI quick start commands
+
+______________________________________________________________________
+
 ## [0.10.3] - 2026-01-21
 
 ### 📚 Golden Path Documentation & Visual Upgrades
@@ -14,26 +47,26 @@ This release focuses on improving the onboarding experience with comprehensive "
 ### Added
 
 - **Golden Path Guide** (`docs/GETTING_STARTED.md`): A comprehensive 30-second to 5-minute guide covering:
-    - First frame creation
-    - Emojis, colors, and gradients
-    - Background effects and progress bars
-    - Building complete dashboards
+  - First frame creation
+  - Emojis, colors, and gradients
+  - Background effects and progress bars
+  - Building complete dashboards
 - **New Complex Examples**:
-    - `enum_showcase.py`: Demonstrates all v0.10.2 Enums (Border, Effect, Align, etc.)
-    - `background_combinations.py`: Large dashboards with background gradients and alerts
-    - `grid_dashboard.py`: 2x2/3-column grids, complete dashboard layouts, cyberpunk themes
+  - `enum_showcase.py`: Demonstrates all v0.10.2 Enums (Border, Effect, Align, etc.)
+  - `background_combinations.py`: Large dashboards with background gradients and alerts
+  - `grid_dashboard.py`: 2x2/3-column grids, complete dashboard layouts, cyberpunk themes
 - **Gallery Updates**:
-    - Added **Background Layer Effects** section
-    - Added **90 Curated Color Palettes** section
+  - Added **Background Layer Effects** section
+  - Added **90 Curated Color Palettes** section
 
 ### Changed
 
 - **README Overhaul**:
-    - Added positioning statement: "StyledConsole is to Rich what Tailwind is to CSS"
-    - Highlighted "Getting Started" link
-    - Updated Key Features table with Background Effects and Enums
+  - Added positioning statement: "StyledConsole is to Rich what Tailwind is to CSS"
+  - Highlighted "Getting Started" link
+  - Updated Key Features table with Background Effects and Enums
 - **Documentation**:
-    - `docs/README.md` now features a prominent "Start Here" section
+  - `docs/README.md` now features a prominent "Start Here" section
 
 ## [0.10.2] - 2026-01-18
 

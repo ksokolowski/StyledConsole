@@ -14,6 +14,35 @@ pip install styledconsole
 
 ______________________________________________________________________
 
+## Try the CLI (No Code Required!)
+
+StyledConsole includes a CLI for exploring features without writing any code:
+
+```bash
+# Interactive demo showcasing all features
+styledconsole demo
+
+# Preview color palettes (90 available)
+styledconsole palette              # List all palettes
+styledconsole palette ocean_depths # Preview a specific palette
+
+# Preview effect presets (32+ available)
+styledconsole effects              # List all effects
+styledconsole effects fire         # Preview a specific effect
+
+# Search icons (200+ available)
+styledconsole icons                # Show sample icons
+styledconsole icons rocket         # Search for icons
+
+# Render a config file
+styledconsole render dashboard.yaml
+
+# Get JSON Schema for IDE autocomplete
+styledconsole schema
+```
+
+______________________________________________________________________
+
 ## 1. Your First Frame (30 seconds)
 
 The simplest way to create styled output:
@@ -26,6 +55,7 @@ console.frame("Hello, World!")
 ```
 
 Output:
+
 ```
 ╭─────────────────╮
 │ Hello, World!   │
@@ -64,6 +94,7 @@ console.frame(
 ```
 
 Output:
+
 ```
 ╭────── ✨ Build Status ──────╮
 │ ✅ Tests passed             │
@@ -351,27 +382,27 @@ EffectSpec.from_palette("ocean_depths", layer="foreground")
 
 ### Named Effects
 
-| Category | Effects |
-|----------|---------|
+| Category      | Effects                                                                |
+| ------------- | ---------------------------------------------------------------------- |
 | **Gradients** | `fire`, `ocean`, `sunset`, `forest`, `aurora`, `gold`, `mint`, `peach` |
-| **Rainbows** | `rainbow`, `rainbow_pastel`, `rainbow_neon`, `rainbow_muted` |
-| **Themed** | `matrix`, `cyberpunk`, `vaporwave`, `dracula`, `nord_aurora` |
-| **Semantic** | `success`, `warning`, `error`, `info`, `neutral` |
+| **Rainbows**  | `rainbow`, `rainbow_pastel`, `rainbow_neon`, `rainbow_muted`           |
+| **Themed**    | `matrix`, `cyberpunk`, `vaporwave`, `dracula`, `nord_aurora`           |
+| **Semantic**  | `success`, `warning`, `error`, `info`, `neutral`                       |
 
 ### Common Icons
 
-| Icon | Name | Usage |
-|------|------|-------|
-| ✅ | `CHECK_MARK_BUTTON` | Success, completed |
-| ❌ | `CROSS_MARK` | Error, failed |
-| ⚠️ | `WARNING` | Warnings, caution |
-| 🚀 | `ROCKET` | Deploy, launch |
-| ⚙️ | `GEAR` | Settings, config |
-| 📦 | `PACKAGE` | Dependencies, packages |
-| ✨ | `SPARKLES` | Features, highlights |
-| 🔥 | `FIRE` | Hot, trending |
-| 🌐 | `GLOBE_WITH_MERIDIANS` | Network, global |
-| ⚡ | `HIGH_VOLTAGE` | Performance, speed |
+| Icon | Name                   | Usage                  |
+| ---- | ---------------------- | ---------------------- |
+| ✅   | `CHECK_MARK_BUTTON`    | Success, completed     |
+| ❌   | `CROSS_MARK`           | Error, failed          |
+| ⚠️   | `WARNING`              | Warnings, caution      |
+| 🚀   | `ROCKET`               | Deploy, launch         |
+| ⚙️   | `GEAR`                 | Settings, config       |
+| 📦   | `PACKAGE`              | Dependencies, packages |
+| ✨   | `SPARKLES`             | Features, highlights   |
+| 🔥   | `FIRE`                 | Hot, trending          |
+| 🌐   | `GLOBE_WITH_MERIDIANS` | Network, global        |
+| ⚡   | `HIGH_VOLTAGE`         | Performance, speed     |
 
 ______________________________________________________________________
 

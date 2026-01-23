@@ -1,0 +1,365 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://styledconsole.dev/schemas/styledconsole.schema.json",
+  "title": "StyledConsole Configuration",
+  "description": "Schema for StyledConsole declarative configuration files (JSON/YAML)",
+  "type": "object",
+  "$defs": {
+    "style": {
+      "type": "object",
+      "description": "Text styling options",
+      "properties": {
+        "color": {
+          "type": "string",
+          "description": "Foreground color (CSS4 name, hex, or extended name)"
+        },
+        "background": {
+          "type": "string",
+          "description": "Background color (CSS4 name, hex, or extended name)"
+        },
+        "bold": {
+          "type": "boolean",
+          "default": false,
+          "description": "Bold text"
+        },
+        "italic": {
+          "type": "boolean",
+          "default": false,
+          "description": "Italic text"
+        },
+        "underline": {
+          "type": "boolean",
+          "default": false,
+          "description": "Underlined text"
+        },
+        "dim": {
+          "type": "boolean",
+          "default": false,
+          "description": "Dimmed/muted text"
+        },
+        "strikethrough": {
+          "type": "boolean",
+          "default": false,
+          "description": "Strikethrough text"
+        }
+      },
+      "additionalProperties": false
+    },
+    "border": {
+      "type": "string",
+      "description": "Border style",
+      "enum": [
+        "solid",
+        "rounded",
+        "double",
+        "heavy",
+        "thick",
+        "rounded_thick",
+        "ascii",
+        "minimal",
+        "dots"
+      ],
+      "default": "solid"
+    },
+    "align": {
+      "type": "string",
+      "description": "Content alignment",
+      "enum": ["left", "center", "right"],
+      "default": "left"
+    },
+    "direction": {
+      "type": "string",
+      "description": "Layout direction",
+      "enum": ["vertical", "horizontal", "grid"],
+      "default": "vertical"
+    },
+    "effect": {
+      "type": "string",
+      "description": "Effect preset name",
+      "enum": [
+        "fire",
+        "ocean",
+        "sunset",
+        "forest",
+        "aurora",
+        "lavender",
+        "peach",
+        "mint",
+        "steel",
+        "gold",
+        "rainbow",
+        "rainbow_pastel",
+        "rainbow_neon",
+        "rainbow_muted",
+        "rainbow_reverse",
+        "rainbow_horizontal",
+        "rainbow_diagonal",
+        "matrix",
+        "cyberpunk",
+        "retro",
+        "vaporwave",
+        "dracula",
+        "nord_aurora",
+        "success",
+        "warning",
+        "error",
+        "info",
+        "neutral",
+        "border_fire",
+        "border_ocean",
+        "border_rainbow",
+        "border_gold"
+      ]
+    },
+    "content": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "array", "items": { "type": "string" } },
+        { "$ref": "#/$defs/consoleObject" }
+      ],
+      "description": "Content can be a string, array of strings, or nested object"
+    },
+    "textObject": {
+      "type": "object",
+      "description": "Plain or styled text",
+      "properties": {
+        "type": { "const": "text" },
+        "content": { "type": "string" },
+        "style": { "$ref": "#/$defs/style" }
+      },
+      "required": ["type", "content"],
+      "additionalProperties": false
+    },
+    "frameObject": {
+      "type": "object",
+      "description": "Bordered panel with optional title and effects",
+      "properties": {
+        "type": { "const": "frame" },
+        "content": { "$ref": "#/$defs/content" },
+        "title": { "type": "string", "description": "Frame title" },
+        "subtitle": { "type": "string", "description": "Frame subtitle" },
+        "border": { "$ref": "#/$defs/border" },
+        "effect": { "$ref": "#/$defs/effect" },
+        "width": { "type": "integer", "minimum": 1, "description": "Explicit frame width" },
+        "padding": { "type": "integer", "default": 1, "description": "Internal padding" },
+        "align": { "$ref": "#/$defs/align" },
+        "style": { "$ref": "#/$defs/style" }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "bannerObject": {
+      "type": "object",
+      "description": "ASCII art text using pyfiglet fonts",
+      "properties": {
+        "type": { "const": "banner" },
+        "text": { "type": "string", "description": "Text to render as ASCII art" },
+        "font": { "type": "string", "default": "standard", "description": "Pyfiglet font name" },
+        "effect": { "$ref": "#/$defs/effect" },
+        "style": { "$ref": "#/$defs/style" }
+      },
+      "required": ["type", "text"],
+      "additionalProperties": false
+    },
+    "columnDef": {
+      "type": "object",
+      "description": "Table column definition",
+      "properties": {
+        "header": { "type": "string", "description": "Column header text" },
+        "width": { "type": "integer", "minimum": 1, "description": "Column width" },
+        "align": { "$ref": "#/$defs/align" },
+        "style": { "$ref": "#/$defs/style" }
+      },
+      "required": ["header"],
+      "additionalProperties": false
+    },
+    "tableObject": {
+      "type": "object",
+      "description": "Tabular data display",
+      "properties": {
+        "type": { "const": "table" },
+        "columns": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/columnDef" },
+          "description": "Column definitions"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "description": "Data rows"
+        },
+        "title": { "type": "string", "description": "Table title" },
+        "border": { "$ref": "#/$defs/border" },
+        "effect": { "$ref": "#/$defs/effect" },
+        "style": { "$ref": "#/$defs/style" }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "layoutObject": {
+      "type": "object",
+      "description": "Container for arranging child objects",
+      "properties": {
+        "type": { "enum": ["layout", "vertical", "horizontal", "grid"] },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/consoleObject" },
+          "description": "Child objects"
+        },
+        "items": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/consoleObject" },
+          "description": "Child objects (alias for children)"
+        },
+        "direction": { "$ref": "#/$defs/direction" },
+        "gap": { "type": "integer", "default": 0, "description": "Space between children" },
+        "columns": { "type": "integer", "minimum": 1, "description": "Grid columns" },
+        "equal_width": { "type": "boolean", "default": false, "description": "Equal width children" },
+        "style": { "$ref": "#/$defs/style" }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "groupObject": {
+      "type": "object",
+      "description": "Logical grouping without visual container",
+      "properties": {
+        "type": { "const": "group" },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/consoleObject" }
+        },
+        "items": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/consoleObject" }
+        },
+        "style": { "$ref": "#/$defs/style" }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "spacerObject": {
+      "type": "object",
+      "description": "Vertical blank space",
+      "properties": {
+        "type": { "const": "spacer" },
+        "lines": { "type": "integer", "default": 1, "minimum": 1 }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "ruleObject": {
+      "type": "object",
+      "description": "Horizontal divider line",
+      "properties": {
+        "type": { "const": "rule" },
+        "title": { "type": "string", "description": "Optional title text" }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "consoleObject": {
+      "oneOf": [
+        { "type": "string", "description": "Shorthand: plain text" },
+        {
+          "type": "array",
+          "items": { "$ref": "#/$defs/consoleObject" },
+          "description": "Shorthand: vertical layout"
+        },
+        { "$ref": "#/$defs/textObject" },
+        { "$ref": "#/$defs/frameObject" },
+        { "$ref": "#/$defs/bannerObject" },
+        { "$ref": "#/$defs/tableObject" },
+        { "$ref": "#/$defs/layoutObject" },
+        { "$ref": "#/$defs/groupObject" },
+        { "$ref": "#/$defs/spacerObject" },
+        { "$ref": "#/$defs/ruleObject" },
+        { "$ref": "#/$defs/frameShorthand" },
+        { "$ref": "#/$defs/bannerShorthand" },
+        { "$ref": "#/$defs/rowShorthand" },
+        { "$ref": "#/$defs/columnShorthand" },
+        { "$ref": "#/$defs/gridShorthand" }
+      ]
+    },
+    "frameShorthand": {
+      "type": "object",
+      "description": "Shorthand: { frame: content, title: ... }",
+      "properties": {
+        "frame": { "$ref": "#/$defs/content" },
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "border": { "$ref": "#/$defs/border" },
+        "effect": { "$ref": "#/$defs/effect" },
+        "width": { "type": "integer", "minimum": 1 },
+        "padding": { "type": "integer" },
+        "align": { "$ref": "#/$defs/align" },
+        "style": { "$ref": "#/$defs/style" }
+      },
+      "required": ["frame"],
+      "additionalProperties": false
+    },
+    "bannerShorthand": {
+      "type": "object",
+      "description": "Shorthand: { banner: text, font: ... }",
+      "properties": {
+        "banner": { "type": "string" },
+        "font": { "type": "string" },
+        "effect": { "$ref": "#/$defs/effect" },
+        "style": { "$ref": "#/$defs/style" }
+      },
+      "required": ["banner"],
+      "additionalProperties": false
+    },
+    "rowShorthand": {
+      "type": "object",
+      "description": "Shorthand: { row: [...], gap: ... }",
+      "properties": {
+        "row": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/consoleObject" }
+        },
+        "gap": { "type": "integer" },
+        "equal_width": { "type": "boolean" },
+        "style": { "$ref": "#/$defs/style" }
+      },
+      "required": ["row"],
+      "additionalProperties": false
+    },
+    "columnShorthand": {
+      "type": "object",
+      "description": "Shorthand: { column: [...], gap: ... }",
+      "properties": {
+        "column": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/consoleObject" }
+        },
+        "gap": { "type": "integer" },
+        "style": { "$ref": "#/$defs/style" }
+      },
+      "required": ["column"],
+      "additionalProperties": false
+    },
+    "gridShorthand": {
+      "type": "object",
+      "description": "Shorthand: { grid: [...], columns: ... }",
+      "properties": {
+        "grid": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/consoleObject" }
+        },
+        "columns": { "type": "integer", "minimum": 1 },
+        "gap": { "type": "integer" },
+        "equal_width": { "type": "boolean" },
+        "style": { "$ref": "#/$defs/style" }
+      },
+      "required": ["grid"],
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    { "$ref": "#/$defs/consoleObject" }
+  ]
+}

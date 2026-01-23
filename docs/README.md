@@ -1,6 +1,6 @@
 # StyledConsole Documentation
 
-**Version:** 0.10.2
+**Version:** 0.10.4
 **Last Updated:** January 2026
 
 > **StyledConsole is to Rich what Tailwind is to CSS** — opinionated, declarative, fast.
@@ -45,6 +45,16 @@ pip install styledconsole              # Core library
 pip install styledconsole[yaml]        # + YAML support
 pip install styledconsole[jinja]       # + Jinja2 templates
 pip install styledconsole[all]         # Everything
+```
+
+**Try the CLI (no code required):**
+
+```bash
+styledconsole demo              # Interactive feature showcase
+styledconsole palette           # Browse 90 color palettes
+styledconsole effects fire      # Preview effect presets
+styledconsole icons rocket      # Search 200+ icons
+styledconsole schema            # Get JSON Schema for IDE config
 ```
 
 **Three Ways to Create UIs:**
@@ -109,7 +119,7 @@ ______________________________________________________________________
 
 ## External Resources
 
-- **Examples:** [StyledConsole-Examples](https://github.com/ksokolowski/StyledConsole-Examples) — 50+ working demos
+- **Examples:** [StyledConsole-Examples](https://github.com/ksokolowski/StyledConsole-Examples) — 60+ working demos
 - **Issues:** [GitHub Issues](https://github.com/ksokolowski/StyledConsole/issues)
 - **Source:** [GitHub Repository](https://github.com/ksokolowski/StyledConsole)
 - **Support:** [Ko-fi](https://ko-fi.com/styledconsole)
@@ -118,9 +128,9 @@ ______________________________________________________________________
 
 ## Version Information
 
-|             |                  |
-| ----------- | ---------------- |
-| **Version** | 0.10.0           |
-| **Python**  | ≥3.10            |
-| **License** | Apache-2.0       |
-| **Status**  | Production Ready |
+|             |              |
+| ----------- | ------------ |
+| **Version** | 0.10.4       |
+| **Python**  | ≥3.10        |
+| **License** | Apache-2.0   |
+| **Status**  | Early Access |
