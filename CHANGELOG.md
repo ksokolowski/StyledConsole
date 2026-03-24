@@ -5,6 +5,28 @@ All notable changes to StyledConsole will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.5] - 2026-03-24
+
+### Internal Cleanup
+
+This release addresses code review findings with internal improvements. No public API changes.
+
+### Fixed
+
+- **Thread safety**: Render target (`visual_width()` mode) is now scoped per render call via ContextVar instead of being set globally in `Console.__init__`. Multiple Console instances no longer interfere with each other's width calculations.
+
+### Internal
+
+- Extracted exception classes to dedicated `exceptions.py` module
+- Adopted library-level `NullHandler` logging pattern (per Python best practices)
+- Added debug-level logging to bare `except Exception` blocks for better diagnosability
+- Simplified `EffectSpec.with_*()` methods using `dataclasses.replace()`
+- Renamed internal `Renderer` protocol to `ObjectRenderer` to avoid confusion with public `Renderer`
+- Moved benchmark and utility scripts out of `tests/` directory
+- Added `docs/THREAD_SAFETY.md` documenting concurrency guarantees
+
+______________________________________________________________________
+
 ## [0.10.4] - 2026-01-22
 
 ### 🖥️ CLI Preview Tool & JSON Schema

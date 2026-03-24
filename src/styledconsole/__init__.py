@@ -221,7 +221,7 @@ from styledconsole.utils.wrap import (
     wrap_text,
 )
 
-__version__ = "0.10.4"
+__version__ = "0.10.5"
 __author__ = "Krzysztof Sokołowski"
 __license__ = "Apache-2.0"
 
