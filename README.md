@@ -2,7 +2,7 @@
 
 [![Python >=3.10](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-0.10.4-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole/releases)
+[![Version](https://img.shields.io/badge/version-0.10.5-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole/releases)
 [![Tests](https://img.shields.io/badge/tests-1328%20passing-success.svg)](https://github.com/ksokolowski/StyledConsole)
 [![Coverage](https://img.shields.io/badge/coverage-79%25-brightgreen.svg)](https://github.com/ksokolowski/StyledConsole)
 [![PyPI](https://img.shields.io/pypi/v/styledconsole.svg)](https://pypi.org/project/styledconsole/)
