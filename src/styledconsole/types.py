@@ -35,10 +35,13 @@ class FrameGroupItem(TypedDict, total=False):
 
 
 class Renderer(Protocol):
-    """Protocol for renderer implementations.
+    """Public protocol for content-based renderer implementations.
 
-    Renderers convert content into formatted output lines.
-    This protocol enables custom renderer implementations.
+    This is the public Renderer protocol exported from styledconsole.
+    Renderers convert content strings into formatted output lines.
+
+    For the internal model-layer renderer protocol (used with ConsoleObjects),
+    see styledconsole.rendering.base.ObjectRenderer.
     """
 
     def render(self, content: str | list[str], **kwargs) -> list[str]:

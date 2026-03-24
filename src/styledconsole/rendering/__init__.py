@@ -38,14 +38,17 @@ Example:
     >>> terminal.render(frame, context=ctx)
 """
 
-from styledconsole.rendering.base import BaseRenderer, Renderer
+from styledconsole.rendering.base import BaseRenderer, ObjectRenderer
 from styledconsole.rendering.context import RenderContext
 from styledconsole.rendering.html import HTMLRenderer
 from styledconsole.rendering.terminal import TerminalRenderer
 
+Renderer = ObjectRenderer  # Deprecated alias — use ObjectRenderer. Will be removed in v0.11.0.
+
 __all__ = [
     "BaseRenderer",
     "HTMLRenderer",
+    "ObjectRenderer",
     "RenderContext",
     "Renderer",
     "TerminalRenderer",

@@ -22,12 +22,15 @@ if TYPE_CHECKING:
 
 
 @runtime_checkable
-class Renderer(Protocol):
-    """Protocol for all renderers.
+class ObjectRenderer(Protocol):
+    """Protocol for model-layer renderers.
 
     Renderers take ConsoleObjects and produce output in a specific format.
     Each renderer handles the conversion from the abstract model to a
     concrete representation (ANSI, HTML, image bytes, etc.).
+
+    Note: This is the internal renderer protocol for ConsoleObject rendering.
+    The public Renderer protocol in styledconsole.types is for content-based rendering.
 
     The render() method is the main entry point. It accepts:
     - obj: The ConsoleObject to render
@@ -164,4 +167,4 @@ class BaseRenderer:
         raise NotImplementedError
 
 
-__all__ = ["BaseRenderer", "Renderer"]
+__all__ = ["BaseRenderer", "ObjectRenderer"]

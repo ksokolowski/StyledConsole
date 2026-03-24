@@ -35,7 +35,7 @@ from styledconsole.declarative.templates import (
 
 if TYPE_CHECKING:
     from styledconsole.model.base import ConsoleObject
-    from styledconsole.rendering.base import Renderer
+    from styledconsole.rendering.base import ObjectRenderer
     from styledconsole.rendering.context import RenderContext
 
 
@@ -192,7 +192,7 @@ class Declarative:
         data: Any,
         *,
         variables: dict[str, Any] | None = None,
-        renderer: Renderer | None = None,
+        renderer: ObjectRenderer | None = None,
         context: RenderContext | None = None,
     ) -> None:
         """Create and render a ConsoleObject directly.
@@ -222,7 +222,7 @@ class Declarative:
         self,
         name: str,
         *,
-        renderer: Renderer | None = None,
+        renderer: ObjectRenderer | None = None,
         context: RenderContext | None = None,
         **variables: Any,
     ) -> None:
