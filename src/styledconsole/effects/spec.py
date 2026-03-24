@@ -25,6 +25,7 @@ Example:
 
 from __future__ import annotations
 
+import dataclasses
 from dataclasses import dataclass, field
 from typing import Literal
 
@@ -354,19 +355,7 @@ class EffectSpec:
         Returns:
             New EffectSpec with updated direction.
         """
-        return EffectSpec(
-            name=self.name,
-            colors=self.colors,
-            direction=direction,
-            target=self.target,
-            layer=self.layer,
-            background_colors=self.background_colors,
-            saturation=self.saturation,
-            brightness=self.brightness,
-            reverse=self.reverse,
-            neon=self.neon,
-            phase=self.phase,
-        )
+        return dataclasses.replace(self, direction=direction)
 
     def with_target(self, target: Literal["content", "border", "both"]) -> EffectSpec:
         """Return a copy with a different target.
@@ -377,19 +366,7 @@ class EffectSpec:
         Returns:
             New EffectSpec with updated target.
         """
-        return EffectSpec(
-            name=self.name,
-            colors=self.colors,
-            direction=self.direction,
-            target=target,
-            layer=self.layer,
-            background_colors=self.background_colors,
-            saturation=self.saturation,
-            brightness=self.brightness,
-            reverse=self.reverse,
-            neon=self.neon,
-            phase=self.phase,
-        )
+        return dataclasses.replace(self, target=target)
 
     def reversed(self) -> EffectSpec:
         """Return a copy with reversed direction.
@@ -397,19 +374,7 @@ class EffectSpec:
         Returns:
             New EffectSpec with reverse=True.
         """
-        return EffectSpec(
-            name=self.name,
-            colors=self.colors,
-            direction=self.direction,
-            target=self.target,
-            layer=self.layer,
-            background_colors=self.background_colors,
-            saturation=self.saturation,
-            brightness=self.brightness,
-            reverse=not self.reverse,
-            neon=self.neon,
-            phase=self.phase,
-        )
+        return dataclasses.replace(self, reverse=not self.reverse)
 
     def with_phase(self, phase: float) -> EffectSpec:
         """Return a copy with a different phase.
@@ -428,19 +393,7 @@ class EffectSpec:
             >>> frame2 = spec.with_phase(0.1)
             >>> frame3 = spec.with_phase(0.2)
         """
-        return EffectSpec(
-            name=self.name,
-            colors=self.colors,
-            direction=self.direction,
-            target=self.target,
-            layer=self.layer,
-            background_colors=self.background_colors,
-            saturation=self.saturation,
-            brightness=self.brightness,
-            reverse=self.reverse,
-            neon=self.neon,
-            phase=phase,
-        )
+        return dataclasses.replace(self, phase=phase)
 
     def get_start_color(self) -> str | None:
         """Get the starting color of a gradient effect.
