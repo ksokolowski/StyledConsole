@@ -407,6 +407,6 @@ def __getattr__(name: str):
 
 
 # Library-level NullHandler per Python logging best practices
-import logging as _logging
+import logging as _logging  # noqa: E402
 
 _logging.getLogger("styledconsole").addHandler(_logging.NullHandler())
