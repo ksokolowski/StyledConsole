@@ -60,7 +60,7 @@ from styledconsole.effects.strategies import (
     VerticalPosition,
 )
 from styledconsole.utils.color import colorize, get_rainbow_color, interpolate_color
-from styledconsole.utils.text import get_render_target, set_render_target, strip_ansi
+from styledconsole.utils.text import strip_ansi
 
 __all__ = [
     "EFFECTS",
@@ -116,18 +116,15 @@ def _get_border_chars(border_style: str) -> set[str]:
 
 
 def _create_console_preserving_context(buffer: StringIO) -> Console:
-    """Create a Console while preserving the render_target context.
+    """Create a Console for internal effect rendering.
 
-    The Console.__init__ sets render_target based on its policy, which can
-    overwrite the caller's context (e.g., "image" mode during image export).
-    This helper saves and restores the context.
+    Since v0.10.5, Console.__init__ no longer sets the global render_target,
+    so no save/restore is needed. This function is kept for API compatibility
+    with internal callers.
     """
     from styledconsole import Console
 
-    saved_target = get_render_target()
-    console = Console(file=buffer, detect_terminal=False, record=False)
-    set_render_target(saved_target)
-    return console
+    return Console(file=buffer, detect_terminal=False, record=False)
 
 
 def gradient_frame(

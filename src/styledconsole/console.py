@@ -14,6 +14,7 @@ import logging
 import sys
 import warnings
 from collections.abc import Iterable
+from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, TextIO
 
 from rich.console import Console as RichConsole
@@ -41,6 +42,21 @@ if TYPE_CHECKING:
     from styledconsole.export import ImageTheme
     from styledconsole.model import ConsoleObject
     from styledconsole.rendering import RenderContext
+
+
+@contextmanager
+def _render_target_scope(target):
+    """Context manager that scopes render_target to the current call.
+
+    Uses ContextVar Token for correct nesting — never resets to a hardcoded default.
+    """
+    from styledconsole.utils.text import _render_target_context
+
+    token = _render_target_context.set(target)
+    try:
+        yield
+    finally:
+        _render_target_context.reset(token)
 
 
 class Console:
@@ -135,11 +151,8 @@ class Console:
         # Apply policy to global icon system
         self._policy.apply_to_icons()
 
-        # Apply render target to global width calculation system
-        # This ensures visual_width() uses correct calculations for image/html export
-        from styledconsole.utils.text import set_render_target
-
-        set_render_target(self._policy.render_target)
+        # Store render target for per-call scoping via _render_target_scope()
+        self._render_target = self._policy.render_target
 
         # When debug=True, add a StreamHandler so debug output is visible.
         # The library uses NullHandler by default (per best practices);
@@ -389,38 +402,39 @@ class Console:
         Returns:
             Rendered frame as a string containing ANSI escape codes.
         """
-        # Resolve effect from new or legacy parameters
-        resolved_effect = self._resolve_effect(
-            effect=effect,
-            start_color=start_color,
-            end_color=end_color,
-            border_gradient_start=border_gradient_start,
-            border_gradient_end=border_gradient_end,
-            border_gradient_direction=border_gradient_direction,
-        )
+        with _render_target_scope(self._render_target):
+            # Resolve effect from new or legacy parameters
+            resolved_effect = self._resolve_effect(
+                effect=effect,
+                start_color=start_color,
+                end_color=end_color,
+                border_gradient_start=border_gradient_start,
+                border_gradient_end=border_gradient_end,
+                border_gradient_direction=border_gradient_direction,
+            )
 
-        # Resolve style using helper
-        resolved_context = self._resolve_frame_style(
-            style=None,  # render_frame doesn't support style= parameter
-            title=title,
-            border=border,
-            width=width,
-            padding=padding,
-            align=align,
-            frame_align=frame_align,
-            margin=margin,
-            content_color=content_color,
-            border_color=border_color,
-            title_color=title_color,
-            start_color=start_color,
-            end_color=end_color,
-            border_gradient_start=border_gradient_start,
-            border_gradient_end=border_gradient_end,
-            border_gradient_direction=border_gradient_direction,
-            effect=resolved_effect,
-        )
+            # Resolve style using helper
+            resolved_context = self._resolve_frame_style(
+                style=None,  # render_frame doesn't support style= parameter
+                title=title,
+                border=border,
+                width=width,
+                padding=padding,
+                align=align,
+                frame_align=frame_align,
+                margin=margin,
+                content_color=content_color,
+                border_color=border_color,
+                title_color=title_color,
+                start_color=start_color,
+                end_color=end_color,
+                border_gradient_start=border_gradient_start,
+                border_gradient_end=border_gradient_end,
+                border_gradient_direction=border_gradient_direction,
+                effect=resolved_effect,
+            )
 
-        return self._renderer.render_frame_to_string(content, context=resolved_context)
+            return self._renderer.render_frame_to_string(content, context=resolved_context)
 
     def _normalize_theme_color(self, color: str | None) -> str | None:
         """Resolve semantic color and normalize for Rich.
@@ -739,65 +753,66 @@ class Console:
             >>> # Using custom EffectSpec
             >>> console.frame("Custom", effect=EffectSpec.gradient("red", "blue"))
         """
-        # Resolve effect from new or legacy parameters
-        resolved_effect = self._resolve_effect(
-            effect=effect,
-            start_color=start_color,
-            end_color=end_color,
-            border_gradient_start=border_gradient_start,
-            border_gradient_end=border_gradient_end,
-            border_gradient_direction=border_gradient_direction,
-        )
-
-        # Resolve style using helper
-        resolved_context = self._resolve_frame_style(
-            style=style,
-            title=title,
-            border=border,
-            width=width,
-            padding=padding,
-            align=align,
-            frame_align=frame_align,
-            margin=margin,
-            content_color=content_color,
-            border_color=border_color,
-            title_color=title_color,
-            start_color=start_color,
-            end_color=end_color,
-            border_gradient_start=border_gradient_start,
-            border_gradient_end=border_gradient_end,
-            border_gradient_direction=border_gradient_direction,
-            effect=resolved_effect,
-        )
-
-        # Check if we're inside a group context
-        from styledconsole.core.group import get_active_group
-
-        active_group = get_active_group()
-        if active_group is not None:
-            # Capture using resolved values
-            active_group.capture_frame(
-                content,
-                title=resolved_context.title,
-                border=resolved_context.border_style,
-                width=resolved_context.width,
-                padding=resolved_context.padding,
-                align=resolved_context.align,
-                frame_align=resolved_context.frame_align,
-                margin=resolved_context.margin,
-                content_color=resolved_context.content_color,
-                border_color=resolved_context.border_color,
-                title_color=resolved_context.title_color,
-                start_color=resolved_context.start_color,
-                end_color=resolved_context.end_color,
-                border_gradient_start=resolved_context.border_gradient_start,
-                border_gradient_end=resolved_context.border_gradient_end,
-                border_gradient_direction=resolved_context.border_gradient_direction,
+        with _render_target_scope(self._render_target):
+            # Resolve effect from new or legacy parameters
+            resolved_effect = self._resolve_effect(
+                effect=effect,
+                start_color=start_color,
+                end_color=end_color,
+                border_gradient_start=border_gradient_start,
+                border_gradient_end=border_gradient_end,
+                border_gradient_direction=border_gradient_direction,
             )
-            return
 
-        # Normal print behavior (using context)
-        self._renderer.print_frame(content, context=resolved_context)
+            # Resolve style using helper
+            resolved_context = self._resolve_frame_style(
+                style=style,
+                title=title,
+                border=border,
+                width=width,
+                padding=padding,
+                align=align,
+                frame_align=frame_align,
+                margin=margin,
+                content_color=content_color,
+                border_color=border_color,
+                title_color=title_color,
+                start_color=start_color,
+                end_color=end_color,
+                border_gradient_start=border_gradient_start,
+                border_gradient_end=border_gradient_end,
+                border_gradient_direction=border_gradient_direction,
+                effect=resolved_effect,
+            )
+
+            # Check if we're inside a group context
+            from styledconsole.core.group import get_active_group
+
+            active_group = get_active_group()
+            if active_group is not None:
+                # Capture using resolved values
+                active_group.capture_frame(
+                    content,
+                    title=resolved_context.title,
+                    border=resolved_context.border_style,
+                    width=resolved_context.width,
+                    padding=resolved_context.padding,
+                    align=resolved_context.align,
+                    frame_align=resolved_context.frame_align,
+                    margin=resolved_context.margin,
+                    content_color=resolved_context.content_color,
+                    border_color=resolved_context.border_color,
+                    title_color=resolved_context.title_color,
+                    start_color=resolved_context.start_color,
+                    end_color=resolved_context.end_color,
+                    border_gradient_start=resolved_context.border_gradient_start,
+                    border_gradient_end=resolved_context.border_gradient_end,
+                    border_gradient_direction=resolved_context.border_gradient_direction,
+                )
+                return
+
+            # Normal print behavior (using context)
+            self._renderer.print_frame(content, context=resolved_context)
 
     def render_frame_group(
         self,
@@ -874,24 +889,25 @@ class Console:
             ...     min_columns=2,
             ... )
         """
-        return self._renderer.render_frame_group_to_string(
-            items,
-            title=title,
-            border=border,
-            width=width,
-            padding=padding,
-            align=align,
-            border_color=border_color,
-            title_color=title_color,
-            border_gradient_start=border_gradient_start,
-            border_gradient_end=border_gradient_end,
-            layout=layout,
-            gap=gap,
-            inherit_style=inherit_style,
-            columns=columns,
-            min_columns=min_columns,
-            item_width=item_width,
-        )
+        with _render_target_scope(self._render_target):
+            return self._renderer.render_frame_group_to_string(
+                items,
+                title=title,
+                border=border,
+                width=width,
+                padding=padding,
+                align=align,
+                border_color=border_color,
+                title_color=title_color,
+                border_gradient_start=border_gradient_start,
+                border_gradient_end=border_gradient_end,
+                layout=layout,
+                gap=gap,
+                inherit_style=inherit_style,
+                columns=columns,
+                min_columns=min_columns,
+                item_width=item_width,
+            )
 
     def frame_group(
         self,
@@ -982,26 +998,27 @@ class Console:
             ...     gap=2,
             ... )
         """
-        self._renderer.print_frame_group(
-            items,
-            title=title,
-            border=border,
-            width=width,
-            padding=padding,
-            align=align,
-            border_color=border_color,
-            title_color=title_color,
-            border_gradient_start=border_gradient_start,
-            border_gradient_end=border_gradient_end,
-            layout=layout,
-            gap=gap,
-            inherit_style=inherit_style,
-            margin=margin,
-            frame_align=frame_align,
-            columns=columns,
-            min_columns=min_columns,
-            item_width=item_width,
-        )
+        with _render_target_scope(self._render_target):
+            self._renderer.print_frame_group(
+                items,
+                title=title,
+                border=border,
+                width=width,
+                padding=padding,
+                align=align,
+                border_color=border_color,
+                title_color=title_color,
+                border_gradient_start=border_gradient_start,
+                border_gradient_end=border_gradient_end,
+                layout=layout,
+                gap=gap,
+                inherit_style=inherit_style,
+                margin=margin,
+                frame_align=frame_align,
+                columns=columns,
+                min_columns=min_columns,
+                item_width=item_width,
+            )
 
     def group(
         self,
@@ -1042,25 +1059,26 @@ class Console:
             ...     console.frame("Short", title="A")
             ...     console.frame("Much longer content here", title="B")
         """
-        from styledconsole.core.group import FrameGroupContext
+        with _render_target_scope(self._render_target):
+            from styledconsole.core.group import FrameGroupContext
 
-        return FrameGroupContext(
-            console=self,
-            title=title,
-            border=border,
-            border_color=border_color,
-            title_color=title_color,
-            border_gradient_start=border_gradient_start,
-            border_gradient_end=border_gradient_end,
-            padding=padding,
-            width=width,
-            align=align,
-            gap=gap,
-            inherit_style=inherit_style,
-            align_widths=align_widths,
-            margin=margin,
-            frame_align=frame_align,
-        )
+            return FrameGroupContext(
+                console=self,
+                title=title,
+                border=border,
+                border_color=border_color,
+                title_color=title_color,
+                border_gradient_start=border_gradient_start,
+                border_gradient_end=border_gradient_end,
+                padding=padding,
+                width=width,
+                align=align,
+                gap=gap,
+                inherit_style=inherit_style,
+                align_widths=align_widths,
+                margin=margin,
+                frame_align=frame_align,
+            )
 
     def _print_ansi_output(self, output: str, align: str = "left") -> None:
         """Print ANSI output with proper alignment handling.
@@ -1138,65 +1156,66 @@ class Console:
             >>> console.banner("DEMO", start_color="red", end_color="blue")
             >>> console.banner("RAINBOW", rainbow=True)  # Use effect="rainbow" instead
         """
-        # Resolve effect parameter
-        resolved_effect: EffectSpec | None = None
-        effective_rainbow = rainbow
-        effective_start = start_color
-        effective_end = end_color
+        with _render_target_scope(self._render_target):
+            # Resolve effect parameter
+            resolved_effect: EffectSpec | None = None
+            effective_rainbow = rainbow
+            effective_start = start_color
+            effective_end = end_color
 
-        if effect is not None:
-            # New effect= parameter takes precedence
-            # EFFECTS.get() raises KeyError with helpful message if not found
-            resolved_effect = EFFECTS.get(effect) if isinstance(effect, str) else effect
+            if effect is not None:
+                # New effect= parameter takes precedence
+                # EFFECTS.get() raises KeyError with helpful message if not found
+                resolved_effect = EFFECTS.get(effect) if isinstance(effect, str) else effect
 
-            # Convert effect to banner parameters
-            if resolved_effect.is_rainbow():
-                effective_rainbow = True
-                effective_start = None
-                effective_end = None
-            elif resolved_effect.is_gradient() or resolved_effect.is_multi_stop():
-                effective_rainbow = False
-                effective_start = resolved_effect.get_start_color()
-                effective_end = resolved_effect.get_end_color()
-        else:
-            # Legacy parameter handling
-            if rainbow:
-                warnings.warn(
-                    "rainbow=True is deprecated. Use effect='rainbow' instead.",
-                    DeprecationWarning,
-                    stacklevel=2,
-                )
-            elif start_color is not None and end_color is not None:
-                warnings.warn(
-                    "start_color/end_color are deprecated. "
-                    "Use effect=EffectSpec.gradient(start, end) instead.",
-                    DeprecationWarning,
-                    stacklevel=2,
-                )
+                # Convert effect to banner parameters
+                if resolved_effect.is_rainbow():
+                    effective_rainbow = True
+                    effective_start = None
+                    effective_end = None
+                elif resolved_effect.is_gradient() or resolved_effect.is_multi_stop():
+                    effective_rainbow = False
+                    effective_start = resolved_effect.get_start_color()
+                    effective_end = resolved_effect.get_end_color()
+            else:
+                # Legacy parameter handling
+                if rainbow:
+                    warnings.warn(
+                        "rainbow=True is deprecated. Use effect='rainbow' instead.",
+                        DeprecationWarning,
+                        stacklevel=2,
+                    )
+                elif start_color is not None and end_color is not None:
+                    warnings.warn(
+                        "start_color/end_color are deprecated. "
+                        "Use effect=EffectSpec.gradient(start, end) instead.",
+                        DeprecationWarning,
+                        stacklevel=2,
+                    )
 
-        # Apply theme banner gradient if no explicit gradient provided
-        if (
-            effective_start is None
-            and not effective_rainbow
-            and self._theme.banner_gradient is not None
-        ):
-            effective_start = self._theme.banner_gradient.start
-            effective_end = self._theme.banner_gradient.end
+            # Apply theme banner gradient if no explicit gradient provided
+            if (
+                effective_start is None
+                and not effective_rainbow
+                and self._theme.banner_gradient is not None
+            ):
+                effective_start = self._theme.banner_gradient.start
+                effective_end = self._theme.banner_gradient.end
 
-        resolved_start_color = self._normalize_theme_color(effective_start)
-        resolved_end_color = self._normalize_theme_color(effective_end)
+            resolved_start_color = self._normalize_theme_color(effective_start)
+            resolved_end_color = self._normalize_theme_color(effective_end)
 
-        self._renderer.print_banner(
-            text,
-            font=font,
-            start_color=resolved_start_color,
-            end_color=resolved_end_color,
-            rainbow=effective_rainbow,
-            border=border,
-            width=width,
-            align=align,
-            padding=padding,
-        )
+            self._renderer.print_banner(
+                text,
+                font=font,
+                start_color=resolved_start_color,
+                end_color=resolved_end_color,
+                rainbow=effective_rainbow,
+                border=border,
+                width=width,
+                align=align,
+                padding=padding,
+            )
 
     def text(
         self,
@@ -1243,37 +1262,38 @@ class Console:
             >>> console.text("Loading", end="")
             >>> console.text("... done!", color="green")
         """
-        normalized_color = self._normalize_theme_color(color)
+        with _render_target_scope(self._render_target):
+            normalized_color = self._normalize_theme_color(color)
 
-        # Build style string
-        styles = []
-        if bold:
-            styles.append("bold")
-        if italic:
-            styles.append("italic")
-        if underline:
-            styles.append("underline")
-        if dim:
-            styles.append("dim")
-        if normalized_color:
-            styles.append(normalized_color)
+            # Build style string
+            styles = []
+            if bold:
+                styles.append("bold")
+            if italic:
+                styles.append("italic")
+            if underline:
+                styles.append("underline")
+            if dim:
+                styles.append("dim")
+            if normalized_color:
+                styles.append(normalized_color)
 
-        # Use Rich console directly for dim support
-        if styles:
-            from rich.text import Text as RichText
+            # Use Rich console directly for dim support
+            if styles:
+                from rich.text import Text as RichText
 
-            style_str = " ".join(styles)
-            rich_text = RichText(text, style=style_str)
-            self._rich_console.print(rich_text, end=end, highlight=False)
-        else:
-            self._renderer.print_text(
-                text,
-                color=normalized_color,
-                bold=bold,
-                italic=italic,
-                underline=underline,
-                end=end,
-            )
+                style_str = " ".join(styles)
+                rich_text = RichText(text, style=style_str)
+                self._rich_console.print(rich_text, end=end, highlight=False)
+            else:
+                self._renderer.print_text(
+                    text,
+                    color=normalized_color,
+                    bold=bold,
+                    italic=italic,
+                    underline=underline,
+                    end=end,
+                )
 
     def rule(
         self,
@@ -1308,9 +1328,10 @@ class Console:
             >>> console = Console(theme="dark")
             >>> console.rule("Status", color="primary")
         """
-        resolved_color = self._normalize_theme_color(color) or "white"
+        with _render_target_scope(self._render_target):
+            resolved_color = self._normalize_theme_color(color) or "white"
 
-        self._renderer.print_rule(title=title, color=resolved_color, style=style, align=align)
+            self._renderer.print_rule(title=title, color=resolved_color, style=style, align=align)
 
     def newline(self, count: int = 1) -> None:
         """Print one or more blank lines.
@@ -1371,7 +1392,8 @@ class Console:
             >>> with open("output.html", "w") as f:
             ...     f.write(html)
         """
-        return self._exporter.export_html(inline_styles=inline_styles)
+        with _render_target_scope(self._render_target):
+            return self._exporter.export_html(inline_styles=inline_styles)
 
     def export_text(self) -> str:
         """Export recorded console output as plain text.
@@ -1392,7 +1414,8 @@ class Console:
             >>> text = console.export_text()
             >>> print(repr(text))  # No ANSI codes
         """
-        return self._exporter.export_text()
+        with _render_target_scope(self._render_target):
+            return self._exporter.export_text()
 
     def export_png(self, path: str, *, scale: float = 1.0) -> None:
         """Export recorded console output as PNG image.
@@ -1418,16 +1441,17 @@ class Console:
         Note:
             Requires: pip install styledconsole[image]
         """
-        self._exporter._validate_recording_enabled()
-        from styledconsole.export import get_image_exporter
+        with _render_target_scope(self._render_target):
+            self._exporter._validate_recording_enabled()
+            from styledconsole.export import get_image_exporter
 
-        try:
-            image_exporter_cls = get_image_exporter()
-            exporter = image_exporter_cls(self._rich_console)
-            exporter.save_png(path, scale=scale)
-        finally:
-            # Restore cell_len after export so subsequent terminal output is correct
-            self._restore_rich_cell_len()
+            try:
+                image_exporter_cls = get_image_exporter()
+                exporter = image_exporter_cls(self._rich_console)
+                exporter.save_png(path, scale=scale)
+            finally:
+                # Restore cell_len after export so subsequent terminal output is correct
+                self._restore_rich_cell_len()
 
     def export_webp(
         self,
@@ -1477,26 +1501,27 @@ class Console:
         Note:
             Requires: pip install styledconsole[image]
         """
-        self._exporter._validate_recording_enabled()
-        from styledconsole.export import get_image_exporter
+        with _render_target_scope(self._render_target):
+            self._exporter._validate_recording_enabled()
+            from styledconsole.export import get_image_exporter
 
-        # Patch cell_len only during export to avoid affecting terminal output
-        self._patch_rich_cell_len_for_export()
-        try:
-            image_exporter_cls = get_image_exporter()
-            exporter = image_exporter_cls(self._rich_console, theme=theme)
-            exporter.save_webp(
-                path,
-                quality=quality,
-                animated=animated,
-                fps=fps,
-                loop=loop,
-                do_auto_crop=auto_crop,
-                crop_margin=crop_margin,
-            )
-        finally:
-            # Restore cell_len after export so subsequent terminal output is correct
-            self._restore_rich_cell_len()
+            # Patch cell_len only during export to avoid affecting terminal output
+            self._patch_rich_cell_len_for_export()
+            try:
+                image_exporter_cls = get_image_exporter()
+                exporter = image_exporter_cls(self._rich_console, theme=theme)
+                exporter.save_webp(
+                    path,
+                    quality=quality,
+                    animated=animated,
+                    fps=fps,
+                    loop=loop,
+                    do_auto_crop=auto_crop,
+                    crop_margin=crop_margin,
+                )
+            finally:
+                # Restore cell_len after export so subsequent terminal output is correct
+                self._restore_rich_cell_len()
 
     def export_gif(self, path: str, *, fps: int = 10, loop: int = 0) -> None:
         """Export recorded console output as animated GIF.
@@ -1521,16 +1546,17 @@ class Console:
         Note:
             Requires: pip install styledconsole[image]
         """
-        self._exporter._validate_recording_enabled()
-        from styledconsole.export import get_image_exporter
+        with _render_target_scope(self._render_target):
+            self._exporter._validate_recording_enabled()
+            from styledconsole.export import get_image_exporter
 
-        try:
-            image_exporter_cls = get_image_exporter()
-            exporter = image_exporter_cls(self._rich_console)
-            exporter.save_gif(path, fps=fps, loop=loop)
-        finally:
-            # Restore cell_len after export so subsequent terminal output is correct
-            self._restore_rich_cell_len()
+            try:
+                image_exporter_cls = get_image_exporter()
+                exporter = image_exporter_cls(self._rich_console)
+                exporter.save_gif(path, fps=fps, loop=loop)
+            finally:
+                # Restore cell_len after export so subsequent terminal output is correct
+                self._restore_rich_cell_len()
 
     def print(self, *args: Any, **kwargs: Any) -> None:
         """Direct pass-through to Rich console print.
@@ -1551,7 +1577,8 @@ class Console:
             >>> table = Table()
             >>> console.print(table)
         """
-        self._rich_console.print(*args, **kwargs)
+        with _render_target_scope(self._render_target):
+            self._rich_console.print(*args, **kwargs)
 
     def progress(
         self,
@@ -1590,14 +1617,15 @@ class Console:
             ...     task = progress.add_task("Downloading...", total=1000)
             ...     # ...
         """
-        return StyledProgress(
-            theme=self._theme,
-            console=self._rich_console,
-            transient=transient,
-            auto_refresh=auto_refresh,
-            expand=expand,
-            policy=self._policy,
-        )
+        with _render_target_scope(self._render_target):
+            return StyledProgress(
+                theme=self._theme,
+                console=self._rich_console,
+                transient=transient,
+                auto_refresh=auto_refresh,
+                expand=expand,
+                policy=self._policy,
+            )
 
     def resolve_color(self, color: str | None) -> str | None:
         """Resolve a semantic color name using the current theme.
@@ -1669,21 +1697,22 @@ class Console:
             >>> # With emoji (automatically sanitized based on policy)
             >>> console.columns(["✅ Done", "⚠️ Warning", "❌ Error"])
         """
-        from styledconsole.columns import StyledColumns
+        with _render_target_scope(self._render_target):
+            from styledconsole.columns import StyledColumns
 
-        columns_obj = StyledColumns(
-            renderables,
-            padding=padding,
-            policy=self._policy,
-            width=width,
-            expand=expand,
-            equal=equal,
-            column_first=column_first,
-            right_to_left=right_to_left,
-            align=align,
-            title=title,
-        )
-        self._rich_console.print(columns_obj)
+            columns_obj = StyledColumns(
+                renderables,
+                padding=padding,
+                policy=self._policy,
+                width=width,
+                expand=expand,
+                equal=equal,
+                column_first=column_first,
+                right_to_left=right_to_left,
+                align=align,
+                title=title,
+            )
+            self._rich_console.print(columns_obj)
 
     # =========================================================================
     # Builder Factory Methods (Phase 5 - v0.10.0 API)
@@ -1782,15 +1811,16 @@ class Console:
             >>> frame = Frame(content=Text(content="Hello"), title="Greeting")
             >>> console.render_object(frame)
         """
-        from styledconsole.rendering import RenderContext, TerminalRenderer
+        with _render_target_scope(self._render_target):
+            from styledconsole.rendering import RenderContext, TerminalRenderer
 
-        renderer = TerminalRenderer()
-        ctx = context or RenderContext(
-            color=self._policy.color,
-            emoji=self._policy.emoji,
-            width=self._rich_console.width,
-        )
-        renderer.render(obj, target=self._rich_console.file, context=ctx)
+            renderer = TerminalRenderer()
+            ctx = context or RenderContext(
+                color=self._policy.color,
+                emoji=self._policy.emoji,
+                width=self._rich_console.width,
+            )
+            renderer.render(obj, target=self._rich_console.file, context=ctx)
 
     # =========================================================================
     # Declarative Methods (Phase 5 - v0.10.0 API)
@@ -1818,10 +1848,11 @@ class Console:
             >>> console.render_dict({"frame": "Content", "title": "Title"})
             >>> console.render_dict(["Item 1", "Item 2", "Item 3"])
         """
-        from styledconsole.declarative import load_dict
+        with _render_target_scope(self._render_target):
+            from styledconsole.declarative import load_dict
 
-        obj = load_dict(data, variables=variables)
-        self.render_object(obj)
+            obj = load_dict(data, variables=variables)
+            self.render_object(obj)
 
     def render_template(
         self,
@@ -1841,11 +1872,12 @@ class Console:
             >>> console.render_template("info_box", message="Important information")
             >>> console.render_template("error_box", message="Something went wrong")
         """
-        from styledconsole.declarative import Declarative
+        with _render_target_scope(self._render_target):
+            from styledconsole.declarative import Declarative
 
-        decl = Declarative()
-        obj = decl.from_template(name, **variables)
-        self.render_object(obj)
+            decl = Declarative()
+            obj = decl.from_template(name, **variables)
+            self.render_object(obj)
 
     def render_file(
         self,
