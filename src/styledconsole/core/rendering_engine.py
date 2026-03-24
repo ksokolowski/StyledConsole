@@ -100,17 +100,8 @@ class RenderingEngine:
             self._logger.debug("RenderingEngine initialized (v0.3.0 - Rich native)")
 
     def _setup_logging(self) -> logging.Logger:
-        """Set up logging for the rendering engine.
-
-        Returns:
-            Configured logger instance.
-        """
+        """Set up logging for the rendering engine."""
         logger = logging.getLogger("styledconsole.core.rendering_engine")
-        if not logger.handlers:
-            handler = logging.StreamHandler()
-            formatter = logging.Formatter("[%(levelname)s] %(name)s: %(message)s")
-            handler.setFormatter(formatter)
-            logger.addHandler(handler)
         logger.setLevel(logging.DEBUG if self._debug else logging.WARNING)
         return logger
 

@@ -10,6 +10,7 @@ ExportManager, RenderingEngine) following the Facade pattern.
 
 from __future__ import annotations
 
+import logging
 import sys
 import warnings
 from collections.abc import Iterable
@@ -139,6 +140,23 @@ class Console:
         from styledconsole.utils.text import set_render_target
 
         set_render_target(self._policy.render_target)
+
+        # When debug=True, add a StreamHandler so debug output is visible.
+        # The library uses NullHandler by default (per best practices);
+        # this is the only place that adds a real handler.
+        if debug:
+            _debug_logger = logging.getLogger("styledconsole")
+            # Use type() not isinstance() to avoid matching FileHandler and other
+            # StreamHandler subclasses. Only add if no exact StreamHandler exists.
+            if not any(
+                type(h) is logging.StreamHandler
+                for h in _debug_logger.handlers
+            ):
+                _handler = logging.StreamHandler()
+                _handler.setFormatter(
+                    logging.Formatter("[%(name)s] %(levelname)s: %(message)s")
+                )
+                _debug_logger.addHandler(_handler)
 
         # Initialize terminal manager (handles detection and color system)
         self._terminal = TerminalManager(detect=detect_terminal, debug=debug)

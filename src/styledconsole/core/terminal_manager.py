@@ -63,19 +63,10 @@ class TerminalManager:
     def _setup_logging(self) -> logging.Logger:
         """Set up debug logger for TerminalManager.
 
-        Returns:
-            Configured logger instance that writes to stderr.
-
-        Note:
-            Logger is only created if debug=True in __init__.
-            Uses format: [module.class] LEVEL: message
+        Note: This method is only called when debug=True (see __init__).
         """
         logger = logging.getLogger("styledconsole.terminal")
-        if not logger.handlers:
-            handler = logging.StreamHandler(sys.stderr)
-            handler.setFormatter(logging.Formatter("[%(name)s] %(levelname)s: %(message)s"))
-            logger.addHandler(handler)
-            logger.setLevel(logging.DEBUG)
+        logger.setLevel(logging.DEBUG)
         return logger
 
     def _log_capabilities(self) -> None:

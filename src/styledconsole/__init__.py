@@ -405,3 +405,9 @@ def __getattr__(name: str):
         )
         return type(EMOJI)
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+# Library-level NullHandler per Python logging best practices
+import logging as _logging
+
+_logging.getLogger("styledconsole").addHandler(_logging.NullHandler())
