@@ -6,7 +6,6 @@ and debug logging for terminal-related functionality.
 
 import logging
 import os
-import sys
 from typing import Literal
 
 from styledconsole.utils.terminal import TerminalProfile, detect_terminal_capabilities

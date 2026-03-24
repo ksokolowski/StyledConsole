@@ -274,7 +274,9 @@ class EmojiRenderer:
                 cell_width = rich_cells.cell_len(emoji_text)
                 return cell_width * self.char_width
             except Exception:
-                logger.debug("cell_len failed for emoji, falling back to visual_width", exc_info=True)
+                logger.debug(
+                    "cell_len failed for emoji, falling back to visual_width", exc_info=True
+                )
                 # Fallback to visual_width for consistent export behavior
                 from styledconsole.utils.text import visual_width
 

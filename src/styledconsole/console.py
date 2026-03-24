@@ -161,14 +161,9 @@ class Console:
             _debug_logger = logging.getLogger("styledconsole")
             # Use type() not isinstance() to avoid matching FileHandler and other
             # StreamHandler subclasses. Only add if no exact StreamHandler exists.
-            if not any(
-                type(h) is logging.StreamHandler
-                for h in _debug_logger.handlers
-            ):
+            if not any(type(h) is logging.StreamHandler for h in _debug_logger.handlers):
                 _handler = logging.StreamHandler()
-                _handler.setFormatter(
-                    logging.Formatter("[%(name)s] %(levelname)s: %(message)s")
-                )
+                _handler.setFormatter(logging.Formatter("[%(name)s] %(levelname)s: %(message)s"))
                 _debug_logger.addHandler(_handler)
 
         # Initialize terminal manager (handles detection and color system)

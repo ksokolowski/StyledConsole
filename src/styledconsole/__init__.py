@@ -234,7 +234,6 @@ from styledconsole.exceptions import (
     TerminalError,
 )
 
-
 # Public API (sorted alphabetically per RUF022)
 __all__ = [
     "ASCII",

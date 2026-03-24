@@ -6,7 +6,6 @@ supporting both HTML and plain text formats.
 
 import logging
 import re
-import sys
 
 from rich.console import Console as RichConsole
 from rich.terminal_theme import TerminalTheme
