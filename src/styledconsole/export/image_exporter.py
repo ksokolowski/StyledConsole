@@ -14,6 +14,7 @@ Requires: pip install styledconsole[image] (or Pillow>=10.0.0)
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -39,6 +40,8 @@ if TYPE_CHECKING:
     from rich.segment import Segment
 
     from .emoji_renderer import BaseEmojiSource
+
+logger = logging.getLogger("styledconsole.export.image_exporter")
 
 
 class ImageExporter:
@@ -471,7 +474,7 @@ class ImageExporter:
             if isinstance(dimmed, str) and dimmed:
                 grid_color = dimmed
         except Exception:
-            pass
+            logger.debug("Failed to dim grid color", exc_info=True)
 
         # Vertical lines
         for c in range(0, cols + 1, every):

@@ -10,6 +10,7 @@ The emoji parsing and source classes are in separate modules:
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
@@ -49,6 +50,8 @@ __all__ = [
     "OpenmojiSource",
     "TwemojiSource",
 ]
+
+logger = logging.getLogger("styledconsole.export.emoji_renderer")
 
 
 @dataclass
@@ -271,6 +274,7 @@ class EmojiRenderer:
                 cell_width = rich_cells.cell_len(emoji_text)
                 return cell_width * self.char_width
             except Exception:
+                logger.debug("cell_len failed for emoji, falling back to visual_width", exc_info=True)
                 # Fallback to visual_width for consistent export behavior
                 from styledconsole.utils.text import visual_width
 
@@ -285,7 +289,7 @@ class EmojiRenderer:
         """Extract font size from font object."""
         try:
             return int(getattr(font, "size", 14))
-        except Exception:
+        except (TypeError, ValueError, AttributeError):
             return 14
 
     def _select_styled_font(self, font, font_family, text_style):
@@ -401,7 +405,7 @@ class EmojiRenderer:
             try:
                 return self._paste_emoji(x, y, emoji_stream, emoji_size, emoji_width, font)
             except Exception:
-                pass
+                logger.debug("Failed to paste emoji at (%d, %d)", x, y, exc_info=True)
 
         # Fallback: draw placeholder
         self._draw.text((x, y), "□", fill=fill, font=font)
@@ -432,6 +436,7 @@ class EmojiRenderer:
                     return int(text_bbox[3]) - emoji_size
                 return int((self.line_height - emoji_size) // 2)
             except Exception:
+                logger.debug("Failed to calculate emoji vertical offset", exc_info=True)
                 return int((self.line_height - emoji_size) // 2)
         return int(self.emoji_position_offset[1])
 
@@ -491,11 +496,11 @@ class EmojiRenderer:
             if callable(_getlen):
                 return int(_getlen(content) or 0)
         except Exception:
-            pass
+            logger.debug("_getlen failed for content", exc_info=True)
         try:
             bbox = font.getbbox(content)
             if bbox:
                 return int(bbox[2] - bbox[0])
         except Exception:
-            pass
+            logger.debug("bbox text width measurement failed", exc_info=True)
         return len(content) * 8

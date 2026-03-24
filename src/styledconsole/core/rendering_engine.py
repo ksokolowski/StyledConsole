@@ -609,10 +609,9 @@ class RenderingEngine:
                 ascii_art = figlet.renderText(banner.text)
                 # Split into lines and remove trailing empty lines
                 ascii_lines = ascii_art.rstrip("\n").split("\n")
-            except Exception as e:
+            except Exception:
                 # Fallback on font error
-                if self._debug:
-                    self._logger.warning(f"Font error: {e}")
+                self._logger.debug("Font error in banner rendering", exc_info=True)
                 ascii_lines = [banner.text]
 
         # Truncate lines if width is specified and exceeded
